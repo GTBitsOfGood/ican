@@ -28,7 +28,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   },
-    "lint-staged": {
+  "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
     "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
   }
