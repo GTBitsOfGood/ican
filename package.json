@@ -14,6 +14,7 @@
     "secrets:get": "bw sync && bw get item 1676370d-5f21-4a5a-9f1d-b266000cc319 | fx .notes > \".env.development.local\""
   },
   "dependencies": {
+    "bw": "^0.0.0",
     "eslint": "^9.18.0",
     "eslint-config-next": "^15.1.4",
     "mongodb": "^6.12.0",
