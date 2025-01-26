@@ -7,7 +7,7 @@ export async function getPetByUserId(id: number) {
   return pet;
 }
 
-export async function updatePetName(id: number, name: string) {
+export async function updatePetByUserId(id: number, name: string) {
   const db = client.db();
   const updatedPet = await db
     .collection("pets")
@@ -18,4 +18,11 @@ export async function updatePetName(id: number, name: string) {
     );
 
   return updatedPet;
+}
+
+export async function deletePetByUserId(id: number) {
+  const db = client.db();
+  const pet = await db.collection("pets").findOneAndDelete({ userId: id });
+
+  return pet;
 }

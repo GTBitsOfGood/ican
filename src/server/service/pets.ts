@@ -1,5 +1,13 @@
-import { getPetByUserId, updatePetName } from "../db/actions/pets";
+import {
+  deletePetByUserId,
+  getPetByUserId,
+  updatePetByUserId,
+} from "../db/actions/pets";
 import { Pet } from "../db/models";
+
+export interface UpdatePetBody {
+  name: string;
+}
 
 export async function getTypedPets(id: number): Promise<Pet | null> {
   const petData = await getPetByUserId(id);
@@ -18,27 +26,39 @@ export async function getTypedPets(id: number): Promise<Pet | null> {
   return typedPet;
 }
 
-interface UpdatePetBody {
-  name: string;
-}
-
 export async function typedUpdatePet(
   id: number,
-  body: UpdatePetBody,
+  name: string,
 ): Promise<Pet | null> {
-  const updatedPetData = await updatePetName(id, body.name);
+  const updatedPet = await updatePetByUserId(id, name);
 
-  if (!updatedPetData) {
+  if (!updatedPet) {
     return null;
   }
 
-  const updatedPet: Pet = {
-    name: updatedPetData.value.name,
-    xpGained: updatedPetData.value.xpGained,
-    xpLevel: updatedPetData.value.xpLevel,
-    coins: updatedPetData.value.coins,
-    userId: updatedPetData.value.userId,
+  const typedPet: Pet = {
+    name: updatedPet.name,
+    xpGained: updatedPet.xpGained,
+    xpLevel: updatedPet.xpLevel,
+    coins: updatedPet.coins,
+    userId: updatedPet.userId,
   };
 
-  return updatedPet;
+  return typedPet;
+}
+
+export async function typedDeletePet(id: number): Promise<Pet | null> {
+  const deletedPet = await deletePetByUserId(id);
+
+  if (!deletedPet) return null;
+
+  const typedPet = {
+    name: deletedPet.name,
+    xpGained: deletedPet.xpGained,
+    xpLevel: deletedPet.xpLevel,
+    coins: deletedPet.coins,
+    userId: deletedPet.userId,
+  } as Pet;
+
+  return typedPet;
 }
