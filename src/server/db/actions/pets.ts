@@ -1,4 +1,10 @@
 import client from "../dbClient";
+import { Pet } from "../models";
+
+export async function createPet(newPet: Pet) {
+  const db = client.db();
+  db.collection("pets").insertOne(newPet);
+}
 
 export async function getPetByUserId(id: number) {
   const db = client.db();

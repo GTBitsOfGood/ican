@@ -1,6 +1,6 @@
 import { Pet } from "@/server/db/models";
 import {
-  getTypedPets,
+  getTypedPet,
   typedDeletePet,
   typedUpdatePet,
   UpdatePetBody,
@@ -21,7 +21,7 @@ export default async function handler(
   try {
     switch (method) {
       case "GET":
-        const pet: Pet | null = await getTypedPets(Number(userId));
+        const pet: Pet | null = await getTypedPet(Number(userId));
 
         // If null response, this user doesn't have a pet
         if (pet) {

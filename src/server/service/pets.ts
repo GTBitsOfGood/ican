@@ -1,4 +1,5 @@
 import {
+  createPet,
   deletePetByUserId,
   getPetByUserId,
   updatePetByUserId,
@@ -9,7 +10,26 @@ export interface UpdatePetBody {
   name: string;
 }
 
-export async function getTypedPets(id: number): Promise<Pet | null> {
+export interface CreatePetBody {
+  name: string;
+  userId: number;
+}
+
+export async function typedCreatePet(id: number, name: string): Promise<Pet> {
+  const newPet: Pet = {
+    name: name,
+    xpGained: 0,
+    xpLevel: 0,
+    coins: 0,
+    userId: id,
+  };
+
+  await createPet(newPet);
+
+  return newPet;
+}
+
+export async function getTypedPet(id: number): Promise<Pet | null> {
   const petData = await getPetByUserId(id);
 
   if (!petData) return null;
