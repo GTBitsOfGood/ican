@@ -12,7 +12,7 @@ export default async function handler(
     switch (method) {
       case "POST":
         const createBody: CreatePetBody = body;
-        console.log(createBody);
+
         if (
           !createBody ||
           typeof createBody.name !== "string" ||
