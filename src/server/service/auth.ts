@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { checkLogin, createUser } from "../db/actions/auth";
 import { User } from "../db/models";
 
 export interface CreateUserBody {
@@ -6,6 +7,11 @@ export interface CreateUserBody {
   email: string;
   password: string;
   confirmPassword: string;
+}
+
+export interface LoginBody {
+  email: string;
+  password: string;
 }
 
 export async function validateCreateUser(body: CreateUserBody) {
@@ -22,6 +28,12 @@ export async function validateCreateUser(body: CreateUserBody) {
   };
 
   const token = await createUser(newUser);
+
+  return { token };
+}
+
+export async function validateLogin(body: LoginBody) {
+  const token = await checkLogin(body);
 
   return { token };
 }
