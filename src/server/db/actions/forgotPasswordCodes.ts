@@ -8,7 +8,7 @@ export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
 }
 
 export async function updateForgotPasswordCodeByUserId(
-  userId: string,
+  userId: ObjectId,
   updatedCode: ForgotPasswordCode,
 ) {
   const db = client.db();
@@ -29,7 +29,7 @@ export async function updateForgotPasswordCodeByUserId(
 }
 
 export async function getForgotPasswordCodeByUserId(
-  userId: string,
+  userId: ObjectId,
 ): Promise<ForgotPasswordCode | null> {
   const db = client.db();
   const code = await db
