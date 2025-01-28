@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { changePassword } from "@/server/service/forgotPasswordCodes";
+import ApiError from "@/services/apiError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,8 +10,8 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { newPassword, confirmPassword } = req.body;
-  if (!newPassword || !confirmPassword) {
+  const { password, confirmPassword } = req.body;
+  if (!password || !confirmPassword) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -23,12 +24,12 @@ export default async function handler(
     }
 
     const token = authHeader.split(" ")[1];
-    await changePassword(token, newPassword, confirmPassword);
+    await changePassword(token, password, confirmPassword);
 
     return res.status(200).json({ message: "Password updated successfully!" });
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
+    if (error instanceof ApiError) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
     return res.status(500).json({ error: "Unknown error occured." });
   }

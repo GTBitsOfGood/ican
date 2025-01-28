@@ -1,6 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
 import client from "../dbClient";
 import { User } from "../models";
+import ApiError from "@/services/apiError";
 
 export async function getUserFromEmail(
   email: string,
@@ -19,6 +20,6 @@ export async function updateUserPasswordFromId(
     .collection("users")
     .updateOne({ _id }, { $set: { password: newPassword } });
   if (result.modifiedCount === 0) {
-    throw new Error("User password update failed.");
+    throw new ApiError("User password update failed.", 500);
   }
 }

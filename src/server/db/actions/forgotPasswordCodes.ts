@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { ForgotPasswordCode } from "../models";
+import ApiError from "@/services/apiError";
 
 export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
   const db = client.db();
@@ -24,7 +25,7 @@ export async function updateForgotPasswordCodeByUserId(
       },
     );
   if (result.modifiedCount === 0) {
-    throw new Error("Failed to update forgot password code.");
+    throw new ApiError("Failed to update forgot password code.", 500);
   }
 }
 

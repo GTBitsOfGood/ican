@@ -9,6 +9,7 @@ import { ForgotPasswordCode } from "../db/models";
 import bcrypt from "bcrypt";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { updateUserPasswordFromId } from "../db/actions/user";
+import ApiError from "@/services/apiError";
 
 if (!process.env.JWT_SECRET) {
   throw new Error('Invalid/Missing environment variable: "JWT_SECRET"');
@@ -55,16 +56,16 @@ export async function verifyForgotPasswordCode(
   const forgotPasswordCode = await getForgotPasswordCodeByUserId(userId);
 
   if (!forgotPasswordCode) {
-    throw new Error("No forgot password code found for this user id.");
+    throw new ApiError("No forgot password code found for this user id.", 404);
   }
 
   if (new Date() > forgotPasswordCode.expirationDate) {
-    throw new Error("Forgot password code has expired.");
+    throw new ApiError("Forgot password code has expired.", 410);
   }
 
   const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
   if (!isMatch) {
-    throw new Error("Invalid forgot password code.");
+    throw new ApiError("Invalid forgot password code.", 400);
   }
 
   await deleteForgotPasswordCodeById(forgotPasswordCode._id);
@@ -79,7 +80,7 @@ export async function changePassword(
   confirmPassword: string,
 ) {
   if (newPassword !== confirmPassword) {
-    throw new Error("Passwords do not match.");
+    throw new ApiError("Passwords do not match.", 400);
   }
 
   try {
@@ -90,8 +91,10 @@ export async function changePassword(
     await updateUserPasswordFromId(new ObjectId(userId), hashedPassword);
   } catch (error) {
     if (error instanceof JsonWebTokenError) {
-      throw new Error("Invalid or expired token.");
+      throw new ApiError("Invalid or expired token.", 401);
+    } else if (error instanceof ApiError) {
+      throw error;
     }
-    throw error;
+    throw new ApiError("An unknown error occurred.", 500);
   }
 }

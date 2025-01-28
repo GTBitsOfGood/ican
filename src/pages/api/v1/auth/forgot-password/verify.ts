@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyForgotPasswordCode } from "@/server/service/forgotPasswordCodes";
+import { ObjectId } from "mongodb";
+import ApiError from "@/services/apiError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,11 +18,14 @@ export default async function handler(
   }
 
   try {
-    const token = await verifyForgotPasswordCode(userId, code);
+    const token = await verifyForgotPasswordCode(
+      new ObjectId(userId as string),
+      code,
+    );
     return res.status(200).json({ token });
   } catch (error) {
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
+    if (error instanceof ApiError) {
+      return res.status(error.statusCode).json({ error: error.message });
     }
     return res.status(500).json({ error: "Unknown error occured." });
   }
