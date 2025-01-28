@@ -16,7 +16,7 @@ if (!process.env.JWT_SECRET) {
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 
-function get6DigitCode(): number {
+function get4DigitCode(): number {
   return Math.floor(1000 + Math.random() * 9000);
 }
 
@@ -32,7 +32,7 @@ async function generateEncryptedCode(rawCode: number): Promise<string> {
 }
 
 export async function generateForgotPasswordCodeForUser(userId: ObjectId) {
-  const code = get6DigitCode();
+  const code = get4DigitCode();
   const expirationDate = generateExpirationDate();
   // send email
   const newCode: ForgotPasswordCode = {
