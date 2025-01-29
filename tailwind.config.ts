@@ -13,8 +13,9 @@ export default {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        quantico: ["Quantico", "sans-serif"]
-      }
+        quantico: ["Quantico", "sans-serif"],
+        pixelify: ["Pixelify Sans", "sans-serif"],
+      },
     },
   },
   plugins: [],
