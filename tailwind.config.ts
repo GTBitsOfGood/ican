@@ -11,6 +11,10 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        textGrey: "#626262",
+        loginGreen: "#ACCC6E",
+        borderGrey: "#747474",
+        errorRed: "#CE4E4E",
       },
       fontFamily: {},
       textStrokeWidth: {
