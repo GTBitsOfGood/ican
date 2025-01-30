@@ -3,14 +3,6 @@ import { useRouter } from "next/router";
 
 type ButtonType = "bag" | "help" | "log" | "settings" | "store";
 
-const IconMap: Record<ButtonType, string> = {
-  bag: "/icons/bag.png",
-  help: "/icons/help.png",
-  log: "/icons/log.png",
-  settings: "/icons/settings.png",
-  store: "/icons/store.png",
-};
-
 interface ButtonProps {
   buttonType: ButtonType;
   drawButton?: boolean;
@@ -21,8 +13,9 @@ const Button: React.FC<ButtonProps> = ({
   drawButton = true,
 }) => {
   const router = useRouter();
-  const iconURL = IconMap[buttonType];
-  const name = buttonType.toUpperCase();
+  // Switch to SVG later
+  const iconURL = `/icons/${buttonType}.png`;
+  const label = buttonType.toUpperCase();
 
   const redirect = () => {
     router.push(`/${buttonType}`);
@@ -31,24 +24,24 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={redirect}
-      className="w-[230px] h-[120px] relative cursor-pointer border-none bg-transparent p-0"
+      className="w-[14.375rem] h-[7.5rem] relative cursor-pointer border-none bg-transparent p-0"
       type="button"
     >
-      <div className="w-full h-full relative">
+      <div className="w-full h-full">
         {drawButton && (
           <>
-            {/* Need to fix the logic for positioning these too or just turn it into an SVG */}
+            {/* The border of the inner div doesn't match the Figma, I might have to use an SVG instead? */}
             <div
-              className="w-[230px] h-[120px] left-0 top-0 absolute bg-gradient-to-b 
-            from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
-            shadow-[0px_0px_0px_2px_rgba(61,112,201,0.40),inset_0px_2px_1px_0px_rgba(0,0,0,0.25)] 
-            border-4 border-[#13173c]/40"
-            />
-            <div
-              className="w-[202.94px] h-[96.64px] left-[13.53px] top-[11.68px] absolute 
-            bg-gradient-to-b from-[#7d83b2] to-[#535677] shadow-[inset_0px_4px_0px_0px_rgba(183,189,239,1.00)] 
-            border-4 border-t-0 border-[#7d83b2]/40"
-            />
+              className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
+              from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
+              shadow-[0px_0px_0px_2px_rgba(61,112,201,0.40),inset_0px_2px_1px_0px_rgba(0,0,0,0.25)] 
+              border-4 border-[#13173c]/40 flex justify-center items-center"
+            >
+              <div
+                className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#7d83b2] to-[#535677] 
+                shadow-[inset_0px_4px_0px_0px_rgba(183,189,239,1.00)] border-4 border-t-0 border-[#7d83b2]/40"
+              />
+            </div>
           </>
         )}
 
@@ -58,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
             {/* SVG? */}
             <Image
               src={iconURL}
-              alt={`${name}`}
+              alt={label}
               width={80}
               height={80}
               className="object-contain"
@@ -66,8 +59,7 @@ const Button: React.FC<ButtonProps> = ({
           </div>
           <div className="h-9 z-10 justify-center items-center inline-flex">
             <span className="font-quantico text-center text-white text-4xl font-bold leading-9 text-shadow-blue">
-              {" "}
-              {name}{" "}
+              {label.toUpperCase()}
             </span>
           </div>
         </div>
