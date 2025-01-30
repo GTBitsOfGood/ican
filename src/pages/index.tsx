@@ -1,7 +1,9 @@
+import Bubble from "@/components/ui/bubble";
+import FeedButton from "@/components/ui/feedButton";
+import Navbar from "@/components/ui/navbar";
+import NavButton from "@/components/ui/navButton";
 import Profile from "@/components/ui/profile";
 import ProfileInfo from "@/components/ui/profileInfo";
-import Navbar from "@/components/ui/navbar";
-import Button from "@/components/ui/button";
 
 import Image from "next/image";
 
@@ -18,27 +20,33 @@ export default function Home() {
           <Profile />
           <ProfileInfo />
         </div>
-        {/* Temporarily here for now, need to somehow align this with the profile */}
+        {/* Temporarily here for now, might want to make a seperate componenet to keep them in? */}
         <div className="flex flex-col gap-12 justify-center py-3 px-6">
-          <Button buttonType="settings" drawButton={false} />
-          <Button buttonType="help" drawButton={false} />
+          <NavButton buttonType="settings" drawButton={false} />
+          <NavButton buttonType="help" drawButton={false} />
         </div>
-        <div></div>
       </div>
 
       <Navbar>
-        <Button buttonType="store" />
-        <Button buttonType="log" />
-        <Button buttonType="bag" />
+        <NavButton buttonType="store" />
+        <NavButton buttonType="log" />
+        <NavButton buttonType="bag" />
+        <FeedButton />
       </Navbar>
 
-      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/4 h-2/5">
+      {/* How to scale duck size? % or using md, lg */}
+      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[22rem] h-[31rem]">
         <Image
           src="/characters/duck.png"
           alt="pet"
           fill
           className="object-contain"
         />
+      </div>
+
+      {/* Need to find a good way to position the text-bubble + Duck so they still match up regardless to resolution */}
+      <div className="absolute left-1/2 bottom-1/2 ml-40 mb-32">
+        <Bubble/>
       </div>
     </div>
   );

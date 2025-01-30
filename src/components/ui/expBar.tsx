@@ -15,7 +15,7 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp }) => {
       {/* XP Bar */}
       <div className="absolute right-0 h-7 w-11/12 bg-[#37401e] shadow-[inset_0px_-4px_0px_0px_rgba(0,0,0,0.14)]">
         <div
-          className="h-full w-full bg-[#c8e57f] border-2 border-[#5a711a]
+          className="h-full w-full border-2 bg-[#c8e57f] border-[#5a711a]
         shadow-[inset_0rem_-0.375rem_0rem_0rem_#718E1F,inset_0rem_0.25rem_0rem_0rem_#DBEDA6]"
           style={{ width: `${progress}%` }}
         />

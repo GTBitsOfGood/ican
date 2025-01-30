@@ -1,22 +1,20 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-type ButtonType = "bag" | "help" | "log" | "settings" | "store";
+// Probably move the types into a folder
+type ButtonType = "bag" | "help" | "log" | "settings" | "store" | "feed";
 
 interface ButtonProps {
-  buttonType: ButtonType;
+  buttonType?: ButtonType;
   drawButton?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  buttonType = "store",
-  drawButton = true,
-}) => {
+const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true }) => {
   const router = useRouter();
   // Switch to SVG later
   const iconURL = `/icons/${buttonType}.png`;
-  const label = buttonType.toUpperCase();
 
+  // Pass the onclick logic as a prop?
   const redirect = () => {
     router.push(`/${buttonType}`);
   };
@@ -45,13 +43,13 @@ const Button: React.FC<ButtonProps> = ({
           </>
         )}
 
-        {/* I don't like this logic for making the icons stick out at all, change later with abs positioning some other way */}
+        {/* I don't like this logic for making the icons stick out, I will reorganize / experiment with this (put it into the div above?) */}
         <div className="w-full h-full z-10 flex flex-col items-center justify-end pb-[20px] gap-1">
           <div className="relative h-20 w-auto aspect-square">
-            {/* SVG? */}
+            {/* Will probably switch the Icons over to SVG's */}
             <Image
               src={iconURL}
-              alt={label}
+              alt={buttonType}
               width={80}
               height={80}
               className="object-contain"
@@ -59,7 +57,7 @@ const Button: React.FC<ButtonProps> = ({
           </div>
           <div className="h-9 z-10 justify-center items-center inline-flex">
             <span className="font-quantico text-center text-white text-4xl font-bold leading-9 text-shadow-blue">
-              {label.toUpperCase()}
+              {buttonType.toUpperCase()}
             </span>
           </div>
         </div>
