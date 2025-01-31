@@ -5,36 +5,37 @@ import {
   getForgotPasswordCodeByUserId,
   updateForgotPasswordCodeByUserId,
 } from "../db/actions/forgotPasswordCodes";
-import { ForgotPasswordCode } from "../db/models";
 import bcrypt from "bcrypt";
+import { ForgotPasswordCode } from "../db/models";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { updateUserPasswordFromId } from "../db/actions/user";
 import ApiError from "@/services/apiError";
+import {
+  generateEncryptedCode,
+  generateExpirationDate,
+  get6DigitCode,
+} from "@/utils/forgotPasswordUtils";
+import {
+  BadRequestError,
+  ConflictError,
+  InternalServerError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/utils/errors";
 
 if (!process.env.JWT_SECRET) {
-  throw new Error('Invalid/Missing environment variable: "JWT_SECRET"');
+  throw new InternalServerError(
+    'Invalid/Missing environment variable: "JWT_SECRET"',
+  );
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 
-function get4DigitCode(): number {
-  return Math.floor(1000 + Math.random() * 9000);
-}
-
-function generateExpirationDate(): Date {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() + 15);
-  return now;
-}
-
-async function generateEncryptedCode(rawCode: number): Promise<string> {
-  const encryptedCode = await bcrypt.hash(rawCode.toString(), 10);
-  return encryptedCode;
-}
-
 export async function generateForgotPasswordCodeForUser(userId: ObjectId) {
-  const code = get4DigitCode();
+  const code = get6DigitCode();
   const expirationDate = generateExpirationDate();
+
   // send email
+
   const newCode: ForgotPasswordCode = {
     code: await generateEncryptedCode(code),
     expirationDate,
@@ -50,22 +51,27 @@ export async function generateForgotPasswordCodeForUser(userId: ObjectId) {
 }
 
 export async function verifyForgotPasswordCode(
-  userId: ObjectId,
+  userIdString: string,
   code: string,
 ): Promise<string> {
+  if (!userIdString || !code) {
+    throw new BadRequestError("User ID and code are required.");
+  }
+  const userId = new ObjectId(userIdString);
+
   const forgotPasswordCode = await getForgotPasswordCodeByUserId(userId);
 
   if (!forgotPasswordCode) {
-    throw new ApiError("No forgot password code found for this user id.", 404);
+    throw new NotFoundError("No forgot password code found for this user id.");
   }
 
   if (new Date() > forgotPasswordCode.expirationDate) {
-    throw new ApiError("Forgot password code has expired.", 410);
+    throw new ConflictError("Forgot password code has expired.");
   }
 
   const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
   if (!isMatch) {
-    throw new ApiError("Invalid forgot password code.", 400);
+    throw new UnauthorizedError("Invalid forgot password code.");
   }
 
   await deleteForgotPasswordCodeById(forgotPasswordCode._id);
@@ -79,8 +85,12 @@ export async function changePassword(
   newPassword: string,
   confirmPassword: string,
 ) {
+  if (!newPassword || !confirmPassword) {
+    throw new BadRequestError("Missing required fields.");
+  }
+
   if (newPassword !== confirmPassword) {
-    throw new ApiError("Passwords do not match.", 400);
+    throw new BadRequestError("Passwords do not match");
   }
 
   try {
@@ -91,10 +101,10 @@ export async function changePassword(
     await updateUserPasswordFromId(new ObjectId(userId), hashedPassword);
   } catch (error) {
     if (error instanceof JsonWebTokenError) {
-      throw new ApiError("Invalid or expired token.", 401);
+      throw new ConflictError("Invalid or expired token.");
     } else if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError("An unknown error occurred.", 500);
+    throw new InternalServerError("An unknown error occurred.");
   }
 }

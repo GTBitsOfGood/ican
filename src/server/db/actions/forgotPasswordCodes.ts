@@ -1,11 +1,13 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { ForgotPasswordCode } from "../models";
-import ApiError from "@/services/apiError";
+import { InternalServerError } from "@/utils/errors";
 
 export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
   const db = client.db();
-  await db.collection("forgotPasswordCodes").insertOne(newCode);
+  await db
+    .collection<ForgotPasswordCode>("forgotPasswordCodes")
+    .insertOne(newCode);
 }
 
 export async function updateForgotPasswordCodeByUserId(
@@ -25,7 +27,7 @@ export async function updateForgotPasswordCodeByUserId(
       },
     );
   if (result.modifiedCount === 0) {
-    throw new ApiError("Failed to update forgot password code.", 500);
+    throw new InternalServerError("Failed to update forgot password code.");
   }
 }
 
@@ -43,6 +45,8 @@ export async function deleteForgotPasswordCodeById(
   _id: ObjectId | undefined,
 ): Promise<boolean> {
   const db = client.db();
-  const result = await db.collection("forgotPasswordCodes").deleteOne({ _id });
+  const result = await db
+    .collection<ForgotPasswordCode>("forgotPasswordCodes")
+    .deleteOne({ _id });
   return result.deletedCount > 0;
 }

@@ -1,7 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
 import client from "../dbClient";
 import { User } from "../models";
-import ApiError from "@/services/apiError";
+import { InternalServerError, NotFoundError } from "@/utils/errors";
 
 export async function getUserFromEmail(
   email: string,
@@ -16,10 +16,14 @@ export async function updateUserPasswordFromId(
   newPassword: string,
 ) {
   const db = client.db();
+  const userExists = await db.collection<User>("users").findOne({ _id });
+  if (!userExists) {
+    throw new NotFoundError("User does not exist.");
+  }
   const result = await db
-    .collection("users")
+    .collection<User>("users")
     .updateOne({ _id }, { $set: { password: newPassword } });
   if (result.modifiedCount === 0) {
-    throw new ApiError("User password update failed.", 500);
+    throw new InternalServerError("User password update failed.");
   }
 }
