@@ -1,5 +1,3 @@
-// Should I collapse this into navButton? I'm not too sure what this button does yet
-
 const FeedButton = ({}) => {
   return (
     <button
@@ -9,12 +7,12 @@ const FeedButton = ({}) => {
       <div
         className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
         from-[#accc6e] via-[#7b9449] to-[#365914] 
-        shadow-[0px_0px_0px_2px_rgba(61,112,201,0.40),inset_0px_2px_1px_0px_rgba(0,0,0,0.25)] 
+        shadow-button-outer
         border-4 border-[#1a2107]/40 flex justify-center items-center"
       >
         <div
           className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#accc6e] to-[#739935] 
-          shadow-[inset_0px_4px_0px_0px_rgba(206,224,160,1.00)] border-4 border-t-0 border-[#b7c982]/40"
+          shadow-inner border-4 border-t-0 border-[#b7c982]/40"
         >
           <div className="h-full w-full flex justify-center items-center">
             <span className="font-quantico text-center text-white text-6xl font-bold leading-9 text-shadow-blue"> FEED </span>

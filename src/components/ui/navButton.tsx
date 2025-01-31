@@ -32,12 +32,12 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
             <div
               className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
               from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
-              shadow-[0px_0px_0px_2px_rgba(61,112,201,0.40),inset_0px_2px_1px_0px_rgba(0,0,0,0.25)] 
+              shadow-button-outer
               border-4 border-[#13173c]/40 flex justify-center items-center"
             >
               <div
                 className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#7d83b2] to-[#535677] 
-                shadow-[inset_0px_4px_0px_0px_rgba(183,189,239,1.00)] border-4 border-t-0 border-[#7d83b2]/40"
+                shadow-button-inner border-4 border-t-0 border-[#7d83b2]/40"
               />
             </div>
           </>

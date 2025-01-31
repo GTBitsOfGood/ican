@@ -5,7 +5,7 @@ interface BubbleProps {
 const Bubble: React.FC<BubbleProps> = ({ text = "Hey there! Don’t forget to take your medicine at 12:00!!" }) => {
   return (
     <div className="w-[43.75rem]">
-      <div className="p-8 w-full bg-white shadow-[0px_8px_0px_0px_rgba(125,131,178,1.00)] text-4xl font-bold text-black text-center">
+      <div className="w-full p-8 bg-white text-4xl font-bold text-black text-center shadow-bubble">
         {text}
       </div>
       <div className="h-10 w-10 ml-12">

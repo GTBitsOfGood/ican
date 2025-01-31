@@ -1,9 +1,9 @@
-import Bubble from "@/components/ui/bubble";
-import FeedButton from "@/components/ui/feedButton";
-import Navbar from "@/components/ui/navbar";
-import NavButton from "@/components/ui/navButton";
-import Profile from "@/components/ui/profile";
-import ProfileInfo from "@/components/ui/profileInfo";
+import Bubble from "@/components/ui/Bubble";
+import FeedButton from "@/components/ui/FeedButton";
+import Navbar from "@/components/ui/Navbar";
+import NavButton from "@/components/ui/NavButton";
+import Profile from "@/components/ui/Profile";
+import ProfileInfo from "@/components/ui/ProfileInfo";
 
 import Image from "next/image";
 

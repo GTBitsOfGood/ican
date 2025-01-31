@@ -1,12 +1,12 @@
 import Image from "next/image";
-import ExpBar from "./expBar";
+import ExpBar from "./ExpBar";
 
 interface ProfileInfoProps {
-  name?: string;
-  level?: number;
-  currentExp?: number;
-  totalExp?: number;
-  coins?: number;
+  name: string;
+  level: number;
+  currentExp: number;
+  totalExp: number;
+  coins: number;
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
