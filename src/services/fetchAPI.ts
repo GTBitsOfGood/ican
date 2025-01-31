@@ -1,9 +1,8 @@
 // Should I move this into /services and I'm also not too sure what to name this file or have a specific fetch function for each service
-// Also not too sure what to name this
 const BASE_URL = '/api/v1'
 
 // Should I have 1 function or 1 function for each request method (Get, patch, etc)
-// Also wondering if I should have an explicit variable for body instead of request then spreading
+// Should I have an explicit variable for body instead of request then spreading
 export async function fetchAPI<T>(
   endpoint: string,
   request: RequestInit = {}

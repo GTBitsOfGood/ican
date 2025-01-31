@@ -1,6 +1,5 @@
 import { fetchAPI } from "@/services/fetchAPI";
 
-// Keep these interfaces here?
 export interface LoginData {
   email: string;
   password: string;
