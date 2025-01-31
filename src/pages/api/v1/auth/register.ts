@@ -1,5 +1,6 @@
-import { CreateUserBody, validateCreateUser } from "@/server/service/auth";
+import { validateCreateUser } from "@/server/service/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { CustomError } from "@/utils/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,35 +9,21 @@ export default async function handler(
   const { method, body } = req;
 
   try {
-    switch (method) {
-      case "POST":
-        // Validate body
-        const createBody: CreateUserBody = body;
-        if (
-          !createBody ||
-          typeof createBody.name !== "string" ||
-          createBody.name.trim() === "" ||
-          typeof createBody.email !== "string" ||
-          createBody.email.trim() === "" ||
-          typeof createBody.password !== "string" ||
-          createBody.name.trim() === "" ||
-          typeof createBody.confirmPassword !== "string"
-        ) {
-          return res.status(400).json({
-            error:
-              "Invalid request body: 'name', 'email', 'password', and 'confirmPassword' are required and must be non-empty strings.",
-          });
-        }
-
-        const response = await validateCreateUser(createBody);
-
+    if (method == "POST") {
+      try {
+        const response = await validateCreateUser(body);
         res.status(201).json(response);
-        break;
-
-      default:
-        // Method not allowed
-        res.setHeader("Allow", ["POST"]);
-        res.status(405).end(`Method ${method} Not Allowed`);
+      } catch (error) {
+        if (error instanceof CustomError) {
+          res.status(error.statusCode).json({ error: error.message });
+        } else {
+          throw error;
+        }
+      }
+    } else {
+      // Method not allowed
+      res.setHeader("Allow", ["POST"]);
+      res.status(405).json(`Method ${method} Not Allowed`);
     }
   } catch (error) {
     res
