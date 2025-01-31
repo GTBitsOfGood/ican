@@ -1,6 +1,10 @@
-import { emailValidation } from "@/utils/validation";
+import ErrorMessage from "@/components/ErrorMessage";
+import {
+  emailValidation,
+  passwordRequirementsValidation,
+} from "@/utils/validation";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const Sections = [
   {
@@ -19,21 +23,22 @@ const Sections = [
   },
 ];
 
-// const ErrorStates = [
-//   { 0: "Please enter a valid email address." },
-//   { 1: "Please enter a valid OTP." },
-//   { 2: "Please enter a valid password." },
-// ];
+const ErrorStates = {
+  email: "Please enter a valid email address.",
+  otp: "Please enter a valid OTP.",
+  password: "Must contain at least 6 characters, 1 number, & 1 symbol",
+  confirmPassword: "Passwords do not match",
+};
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [otp, setOTP] = useState<string>("");
 
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<Record<string, string>>({});
 
-  //   const resetPasswordRef = useRef<HTMLDivElement>(null);
-  //   const confirmPasswordRef = useRef<HTMLDivElement>(null);
+  const resetPasswordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -49,14 +54,46 @@ export default function ForgotPasswordPage() {
   };
 
   const incPage = () => {
+    if (!isFormValid()) return;
+    setPage((prev) => prev + 1);
+  };
+
+  const isFormValid = (): boolean => {
+    let isValid = true;
+
     if (page === 0) {
       if (!emailValidation(email)) {
-        setError("Please enter a valid email address.");
-        return;
+        isValid = false;
+        setError({ email: ErrorStates.email });
+      }
+    } else if (page === 1) {
+      // if (otp.length !== 4) {
+      //   isValid = false;
+      //   setError({ otp: ErrorStates.otp });
+      // }
+    } else if (page === 2) {
+      const errorObj: { password?: string; confirmPassword?: string } = {};
+
+      if (
+        !resetPasswordRef.current?.value ||
+        !passwordRequirementsValidation(resetPasswordRef.current?.value)
+      ) {
+        isValid = false;
+        errorObj["password"] = ErrorStates.password;
+      }
+      if (
+        !confirmPasswordRef.current?.value ||
+        resetPasswordRef.current?.value !== confirmPasswordRef.current?.value
+      ) {
+        isValid = false;
+        errorObj["confirmPassword"] = ErrorStates.confirmPassword;
+      }
+
+      if (!isValid) {
+        setError(errorObj);
       }
     }
-    setError("");
-    setPage((prev) => prev + 1);
+    return isValid;
   };
 
   return (
@@ -77,19 +114,12 @@ export default function ForgotPasswordPage() {
             {page === 0 && (
               <>
                 <input
-                  className="w-full border-2 border-solid border-[#747474] bg-white px-[10px] py-4 text-black h-16"
+                  className={`w-full border-2 border-solid ${!error.email ? "border-[#747474] text-[#747474] placeholder:text-[#747474]" : "border-[#CE4E4E] text-[#CE4E4E] placeholder:text-[#CE4E4E]"} bg-white px-[10px] py-4 h-16`}
                   type="text"
                   placeholder="Email"
                   onChange={handleEmailChange}
                 />
-                {error && (
-                  <div className="text-black gap-y-2 flex items-center">
-                    <span>
-                      <Image src="assets/ErrorIcon.svg" alt="Error Icon" />
-                    </span>
-                    <p>{error}</p>
-                  </div>
-                )}
+                {error.email && <ErrorMessage message={error.email} />}
               </>
             )}
             {page === 1 && (
@@ -114,17 +144,13 @@ export default function ForgotPasswordPage() {
                   <div className="text-2xl text-[#000]">New Password</div>
                   <div>
                     <input
-                      className="h-16 px-[10px] py-4 border-2 border-solid border-[#747474] bg-white text-[32px] text-[#626262]"
+                      className={`w-full border-2 border-solid ${!error.password ? "border-[#747474] text-[#747474] placeholder:text-[#747474]" : "border-[#CE4E4E] text-[#CE4E4E] placeholder:text-[#CE4E4E]"} bg-white px-[10px] py-4 h-16`}
                       type="password"
                       placeholder="Password"
+                      ref={resetPasswordRef}
                     />
-                    {error && (
-                      <div className="text-black gap-y-2 flex items-center">
-                        <span>
-                          <Image src="assets/ErrorIcon.svg" alt="Error Icon" />
-                        </span>
-                        <p>{error}</p>
-                      </div>
+                    {error.password && (
+                      <ErrorMessage message={error.password} />
                     )}
                   </div>
                 </div>
@@ -132,17 +158,13 @@ export default function ForgotPasswordPage() {
                   <div className="text-2xl text-[#000]">New Password</div>
                   <div>
                     <input
-                      className="h-16 px-[10px] py-4 border-2 border-solid border-[#747474] bg-white text-[32px] text-[#626262]"
+                      className={`w-full border-2 border-solid ${!error.confirmPassword ? "border-[#747474] text-[#747474] placeholder:text-[#747474]" : "border-[#CE4E4E] text-[#CE4E4E] placeholder:text-[#CE4E4E]"} bg-white px-[10px] py-4 h-16`}
                       type="password"
                       placeholder="Confirm Passowrd"
+                      ref={confirmPasswordRef}
                     />
-                    {error && (
-                      <div className="text-black gap-y-2 flex items-center">
-                        <span>
-                          <Image src="assets/ErrorIcon.svg" alt="Error Icon" />
-                        </span>
-                        <p>{error}</p>
-                      </div>
+                    {error.confirmPassword && (
+                      <ErrorMessage message={error.confirmPassword} />
                     )}
                   </div>
                 </div>
@@ -185,7 +207,8 @@ export default function ForgotPasswordPage() {
             <Image
               src="/assets/GoogleSocialIcon.svg"
               alt="Google Logo"
-              className="w-10 h-10"
+              width={40}
+              height={40}
             />
             <div className="text-[32px] text-[#000]">Login with Google</div>
           </button>
