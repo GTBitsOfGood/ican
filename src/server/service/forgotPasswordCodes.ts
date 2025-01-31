@@ -54,9 +54,14 @@ export async function verifyForgotPasswordCode(
   userIdString: string,
   code: string,
 ): Promise<string> {
-  if (!userIdString || !code) {
-    throw new BadRequestError("User ID and code are required.");
+  if (!userIdString || !userIdString.trim()) {
+    throw new BadRequestError("User ID is required.");
   }
+
+  if (!code || !code.trim()) {
+    throw new BadRequestError("Code is required");
+  }
+
   const userId = new ObjectId(userIdString);
 
   const forgotPasswordCode = await getForgotPasswordCodeByUserId(userId);
@@ -85,12 +90,16 @@ export async function changePassword(
   newPassword: string,
   confirmPassword: string,
 ) {
-  if (!newPassword || !confirmPassword) {
-    throw new BadRequestError("Missing required fields.");
+  if (!newPassword || !newPassword.trim()) {
+    throw new BadRequestError("New password is required.");
+  }
+
+  if (!confirmPassword || !confirmPassword.trim()) {
+    throw new BadRequestError("Confirm password is required");
   }
 
   if (newPassword !== confirmPassword) {
-    throw new BadRequestError("Passwords do not match");
+    throw new BadRequestError("Passwords do not match.");
   }
 
   try {
