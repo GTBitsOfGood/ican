@@ -33,7 +33,11 @@ export default {
     },
   },
   plugins: [
-    function ({ addUtilities }) {
+    function ({
+      addUtilities,
+    }: {
+      addUtilities: (utilities: Record<string, Record<string, string>>) => void;
+    }) {
       addUtilities({
         ".text-stroke-1": {
           "-webkit-text-stroke-width": "1px",
