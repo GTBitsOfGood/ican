@@ -1,5 +1,6 @@
 import { Pet } from "@/server/db/models";
-import { CreatePetBody, typedCreatePet } from "@/server/service/pets";
+import { typedCreatePet } from "@/server/service/pets";
+import { CustomError } from "@/utils/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -9,34 +10,21 @@ export default async function handler(
   const { method, body } = req;
 
   try {
-    switch (method) {
-      case "POST":
-        const createBody: CreatePetBody = body;
-
-        if (
-          !createBody ||
-          typeof createBody.name !== "string" ||
-          createBody.name.trim() === "" ||
-          isNaN(Number(createBody.userId))
-        ) {
-          return res.status(400).json({
-            error:
-              "Invalid request body: 'name' is required and must be a non-empty string, 'userId' is required and must be a number.",
-          });
-        }
-
-        const createdPet: Pet = await typedCreatePet(
-          Number(createBody.userId),
-          createBody.name,
-        );
-
+    if (method == "POST") {
+      try {
+        const createdPet: Pet = await typedCreatePet(body);
         res.status(200).json(createdPet);
-        break;
-
-      default:
-        // Method not allowed
-        res.setHeader("Allow", ["POST"]);
-        res.status(405).end(`Method ${method} Not Allowed`);
+      } catch (error) {
+        if (error instanceof CustomError) {
+          res.status(error.statusCode).json({ error: error.message });
+        } else {
+          throw error;
+        }
+      }
+    } else {
+      // Method not allowed
+      res.setHeader("Allow", ["POST"]);
+      res.status(405).end(`Method ${method} Not Allowed`);
     }
   } catch (error) {
     res

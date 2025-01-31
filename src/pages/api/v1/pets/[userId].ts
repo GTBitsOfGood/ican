@@ -3,8 +3,8 @@ import {
   getTypedPet,
   typedDeletePet,
   typedUpdatePet,
-  UpdatePetBody,
 } from "@/server/service/pets";
+import { CustomError } from "@/utils/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -14,57 +14,52 @@ export default async function handler(
   const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof userId !== "string" || isNaN(Number(userId))) {
-    return res.status(400).json({ error: "userId must be a number" });
+  if (typeof userId !== "string") {
+    return res.status(400).json({ error: "userId must be a string" });
   }
 
   try {
     switch (method) {
       case "GET":
-        const pet: Pet | null = await getTypedPet(Number(userId));
-
-        // If null response, this user doesn't have a pet
-        if (pet) {
+        try {
+          const pet: Pet | null = await getTypedPet(userId);
           res.status(200).json(pet);
-        } else {
-          res.status(404).json({ message: "This user doesn't have a pet" });
+        } catch (error) {
+          if (error instanceof CustomError) {
+            res.status(error.statusCode).json({ error: error.message });
+          } else {
+            throw error;
+          }
         }
+
         break;
 
       case "PATCH":
-        // Validate the request body
-        const updateBody: UpdatePetBody = body;
-        if (
-          !updateBody ||
-          typeof updateBody.name !== "string" ||
-          updateBody.name.trim() === ""
-        ) {
-          return res.status(400).json({
-            error:
-              "Invalid request body: 'name' is required and must be a non-empty string.",
-          });
+        try {
+          await typedUpdatePet(userId, body);
+          res.status(204).json({});
+        } catch (error) {
+          if (error instanceof CustomError) {
+            res.status(error.statusCode).json({ error: error.message });
+          } else {
+            throw error;
+          }
         }
 
-        const updatedPet: Pet | null = await typedUpdatePet(
-          Number(userId),
-          updateBody.name,
-        );
-
-        if (updatedPet) {
-          res.status(200).json(updatedPet);
-        } else {
-          res.status(404).json({ message: "This user doesn't have a pet" });
-        }
         break;
 
       case "DELETE":
-        const deletedPet: Pet | null = await typedDeletePet(Number(userId));
-
-        if (deletedPet) {
-          res.status(200).json(deletedPet);
-        } else {
-          res.status(404).json({ message: "This user doesn't have a pet" });
+        try {
+          await typedDeletePet(userId);
+          res.status(204).json({});
+        } catch (error) {
+          if (error instanceof CustomError) {
+            res.status(error.statusCode).json({ error: error.message });
+          } else {
+            throw error;
+          }
         }
+
         break;
 
       default:

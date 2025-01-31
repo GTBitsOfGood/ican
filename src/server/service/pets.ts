@@ -1,3 +1,4 @@
+import { AlreadyExistsError, CustomError } from "@/utils/types/exceptions";
 import {
   createPet,
   deletePetByUserId,
@@ -5,6 +6,8 @@ import {
   updatePetByUserId,
 } from "../db/actions/pets";
 import { Pet } from "../db/models";
+import { ObjectId } from "mongodb";
+import client from "../db/dbClient";
 
 export interface UpdatePetBody {
   name: string;
@@ -12,16 +15,41 @@ export interface UpdatePetBody {
 
 export interface CreatePetBody {
   name: string;
-  userId: number;
+  userId: string;
 }
 
-export async function typedCreatePet(id: number, name: string): Promise<Pet> {
-  const newPet: Pet = {
-    name: name,
+export async function typedCreatePet(createBody: CreatePetBody): Promise<Pet> {
+  // Validate body
+  if (
+    !createBody ||
+    typeof createBody.name !== "string" ||
+    createBody.name.trim() === "" ||
+    typeof createBody.userId !== "string" ||
+    createBody.userId.trim() === ""
+  ) {
+    throw new CustomError(
+      400,
+      "Invalid request body: 'name' and 'userId' are required and must be non-empty strings.",
+    );
+  }
+
+  //Check if the user has a pet already
+  const db = client.db();
+
+  const existingPet = await db
+    .collection("pets")
+    .findOne({ userId: new ObjectId(createBody.userId) });
+
+  if (existingPet) {
+    throw new AlreadyExistsError("this user already has a pet");
+  }
+
+  const newPet = {
+    name: createBody.name,
     xpGained: 0,
     xpLevel: 0,
     coins: 0,
-    userId: id,
+    userId: new ObjectId(createBody.userId),
   };
 
   await createPet(newPet);
@@ -29,13 +57,15 @@ export async function typedCreatePet(id: number, name: string): Promise<Pet> {
   return newPet;
 }
 
-export async function getTypedPet(id: number): Promise<Pet | null> {
-  const petData = await getPetByUserId(id);
+export async function getTypedPet(id: string): Promise<Pet | null> {
+  const petData = await getPetByUserId(new ObjectId(id));
 
-  if (!petData) return null;
+  if (!petData) {
+    throw new CustomError(404, "This user does not have a pet");
+  }
 
   //Convert data to Pet type
-  const typedPet = {
+  const typedPet: Pet = {
     name: petData.name,
     xpGained: petData.xpGained,
     xpLevel: petData.xpLevel,
@@ -46,39 +76,30 @@ export async function getTypedPet(id: number): Promise<Pet | null> {
   return typedPet;
 }
 
-export async function typedUpdatePet(
-  id: number,
-  name: string,
-): Promise<Pet | null> {
-  const updatedPet = await updatePetByUserId(id, name);
-
-  if (!updatedPet) {
-    return null;
+export async function typedUpdatePet(id: string, body: UpdatePetBody) {
+  const updateBody: UpdatePetBody = body;
+  if (
+    !updateBody ||
+    typeof updateBody.name !== "string" ||
+    updateBody.name.trim() === ""
+  ) {
+    throw new CustomError(
+      400,
+      "Invalid request body: 'name' is required and must be a non-empty string.",
+    );
   }
 
-  const typedPet: Pet = {
-    name: updatedPet.name,
-    xpGained: updatedPet.xpGained,
-    xpLevel: updatedPet.xpLevel,
-    coins: updatedPet.coins,
-    userId: updatedPet.userId,
-  };
+  const updatedPet = await updatePetByUserId(new ObjectId(id), body.name);
 
-  return typedPet;
+  if (!updatedPet) {
+    throw new CustomError(404, "This user does not have a pet");
+  }
 }
 
-export async function typedDeletePet(id: number): Promise<Pet | null> {
-  const deletedPet = await deletePetByUserId(id);
+export async function typedDeletePet(id: string) {
+  const deletedPet = await deletePetByUserId(new ObjectId(id));
 
-  if (!deletedPet) return null;
-
-  const typedPet = {
-    name: deletedPet.name,
-    xpGained: deletedPet.xpGained,
-    xpLevel: deletedPet.xpLevel,
-    coins: deletedPet.coins,
-    userId: deletedPet.userId,
-  } as Pet;
-
-  return typedPet;
+  if (!deletedPet) {
+    throw new CustomError(404, "This user does not have a pet");
+  }
 }
