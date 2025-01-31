@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { generateForgotPasswordCodeForUser } from "@/server/service/forgotPasswordCodes";
 import { getUserIdFromEmail } from "@/server/service/user";
-import ApiError from "@/services/apiError";
+import { ApiError } from "@/utils/errors";
 
 export default async function handler(
   req: NextApiRequest,

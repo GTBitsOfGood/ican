@@ -7,9 +7,8 @@ import {
 } from "../db/actions/forgotPasswordCodes";
 import bcrypt from "bcrypt";
 import { ForgotPasswordCode } from "../db/models";
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { updateUserPasswordFromId } from "../db/actions/user";
-import ApiError from "@/services/apiError";
+import { ApiError } from "@/utils/errors";
 import {
   generateEncryptedCode,
   generateExpirationDate,
@@ -22,13 +21,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/utils/errors";
-
-if (!process.env.JWT_SECRET) {
-  throw new InternalServerError(
-    'Invalid/Missing environment variable: "JWT_SECRET"',
-  );
-}
-const JWT_SECRET = process.env.JWT_SECRET;
+import { generateToken, verifyToken } from "./jwt";
 
 export async function generateForgotPasswordCodeForUser(userId: ObjectId) {
   const code = get6DigitCode();
@@ -81,7 +74,7 @@ export async function verifyForgotPasswordCode(
 
   await deleteForgotPasswordCodeById(forgotPasswordCode._id);
 
-  const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
+  const token = generateToken(userId);
   return token;
 }
 
@@ -103,17 +96,15 @@ export async function changePassword(
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    const decoded = verifyToken(token);
     const userId = decoded.userId;
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await updateUserPasswordFromId(new ObjectId(userId), hashedPassword);
   } catch (error) {
-    if (error instanceof JsonWebTokenError) {
-      throw new ConflictError("Invalid or expired token.");
-    } else if (error instanceof ApiError) {
-      throw error;
+    if (!(error instanceof ApiError)) {
+      throw new InternalServerError("An unknown error occurred.");
     }
-    throw new InternalServerError("An unknown error occurred.");
+    throw error;
   }
 }
