@@ -1,8 +1,14 @@
 import ErrorMessage from "@/components/ErrorMessage";
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import {
   emailValidation,
   passwordRequirementsValidation,
 } from "@/utils/validation";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Image from "next/image";
 import { useRef, useState } from "react";
 
@@ -30,6 +36,13 @@ const ErrorStates = {
   confirmPassword: "Passwords do not match",
 };
 
+const ButtonStates: Record<number, string> = {
+  0: "Send Code",
+  1: "Verify",
+  2: "Reset Password",
+  3: "Login",
+};
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -40,17 +53,17 @@ export default function ForgotPasswordPage() {
   const resetPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
+  const OTPStyles = {
+    border: !error.otp ? "1px solid #D8DADC" : "1px solid #CE4E4E",
+    width: "80px",
+    height: "80px",
+    fontSize: "36px",
+    color: "#000",
+    fontWeight: "700",
   };
 
-  const handleOTPChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length === 1) {
-      if (e.target.nextElementSibling) {
-        setOTP(otp + e.target.value);
-        e.target.nextElementSibling.focus();
-      }
-    }
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
   const incPage = () => {
@@ -59,21 +72,23 @@ export default function ForgotPasswordPage() {
   };
 
   const isFormValid = (): boolean => {
+    console.log("here");
     let isValid = true;
+    const errorObj: Record<string, string> = {};
 
     if (page === 0) {
       if (!emailValidation(email)) {
         isValid = false;
-        setError({ email: ErrorStates.email });
+        errorObj["email"] = ErrorStates.email;
       }
     } else if (page === 1) {
-      // if (otp.length !== 4) {
-      //   isValid = false;
-      //   setError({ otp: ErrorStates.otp });
-      // }
+      console.log(otp);
+      if (otp.length !== 4) {
+        isValid = false;
+        errorObj["otp"] = ErrorStates.otp;
+      }
+      console.log(errorObj);
     } else if (page === 2) {
-      const errorObj: { password?: string; confirmPassword?: string } = {};
-
       if (
         !resetPasswordRef.current?.value ||
         !passwordRequirementsValidation(resetPasswordRef.current?.value)
@@ -88,10 +103,10 @@ export default function ForgotPasswordPage() {
         isValid = false;
         errorObj["confirmPassword"] = ErrorStates.confirmPassword;
       }
+    }
 
-      if (!isValid) {
-        setError(errorObj);
-      }
+    if (!isValid) {
+      setError(errorObj);
     }
     return isValid;
   };
@@ -123,19 +138,20 @@ export default function ForgotPasswordPage() {
               </>
             )}
             {page === 1 && (
-              <div className="flex justify-center gap-x-4">
-                {Array(4)
-                  .fill("")
-                  .map((key: string, idx: number) => {
-                    return (
-                      <input
-                        key={idx}
-                        className="w-20 h-20 border border-solid border-[#D8DADC] text-black justify-center items-center text-4xl leading-none"
-                        type="text"
-                        onChange={handleOTPChange}
-                      />
-                    );
-                  })}
+              <div className="flex flex-col items-center justify-center gap-y-4">
+                <InputOTP
+                  maxLength={4}
+                  onChange={(newValue: string) => setOTP(newValue)}
+                  pattern={REGEXP_ONLY_DIGITS}
+                >
+                  <InputOTPGroup style={{ gap: "15px" }}>
+                    <InputOTPSlot index={0} style={OTPStyles} />
+                    <InputOTPSlot index={1} style={OTPStyles} />
+                    <InputOTPSlot index={2} style={OTPStyles} />
+                    <InputOTPSlot index={3} style={OTPStyles} />
+                  </InputOTPGroup>
+                </InputOTP>
+                {error.otp && <ErrorMessage message={error.otp} />}
               </div>
             )}
             {page === 2 && (
@@ -176,13 +192,7 @@ export default function ForgotPasswordPage() {
             onClick={incPage}
             type="submit"
           >
-            {page === 0
-              ? "Send Code"
-              : page === 1
-                ? "Verify"
-                : page === 2
-                  ? "Reset Password"
-                  : "Login"}
+            {ButtonStates[page]}
           </button>
           {page === 1 && (
             <div className="flex justify-center">
