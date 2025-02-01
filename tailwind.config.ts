@@ -19,6 +19,9 @@ export default {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       colors: {
+        "iCAN-error": "#CE4E4E",
+        "iCAN-textfield": "#747474",
+        "iCAN-gray": "#626262",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         "iCAN-Blue-300": "#2C3694",
@@ -61,10 +64,8 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
-      textShadow: {
-        headerPurpleShadow: "0px 4px 0px #7D83B2",
-      },
       fontFamily: {
+        // berlinSansFB: ["var(--font-berlin-sans-fb)", "sans-serif"],
         quantico: ["var(--font-quantico)", "sans-serif"],
       },
       borderRadius: {
