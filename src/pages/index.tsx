@@ -9,19 +9,18 @@ import ProfilePicture from "@/components/ui/ProfilePicture";
 import { characterImages } from "@/types/characters";
 
 export default function Home() {
-  const pet = 'duck'
+  const pet = "duck";
   return (
     <div className="min-h-screen flex flex-col relative">
       <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
-        
         {/* Profile */}
         <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
-          <ProfilePicture character="duck"/>
-          <ProfileInfo name="Name" level={7} coins={100} currentExp={50}/>
+          <ProfilePicture character="duck" />
+          <ProfileInfo name="Name" level={7} coins={100} currentExp={50} />
         </div>
 
         {/* Side Bar */}
-        <div className="flex flex-col w-fit gap-9 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
+        <div className="flex flex-col gap-9 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
           <NavButton buttonType="settings" drawButton={false} />
           <NavButton buttonType="help" drawButton={false} />
         </div>
@@ -46,9 +45,9 @@ export default function Home() {
             draggable={false}
             className="select-none h-full w-auto object-contain"
           />
-        <div className="absolute left-[100%] bottom-[75%]">
-          <Bubble/>
-        </div>
+          <div className="absolute left-[100%] bottom-[75%]">
+            <Bubble />
+          </div>
         </div>
       </div>
     </div>
