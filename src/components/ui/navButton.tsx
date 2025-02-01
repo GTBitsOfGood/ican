@@ -52,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
               alt={buttonType}
               width={80}
               height={80}
-              className="object-contain"
+              className="object-contain pointer-events-none"
             />
           </div>
           <div className="h-9 z-10 justify-center items-center inline-flex">

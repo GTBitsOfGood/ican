@@ -1,33 +1,30 @@
 import Image from "next/image";
 import ExpBar from "./ExpBar";
+import ProfileName from "./ProfileName";
 
 interface ProfileInfoProps {
   name: string;
   level: number;
-  currentExp: number;
-  totalExp: number;
   coins: number;
+  currentExp: number;
+  totalExp?: number;
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  name = "Name",
-  level = 0,
-  currentExp = 80,
+  name,
+  level,
+  coins,
+  currentExp,
   totalExp = 100,
-  coins = 100,
 }) => {
   return (
     <div className="flex flex-col w-64 h-full gap-2">
-      <div className="flex flex-row gap-2">
-        <span className="text-4xl font-bold">{name}</span>
-        <button className="relative w-7">
-          <Image src="/icons/Edit.svg" alt="Edit" fill />
-        </button>
-      </div>
+      <ProfileName name = {name} />
       <ExpBar level={level} currentExp={currentExp} totalExp={totalExp} />
+
       <div className="flex flex-row items-center gap-4">
         <div className="relative w-12 h-auto aspect-square">
-          <Image src="/icons/Coin-b.svg" alt="Coins" fill />
+          <Image src="/icons/Coin-b.svg" alt="Coins" fill draggable={false} className="select-none"/>
         </div>
         <span className="font-quantico text-3xl">{coins}</span>
       </div>

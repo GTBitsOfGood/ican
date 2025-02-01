@@ -32,7 +32,10 @@ export default {
         'exp-inner': "inset 0rem -0.375rem 0rem 0rem #718E1F, inset 0rem 0.25rem 0rem 0rem #DBEDA6",
         'button-outer': "0px 0px 0px 2px rgba(61,112,201,0.40), inset 0px 2px 1px 0px rgba(0,0,0,0.25)",
         'button-inner': "inset 0px 4px 0px 0px rgba(183,189,239,1.00)"
-      }
+      },
+      screens: {
+        '4xl': '112rem',
+      },
     },
   },
   plugins: [],

@@ -22,8 +22,8 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp = 100}) => {
 
       <div className="w-full h-full flex flex-row gap-4 items-center">
         <div className="w-12 h-auto aspect-square relative">
-          <Image src="/icons/Star.svg" alt="Level Star" fill />
-          {/* Need web kit stroke */}
+          <Image src="/icons/Star.svg" alt="Level Star" fill draggable={false} className="select-none"/>
+
           <div
             className="[text-shadow:_0_1px_0_rgb(0_0_0_/_40%)] absolute w-full h-full z-auto font-pixelify text-center font-bold text-2xl flex justify-center items-center tracking-tight"
             style={{
