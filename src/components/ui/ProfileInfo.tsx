@@ -19,14 +19,22 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full w-fit gap-2">
-      <ProfileName name = {name} />
+      <ProfileName name={name} />
       <ExpBar level={level} currentExp={currentExp} totalExp={totalExp} />
 
       <div className="flex flex-1 flex-row w-fit items-center gap-3 4xl:gap-4">
         <div className="relative h-full aspect-square">
-          <Image src="/icons/Coin-b.svg" alt="Coins" fill draggable={false} className="select-none object-contain"/>
+          <Image
+            src="/icons/Coin-b.svg"
+            alt="Coins"
+            fill
+            draggable={false}
+            className="select-none object-contain"
+          />
         </div>
-        <span className="font-quantico text-2xl 4xl:text-3xl coin-label">{coins}</span>
+        <span className="font-quantico text-2xl 4xl:text-3xl coin-label">
+          {coins}
+        </span>
       </div>
     </div>
   );

@@ -14,12 +14,15 @@ const FeedButton = ({}) => {
           shadow-inner border-4 border-t-0 border-[#b7c982]/40"
         >
           <div className="h-full w-full flex justify-center items-center">
-            <span className="font-quantico text-center text-white text-5xl 4xl:text-6xl font-normal leading-9 feed-button-label"> FEED </span>
+            <span className="font-quantico text-center text-white text-5xl 4xl:text-6xl font-normal leading-9 feed-button-label">
+              {" "}
+              FEED{" "}
+            </span>
           </div>
         </div>
       </div>
     </button>
-  )
-}
+  );
+};
 
-export default FeedButton
+export default FeedButton;
