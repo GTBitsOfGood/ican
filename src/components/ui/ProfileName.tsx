@@ -16,7 +16,7 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   }
 
   return (
-    <div className="flex flex-row flex-1 h-full items-center">
+    <div className="flex flex-row flex-1 h-full items-center w-fit">
         {/* <input 
         // This logic is horrible, theres no way to have the input container fit only the text (can't calculate either)
           className={`

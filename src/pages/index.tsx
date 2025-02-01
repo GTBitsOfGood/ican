@@ -6,7 +6,7 @@ import NavButton from "@/components/ui/NavButton";
 import ProfileInfo from "@/components/ui/ProfileInfo";
 import ProfilePicture from "@/components/ui/ProfilePicture";
 
-import { characterImages } from "@/types/characters"; // Importing gives you width/height info
+import { characterImages } from "@/types/characters";
 
 export default function Home() {
   const pet = 'duck'
@@ -15,7 +15,7 @@ export default function Home() {
       <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
         
         {/* Profile */}
-        <div className="flex h-52 4xl:h-56 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:gap-12 4xl:px-16">
+        <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
           <ProfilePicture character="duck"/>
           <ProfileInfo name="Name" level={7} coins={100} currentExp={50}/>
         </div>
