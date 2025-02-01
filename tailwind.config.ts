@@ -65,7 +65,6 @@ export default {
         },
       },
       fontFamily: {
-        // berlinSansFB: ["var(--font-berlin-sans-fb)", "sans-serif"],
         quantico: ["var(--font-quantico)", "sans-serif"],
       },
       borderRadius: {

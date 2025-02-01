@@ -197,14 +197,14 @@ export default function ForgotPasswordPage() {
             </div>
           )}
           <button
-            className="w-full py-3 flex justify-center items-center text-[32px] bg-iCAN-Blue-300 font-berlinSansFB"
+            className="w-full py-3 flex justify-center items-center text-[32px] bg-iCAN-Blue-300"
             onClick={incPage}
             type="submit"
           >
             {ButtonStates[page]}
           </button>
           {page === 1 && (
-            <div className="flex justify-center font-berlinSansFB">
+            <div className="flex justify-center font-quantico">
               {/* Add variable color here when timer goes down to 0 */}
               <p
                 className={`${time > 0 ? "text-[rgba(98,98,98,0.5)]" : "text-iCAN-gray cursor-pointer"} text-[32px] flex gap-2 items-center`}
@@ -219,7 +219,7 @@ export default function ForgotPasswordPage() {
           )}
         </div>
         {page !== 3 && (
-          <div className="flex flex-col gap-y-6 w-full h-full font-berlinSansFB">
+          <div className="flex flex-col gap-y-6 w-full h-full font-quantico">
             <div className="flex items-center justify-center w-full">
               <div className="border border-iCAN-gray w-full" />
               <div className="text-iCAN-gray px-4">or</div>
