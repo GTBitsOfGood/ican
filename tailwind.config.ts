@@ -36,7 +36,13 @@ export default {
       screens: {
         '4xl': '112rem',
       },
-    },
+      aspectRatio: {
+        'nav-button': "230 / 120",
+        'feed-button': "265 / 113",
+        'profile-picture': "145 / 154",
+        'exp-bar': "262 / 29"
+      },
+    },  
   },
   plugins: [],
 } satisfies Config;

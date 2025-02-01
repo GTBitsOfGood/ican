@@ -19,3 +19,51 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.nav-button-label {
+  text-shadow:
+  /* Outline Shadow */
+  -2px -2px 0 #353859,  
+  2px -2px 0 #353859,
+  -2px 2px 0 #353859,
+  2px 2px 0 #353859,
+  /* Bottom Shadow */
+  -2px 4px 0 #7D83B2,
+  2px 4px 0 #7D83B2,
+  0px 4px 0 #7D83B2;
+  letter-spacing: -0.8px;
+  font-weight: 700;
+}
+
+.feed-button-label {
+  text-shadow:
+  /* Outline Shadow */
+  -2px -2px 0 #516C05,  
+  2px -2px 0 #516C05,
+  -2px 2px 0 #516C05,
+  2px 2px 0 #516C05,
+  /* Bottom Shadow */
+  -2px 4px 0 #798C3F,
+  2px 4px 0 #798C3F,
+  0px 4px 0 #798C3F;
+  letter-spacing: -2px;
+  font-weight: 700;
+}
+
+.exp-bar-label {
+  -webkit-text-stroke-width: 4px;
+  -webkit-text-stroke-color: #2A3213;
+  -webkit-text-fill-color: white;
+  paint-order: stroke fill;
+  letter-spacing: -2px;
+  font-weight: 700;
+}
+
+.coin-label {
+  -webkit-text-stroke-width: 4px;
+  -webkit-text-stroke-color: #482D0D;
+  -webkit-text-fill-color: white;
+  paint-order: stroke fill;
+  letter-spacing: -0.8px;
+  font-weight: 700;
+}

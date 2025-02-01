@@ -11,10 +11,8 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true }) => {
   const router = useRouter();
-  // Switch to SVG later
   const iconURL = `/icons/${buttonType}.png`;
 
-  // Pass the onclick logic as a prop?
   const redirect = () => {
     router.push(`/${buttonType}`);
   };
@@ -22,17 +20,15 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
   return (
     <button
       onClick={redirect}
-      className="w-[14.375rem] h-[7.5rem] relative cursor-pointer border-none bg-transparent p-0"
+      className="relative aspect-nav-button w-44 4xl:w-[14.375rem] cursor-pointer border-none bg-transparent p-0"
       type="button"
     >
       <div className="w-full h-full">
         {drawButton && (
           <>
-            {/* The border of the inner div doesn't match the Figma, I might have to use an SVG instead? */}
             <div
               className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
               from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
-              shadow-button-outer
               border-4 border-[#13173c]/40 flex justify-center items-center"
             >
               <div
@@ -43,10 +39,8 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
           </>
         )}
 
-        {/* I don't like this logic for making the icons stick out, I will reorganize / experiment with this (put it into the div above?) */}
-        <div className="w-full h-full z-10 flex flex-col items-center justify-end pb-[20px] gap-1">
-          <div className="relative h-20 w-auto aspect-square">
-            {/* Will probably switch the Icons over to SVG's */}
+        <div className="w-full h-full flex flex-col items-center justify-end pb-4 4xl:pb-5 4xl:gap-1">
+          <div className="relative h-[75%] w-auto aspect-square">
             <Image
               src={iconURL}
               alt={buttonType}
@@ -55,8 +49,8 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
               className="object-contain pointer-events-none"
             />
           </div>
-          <div className="h-9 z-10 justify-center items-center inline-flex">
-            <span className="font-quantico text-center text-white text-4xl font-bold leading-9 text-shadow-blue">
+          <div className="h-fit z-10 justify-center items-center inline-flex">
+            <span className="font-quantico text-center text-white text-3xl 4xl:text-4xl font-bold leading-9 nav-button-label">
               {buttonType.toUpperCase()}
             </span>
           </div>
