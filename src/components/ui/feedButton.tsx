@@ -1,7 +1,7 @@
 const FeedButton = ({}) => {
   return (
     <button
-      className="relative aspect-feed-button w-52 4xl:w-[16.5rem] cursor-pointer"
+      className="relative aspect-feed-button min-w-52 4xl:w-[16.5rem] cursor-pointer"
       type="button"
     >
       <div

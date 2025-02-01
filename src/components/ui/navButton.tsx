@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({ buttonType = "store", drawButton = true
   return (
     <button
       onClick={redirect}
-      className="relative aspect-nav-button w-44 4xl:w-[14.375rem] cursor-pointer border-none bg-transparent p-0"
+      className="relative aspect-nav-button min-w-44 4xl:w-[14.375rem] cursor-pointer border-none bg-transparent p-0"
       type="button"
     >
       <div className="w-full h-full">
