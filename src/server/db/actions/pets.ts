@@ -3,7 +3,7 @@ import client from "../dbClient";
 import { Pet } from "../models";
 import { CustomError } from "@/utils/types/exceptions";
 
-export async function createPet(newPet: Pet) {
+export async function createNewPet(newPet: Pet) {
   const db = client.db();
 
   try {
@@ -16,43 +16,29 @@ export async function createPet(newPet: Pet) {
   }
 }
 
-export async function getPetByUserId(id: ObjectId) {
+export async function getPetByUserId(userId: ObjectId) {
   const db = client.db();
-  const pet = await db.collection("pets").findOne({ userId: id });
+  const pet = await db.collection("pets").findOne({ userId: userId });
 
   return pet;
 }
 
-export async function updatePetByUserId(id: ObjectId, name: string) {
+export async function updatePetByUserId(userId: ObjectId, name: string) {
   const db = client.db();
-  try {
-    const updatedPet = await db
-      .collection("pets")
-      .findOneAndUpdate(
-        { userId: id },
-        { $set: { name: name } },
-        { returnDocument: "after" },
-      );
+  const result = await db
+    .collection("pets")
+    .updateOne({ userId: userId }, { $set: { name: name } });
 
-    return updatedPet;
-  } catch (error) {
-    throw new CustomError(
-      500,
-      "Failed to update pet: " + (error as Error).message,
-    );
+  if (result.modifiedCount == 0) {
+    throw new CustomError(500, "Failed to update pet.");
   }
 }
 
-export async function deletePetByUserId(id: ObjectId) {
+export async function deletePetByUserId(userId: ObjectId) {
   const db = client.db();
-  try {
-    const pet = await db.collection("pets").findOneAndDelete({ userId: id });
+  const result = await db.collection("pets").deleteOne({ userId: userId });
 
-    return pet;
-  } catch (error) {
-    throw new CustomError(
-      500,
-      "Failed to delete pet: " + (error as Error).message,
-    );
+  if (result.deletedCount == 0) {
+    throw new CustomError(500, "Failed to delete pet.");
   }
 }

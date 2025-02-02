@@ -1,9 +1,5 @@
 import { Pet } from "@/server/db/models";
-import {
-  getTypedPet,
-  typedDeletePet,
-  typedUpdatePet,
-} from "@/server/service/pets";
+import { getPet, deletePet, updatePet } from "@/server/service/pets";
 import { CustomError } from "@/utils/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -22,7 +18,7 @@ export default async function handler(
     switch (method) {
       case "GET":
         try {
-          const pet: Pet | null = await getTypedPet(userId);
+          const pet: Pet | null = await getPet(userId);
           res.status(200).json(pet);
         } catch (error) {
           if (error instanceof CustomError) {
@@ -36,8 +32,8 @@ export default async function handler(
 
       case "PATCH":
         try {
-          await typedUpdatePet(userId, body);
-          res.status(204).json({});
+          await updatePet(userId, body.name);
+          res.status(204).end();
         } catch (error) {
           if (error instanceof CustomError) {
             res.status(error.statusCode).json({ error: error.message });
@@ -50,8 +46,8 @@ export default async function handler(
 
       case "DELETE":
         try {
-          await typedDeletePet(userId);
-          res.status(204).json({});
+          await deletePet(userId);
+          res.status(204).end();
         } catch (error) {
           if (error instanceof CustomError) {
             res.status(error.statusCode).json({ error: error.message });
@@ -65,7 +61,7 @@ export default async function handler(
       default:
         // Method not allowed
         res.setHeader("Allow", ["GET", "PATCH", "DELETE"]);
-        res.status(405).end(`Method ${method} Not Allowed`);
+        res.status(405).end({ error: `Method ${method} Not Allowed` });
     }
   } catch (error) {
     res

@@ -1,5 +1,5 @@
 import { Pet } from "@/server/db/models";
-import { typedCreatePet } from "@/server/service/pets";
+import { createPet } from "@/server/service/pets";
 import { CustomError } from "@/utils/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -12,7 +12,7 @@ export default async function handler(
   try {
     if (method == "POST") {
       try {
-        const createdPet: Pet = await typedCreatePet(body);
+        const createdPet: Pet = await createPet(body.userId, body.name);
         res.status(200).json(createdPet);
       } catch (error) {
         if (error instanceof CustomError) {
@@ -24,7 +24,7 @@ export default async function handler(
     } else {
       // Method not allowed
       res.setHeader("Allow", ["POST"]);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).end({ error: `Method ${method} Not Allowed` });
     }
   } catch (error) {
     res

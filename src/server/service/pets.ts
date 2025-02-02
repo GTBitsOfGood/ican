@@ -1,13 +1,16 @@
-import { AlreadyExistsError, CustomError } from "@/utils/types/exceptions";
 import {
-  createPet,
+  AlreadyExistsError,
+  DoesNotExistError,
+} from "@/utils/types/exceptions";
+import {
+  createNewPet,
   deletePetByUserId,
   getPetByUserId,
   updatePetByUserId,
 } from "../db/actions/pets";
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
-import client from "../db/dbClient";
+import { validateParams } from "@/utils/pets";
 
 export interface UpdatePetBody {
   name: string;
@@ -18,88 +21,65 @@ export interface CreatePetBody {
   userId: string;
 }
 
-export async function typedCreatePet(createBody: CreatePetBody): Promise<Pet> {
-  // Validate body
-  if (
-    !createBody ||
-    typeof createBody.name !== "string" ||
-    createBody.name.trim() === "" ||
-    typeof createBody.userId !== "string" ||
-    createBody.userId.trim() === ""
-  ) {
-    throw new CustomError(
-      400,
-      "Invalid request body: 'name' and 'userId' are required and must be non-empty strings.",
-    );
-  }
+export async function createPet(userId: string, name: string): Promise<Pet> {
+  // Validate parameters
+  validateParams(userId, name);
 
-  //Check if the user has a pet already
-  const db = client.db();
-
-  const existingPet = await db
-    .collection("pets")
-    .findOne({ userId: new ObjectId(createBody.userId) });
+  // Check if the user has a pet already
+  const existingPet = await getPetByUserId(new ObjectId(userId));
 
   if (existingPet) {
     throw new AlreadyExistsError("this user already has a pet");
   }
 
   const newPet = {
-    name: createBody.name,
+    name: name,
     xpGained: 0,
     xpLevel: 0,
     coins: 0,
-    userId: new ObjectId(createBody.userId),
+    userId: new ObjectId(userId),
   };
 
-  await createPet(newPet);
+  await createNewPet(newPet);
 
   return newPet;
 }
 
-export async function getTypedPet(id: string): Promise<Pet | null> {
-  const petData = await getPetByUserId(new ObjectId(id));
+export async function getPet(userId: string): Promise<Pet | null> {
+  // Validate parameters
+  validateParams(userId);
 
-  if (!petData) {
-    throw new CustomError(404, "This user does not have a pet");
+  // Check if the pet exists
+  const existingPet = await getPetByUserId(new ObjectId(userId));
+  if (!existingPet) {
+    throw new DoesNotExistError("This pet does not exist");
   }
 
-  //Convert data to Pet type
-  const typedPet: Pet = {
-    name: petData.name,
-    xpGained: petData.xpGained,
-    xpLevel: petData.xpLevel,
-    coins: petData.coins,
-    userId: petData.userId,
-  } as Pet;
-
-  return typedPet;
+  return existingPet as Pet;
 }
 
-export async function typedUpdatePet(id: string, body: UpdatePetBody) {
-  const updateBody: UpdatePetBody = body;
-  if (
-    !updateBody ||
-    typeof updateBody.name !== "string" ||
-    updateBody.name.trim() === ""
-  ) {
-    throw new CustomError(
-      400,
-      "Invalid request body: 'name' is required and must be a non-empty string.",
-    );
+export async function updatePet(userId: string, name: string) {
+  // Validate parameters
+  validateParams(userId, name);
+
+  // Check if the pet exists
+  const existingPet = await getPetByUserId(new ObjectId(userId));
+  if (!existingPet) {
+    throw new DoesNotExistError("This pet does not exist");
   }
 
-  const updatedPet = await updatePetByUserId(new ObjectId(id), body.name);
-
-  if (!updatedPet) {
-    throw new CustomError(404, "This user does not have a pet");
-  }
+  await updatePetByUserId(new ObjectId(userId), name);
 }
 
-export async function typedDeletePet(id: string) {
-  const deletedPet = await deletePetByUserId(new ObjectId(id));
+export async function deletePet(userId: string) {
+  // Validate parameters
+  validateParams(userId);
 
-  if (!deletedPet) {
-    throw new CustomError(404, "This user does not have a pet");
+  // Check if the pet exists
+  const existingPet = await getPetByUserId(new ObjectId(userId));
+  if (!existingPet) {
+    throw new DoesNotExistError("This pet does not exist");
   }
+
+  await deletePetByUserId(new ObjectId(userId));
 }
