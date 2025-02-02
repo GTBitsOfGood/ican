@@ -16,7 +16,7 @@ export default function Home() {
         {/* Profile */}
         <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
           <ProfilePicture character="duck" />
-          <ProfileInfo name="Name" level={7} coins={100} currentExp={50} />
+          <ProfileInfo name="Name" level={7} coins={100} currentExp={80} />
         </div>
 
         {/* Side Bar */}

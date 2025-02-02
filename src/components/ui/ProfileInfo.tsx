@@ -32,7 +32,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
             className="select-none object-contain"
           />
         </div>
-        <span className="font-quantico text-2xl 4xl:text-3xl coin-label">
+        <span className="font-quantico font-bold text-2xl 4xl:text-3xl text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke letter-spacing-ui">
           {coins}
         </span>
       </div>

@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import type { PluginAPI } from "tailwindcss/types/config";
+import plugin from "tailwindcss/plugin";
 
 export default {
   content: [
@@ -46,5 +48,55 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities, matchUtilities }: PluginAPI) {
+      addUtilities({
+        ".text-stroke": {
+          "-webkit-text-stroke-width": "1px",
+          "text-stroke-width": "1px",
+        },
+        ".text-stroke-2": {
+          "-webkit-text-stroke-width": "2px",
+          "text-stroke-width": "2px",
+        },
+        ".text-stroke-4": {
+          "-webkit-text-stroke-width": "4px",
+          "text-stroke-width": "4px",
+        },
+        ".paint-stroke": {
+          "paint-order": "stroke fill",
+        },
+        ".letter-spacing-ui": {
+          "letter-spacing": "-0.8px",
+        },
+      });
+
+      matchUtilities(
+        {
+          "text-stroke": (value: string) => ({
+            "-webkit-text-stroke-color": value,
+            "text-stroke-color": value,
+          }),
+        },
+        { type: ["color", "any"] },
+      );
+
+      matchUtilities(
+        {
+          "text-shadow": (value: string) => ({
+            "text-shadow": `0px 4px 0px ${value}`,
+          }),
+        },
+        { type: ["color", "any"] },
+      );
+      matchUtilities(
+        {
+          "letter-spacing": (value: string) => ({
+            "letter-spacing": value,
+          }),
+        },
+        { type: ["any"] },
+      );
+    }),
+  ],
 } satisfies Config;

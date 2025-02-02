@@ -29,11 +29,11 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp = 100 }) => {
             className="object-contain select-none"
           />
 
-          <div className="absolute w-full h-full z-auto font-pixelify text-center font-bold text-2xl flex justify-center items-center tracking-tight coin-label">
+          <div className="absolute w-full h-full z-auto font-pixelify text-center font-bold text-2xl flex justify-center items-center text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke">
             {level}
           </div>
         </div>
-        <span className="h-fit z-10 font-quantico font-extrabold text-[2rem] text-white exp-bar-label">
+        <span className="h-fit z-10 font-quantico font-extrabold text-[2rem] text-white text-stroke-4 text-stroke-[#2A3213] text-shadow-[#444D29] paint-stroke letter-spacing-ui">
           {currentExp}/{totalExp} XP
         </span>
       </div>

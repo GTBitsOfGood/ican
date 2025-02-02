@@ -53,7 +53,7 @@ const Button: React.FC<ButtonProps> = ({
             />
           </div>
           <div className="h-fit z-10 justify-center items-center inline-flex">
-            <span className="font-quantico text-center text-white text-3xl 4xl:text-4xl font-bold leading-9 nav-button-label">
+            <span className="font-quantico text-center text-white text-3xl 4xl:text-4xl font-bold leading-9 text-stroke-4 text-stroke-[#353859] text-shadow-[#7D83B2] paint-stroke letter-spacing-ui">
               {buttonType.toUpperCase()}
             </span>
           </div>
