@@ -1,13 +1,41 @@
-import { CustomError } from "./types/exceptions";
+import { InvalidBodyError } from "./types/exceptions";
+import { z } from "zod";
 
-export function validatePassword(password: string, confirmPassword: string) {
-  // Assert a password length of greater than 10
-  if (password.length <= 10) {
-    throw new CustomError(400, "Password must be more than 10 characters.");
+export function validateName(name: string) {
+  if (typeof name !== "string" || name.trim() === "") {
+    throw new InvalidBodyError(
+      "Invalid request body: 'name' is required and must be a non-empty string.",
+    );
   }
+}
 
-  // Check password & confirmPassword
+export function validateEmail(email: string) {
+  const emailSchema = z.string().email();
+  if (!emailSchema.safeParse(email).success) {
+    throw new InvalidBodyError(
+      "Invalid request body: 'email' is required and must be a valid email.",
+    );
+  }
+}
+
+export function validatePassword(password: string) {
+  if (
+    !(
+      password.length >= 6 &&
+      /\d/.test(password) &&
+      /[!@#$%^&*]/.test(password)
+    )
+  ) {
+    throw new InvalidBodyError(
+      "Invalid request body: 'password' is required and must be greater than 6 characters and have special characters.",
+    );
+  }
+}
+
+export function passwordsAreEqual(password: string, confirmPassword: string) {
   if (password !== confirmPassword) {
-    throw new CustomError(400, "Password does not equal confirm password.");
+    throw new InvalidBodyError(
+      "Invalid request body: 'password' and 'confirmPassword' must be equal.",
+    );
   }
 }

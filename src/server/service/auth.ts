@@ -1,9 +1,18 @@
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
-import { AlreadyExistsError, CustomError } from "@/utils/types/exceptions";
+import {
+  AlreadyExistsError,
+  CustomError,
+  DoesNotExistError,
+} from "@/utils/types/exceptions";
 import jwt from "jsonwebtoken";
-import { validatePassword } from "@/utils/auth";
+import {
+  passwordsAreEqual,
+  validateEmail,
+  validateName,
+  validatePassword,
+} from "@/utils/auth";
 
 export interface CreateUserBody {
   name: string;
@@ -30,24 +39,10 @@ export async function validateCreateUser(
   confirmPassword: string,
 ) {
   // Validate parameters
-  if (
-    typeof name !== "string" ||
-    name.trim() === "" ||
-    typeof email !== "string" ||
-    email.trim() === "" ||
-    typeof password !== "string" ||
-    password.trim() === "" ||
-    typeof confirmPassword !== "string" ||
-    password.trim() === ""
-  ) {
-    throw new CustomError(
-      400,
-      "Invalid request body: 'name', 'email', 'password', and 'confirmPassword' are required and must be non-empty strings.",
-    );
-  }
-
-  //Validate password & confirmPassword
-  validatePassword(password, confirmPassword);
+  validateName(name);
+  validatePassword(password);
+  validateEmail(email);
+  passwordsAreEqual(password, confirmPassword);
 
   // Check if user already exists
   const existingUser = await findUserByEmail(email);
@@ -83,23 +78,14 @@ export async function validateCreateUser(
 
 export async function validateLogin(email: string, password: string) {
   // Validate parameters
-  if (
-    typeof email !== "string" ||
-    email.trim() === "" ||
-    typeof password !== "string" ||
-    password.trim() === ""
-  ) {
-    throw new CustomError(
-      400,
-      "Invalid request body: 'email' and 'password' are required and must be non-empty strings.",
-    );
-  }
+  validateEmail(email);
+  validatePassword(password);
 
   // Check if user exists
   const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
-    throw new CustomError(400, "user does not exist");
+    throw new DoesNotExistError("user does not exist");
   }
 
   // Check if password is correct

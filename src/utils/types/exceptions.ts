@@ -12,3 +12,15 @@ export class AlreadyExistsError extends CustomError {
     super(409, message);
   }
 }
+
+export class DoesNotExistError extends CustomError {
+  constructor(message: string) {
+    super(400, message);
+  }
+}
+
+export class InvalidBodyError extends CustomError {
+  constructor(message: string) {
+    super(400, message);
+  }
+}
