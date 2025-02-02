@@ -20,6 +20,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+html {
+  font-family: var(--font-pixelify-sans), sans-serif;
+}
+
 .nav-button-label {
   text-shadow:
   /* Outline Shadow */
