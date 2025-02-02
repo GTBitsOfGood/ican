@@ -29,7 +29,7 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp = 100 }) => {
             className="object-contain select-none"
           />
 
-          <div className="absolute w-full h-full z-auto font-pixelify text-center font-bold text-2xl flex justify-center items-center text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke">
+          <div className="absolute w-full h-full z-auto font-pixelify text-center font-bold text-2xl flex justify-center items-center text-white text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke">
             {level}
           </div>
         </div>

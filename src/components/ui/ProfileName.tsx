@@ -35,7 +35,7 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
       <input
         className={`
           text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent border-none w-fit 
-          focus:outline-none focus:ring-0 focus:border-none
+          focus:outline-none focus:ring-0 focus:border-none text-white
           ${!isEditing ? "pointer-events-none select-none" : ""}
         `}
         type="text"
