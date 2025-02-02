@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
-import { createUser } from "../db/actions/auth";
+import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 import { AlreadyExistsError, CustomError } from "@/utils/types/exceptions";
-import client from "../db/dbClient";
 import jwt from "jsonwebtoken";
+import { validatePassword } from "@/utils/auth";
 
 export interface CreateUserBody {
   name: string;
@@ -23,18 +23,22 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export async function validateCreateUser(body: CreateUserBody) {
-  // Validate body
-  const createBody: CreateUserBody = body;
+export async function validateCreateUser(
+  name: string,
+  email: string,
+  password: string,
+  confirmPassword: string,
+) {
+  // Validate parameters
   if (
-    !createBody ||
-    typeof createBody.name !== "string" ||
-    createBody.name.trim() === "" ||
-    typeof createBody.email !== "string" ||
-    createBody.email.trim() === "" ||
-    typeof createBody.password !== "string" ||
-    createBody.name.trim() === "" ||
-    typeof createBody.confirmPassword !== "string"
+    typeof name !== "string" ||
+    name.trim() === "" ||
+    typeof email !== "string" ||
+    email.trim() === "" ||
+    typeof password !== "string" ||
+    password.trim() === "" ||
+    typeof confirmPassword !== "string" ||
+    password.trim() === ""
   ) {
     throw new CustomError(
       400,
@@ -42,33 +46,22 @@ export async function validateCreateUser(body: CreateUserBody) {
     );
   }
 
-  // Assert a password length of greater than 10
-  if (createBody.password.length <= 10) {
-    throw new CustomError(400, "Password must be more than 10 characters.");
-  }
-
-  // Check password & confirmPassword
-  if (body.password != body.confirmPassword) {
-    throw new CustomError(400, "password does not equal confirm password");
-  }
+  //Validate password & confirmPassword
+  validatePassword(password, confirmPassword);
 
   // Check if user already exists
-  const db = client.db();
-
-  const existingUser = await db
-    .collection("users")
-    .findOne({ email: body.email });
+  const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
     throw new AlreadyExistsError("user already exists");
   }
 
   // Hash password and create user to pass to access layer
-  const hashedPassword = await bcrypt.hash(body.password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser: User = {
-    name: body.name,
-    email: body.email,
+    name: name,
+    email: email,
     password: hashedPassword,
   };
 
@@ -85,18 +78,16 @@ export async function validateCreateUser(body: CreateUserBody) {
     },
   );
 
-  return token;
+  return { token };
 }
 
-export async function validateLogin(body: LoginBody) {
-  // Validate body
-  const loginBody: LoginBody = body;
+export async function validateLogin(email: string, password: string) {
+  // Validate parameters
   if (
-    !loginBody ||
-    typeof loginBody.email !== "string" ||
-    loginBody.email.trim() === "" ||
-    typeof loginBody.password !== "string" ||
-    loginBody.password.trim() === ""
+    typeof email !== "string" ||
+    email.trim() === "" ||
+    typeof password !== "string" ||
+    password.trim() === ""
   ) {
     throw new CustomError(
       400,
@@ -105,21 +96,14 @@ export async function validateLogin(body: LoginBody) {
   }
 
   // Check if user exists
-  const db = client.db();
-
-  const existingUser = await db
-    .collection("users")
-    .findOne({ email: body.email });
+  const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
     throw new CustomError(400, "user does not exist");
   }
 
   // Check if password is correct
-  const passwordMatch = await bcrypt.compare(
-    body.password,
-    existingUser.password,
-  );
+  const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
     throw new CustomError(400, "password is not correct");
@@ -128,7 +112,7 @@ export async function validateLogin(body: LoginBody) {
   // Create and return jwt
   const token = jwt.sign(
     {
-      email: body.email,
+      email: email,
     },
     JWT_SECRET,
     {

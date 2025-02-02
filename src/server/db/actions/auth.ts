@@ -11,3 +11,9 @@ export async function createUser(newUser: User) {
     throw new CustomError(500, "Internal Server Error");
   }
 }
+
+export async function findUserByEmail(email: string): Promise<User | null> {
+  const db = client.db();
+  const existingUser = await db.collection("users").findOne({ email: email });
+  return existingUser as User | null;
+}

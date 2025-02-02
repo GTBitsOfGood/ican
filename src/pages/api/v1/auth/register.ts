@@ -6,12 +6,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method, body } = req;
+  const { method } = req;
+  const { name, email, password, confirmPassword } = req.body;
 
   try {
     if (method == "POST") {
       try {
-        const response = await validateCreateUser(body);
+        const response = await validateCreateUser(
+          name,
+          email,
+          password,
+          confirmPassword,
+        );
         res.status(201).json(response);
       } catch (error) {
         if (error instanceof CustomError) {

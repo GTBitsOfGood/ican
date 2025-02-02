@@ -6,12 +6,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method, body } = req;
+  const { method } = req;
+  const { email, password } = req.body;
 
   try {
     if (method == "POST") {
       try {
-        const response = await validateLogin(body);
+        const response = await validateLogin(email, password);
         res.status(201).json(response);
       } catch (error) {
         if (error instanceof CustomError) {
@@ -23,7 +24,7 @@ export default async function handler(
     } else {
       // Method not allowed
       res.setHeader("Allow", ["POST"]);
-      res.status(405).json(`Method ${method} Not Allowed`);
+      res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
   } catch (error) {
     res
