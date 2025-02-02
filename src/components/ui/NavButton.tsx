@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({
   drawButton = true,
 }) => {
   const router = useRouter();
-  const iconURL = `/icons/${buttonType}.png`;
+  const iconURL = `/icons/${buttonType}.svg`;
 
   const redirect = () => {
     router.push(`/${buttonType}`);
