@@ -7,6 +7,10 @@ export default {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    screens: {
+      mobile: "640px",
+      desktop: "1024px",
+    },
     extend: {
       colors: {
         background: "var(--background)",

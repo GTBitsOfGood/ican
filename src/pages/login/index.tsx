@@ -1,51 +1,53 @@
 import Image from "next/image";
 import Link from "next/link";
-import { WarningCircle } from "@phosphor-icons/react";
 import { useState } from "react";
+import { emailIsValid, passwordIsValid } from "@/utils/validation";
+import ErrorBox from "@/components/ErrorBox";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [registering, setRegistering] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    };
     let errorDetected = false;
-    if (data.email.trim() === "" || !data.email.includes("@")) {
+    if (!emailIsValid(email.trim())) {
       setEmailError("Please enter a valid email");
       errorDetected = true;
     } else {
       setEmailError("");
     }
-    if (data.password.trim() === "" || !passwordIsValid(data.password.trim())) {
+    if (!passwordIsValid(password.trim())) {
       setPasswordError(
-        "Must contain at least 6 characters, 1 number, and 1 symbol",
+        "Must contain at least 6 characters, 1 number, & 1 symbol",
       );
       errorDetected = true;
     } else {
       setPasswordError("");
     }
     if (!errorDetected) {
-      setRegistering(true);
+      setLoggingIn(true);
     }
-    alert(JSON.stringify(data));
+    return errorDetected;
   };
 
-  const passwordIsValid = (password: string) => {
-    return (
-      password.length >= 6 && /\d/.test(password) && /[!@#$%^&*]/.test(password)
-    );
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    setEmailError("");
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    setPasswordError("");
   };
 
   return (
     <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
       <div
-        className={`self-center flex flex-col items-center justify-center rounded-[64px] w-2/5 bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+        className={`self-center flex flex-col items-center justify-center rounded-[64px] mobile:w-[70%] desktop:w-[45%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
       >
         <Image
           className="mb-4"
@@ -57,11 +59,11 @@ export default function Home() {
         <div className="self-center w-[80%] my-4 text-center text-black text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
           Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
         </div>
-        {registering ? (
+        {loggingIn ? (
           <div className="flex justify-between space-between items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
             LOGGING IN
             <Image
-              className="ml-3"
+              className="ml-3 spin"
               src="/loading.svg"
               alt="loading"
               width={60}
@@ -72,40 +74,30 @@ export default function Home() {
           <>
             <form
               onSubmit={handleSubmit}
-              className="flex flex-col items-center justify-between w-[80%] h-[45%] bg-white rounded-lg"
+              className="flex flex-col items-center justify-center w-[80%] bg-white rounded-lg"
             >
               <div className="text-white self-start text-[32px]/[40px] font-bold text-shadow-default text-stroke-2 text-stroke-default mb-4">
-                Log in
+                Log In
               </div>
               <input
-                className={`flex h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                className={`flex h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                 type="text"
                 placeholder="Email"
                 name="email"
+                value={email}
+                onChange={handleEmailChange}
               />
-              {emailError !== "" ? (
-                <span className="flex self-start text-black mb-2">
-                  <WarningCircle className="self-center mr-2" size={16} />{" "}
-                  {emailError}
-                </span>
-              ) : (
-                <></>
-              )}
+              <ErrorBox message={emailError} />
               <input
-                className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-6" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                 type="password"
                 placeholder="Password"
                 name="password"
+                value={password}
+                onChange={handlePasswordChange}
               />
-              {passwordError !== "" ? (
-                <span className="flex self-start text-black mb-2">
-                  <WarningCircle className="self-center mr-2" size={16} />{" "}
-                  {passwordError}
-                </span>
-              ) : (
-                <></>
-              )}
-              <p className="text-textGrey self-start font-berlin-sans text-[16px] font-normal underline decoration-solid mb-2 [text-decoration-skip-ink:none]">
+              <ErrorBox message={passwordError} />
+              <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal underline decoration-solid mb-2 [text-decoration-skip-ink:none]">
                 Forgot Password?
               </p>
               <button
@@ -136,7 +128,7 @@ export default function Home() {
                 </div>
               </button>
             </div>
-            <div className="text-textGrey">
+            <div className="text-textGrey text-[20px]">
               Don&apos;t have an account?{" "}
               <Link className="underline" href="/register">
                 Sign up
