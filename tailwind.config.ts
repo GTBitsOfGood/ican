@@ -64,6 +64,9 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
+      textShadow: {
+        default: "0 4px 0 #7D83B2",
+      },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
       },
@@ -74,5 +77,33 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({
+      addUtilities,
+    }: {
+      addUtilities: (utilities: Record<string, Record<string, string>>) => void;
+    }) {
+      addUtilities({
+        ".text-stroke-1": {
+          "-webkit-text-stroke-width": "1px",
+          "text-stroke-width": "1px",
+        },
+        ".text-stroke-2": {
+          "-webkit-text-stroke-width": "2px",
+          "text-stroke-width": "2px",
+        },
+        ".text-stroke-3": {
+          "-webkit-text-stroke-width": "3px",
+          "text-stroke-width": "3px",
+        },
+        ".text-stroke-default": {
+          "-webkit-text-stroke-color": "#2C3694",
+          "text-stroke-color": "#2C3694",
+        },
+        ".text-shadow-default": {
+          "text-shadow": "0 4px 0 #7D83B2",
+        },
+      });
+    },
+  ],
 } satisfies Config;

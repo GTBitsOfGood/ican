@@ -32,7 +32,7 @@ const Sections = [
 
 const ErrorStates = {
   email: "Please enter a valid email address.",
-  otp: "Please enter a valid OTP.",
+  otp: "Please enter a valid One Time Pin.",
   password: "Must contain at least 6 characters, 1 number, & 1 symbol",
   confirmPassword: "Passwords do not match",
 };
@@ -122,16 +122,17 @@ export default function ForgotPasswordPage() {
     <div
       className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
     >
-      <div className="bg-white p-16 rounded-[64px] flex flex-col gap-y-6 w-fit h-fit">
-        <div className="flex flex-col gap-y-12 items-center w-fit max-w-[800px] font-quantico">
-          <div className="flex flex-col gap-y-4 items-center">
-            <div className="text-[#FFF] text-[64px]/[64px] font-bold [text-shadow:_4px_4px_4px_#7D83B2]">
+      <div className="bg-white p-16 rounded-[64px] flex flex-col gap-y-6 w-5/12">
+        <div className="flex flex-col gap-y-12 items-center font-quantico">
+          <div className={`flex flex-col gap-y-4 items-center`}>
+            <div className="text-[#FFF] text-[64px]/[64px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
               {Sections[page].header}
             </div>
-            <div className="text-black text-center text-4xl/9 font-bold">
+            <div className="text-black text-center text-4xl/9 font-bold flex flex-wrap">
               {Sections[page].subheader} {page === 1 && email}
             </div>
           </div>
+
           {page !== 3 && (
             <div className="flex flex-col gap-y-2 w-full">
               {page === 0 && (
@@ -179,12 +180,14 @@ export default function ForgotPasswordPage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-y-4">
-                    <div className="text-2xl text-[#000]">New Password</div>
+                    <div className="text-2xl text-[#000]">
+                      Confirm New Password
+                    </div>
                     <div>
                       <input
                         className={`w-full border-2 border-solid ${!error.confirmPassword ? "border--iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 h-16`}
                         type="password"
-                        placeholder="Confirm Passowrd"
+                        placeholder="Confirm Password"
                         ref={confirmPasswordRef}
                       />
                       {error.confirmPassword && (
@@ -206,15 +209,18 @@ export default function ForgotPasswordPage() {
           {page === 1 && (
             <div className="flex justify-center font-quantico">
               {/* Add variable color here when timer goes down to 0 */}
-              <p
-                className={`${time > 0 ? "text-[rgba(98,98,98,0.5)]" : "text-iCAN-gray cursor-pointer"} text-[32px] flex gap-2 items-center`}
+              <div
+                className="flex gap-2 items-center"
                 onClick={handleTimerReset}
               >
-                Send code again{" "}
-                <span>
-                  <Timer time={time} setTime={setTime} />
-                </span>
-              </p>
+                <div
+                  className={`${time > 0 ? "text-[rgba(98,98,98,0.5)]" : "text-iCAN-gray cursor-pointer underline hover:text-black"} text-[32px] flex items-center`}
+                  onClick={handleTimerReset}
+                >
+                  Send code again{" "}
+                </div>
+                <Timer time={time} setTime={setTime} />
+              </div>
             </div>
           )}
         </div>
