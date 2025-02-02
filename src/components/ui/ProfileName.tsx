@@ -11,6 +11,7 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   const [name, setName] = useState(initialName);
   const [inputWidth, setInputWidth] = useState(0);
   const spanRef = useRef<HTMLSpanElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleEditing = () => {
     setEditing((prev) => !prev);
@@ -22,32 +23,37 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
     }
   }, [name]);
 
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
   return (
-    <div className="relative flex flex-row flex-1 h-full items-center w-fit">
+    <div className="relative inline-flex flex-row flex-1 h-full items-center">
       {/* Reference span to correctly calculate width of input */}
       <span
         ref={spanRef}
-        className="absolute invisible whitespace-pre text-2xl 4xl:text-4xl font-quantico font-bold"
+        className="absolute invisible whitespace-pre text-2xl 4xl:text-4xl font-bold"
       >
-        {name || "X"}
+        {"_" + name}
       </span>
-
       <input
         className={`
-          text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent border-none w-fit 
-          focus:outline-none focus:ring-0 focus:border-none text-white
-          ${!isEditing ? "pointer-events-none select-none" : ""}
+          text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          ${!isEditing ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none" : "animate-pulse outline-dashed outline-white outline-2"}
         `}
         type="text"
+        ref={inputRef}
         value={name}
         style={{ width: `${inputWidth}px` }}
         readOnly={!isEditing}
         onChange={(e) => setName(e.target.value)}
-        maxLength={10}
+        maxLength={9}
       />
 
       <button
-        className="relative h-3/5 aspect-square ml-1"
+        className="relative h-3/5 w-fit ml-1 inline-block"
         onClick={toggleEditing}
       >
         <Image
@@ -56,7 +62,7 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
           width={40}
           height={40}
           draggable={false}
-          className="object-contain select-none"
+          className="h-full aspect-square object-contain select-none"
         />
       </button>
     </div>

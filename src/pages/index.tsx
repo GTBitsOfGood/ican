@@ -20,7 +20,7 @@ export default function Home() {
         </div>
 
         {/* Side Bar */}
-        <div className="flex flex-col gap-9 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
+        <div className="flex flex-col gap-9 w-fit 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
           <NavButton buttonType="settings" drawButton={false} />
           <NavButton buttonType="help" drawButton={false} />
         </div>
