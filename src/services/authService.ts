@@ -17,7 +17,7 @@ export interface ForgotPasswordRequestBody {
 }
 
 export interface VerificationRequestBody {
-  userId: number;
+  userId: string;
   code: string;
 }
 
@@ -65,7 +65,7 @@ export const authService = {
     });
   },
 
-  verifyForgotPassword: async (userId: number, code: string): Promise<void> => {
+  verifyForgotPassword: async (userId: string, code: string): Promise<void> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
     return fetchService<void>(`/auth/verify`, {
       method: "POST",
