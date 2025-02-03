@@ -1,42 +1,41 @@
-import { fetchAPI } from "@/services/fetchAPI";
+import { fetchAPI } from "@/services/fetchService";
 import { Pet } from "@/types/pet";
 
-// Should I make every function take an object or should I just keep it simple with something like 
-// createPet: async (name: string, userID: string) because I kind of don't like how half the calls require an object while other half doesn't currently.
+interface CreatePetBodyRequestBody {
+  name: string;
+  userId: string;
+}
 
-// Should we explicitly deal with status codes ex: Status Code: 200 for get?
-
-interface PetIdentifier {
-  name: string
-  userID: string
-};
+interface UpdatePetRequestBody {
+  name: string;
+}
 
 export const petService = {
-  // Try catch to handle errors in here + error handling?
-  createPet: async (petIdentifier: PetIdentifier): Promise<Pet> => {
-    return fetchAPI<Pet>('/pets', {
-      method: 'POST',
-      // Should I stringify body here or in fetchAPI
-      body: JSON.stringify(petIdentifier)
+  createPet: async (name: string, userId: string): Promise<Pet> => {
+    const CreatePetBodyRequestBody: CreatePetBodyRequestBody = { name, userId };
+    return fetchAPI<Pet>("/pets", {
+      method: "POST",
+      body: JSON.stringify(CreatePetBodyRequestBody),
     });
   },
 
   getPet: async (userId: string): Promise<Pet> => {
     return fetchAPI<Pet>(`/pets/${userId}`, {
-      method: 'GET'
+      method: "GET",
     });
   },
 
-  updatePet: async (petIdentifier: PetIdentifier): Promise<void> => {
-    return fetchAPI<void>(`/pets/${petIdentifier.userID}`, {
-      method: 'PATCH',
-      body: JSON.stringify(petIdentifier.name)
+  updatePet: async (name: string, userId: string): Promise<void> => {
+    const updatePetRequestBody: UpdatePetRequestBody = { name };
+    return fetchAPI<void>(`/pets/${userId}`, {
+      method: "PATCH",
+      body: JSON.stringify(updatePetRequestBody),
     });
   },
 
   deletePet: async (userId: string): Promise<void> => {
     return fetchAPI<void>(`/pets/${userId}`, {
-      method: 'DELETE'
+      method: "DELETE",
     });
-  }
+  },
 };
