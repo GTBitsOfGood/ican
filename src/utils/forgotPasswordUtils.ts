@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 
-export function get6DigitCode(): string {
-  return Math.floor(Math.random() * 1_000_000)
+export function get4DigitCode(): string {
+  return Math.floor(Math.random() * 1_000_0)
     .toString()
-    .padStart(6, "0");
+    .padStart(4, "0");
 }
 
 export function generateExpirationDate(): Date {

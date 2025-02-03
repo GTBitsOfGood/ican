@@ -1,4 +1,4 @@
-import { ConflictError, InternalServerError } from "@/utils/errors";
+import { InternalServerError, UnauthorizedError } from "@/utils/errors";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 
@@ -19,7 +19,7 @@ export function verifyToken(token: string): { userId: string } {
     return decoded;
   } catch (error) {
     if (error instanceof JsonWebTokenError) {
-      throw new ConflictError("Invalid or expired token.");
+      throw new UnauthorizedError("Invalid or expired token.");
     } else {
       throw new InternalServerError("An unknown error occurred.");
     }

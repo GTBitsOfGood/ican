@@ -7,12 +7,16 @@ import {
 } from "../db/actions/forgotPasswordCodes";
 import bcrypt from "bcrypt";
 import { ForgotPasswordCode } from "../db/models";
-import { updateUserPasswordFromId } from "../db/actions/user";
+import {
+  getUserFromEmail,
+  getUserFromId,
+  updateUserPasswordFromId,
+} from "../db/actions/user";
 import { ApiError } from "@/utils/errors";
 import {
   generateEncryptedCode,
   generateExpirationDate,
-  get6DigitCode,
+  get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
 import {
   BadRequestError,
@@ -23,23 +27,36 @@ import {
 } from "@/utils/errors";
 import { generateToken, verifyToken } from "./jwt";
 
-export async function generateForgotPasswordCodeForUser(userId: ObjectId) {
-  const code = get6DigitCode();
-  const expirationDate = generateExpirationDate();
+export async function sendPasswordCode(
+  email: string | undefined,
+): Promise<ObjectId> {
+  try {
+    const user = await getUserFromEmail(email);
+    const code = get4DigitCode();
+    const expirationDate = generateExpirationDate();
 
-  // send email
+    const newCode: ForgotPasswordCode = {
+      code: await generateEncryptedCode(code),
+      expirationDate,
+      userId: user._id,
+    };
 
-  const newCode: ForgotPasswordCode = {
-    code: await generateEncryptedCode(code),
-    expirationDate,
-    userId,
-  };
-  const previousForgotPasswordCode =
-    await getForgotPasswordCodeByUserId(userId);
-  if (previousForgotPasswordCode) {
-    await updateForgotPasswordCodeByUserId(userId, newCode);
-  } else {
-    await createForgotPasswordCode(newCode);
+    const previousForgotPasswordCode = await getForgotPasswordCodeByUserId(
+      user._id,
+    );
+
+    if (previousForgotPasswordCode) {
+      await updateForgotPasswordCodeByUserId(user._id, newCode);
+    } else {
+      await createForgotPasswordCode(newCode);
+    }
+
+    return user._id;
+  } catch (error) {
+    if (!(error instanceof ApiError)) {
+      throw new InternalServerError("An unknown error occurred.");
+    }
+    throw error;
   }
 }
 
@@ -57,25 +74,35 @@ export async function verifyForgotPasswordCode(
 
   const userId = new ObjectId(userIdString);
 
-  const forgotPasswordCode = await getForgotPasswordCodeByUserId(userId);
+  try {
+    const user = await getUserFromId(userId);
+    const forgotPasswordCode = await getForgotPasswordCodeByUserId(user._id);
 
-  if (!forgotPasswordCode) {
-    throw new NotFoundError("No forgot password code found for this user id.");
+    if (!forgotPasswordCode) {
+      throw new NotFoundError(
+        "No forgot password code found for this user id.",
+      );
+    }
+
+    if (new Date() > forgotPasswordCode.expirationDate) {
+      throw new ConflictError("Forgot password code has expired.");
+    }
+
+    const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
+    if (!isMatch) {
+      throw new UnauthorizedError("Invalid forgot password code.");
+    }
+
+    await deleteForgotPasswordCodeById(forgotPasswordCode._id);
+
+    const token = generateToken(userId);
+    return token;
+  } catch (error) {
+    if (!(error instanceof ApiError)) {
+      throw new InternalServerError("An unknown error occurred.");
+    }
+    throw error;
   }
-
-  if (new Date() > forgotPasswordCode.expirationDate) {
-    throw new ConflictError("Forgot password code has expired.");
-  }
-
-  const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
-  if (!isMatch) {
-    throw new UnauthorizedError("Invalid forgot password code.");
-  }
-
-  await deleteForgotPasswordCodeById(forgotPasswordCode._id);
-
-  const token = generateToken(userId);
-  return token;
 }
 
 export async function changePassword(
@@ -97,10 +124,11 @@ export async function changePassword(
 
   try {
     const decoded = verifyToken(token);
-    const userId = decoded.userId;
+    const userId = new ObjectId(decoded.userId);
+    const user = await getUserFromId(userId);
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await updateUserPasswordFromId(new ObjectId(userId), hashedPassword);
+    await updateUserPasswordFromId(user._id, hashedPassword);
   } catch (error) {
     if (!(error instanceof ApiError)) {
       throw new InternalServerError("An unknown error occurred.");

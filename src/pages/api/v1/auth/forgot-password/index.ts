@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { generateForgotPasswordCodeForUser } from "@/server/service/forgotPasswordCodes";
-import { getUserIdFromEmail } from "@/server/service/user";
+import { sendPasswordCode } from "@/server/service/forgotPasswordCodes";
 import { ApiError } from "@/utils/errors";
 
 export default async function handler(
@@ -15,8 +14,7 @@ export default async function handler(
   const { email } = req.body;
 
   try {
-    const userId = await getUserIdFromEmail(email);
-    await generateForgotPasswordCodeForUser(userId);
+    const userId = await sendPasswordCode(email);
     return res.status(200).json({ userId });
   } catch (error) {
     if (error instanceof ApiError) {
