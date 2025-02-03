@@ -1,7 +1,7 @@
 const BASE_URL = "/api/v1";
 
 // Body variable, validate parameters
-export async function fetchAPI<T>(
+export default async function fetchService<T>(
   endpoint: string,
   request: RequestInit = {},
 ): Promise<T> {

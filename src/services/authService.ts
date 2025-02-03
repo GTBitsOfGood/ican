@@ -1,4 +1,4 @@
-import { fetchAPI } from "@/services/fetchService";
+import fetchService from "./fetchService";
 
 export interface LoginRequestBody {
   email: string;
@@ -33,7 +33,7 @@ export interface AuthResponseBody {
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
     const loginReqquestBody: LoginRequestBody = { email, password };
-    return fetchAPI<AuthResponseBody>(`/auth/login`, {
+    return fetchService<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginReqquestBody),
     });
@@ -51,7 +51,7 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchAPI<AuthResponseBody>(`/auth/register`, {
+    return fetchService<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
     });
@@ -59,7 +59,7 @@ export const authService = {
 
   forgotPassword: async (email: string): Promise<void> => {
     const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
-    return fetchAPI<void>(`/auth/forget-password`, {
+    return fetchService<void>(`/auth/forget-password`, {
       method: "POST",
       body: JSON.stringify(forgotPasswordRequestBody),
     });
@@ -67,7 +67,7 @@ export const authService = {
 
   verifyForgotPassword: async (userId: number, code: string): Promise<void> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return fetchAPI<void>(`/auth/verify`, {
+    return fetchService<void>(`/auth/verify`, {
       method: "POST",
       body: JSON.stringify(verificationRequestBody),
     });
@@ -81,7 +81,7 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchAPI<void>(`/auth/change-password`, {
+    return fetchService<void>(`/auth/change-password`, {
       method: "POST",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
