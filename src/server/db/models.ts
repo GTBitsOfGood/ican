@@ -7,6 +7,13 @@ export interface User {
   password: string;
 }
 
+export interface ForgotPasswordCode {
+  _id?: ObjectId;
+  code: string;
+  expirationDate: Date;
+  userId: ObjectId;
+}
+
 export interface Pet {
   _id?: ObjectId;
   name: string;
