@@ -7,6 +7,24 @@ export class ApiError extends Error {
   }
 }
 
+export class AlreadyExistsError extends ApiError {
+  constructor(message: string) {
+    super(message, 409);
+  }
+}
+
+export class DoesNotExistError extends ApiError {
+  constructor(message: string) {
+    super(message, 404);
+  }
+}
+
+export class InvalidBodyError extends ApiError {
+  constructor(message: string) {
+    super(message, 400);
+  }
+}
+
 export class NotFoundError extends ApiError {
   constructor(message = "Resource not found") {
     super(message, 404);

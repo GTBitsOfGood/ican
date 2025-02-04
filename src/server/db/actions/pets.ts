@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { Pet } from "../models";
-import { CustomError } from "@/utils/types/exceptions";
+import { CustomError } from "@/types/exceptions";
 
 export async function createNewPet(newPet: Pet) {
   const db = client.db();

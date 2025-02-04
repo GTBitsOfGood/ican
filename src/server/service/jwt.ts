@@ -1,4 +1,4 @@
-import { InternalServerError, UnauthorizedError } from "@/utils/errors";
+import { InternalServerError, UnauthorizedError } from "@/types/exceptions";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 

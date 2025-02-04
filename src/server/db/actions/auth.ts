@@ -1,4 +1,4 @@
-import { CustomError } from "@/utils/types/exceptions";
+import { CustomError } from "@/types/exceptions";
 import client from "../dbClient";
 import { User } from "../models";
 

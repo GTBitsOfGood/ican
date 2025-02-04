@@ -1,6 +1,6 @@
 import { validateCreateUser } from "@/server/service/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { CustomError } from "@/utils/types/exceptions";
+import { CustomError } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,

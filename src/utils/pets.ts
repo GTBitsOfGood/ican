@@ -1,4 +1,4 @@
-import { InvalidBodyError } from "./types/exceptions";
+import { InvalidBodyError } from "../types/exceptions";
 import { ObjectId } from "mongodb";
 
 export async function validateParams(

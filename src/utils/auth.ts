@@ -1,4 +1,4 @@
-import { InvalidBodyError } from "./types/exceptions";
+import { InvalidBodyError } from "../types/exceptions";
 import { z } from "zod";
 
 export function validateName(name: string) {

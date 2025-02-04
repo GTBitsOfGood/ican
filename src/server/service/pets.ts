@@ -1,7 +1,4 @@
-import {
-  AlreadyExistsError,
-  DoesNotExistError,
-} from "@/utils/types/exceptions";
+import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
 import {
   createNewPet,
   deletePetByUserId,

@@ -5,7 +5,7 @@ import {
   AlreadyExistsError,
   CustomError,
   DoesNotExistError,
-} from "@/utils/types/exceptions";
+} from "@/types/exceptions";
 import jwt from "jsonwebtoken";
 import {
   passwordsAreEqual,

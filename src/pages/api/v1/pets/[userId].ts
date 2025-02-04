@@ -1,6 +1,6 @@
 import { Pet } from "@/server/db/models";
 import { getPet, deletePet, updatePet } from "@/server/service/pets";
-import { CustomError } from "@/utils/types/exceptions";
+import { CustomError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
