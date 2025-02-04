@@ -13,10 +13,14 @@ export async function getUserFromEmail(
   if (!email || !email.trim()) {
     throw new BadRequestError("Invalid Email.");
   }
-  const user = await getUserFromEmail(email);
+
+  const db = client.db();
+  const user = await db.collection<User>("users").findOne({ email });
+
   if (!user) {
     throw new NotFoundError("User not found.");
   }
+
   return user;
 }
 
