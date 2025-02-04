@@ -13,3 +13,12 @@ export interface ForgotPasswordCode {
   expirationDate: Date;
   userId: ObjectId;
 }
+
+export interface Pet {
+  _id?: ObjectId;
+  name: string;
+  xpGained: number;
+  xpLevel: number;
+  coins: number;
+  userId: ObjectId;
+}
