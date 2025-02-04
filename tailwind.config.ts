@@ -28,7 +28,7 @@ export default {
         "iCAN-textfield": "#747474",
         "iCAN-gray": "#626262",
         "iCAN-Blue-300": "#2C3694",
-         card: {
+        card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
@@ -72,6 +72,16 @@ export default {
         loginGreen: "#ACCC6E",
         borderGrey: "#747474",
         errorRed: "#CE4E4E",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
       },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
@@ -91,16 +101,6 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
-        },
       screens: {
         "4xl": "112rem",
       },
