@@ -29,7 +29,7 @@ export default async function handler(
     } else {
       // Method not allowed
       res.setHeader("Allow", ["POST"]);
-      res.status(405).json(`Method ${method} Not Allowed`);
+      res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
   } catch (error) {
     res
