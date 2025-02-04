@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { verifyForgotPasswordCode } from "@/server/service/forgotPasswordCodes";
+import { verifyForgotPasswordCode } from "@/services/forgotPasswordCodes";
 import { ApiError } from "@/types/exceptions";
 
 export default async function handler(

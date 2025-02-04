@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { changePassword } from "@/server/service/forgotPasswordCodes";
+import { changePassword } from "@/services/forgotPasswordCodes";
 import { ApiError } from "@/types/exceptions";
 
 export default async function handler(
