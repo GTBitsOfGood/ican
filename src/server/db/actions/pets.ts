@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { Pet } from "../models";
-import { CustomError } from "@/types/exceptions";
+import { ApiError } from "@/types/exceptions";
 
 export async function createNewPet(newPet: Pet) {
   const db = client.db();
@@ -9,7 +9,7 @@ export async function createNewPet(newPet: Pet) {
   try {
     await db.collection("pets").insertOne(newPet);
   } catch (error) {
-    throw new CustomError(
+    throw new ApiError(
       500,
       "Failed to create pet: " + (error as Error).message,
     );
@@ -30,7 +30,7 @@ export async function updatePetByUserId(userId: ObjectId, name: string) {
     .updateOne({ userId: userId }, { $set: { name: name } });
 
   if (result.modifiedCount == 0) {
-    throw new CustomError(500, "Failed to update pet.");
+    throw new ApiError(500, "Failed to update pet.");
   }
 }
 
@@ -39,6 +39,6 @@ export async function deletePetByUserId(userId: ObjectId) {
   const result = await db.collection("pets").deleteOne({ userId: userId });
 
   if (result.deletedCount == 0) {
-    throw new CustomError(500, "Failed to delete pet.");
+    throw new ApiError(500, "Failed to delete pet.");
   }
 }

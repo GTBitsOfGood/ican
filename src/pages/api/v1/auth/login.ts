@@ -1,5 +1,5 @@
 import { validateLogin } from "@/server/service/auth";
-import { CustomError } from "@/types/exceptions";
+import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -15,7 +15,7 @@ export default async function handler(
         const response = await validateLogin(email, password);
         res.status(201).json(response);
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });
         } else {
           throw error;

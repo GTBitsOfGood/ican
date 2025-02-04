@@ -3,7 +3,7 @@ import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 import {
   AlreadyExistsError,
-  CustomError,
+  ApiError,
   DoesNotExistError,
 } from "@/types/exceptions";
 import jwt from "jsonwebtoken";
@@ -92,7 +92,7 @@ export async function validateLogin(email: string, password: string) {
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
-    throw new CustomError(400, "password is not correct");
+    throw new ApiError(400, "password is not correct");
   }
 
   // Create and return jwt
