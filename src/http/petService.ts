@@ -1,4 +1,4 @@
-import fetchService from "@/services/fetchService";
+import fetchService from "@/http/fetchService";
 import { Pet } from "@/types/pet";
 
 interface CreatePetBodyRequestBody {
