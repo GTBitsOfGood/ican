@@ -16,7 +16,7 @@ export default function Timer({ time, setTime }: TimerProps) {
     }
 
     return () => clearInterval(interval);
-  }, [time]);
+  }, [time, setTime]);
 
   return (
     <div className="text-iCAN-gray text-[32px]">
