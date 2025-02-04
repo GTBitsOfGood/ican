@@ -1,4 +1,3 @@
-import { quantico } from "@/styles/fonts";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { pixelifySans, quantico } from "@/styles/font";

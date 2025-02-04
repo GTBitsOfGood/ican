@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss";
 import type { PluginAPI } from "tailwindcss/types/config";
-import plugin from "tailwindcss/plugin";
 
 export default {
   content: [
@@ -68,11 +67,7 @@ export default {
     },
   },
   plugins: [
-    function ({
-      addUtilities,
-    }: {
-      addUtilities: (utilities: Record<string, Record<string, string>>) => void;
-    }) {
+    function ({ addUtilities, matchUtilities }: PluginAPI) {
       addUtilities({
         ".text-stroke-1": {
           "-webkit-text-stroke-width": "1px",
@@ -104,7 +99,6 @@ export default {
           "letter-spacing": "-0.8px",
         },
       });
-
       matchUtilities(
         {
           "text-stroke": (value: string) => ({
