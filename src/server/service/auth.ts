@@ -1,18 +1,18 @@
-import bcrypt from "bcrypt";
-import { createUser, findUserByEmail } from "../db/actions/auth";
-import { User } from "../db/models";
 import {
   AlreadyExistsError,
-  ApiError,
+  BadRequestError,
   DoesNotExistError,
 } from "@/types/exceptions";
-import jwt from "jsonwebtoken";
 import {
   passwordsAreEqual,
   validateEmail,
   validateName,
   validatePassword,
 } from "@/utils/auth";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { createUser, findUserByEmail } from "../db/actions/auth";
+import { User } from "../db/models";
 
 export interface CreateUserBody {
   name: string;
@@ -92,7 +92,7 @@ export async function validateLogin(email: string, password: string) {
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
-    throw new ApiError(400, "password is not correct");
+    throw new BadRequestError("password is not correct");
   }
 
   // Create and return jwt
