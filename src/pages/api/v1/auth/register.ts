@@ -1,6 +1,6 @@
 import { validateCreateUser } from "@/server/service/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { CustomError } from "@/utils/types/exceptions";
+import { ApiError } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,7 +20,7 @@ export default async function handler(
         );
         res.status(201).json(response);
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });
         } else {
           throw error;

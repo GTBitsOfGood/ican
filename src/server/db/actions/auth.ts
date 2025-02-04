@@ -1,4 +1,4 @@
-import { CustomError } from "@/utils/types/exceptions";
+import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
 import { User } from "../models";
 
@@ -8,7 +8,7 @@ export async function createUser(newUser: User) {
     await db.collection("users").insertOne(newUser);
   } catch (error) {
     console.error("Failed to insert new user:", error);
-    throw new CustomError(500, "Internal Server Error");
+    throw new InternalServerError();
   }
 }
 

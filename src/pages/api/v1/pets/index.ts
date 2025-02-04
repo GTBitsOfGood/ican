@@ -1,6 +1,6 @@
 import { Pet } from "@/server/db/models";
 import { createPet } from "@/server/service/pets";
-import { CustomError } from "@/utils/types/exceptions";
+import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -15,7 +15,7 @@ export default async function handler(
         const createdPet: Pet = await createPet(body.userId, body.name);
         res.status(200).json(createdPet);
       } catch (error) {
-        if (error instanceof CustomError) {
+        if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });
         } else {
           throw error;

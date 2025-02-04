@@ -5,7 +5,7 @@ import {
   BadRequestError,
   InternalServerError,
   NotFoundError,
-} from "@/utils/errors";
+} from "@/types/exceptions";
 
 export async function getUserFromEmail(
   email: string | undefined,

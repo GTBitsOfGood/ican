@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { ForgotPasswordCode } from "../models";
-import { InternalServerError } from "@/utils/errors";
+import { InternalServerError } from "@/types/exceptions";
 
 export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
   const db = client.db();

@@ -12,7 +12,7 @@ import {
   getUserFromId,
   updateUserPasswordFromId,
 } from "../db/actions/user";
-import { ApiError } from "@/utils/errors";
+import { ApiError } from "@/types/exceptions";
 import {
   generateEncryptedCode,
   generateExpirationDate,
@@ -24,7 +24,7 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-} from "@/utils/errors";
+} from "@/types/exceptions";
 import { generateToken, verifyToken } from "./jwt";
 
 export async function sendPasswordCode(
