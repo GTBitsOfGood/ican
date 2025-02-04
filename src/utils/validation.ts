@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 export const emailValidation = (email: string): boolean => {
   const emailSchema = z.string().email();
   try {
@@ -27,3 +28,18 @@ export const passwordRequirementsValidation = (password: string): boolean => {
     return false;
   }
 };
+
+export function nameIsValid(name: string) {
+  return name.trim() !== "";
+}
+
+export function emailIsValid(email: string) {
+  const emailSchema = z.string().email();
+  return emailSchema.safeParse(email).success;
+}
+
+export function passwordIsValid(password: string) {
+  return (
+    password.length >= 6 && /\d/.test(password) && /[!@#$%^&*]/.test(password)
+  );
+}

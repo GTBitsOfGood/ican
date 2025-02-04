@@ -1,5 +1,4 @@
 import { Quantico } from "next/font/google";
-// import localFont from "next/font/local";
 
 export const quantico = Quantico({
   subsets: ["latin"],
