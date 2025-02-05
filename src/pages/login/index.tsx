@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { emailIsValid, passwordIsValid } from "@/utils/validation";
+import { authService } from "@/http/authService";
 import ErrorBox from "@/components/ErrorBox";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -10,10 +12,13 @@ export default function Home() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let errorDetected = false;
+
+    // Validate email and password
     if (!emailIsValid(email.trim())) {
       setEmailError("Please enter a valid email");
       errorDetected = true;
@@ -28,8 +33,20 @@ export default function Home() {
     } else {
       setPasswordError("");
     }
+
     if (!errorDetected) {
       setLoggingIn(true);
+      try {
+        const response = await authService.login(email.trim(), password.trim());
+        console.log("Login successful:", response);
+        router.push("/");
+      } catch (error) {
+        console.error("Login failed:", error);
+        setEmailError("Login failed. Please check your credentials.");
+        setPasswordError("");
+      } finally {
+        setLoggingIn(false);
+      }
     }
     return errorDetected;
   };
