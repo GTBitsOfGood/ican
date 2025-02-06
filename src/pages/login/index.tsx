@@ -48,6 +48,7 @@ export default function Home() {
         setLoggingIn(false);
       }
     }
+
     return errorDetected;
   };
 
