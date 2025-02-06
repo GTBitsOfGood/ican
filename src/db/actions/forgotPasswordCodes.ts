@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { ForgotPasswordCode } from "../models";
-import { InternalServerError } from "@/types/exceptions";
+import { InternalError } from "@/types/exceptions";
 
 export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
   const db = client.db();
@@ -27,7 +27,7 @@ export async function updateForgotPasswordCodeByUserId(
       },
     );
   if (result.modifiedCount === 0) {
-    throw new InternalServerError("Failed to update forgot password code.");
+    throw new InternalError("Failed to update forgot password code.");
   }
 }
 
@@ -35,10 +35,9 @@ export async function getForgotPasswordCodeByUserId(
   userId: ObjectId,
 ): Promise<ForgotPasswordCode | null> {
   const db = client.db();
-  const code = await db
+  return await db
     .collection<ForgotPasswordCode>("forgotPasswordCodes")
     .findOne({ userId });
-  return code;
 }
 
 export async function deleteForgotPasswordCodeById(

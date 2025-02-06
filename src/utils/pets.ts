@@ -1,4 +1,4 @@
-import { InvalidBodyError } from "../types/exceptions";
+import { InvalidArgumentsError } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 
 export async function validateParams(
@@ -7,15 +7,15 @@ export async function validateParams(
 ): Promise<void> {
   // Validate parameters
   if (!ObjectId.isValid(userId)) {
-    throw new InvalidBodyError(
-      "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
+    throw new InvalidArgumentsError(
+      "'userId' is required and must be a valid ObjectId.",
     );
   }
 
-  // Validate name only if its passed in
-  if (name && (typeof name !== "string" || name.trim() === "")) {
-    throw new InvalidBodyError(
-      "Invalid parameters: 'name' is required and must be a non-empty string.",
+  // Validate name
+  if (!name || name.trim() === "") {
+    throw new InvalidArgumentsError(
+      "'name' is required and must be a non-empty string.",
     );
   }
 }

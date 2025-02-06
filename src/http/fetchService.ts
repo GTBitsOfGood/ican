@@ -1,3 +1,9 @@
+import {
+  InternalError,
+  InvalidArgumentsError,
+  MethodNotAllowedError,
+} from "@/types/exceptions";
+
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 const BASE_URL = "/api/v1";
@@ -13,7 +19,7 @@ function verifyFetchRequest(method: HttpMethod, request: RequestInit): void {
     case "GET":
     case "DELETE":
       if (request.body) {
-        throw new Error(`${method} can't have a body.`);
+        throw new InvalidArgumentsError(`${method} can't have a body.`);
       }
       break;
     // POST, PUT, PATCH requires a request body
@@ -21,24 +27,26 @@ function verifyFetchRequest(method: HttpMethod, request: RequestInit): void {
     case "PUT":
     case "PATCH":
       if (!request.body) {
-        throw new Error(`${method} expects a request body.`);
+        throw new InvalidArgumentsError(`${method} expects a request body.`);
       }
       // Check if body is a string
       if (typeof request.body !== "string") {
-        throw new Error(`Request body for ${method} must be a JSON string`);
+        throw new InvalidArgumentsError(
+          `Request body for ${method} must be a JSON string`,
+        );
       }
       // Check if body is a JSON string
       try {
         JSON.parse(request.body);
       } catch {
-        throw new Error(
+        throw new InvalidArgumentsError(
           `Request body for ${method} must be a valid JSON string`,
         );
       }
       break;
     // Invalid HTTP method
     default:
-      throw new Error(`Invalid HTTP method: ${method}.`);
+      throw new MethodNotAllowedError(`Invalid HTTP method: ${method}.`);
   }
 }
 
@@ -64,7 +72,7 @@ export default async function fetchService<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`${response.status}`);
+    throw new InternalError(`${response.status}`);
   }
 
   if (response.status == 204) {
