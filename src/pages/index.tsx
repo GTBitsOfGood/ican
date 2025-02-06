@@ -8,7 +8,13 @@ import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import { characterImages } from "@/types/characters";
 
+import AddMedicationModal from "@/components/modals/addMedication/modal";
+import { useState } from "react";
+
 export default function Home() {
+  const [addMedicationVisible, setAddMedicationVisibility] =
+    useState<boolean>(true);
+
   const pet = "duck";
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -50,6 +56,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {addMedicationVisible && (
+        <AddMedicationModal
+          setAddMedicationVisibility={setAddMedicationVisibility}
+        />
+      )}
     </div>
   );
 }
