@@ -12,7 +12,7 @@ export default function Home() {
   const pet = "duck";
   return (
     <div className="min-h-screen flex flex-col relative">
-      <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
+      <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
         {/* Profile */}
         <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
           <ProfilePicture character="duck" />
