@@ -17,15 +17,13 @@ export default function ModalContainer({
     <div
       className={`z-30 absolute top-1/2 left-1/2 translate -translate-x-1/2 -translate-y-1/2 shadow-lg p-16 ${className}`}
     >
-      <div className="flex justify-between">
-        <div className="font-quantico border-b-2 font-bold text-3xl">
-          {title}
-        </div>
+      <div className="flex justify-between items-start">
+        <div className="border-b-2 font-bold text-3xl">{title}</div>
         <div
-          className="font-pixelify text-3xl cursor-pointer"
+          className="font-pixelify -mt-5 text-6xl leading-none cursor-pointer"
           onClick={() => setVisibility(false)}
         >
-          X
+          x
         </div>
       </div>
       {children}
