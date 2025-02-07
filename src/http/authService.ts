@@ -30,6 +30,10 @@ export interface AuthResponseBody {
   token: string;
 }
 
+export interface ValidateTokenResponseBody {
+  isValid: boolean;
+}
+
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
     const loginReqquestBody: LoginRequestBody = { email, password };
@@ -84,6 +88,15 @@ export const authService = {
     return fetchService<void>(`/auth/change-password`, {
       method: "POST",
       body: JSON.stringify(changePasswordRequestBody),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  },
+
+  validateToken: async (): Promise<ValidateTokenResponseBody> => {
+    return fetchService<ValidateTokenResponseBody>(`/auth/validate-token`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
