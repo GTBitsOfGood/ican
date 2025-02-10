@@ -20,7 +20,8 @@ export default function AuthorizedRoute({
       }
 
       try {
-        await authService.validateToken();
+        const decodedToken = await authService.validateToken();
+        console.log(decodedToken);
       } catch {
         router.push("/login");
       }

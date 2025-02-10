@@ -32,6 +32,7 @@ export interface AuthResponseBody {
 
 export interface ValidateTokenResponseBody {
   isValid: boolean;
+  decodedToken: { userId: string };
 }
 
 export const authService = {
