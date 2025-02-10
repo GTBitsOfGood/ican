@@ -7,6 +7,8 @@ import {
   passwordIsValid,
 } from "../../utils/validation";
 import ErrorBox from "@/components/ErrorBox";
+import { authService } from "@/http/authService";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -18,8 +20,9 @@ export default function Home() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [registering, setRegistering] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let errorDetected = false;
 
@@ -58,6 +61,20 @@ export default function Home() {
 
     if (!errorDetected) {
       setRegistering(true);
+      try {
+        await authService.register(
+          name.trim(),
+          email.trim(),
+          password.trim(),
+          confirmPassword.trim(),
+        );
+        router.push("/");
+      } catch {
+        setEmailError("Register failed. Please check your credentials.");
+        setPasswordError("");
+      } finally {
+        setRegistering(false);
+      }
     }
     return errorDetected;
   };
