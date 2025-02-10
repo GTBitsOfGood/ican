@@ -13,14 +13,16 @@ export default function UnauthorizedRoute({
     const validateToken = async () => {
       const token = localStorage.getItem("token");
 
-      if (token) {
+      if (!token) {
         return;
       }
 
       try {
         await authService.validateToken();
         router.push("/");
-      } catch {}
+      } catch (error) {
+        console.log("error with validation: ", error);
+      }
     };
 
     validateToken();

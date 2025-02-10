@@ -30,7 +30,6 @@ export interface AuthResponseBody {
   token: string;
 }
 
-
 export interface ForgotPasswordResponseBody {
   userId: string;
 }
@@ -114,6 +113,7 @@ export const authService = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
+      body: JSON.stringify({}),
     });
   },
 };

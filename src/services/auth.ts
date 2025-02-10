@@ -67,7 +67,7 @@ export async function validateCreateUser(
   // Create jwt once user is successfully created
   const token = jwt.sign(
     {
-      email: newUser.email,
+      userId: newUser._id,
     },
     JWT_SECRET,
     {
@@ -100,7 +100,7 @@ export async function validateLogin(email: string, password: string) {
   // Create and return jwt
   const token = jwt.sign(
     {
-      email: email,
+      userId: existingUser._id,
     },
     JWT_SECRET,
     {
@@ -112,7 +112,6 @@ export async function validateLogin(email: string, password: string) {
 }
 
 export async function validateJsonWebToken(authorization: string) {
-  // Get token from the Authorization header
   if (!authorization || !authorization.startsWith("Bearer ")) {
     throw new UnauthorizedError("No token provided");
   }

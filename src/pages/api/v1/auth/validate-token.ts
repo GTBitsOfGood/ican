@@ -2,7 +2,10 @@ import { validateJsonWebToken } from "@/services/auth";
 import { ApiError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
   const { authorization } = req.headers;
 
   if (req.method !== "POST") {
@@ -10,7 +13,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    const response = validateJsonWebToken(authorization as string);
+    const response = await validateJsonWebToken(authorization as string);
     res.status(200).json(response);
   } catch (error) {
     if (error instanceof ApiError) {

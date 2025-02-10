@@ -22,7 +22,8 @@ export default function AuthorizedRoute({
       try {
         const decodedToken = await authService.validateToken();
         console.log(decodedToken);
-      } catch {
+      } catch (error) {
+        console.log("error with validation: ", error);
         router.push("/login");
       }
     };
