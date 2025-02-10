@@ -30,6 +30,10 @@ export interface AuthResponseBody {
   token: string;
 }
 
+export interface ForgotPasswordResponseBody {
+  userId: string;
+}
+
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
     const loginRequestBody: LoginRequestBody = { email, password };
@@ -59,17 +63,22 @@ export const authService = {
     });
   },
 
-  forgotPassword: async (email: string): Promise<void> => {
+  forgotPassword: async (
+    email: string,
+  ): Promise<ForgotPasswordResponseBody> => {
     const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
-    return fetchService<void>(`/auth/forget-password`, {
+    return fetchService<ForgotPasswordResponseBody>(`/auth/forget-password`, {
       method: "POST",
       body: JSON.stringify(forgotPasswordRequestBody),
     });
   },
 
-  verifyForgotPassword: async (userId: string, code: string): Promise<void> => {
+  verifyForgotPassword: async (
+    userId: string,
+    code: string,
+  ): Promise<AuthResponseBody> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return fetchService<void>(`/auth/verify`, {
+    return fetchService<AuthResponseBody>(`/auth/verify`, {
       method: "POST",
       body: JSON.stringify(verificationRequestBody),
     });

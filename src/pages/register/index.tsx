@@ -62,12 +62,13 @@ export default function Home() {
     if (!errorDetected) {
       setRegistering(true);
       try {
-        await authService.register(
+        const response = await authService.register(
           name.trim(),
           email.trim(),
           password.trim(),
           confirmPassword.trim(),
         );
+        localStorage.setItem("token", response.token);
         router.push("/");
       } catch {
         setEmailError("Register failed. Please check your credentials.");

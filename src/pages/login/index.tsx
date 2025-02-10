@@ -37,10 +37,9 @@ export default function Home() {
       setLoggingIn(true);
       try {
         const response = await authService.login(email.trim(), password.trim());
-        console.log("Login successful:", response);
+        localStorage.setItem("token", response.token);
         router.push("/");
-      } catch (error) {
-        console.error("Login failed:", error);
+      } catch {
         setEmailError("Login failed. Please check your credentials.");
         setPasswordError("");
       } finally {
