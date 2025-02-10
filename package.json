@@ -14,10 +14,11 @@
     "secrets:get": "bw sync && bw get item 1676370d-5f21-4a5a-9f1d-b266000cc319 | fx .notes > \".env.development.local\""
   },
   "dependencies": {
+    "@heroui/react": "^2.6.14",
     "@next/font": "^14.2.15",
     "@phosphor-icons/react": "^2.1.7",
-    "bw": "^0.0.0",
     "bcrypt": "^5.1.1",
+    "bw": "^0.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eslint": "^9.18.0",
@@ -28,6 +29,7 @@
     "mongodb": "^6.12.0",
     "next": "15.1.4",
     "next-google-fonts": "^2.2.0",
+    "pixelarticons": "^1.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.1",

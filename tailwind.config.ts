@@ -85,7 +85,7 @@ export default {
       },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
-        pixelify: ["var(--font-pixelify-sans)", "sans-serif"],
+        pixelify: ["var(--font-pixelify)", "sans-serif"],
       },
       boxShadow: {
         bubble: "0px 8px 0px 0px rgba(125,131,178,1.00)",
@@ -124,7 +124,7 @@ export default {
     },
   },
   plugins: [
-    function ({ addUtilities, matchUtilities }: PluginAPI) {
+    function ({ addBase, addUtilities, matchUtilities }: PluginAPI) {
       addUtilities({
         ".text-stroke-1": {
           "-webkit-text-stroke-width": "1px",
@@ -182,6 +182,12 @@ export default {
         },
         { type: ["any"] },
       );
+      addBase({
+        ":root": {
+          "--font-quantico": "'Quantico', sans-serif",
+          "--font-pixelify": "'Pixelify Sans', sans-serif",
+        },
+      });
     },
   ],
 } satisfies Config;
