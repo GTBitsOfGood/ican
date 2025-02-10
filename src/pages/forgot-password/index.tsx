@@ -5,6 +5,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { authService } from "@/http/authService";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import {
   emailValidation,
@@ -13,6 +14,7 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useRouter } from "next/router";
 
 const Sections = [
   {
@@ -47,10 +49,12 @@ const ButtonStates: Record<number, string> = {
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [otp, setOTP] = useState<string>("");
   const [error, setError] = useState<Record<string, string>>({});
   const [time, setTime] = useState<number>(59);
+  const router = useRouter();
 
   const resetPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
@@ -68,8 +72,45 @@ export default function ForgotPasswordPage() {
     setEmail(e.target.value);
   };
 
-  const incPage = () => {
+  const incPage = async () => {
     if (!isFormValid()) return;
+
+    if (page == 0) {
+      try {
+        console.log(email);
+        const response = await authService.forgotPassword(email);
+        if (response.userId) {
+          setUserId(response.userId);
+        }
+      } catch {
+        console.log("error found");
+        return;
+      }
+    }
+
+    if (page == 1) {
+      try {
+        const response = await authService.verifyForgotPassword(userId, otp);
+        localStorage.setItem("token", response.token);
+      } catch {
+        console.log("error found");
+        return;
+      }
+    }
+
+    if (page == 2) {
+      try {
+        await authService.changePassword(
+          resetPasswordRef.current?.value as string,
+          confirmPasswordRef.current?.value as string,
+        );
+        router.push("/");
+      } catch {
+        console.log("error found");
+        return;
+      }
+    }
+
     setPage((prev) => prev + 1);
   };
 
@@ -113,8 +154,15 @@ export default function ForgotPasswordPage() {
     return isValid;
   };
 
-  const handleTimerReset = () => {
+  const handleTimerReset = async () => {
     if (time === 0) {
+      try {
+        await authService.forgotPassword(email);
+      } catch {
+        console.error("error occured");
+        return;
+      }
+
       setTime(59);
     }
   };

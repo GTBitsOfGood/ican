@@ -30,6 +30,11 @@ export interface AuthResponseBody {
   token: string;
 }
 
+
+export interface ForgotPasswordResponseBody {
+  userId: string;
+}
+
 export interface ValidateTokenResponseBody {
   isValid: boolean;
   decodedToken: { userId: string };
@@ -37,10 +42,10 @@ export interface ValidateTokenResponseBody {
 
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
-    const loginReqquestBody: LoginRequestBody = { email, password };
-    return fetchService<AuthResponseBody>(`/auth/login`, {
+    const loginRequestBody: LoginRequestBody = { email, password };
+    return await fetchService<AuthResponseBody>(`/auth/login`, {
       method: "POST",
-      body: JSON.stringify(loginReqquestBody),
+      body: JSON.stringify(loginRequestBody),
     });
   },
 
@@ -56,23 +61,31 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchService<AuthResponseBody>(`/auth/register`, {
+    return await fetchService<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
     });
   },
 
-  forgotPassword: async (email: string): Promise<void> => {
+  forgotPassword: async (
+    email: string,
+  ): Promise<ForgotPasswordResponseBody> => {
     const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
-    return fetchService<void>(`/auth/forget-password`, {
-      method: "POST",
-      body: JSON.stringify(forgotPasswordRequestBody),
-    });
+    return await fetchService<ForgotPasswordResponseBody>(
+      `/auth/forgot-password`,
+      {
+        method: "POST",
+        body: JSON.stringify(forgotPasswordRequestBody),
+      },
+    );
   },
 
-  verifyForgotPassword: async (userId: string, code: string): Promise<void> => {
+  verifyForgotPassword: async (
+    userId: string,
+    code: string,
+  ): Promise<AuthResponseBody> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return fetchService<void>(`/auth/verify`, {
+    return await fetchService<AuthResponseBody>(`/auth/verify`, {
       method: "POST",
       body: JSON.stringify(verificationRequestBody),
     });
@@ -86,7 +99,7 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchService<void>(`/auth/change-password`, {
+    return await fetchService<void>(`/auth/change-password`, {
       method: "POST",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
