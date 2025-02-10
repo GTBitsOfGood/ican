@@ -32,11 +32,13 @@ export interface AuthResponseBody {
 
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
-    const loginReqquestBody: LoginRequestBody = { email, password };
-    return fetchService<AuthResponseBody>(`/auth/login`, {
+    const loginRequestBody: LoginRequestBody = { email, password };
+    const response = await fetchService<AuthResponseBody>(`/auth/login`, {
       method: "POST",
-      body: JSON.stringify(loginReqquestBody),
+      body: JSON.stringify(loginRequestBody),
     });
+
+    return response;
   },
 
   register: async (

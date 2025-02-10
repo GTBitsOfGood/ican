@@ -18,7 +18,6 @@ export default function Home() {
     e.preventDefault();
     let errorDetected = false;
 
-    // Validate email and password
     if (!emailIsValid(email.trim())) {
       setEmailError("Please enter a valid email");
       errorDetected = true;
