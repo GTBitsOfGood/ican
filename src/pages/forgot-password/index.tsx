@@ -153,8 +153,15 @@ export default function ForgotPasswordPage() {
     return isValid;
   };
 
-  const handleTimerReset = () => {
+  const handleTimerReset = async () => {
     if (time === 0) {
+      try {
+        await authService.forgotPassword(email);
+      } catch {
+        console.error("error occured");
+        return;
+      }
+
       setTime(59);
     }
   };

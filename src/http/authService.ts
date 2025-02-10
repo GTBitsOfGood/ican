@@ -37,12 +37,10 @@ export interface ForgotPasswordResponseBody {
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
     const loginRequestBody: LoginRequestBody = { email, password };
-    const response = await fetchService<AuthResponseBody>(`/auth/login`, {
+    return await fetchService<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
     });
-
-    return response;
   },
 
   register: async (
@@ -57,7 +55,7 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchService<AuthResponseBody>(`/auth/register`, {
+    return await fetchService<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
     });
@@ -67,10 +65,13 @@ export const authService = {
     email: string,
   ): Promise<ForgotPasswordResponseBody> => {
     const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
-    return fetchService<ForgotPasswordResponseBody>(`/auth/forget-password`, {
-      method: "POST",
-      body: JSON.stringify(forgotPasswordRequestBody),
-    });
+    return await fetchService<ForgotPasswordResponseBody>(
+      `/auth/forgot-password`,
+      {
+        method: "POST",
+        body: JSON.stringify(forgotPasswordRequestBody),
+      },
+    );
   },
 
   verifyForgotPassword: async (
@@ -78,7 +79,7 @@ export const authService = {
     code: string,
   ): Promise<AuthResponseBody> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return fetchService<AuthResponseBody>(`/auth/verify`, {
+    return await fetchService<AuthResponseBody>(`/auth/verify`, {
       method: "POST",
       body: JSON.stringify(verificationRequestBody),
     });
@@ -92,7 +93,7 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return fetchService<void>(`/auth/change-password`, {
+    return await fetchService<void>(`/auth/change-password`, {
       method: "POST",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
