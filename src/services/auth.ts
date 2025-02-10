@@ -2,6 +2,8 @@ import {
   AlreadyExistsError,
   BadRequestError,
   DoesNotExistError,
+  InternalServerError,
+  UnauthorizedError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -10,7 +12,7 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 
@@ -107,4 +109,24 @@ export async function validateLogin(email: string, password: string) {
   );
 
   return { token };
+}
+
+export async function validateJsonWebToken(authorization: string) {
+  // Get token from the Authorization header
+  if (!authorization || !authorization.startsWith("Bearer ")) {
+    throw new UnauthorizedError("No token provided");
+  }
+
+  const token = authorization.split(" ")[1];
+
+  try {
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    return { isValid: true, decodedToken: decodedToken };
+  } catch (error) {
+    if (error instanceof JsonWebTokenError) {
+      throw new UnauthorizedError("Invalid or expired token.");
+    } else {
+      throw new InternalServerError("An unknown error occurred.");
+    }
+  }
 }

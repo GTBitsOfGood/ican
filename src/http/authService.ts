@@ -30,8 +30,14 @@ export interface AuthResponseBody {
   token: string;
 }
 
+
 export interface ForgotPasswordResponseBody {
   userId: string;
+}
+
+export interface ValidateTokenResponseBody {
+  isValid: boolean;
+  decodedToken: { userId: string };
 }
 
 export const authService = {
@@ -96,6 +102,15 @@ export const authService = {
     return await fetchService<void>(`/auth/change-password`, {
       method: "POST",
       body: JSON.stringify(changePasswordRequestBody),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  },
+
+  validateToken: async (): Promise<ValidateTokenResponseBody> => {
+    return fetchService<ValidateTokenResponseBody>(`/auth/validate-token`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
