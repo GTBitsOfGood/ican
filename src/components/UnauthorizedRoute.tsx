@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { authService } from "@/http/authService";
+import { useUser } from "./UserContext";
 
 export default function UnauthorizedRoute({
   children,
@@ -8,6 +9,7 @@ export default function UnauthorizedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const { setUserId } = useUser();
 
   useEffect(() => {
     const validateToken = async () => {
@@ -18,9 +20,11 @@ export default function UnauthorizedRoute({
       }
 
       try {
-        await authService.validateToken();
+        const response = await authService.validateToken();
+        setUserId(response.decodedToken?.userId);
         router.push("/");
       } catch (error) {
+        setUserId(null);
         console.log("error with validation: ", error);
       }
     };

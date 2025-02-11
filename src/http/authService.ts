@@ -108,12 +108,15 @@ export const authService = {
   },
 
   validateToken: async (): Promise<ValidateTokenResponseBody> => {
-    return fetchService<ValidateTokenResponseBody>(`/auth/validate-token`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+    return await fetchService<ValidateTokenResponseBody>(
+      `/auth/validate-token`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({}),
       },
-      body: JSON.stringify({}),
-    });
+    );
   },
 };

@@ -8,8 +8,10 @@ import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import { characterImages } from "@/types/characters";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+//import { useUser } from "@/components/UserContext";
 
 export default function Home() {
+  // const { userId } = useUser()
   const pet = "duck";
   return (
     <AuthorizedRoute>
