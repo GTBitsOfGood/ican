@@ -5,3 +5,7 @@ export type UpdateSettingsObject = {
   helpfulTips?: boolean;
   largeFontSize?: boolean;
 };
+
+export type UpdateSettingsPinObject = {
+  pin: string;
+};
