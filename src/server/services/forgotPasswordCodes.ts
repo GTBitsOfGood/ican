@@ -4,14 +4,14 @@ import {
   deleteForgotPasswordCodeById,
   getForgotPasswordCodeByUserId,
   updateForgotPasswordCodeByUserId,
-} from "../db/actions/forgotPasswordCodes";
+} from "../../db/actions/forgotPasswordCodes";
 import bcrypt from "bcrypt";
-import { ForgotPasswordCode } from "../db/models";
+import { ForgotPasswordCode } from "../../db/models";
 import {
   getUserFromEmail,
   getUserFromId,
   updateUserPasswordFromId,
-} from "../db/actions/user";
+} from "../../db/actions/user";
 import { ApiError } from "@/types/exceptions";
 import {
   generateEncryptedCode,

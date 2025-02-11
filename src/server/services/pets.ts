@@ -4,10 +4,11 @@ import {
   deletePetByUserId,
   getPetByPetId,
   getPetByUserId,
-  updatePetAppearanceByPetId,
   updatePetNameByUserId,
-} from "../db/actions/pets";
-import { Pet } from "../db/models";
+  updatePetAppearanceByPetId
+} from "../../db/actions/pets";
+import { Pet } from "../../db/models";
+
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
 import { validateItemName, validatePetId } from "@/utils/store";

@@ -11,14 +11,15 @@ import {
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../db/actions/auth";
-import { User } from "../db/models";
+
 import { createSettings } from "./settings";
 import { createPet } from "./pets";
 import { Provider } from "@/types/auth";
 import { verifyToken } from "./jwt";
 import { getUserFromId } from "@/db/actions/user";
 import { ObjectId } from "mongodb";
+import { createUser, findUserByEmail } from "../../db/actions/auth";
+import { User } from "../../db/models";
 
 export interface CreateUserBody {
   name: string;

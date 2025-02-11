@@ -1,4 +1,4 @@
-import { validateCreateUser } from "@/services/auth";
+import { validateCreateUser } from "@/server/services/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "@/types/exceptions";
 

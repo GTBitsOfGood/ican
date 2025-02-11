@@ -1,5 +1,5 @@
 import { Pet } from "@/db/models";
-import { createPet } from "@/services/pets";
+import { createPet } from "@/server/services/pets";
 import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
