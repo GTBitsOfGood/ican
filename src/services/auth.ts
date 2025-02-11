@@ -13,6 +13,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { createPet } from "./pets";
+import { getUserFromEmail } from "@/db/actions/user";
 
 export interface CreateUserBody {
   name: string;
@@ -60,7 +62,15 @@ export async function validateCreateUser(
     password: hashedPassword,
   };
 
+  // Should I modify createUser to directly return the ID instead?
   await createUser(newUser);
+  const user: User = await getUserFromEmail(email);
+  const userId = user._id?.toString();
+  if (!userId) {
+    throw new DoesNotExistError("user does not exist");
+  }
+  // Used a default name for pet
+  await createPet(userId, `${name}'s Pet`);
 
   // Create jwt once user is successfully created
   const token = jwt.sign(
