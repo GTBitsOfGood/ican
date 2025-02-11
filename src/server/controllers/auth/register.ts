@@ -1,18 +1,23 @@
-import { validateLogin } from "@/services/auth";
-import { ApiError } from "@/types/exceptions";
+import { validateCreateUser } from "@/server/services/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { ApiError } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   const { method } = req;
-  const { email, password } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
 
   try {
     if (method == "POST") {
       try {
-        const response = await validateLogin(email, password);
+        const response = await validateCreateUser(
+          name,
+          email,
+          password,
+          confirmPassword,
+        );
         res.status(201).json(response);
       } catch (error) {
         if (error instanceof ApiError) {

@@ -1,5 +1,4 @@
-import { Pet } from "@/db/models";
-import { createPet } from "@/services/pets";
+import { validateLogin } from "@/server/services/auth";
 import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -7,13 +6,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method, body } = req;
+  const { method } = req;
+  const { email, password } = req.body;
 
   try {
     if (method == "POST") {
       try {
-        const createdPet: Pet = await createPet(body.userId, body.name);
-        res.status(200).json(createdPet);
+        const response = await validateLogin(email, password);
+        res.status(201).json(response);
       } catch (error) {
         if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });
