@@ -9,7 +9,7 @@ export enum PetType {
 export interface Pet {
   _id?: string;
   name: string;
-  type: PetType;
+  petType: PetType;
   xpGained: number;
   xpLevel: number;
   coins: number;
