@@ -20,7 +20,7 @@ export default function ModalContainer({
       <div className="flex justify-between items-start">
         <div className="border-b-2 font-bold text-4xl">{title}</div>
         <div
-          className="font-pixelify -mt-6 text-7xl leading-none cursor-pointer"
+          className="font-pixelify text-icanGreen-100 -mt-6 text-7xl leading-none cursor-pointer"
           onClick={() => setVisibility(false)}
         >
           x

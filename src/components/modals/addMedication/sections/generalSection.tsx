@@ -14,7 +14,7 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
     <div>
       <FormControl>
-        <label className="text-2xl">Form of Medication</label>
+        <label className="text-4xl font-bold">Form of Medication</label>
         <DropDown
           width={220}
           value={info.general.form}
@@ -65,7 +65,7 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
           />
         </DropDown>
       </FormControl>
-      <div className="mt-8 text-3xl font-bold">Medication ID</div>
+      <div className="mt-8 text-4xl font-bold">Medication ID</div>
       <div className="text-2xl">
         Choose up to 5 characters to create an ID to help you remember which
         medication to take.

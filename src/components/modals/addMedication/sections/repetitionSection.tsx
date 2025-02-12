@@ -34,7 +34,7 @@ export default function RepetitionSection({
   return (
     <div>
       <FormControl gap={16}>
-        <div className="text-2xl">Repeat every</div>
+        <div className="text-4xl font-bold">Repeat every</div>
         <InputBox
           maxLength={2}
           value={info.repetition.repeatEvery?.toString() || ""}
@@ -59,7 +59,6 @@ export default function RepetitionSection({
         />
         <DropDown
           className="uppercase"
-          absolute={info.repetition.type == "Month"}
           width={180}
           value={info.repetition.type}
           setValue={(newValue: string) =>
@@ -78,7 +77,7 @@ export default function RepetitionSection({
       </FormControl>
       <div className="mt-8">
         {info.repetition.type == "Week" && (
-          <div className="text-2xl">Repeat on</div>
+          <div className="text-4xl font-bold">Repeat on</div>
         )}
         {info.repetition.type == "Month" && (
           <div>
@@ -93,7 +92,7 @@ export default function RepetitionSection({
                   })
                 }
               />
-              <div className="text-2xl">Repeat monthly on day</div>
+              <div className="text-3xl font-bold">Repeat monthly on day</div>
               <InputBox
                 maxLength={2}
                 value={info.repetition.monthlyDayOfRepetition?.toString() || ""}
@@ -118,8 +117,8 @@ export default function RepetitionSection({
               />
             </FormControl>
             <HorizontalRule
-              ruleClassName="border-2 border-white"
-              textClassName="text-2xl text-white"
+              ruleClassName="border-2 border-icanGreen-200"
+              textClassName="text-4xl font-bold text-icanGreen-200"
             >
               Or
             </HorizontalRule>
@@ -134,9 +133,8 @@ export default function RepetitionSection({
                   })
                 }
               />
-              <div className="text-2xl">Repeat monthly on</div>
+              <div className="text-3xl font-bold">Repeat monthly on</div>
               <DropDown
-                absolute={true}
                 className="uppercase"
                 width={180}
                 value={
@@ -157,7 +155,7 @@ export default function RepetitionSection({
                 <Option value="Third" />
                 <Option value="Fourth" />
               </DropDown>
-              <div className="text-2xl">week</div>
+              <div className="text-3xl font-bold">week</div>
             </FormControl>
           </div>
         )}
