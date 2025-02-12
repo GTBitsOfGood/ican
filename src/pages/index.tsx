@@ -7,12 +7,19 @@ import ProfileInfo from "@/components/ui/ProfileInfo";
 import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import { characterImages } from "@/types/characters";
+import SettingsModal from "@/components/modals/SettingsModal";
 
-export default function Home() {
+interface HomeProps {
+  isSettings?: boolean;
+}
+
+export default function Home({ isSettings = false }: HomeProps) {
   const pet = "duck";
   return (
     <div className="min-h-screen flex flex-col relative">
       <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
+        {/* Settings Modal */}
+        {isSettings && <SettingsModal isParent={true} />}
         {/* Profile */}
         <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
           <ProfilePicture character="duck" />

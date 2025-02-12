@@ -1,10 +1,10 @@
 import { Quantico } from "next/font/google";
 import { Pixelify_Sans } from "next/font/google";
 
-export const pixelifySans = Pixelify_Sans({
-  subsets: ["latin"], 
-  weight: ["400", "500", "600", "700"],  
-  variable: "--font-pixelify-sans",  
+export const pixelify = Pixelify_Sans({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-pixelify",
 });
 
 export const quantico = Quantico({
