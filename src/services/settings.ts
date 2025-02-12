@@ -60,7 +60,7 @@ export async function createSettings({ userId }: CreateSettingsBody) {
     throw new InternalServerError("There was an error making settings.");
   }
 
-  return settings as Settings;
+  return settings;
 }
 
 export async function getSettings({

@@ -21,11 +21,13 @@ export async function createNewSettings(newSettings: Settings) {
   }
 }
 
-export async function getSettingsByUserId(userId: ObjectId) {
+export async function getSettingsByUserId(
+  userId: ObjectId,
+): Promise<Settings | null> {
   const db = client.db();
   const settings = await db.collection("settings").findOne({ userId: userId });
 
-  return settings;
+  return settings as Settings | null;
 }
 
 export async function updateSettingsByUserId(
