@@ -7,6 +7,8 @@ import InputBox from "@/components/ui/form/inputBox";
 import WeekDaySelector from "../weekDaySelector";
 import CheckBox from "@/components/ui/form/checkBox";
 import HorizontalRule from "@/components/ui/form/horizontalRule";
+import Label from "@/components/ui/form/label";
+import FormText from "@/components/ui/form/formText";
 
 interface RepetitionSectionProps {
   info: AddMedicationInfo;
@@ -34,7 +36,7 @@ export default function RepetitionSection({
   return (
     <div>
       <FormControl gap={16}>
-        <div className="text-4xl font-bold">Repeat every</div>
+        <Label>Repeat every</Label>
         <InputBox
           maxLength={2}
           value={info.repetition.repeatEvery?.toString() || ""}
@@ -55,7 +57,7 @@ export default function RepetitionSection({
               return temp;
             })
           }
-          className="w-14 h-[52px] text-4xl"
+          className="w-16 h-[52px] text-4xl"
         />
         <DropDown
           className="uppercase"
@@ -76,9 +78,7 @@ export default function RepetitionSection({
         </DropDown>
       </FormControl>
       <div className="mt-8">
-        {info.repetition.type == "Week" && (
-          <div className="text-4xl font-bold">Repeat on</div>
-        )}
+        {info.repetition.type == "Week" && <Label>Repeat on</Label>}
         {info.repetition.type == "Month" && (
           <div>
             <FormControl gap={16}>
@@ -92,8 +92,11 @@ export default function RepetitionSection({
                   })
                 }
               />
-              <div className="text-3xl font-bold">Repeat monthly on day</div>
+              <FormText disabled={info.repetition.monthlyRepetition != "Day"}>
+                Repeat monthly on day
+              </FormText>
               <InputBox
+                disabled={info.repetition.monthlyRepetition != "Day"}
                 maxLength={2}
                 value={info.repetition.monthlyDayOfRepetition?.toString() || ""}
                 onChange={(newValue: string) =>
@@ -113,7 +116,7 @@ export default function RepetitionSection({
                     return temp;
                   })
                 }
-                className="w-14 h-[52px] text-4xl"
+                className="w-16 h-[52px] text-4xl"
               />
             </FormControl>
             <HorizontalRule
@@ -133,8 +136,11 @@ export default function RepetitionSection({
                   })
                 }
               />
-              <div className="text-3xl font-bold">Repeat monthly on</div>
+              <FormText disabled={info.repetition.monthlyRepetition != "Week"}>
+                Repeat monthly on
+              </FormText>
               <DropDown
+                disabled={info.repetition.monthlyRepetition != "Week"}
                 className="uppercase"
                 width={180}
                 value={
@@ -155,13 +161,16 @@ export default function RepetitionSection({
                 <Option value="Third" />
                 <Option value="Fourth" />
               </DropDown>
-              <div className="text-3xl font-bold">week</div>
+              <FormText disabled={info.repetition.monthlyRepetition != "Week"}>
+                week
+              </FormText>
             </FormControl>
           </div>
         )}
       </div>
       {info.repetition.type != "Day" && (
         <WeekDaySelector
+          disabled={info.repetition.monthlyRepetition != "Week"}
           selectedDays={info.repetition.weeklyRepetition || []}
           onSelect={(newDay: number) =>
             setInfo((prev) => {

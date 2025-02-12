@@ -4,6 +4,7 @@ import { OptionProps } from "./option";
 interface DropDownProps {
   children: ReactElement<OptionProps>[];
   className?: string;
+  disabled?: boolean;
   width?: number;
   value: string;
   setValue: (newValue: string) => void;
@@ -12,6 +13,7 @@ interface DropDownProps {
 export default function DropDown({
   children,
   className,
+  disabled = false,
   width,
   value,
   setValue,
@@ -49,14 +51,16 @@ export default function DropDown({
   }, [showDropDown]);
 
   const handleSelect = (index: number) => {
-    setValue(children[index].props.value);
-    setShowDropDown(false);
+    if (!disabled) {
+      setValue(children[index].props.value);
+      setShowDropDown(false);
+    }
   };
 
   return (
     <div
       ref={dropdownRef}
-      className={`relative border-2 border-black bg-white text-black font-belanosima text-2xl ${className}`}
+      className={`relative border-2 border-black bg-white text-black font-belanosima text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
       style={{
         width: width || 130,
       }}
@@ -65,11 +69,15 @@ export default function DropDown({
       {cloneElement(children[selectedIndex], {
         showDropDown,
         selected: true,
-        onClick: () => setShowDropDown((prev) => !prev),
+        onClick: () => {
+          if (!disabled) {
+            setShowDropDown((prev) => !prev);
+          }
+        },
       })}
 
       {/* Dropdown Menu */}
-      {showDropDown && (
+      {!disabled && showDropDown && (
         <div className="absolute -left-[2px] top-[calc(100%-1px)] z-10 w-[calc(100%+4px)] bg-white border-t-0 border-2 border-black flex flex-col gap-2">
           {children.map((child, index) => {
             if (index != selectedIndex) {

@@ -3,7 +3,6 @@ import ModalContainer from "../modalContainer";
 import { Dispatch, SetStateAction, useState } from "react";
 import SectionSelector from "./sectionSelector";
 import RepetitionSection from "./sections/repetitionSection";
-import DosageSection from "./sections/dosageSection";
 import TimeSection from "./sections/timeSection";
 import ReviewSection from "./sections/reviewSection";
 import {
@@ -11,6 +10,8 @@ import {
   initialAddMedicationInfo,
 } from "./addMedicationInfo";
 import GeneralSection from "./sections/generalSection";
+import DosageNotificationSection from "./sections/dosageNotificationSection";
+import DosageAmountSection from "./sections/dosageAmountSection";
 
 interface addMedicationModalProps {
   setAddMedicationVisibility: Dispatch<SetStateAction<boolean>>;
@@ -30,25 +31,30 @@ export default function AddMedicationModal({
       setInfo={setAddMedicationInfo}
       key={0}
     />,
-    <RepetitionSection
+    <DosageAmountSection
       info={addMedicationInfo}
       setInfo={setAddMedicationInfo}
       key={1}
     />,
-    <DosageSection
+    <RepetitionSection
       info={addMedicationInfo}
       setInfo={setAddMedicationInfo}
       key={2}
     />,
-    <TimeSection
+    <DosageNotificationSection
       info={addMedicationInfo}
       setInfo={setAddMedicationInfo}
       key={3}
     />,
-    <ReviewSection
+    <TimeSection
       info={addMedicationInfo}
       setInfo={setAddMedicationInfo}
       key={4}
+    />,
+    <ReviewSection
+      info={addMedicationInfo}
+      setInfo={setAddMedicationInfo}
+      key={5}
     />,
   ];
 

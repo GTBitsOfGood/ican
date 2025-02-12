@@ -37,8 +37,10 @@ export interface AddMedicationInfo {
     monthlyWeekOfRepetition?: number;
   };
   dosage: {
+    /** How much each dosage is (e.g. 200ml, 2 pills) */
+    amount?: string;
     /** Specifies when notifications should be sent */
-    notificationFrequency: "Day Of" | "Per Dose";
+    notificationFrequency: "Once / Day of Dosage" | "Per Dose";
     /** Specifies whether dosage is scheduled by count (doses per day) or interval (hours) */
     type: "Doses" | "Hours";
     /**
@@ -73,15 +75,16 @@ export const initialAddMedicationInfo: AddMedicationInfo = {
     repeatEvery: 1,
     type: "Day",
     weeklyRepetition: [],
-    monthlyRepetition: undefined,
+    monthlyRepetition: "Day",
     monthlyDayOfRepetition: undefined,
     monthlyWeekOfRepetition: undefined,
   },
   dosage: {
-    notificationFrequency: "Day Of",
+    amount: "",
+    notificationFrequency: "Once / Day of Dosage",
     type: "Doses",
     hourlyInterval: undefined,
-    dosesPerDay: 1,
+    dosesPerDay: undefined,
   },
   times: [],
 };

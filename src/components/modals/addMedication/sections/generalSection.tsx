@@ -4,6 +4,8 @@ import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
 import IDInput from "@/components/modals/addMedication/idInput";
+import Label from "@/components/ui/form/label";
+import FormSubtitle from "@/components/ui/form/formSubtitle";
 
 interface GeneralSectionProps {
   info: AddMedicationInfo;
@@ -14,7 +16,7 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
     <div>
       <FormControl>
-        <label className="text-4xl font-bold">Form of Medication</label>
+        <Label>Form of Medication</Label>
         <DropDown
           width={220}
           value={info.general.form}
@@ -65,11 +67,11 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
           />
         </DropDown>
       </FormControl>
-      <div className="mt-8 text-4xl font-bold">Medication ID</div>
-      <div className="text-2xl">
+      <Label className="mt-8">Medication ID</Label>
+      <FormSubtitle>
         Choose up to 5 characters to create an ID to help you remember which
         medication to take.
-      </div>
+      </FormSubtitle>
       <IDInput
         values={
           info.general.medicationId

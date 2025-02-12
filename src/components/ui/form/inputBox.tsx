@@ -4,6 +4,8 @@ interface InputBoxProps {
   value: string;
   className?: string;
   maxLength?: number;
+  placeHolder?: string;
+  disabled?: boolean;
   onChange: (value: string) => void;
   onFocusNext?: () => void;
   onFocusPrev?: () => void;
@@ -18,6 +20,8 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(
       onChange,
       onFocusNext,
       onFocusPrev,
+      placeHolder,
+      disabled = false,
     }: InputBoxProps,
     ref,
   ) => {
@@ -43,7 +47,9 @@ const InputBox = forwardRef<HTMLInputElement, InputBoxProps>(
         maxLength={maxLength}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className={`noSelect border-2 border-black font-bold text-black uppercase outline-none text-center ${className}`}
+        placeholder={placeHolder}
+        disabled={disabled}
+        className={`${className} ${disabled ? "opacity-40" : ""} placeholder:text-icanBlue-100 noSelect border-2 border-black font-bold text-black uppercase outline-none text-center`}
       />
     );
   },
