@@ -5,6 +5,10 @@ export interface LoginRequestBody {
   password: string;
 }
 
+export interface loginWithGoogleRequestBody {
+  credential: string;
+}
+
 export interface RegistrationRequestBody {
   name: string;
   email: string;
@@ -43,6 +47,16 @@ export const authService = {
   login: async (email: string, password: string): Promise<AuthResponseBody> => {
     const loginRequestBody: LoginRequestBody = { email, password };
     return await fetchService<AuthResponseBody>(`/auth/login`, {
+      method: "POST",
+      body: JSON.stringify(loginRequestBody),
+    });
+  },
+
+  loginWithGoogle: async (credential: string): Promise<AuthResponseBody> => {
+    const loginRequestBody: loginWithGoogleRequestBody = {
+      credential: credential,
+    };
+    return await fetchService<AuthResponseBody>(`/auth/login-with-google`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
     });

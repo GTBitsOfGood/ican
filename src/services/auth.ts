@@ -10,8 +10,10 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { decodeGoogleToken } from "./jwt";
 
 export interface CreateUserBody {
   name: string;
@@ -60,11 +62,12 @@ export async function validateCreateUser(
   };
 
   await createUser(newUser);
+  const dbNewUser = await findUserByEmail(email);
 
   // Create jwt once user is successfully created
   const token = jwt.sign(
     {
-      userId: newUser._id,
+      userId: dbNewUser?._id,
     },
     JWT_SECRET,
     {
@@ -98,6 +101,36 @@ export async function validateLogin(email: string, password: string) {
   const token = jwt.sign(
     {
       userId: existingUser._id,
+    },
+    JWT_SECRET,
+    {
+      expiresIn: "1w",
+    },
+  );
+
+  return { token };
+}
+
+export async function validateGoogleLogin(credential: string) {
+  const decodedToken = decodeGoogleToken(credential) as JwtPayload;
+
+  // If user doesn't exist add them to database
+  let existingUser = await findUserByEmail(decodedToken.email);
+
+  if (!existingUser) {
+    const newUser: User = {
+      name: decodedToken.name,
+      email: decodedToken.email,
+      password: "",
+    };
+
+    await createUser(newUser);
+    existingUser = await findUserByEmail(decodedToken.email);
+  }
+
+  const token = jwt.sign(
+    {
+      userId: existingUser?._id,
     },
     JWT_SECRET,
     {

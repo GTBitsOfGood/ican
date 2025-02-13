@@ -6,6 +6,7 @@ import { authService } from "@/http/authService";
 import ErrorBox from "@/components/ErrorBox";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -127,7 +128,7 @@ export default function Home() {
                   Login
                 </button>
               </form>
-              <div className="flex flex-col gap-y-6 w-[80%]">
+              {/* <div className="flex flex-col gap-y-6 w-[80%]">
                 <div className="flex items-center justify-center w-full">
                   <div className="border border-textGrey w-full" />
                   <div className="text-textGrey px-4">or</div>
@@ -147,7 +148,8 @@ export default function Home() {
                     Login with Google
                   </div>
                 </button>
-              </div>
+              </div> */}
+              <GoogleLoginButton />
               <div className="text-textGrey text-[20px]">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">
