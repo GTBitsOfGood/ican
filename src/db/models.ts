@@ -22,3 +22,12 @@ export interface Pet {
   coins: number;
   userId: ObjectId;
 }
+
+export interface Settings {
+  userId: ObjectId;
+  parentalControl: boolean;
+  notifications: boolean;
+  helpfulTips: boolean;
+  largeFontSize: boolean;
+  pin: string;
+}
