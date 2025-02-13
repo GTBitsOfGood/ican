@@ -24,6 +24,7 @@ export default function AddMedicationModal({
     initialAddMedicationInfo,
   );
   const [currentSection, setCurrentSection] = useState<number>(0);
+  const [error, setError] = useState<string>("");
 
   const sections = [
     <GeneralSection
@@ -61,15 +62,22 @@ export default function AddMedicationModal({
   return (
     <ModalBackground>
       <ModalContainer
-        className="flex flex-col w-[790px] h-[650px] bg-icanBlue-200"
+        className="flex flex-col w-[790px] h-[700px] bg-icanBlue-200"
         title="Add New Medication"
         setVisibility={setAddMedicationVisibility}
       >
+        {error && (
+          <div className="mt-4 h-12 w-full px-4 bg-iCAN-error/90 flex justify-start items-center text-xl">
+            {error}
+          </div>
+        )}
         <div className="flex-grow mt-8 px-4">{sections[currentSection]}</div>
         <SectionSelector
           currentSection={currentSection}
           setCurrentSection={setCurrentSection}
           sectionSize={sections.length}
+          info={addMedicationInfo}
+          setError={setError}
         />
       </ModalContainer>
     </ModalBackground>

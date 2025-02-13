@@ -1,19 +1,32 @@
 import ModalButton from "@/components/ui/modals/modalButton";
 import { Dispatch, SetStateAction } from "react";
+import { AddMedicationInfo } from "./addMedicationInfo";
+import SectionValidator from "./sectionValidator";
 
 interface SectionSelectorProps {
   currentSection: number;
   sectionSize: number;
   setCurrentSection: Dispatch<SetStateAction<number>>;
+  info: AddMedicationInfo;
+  setError: Dispatch<SetStateAction<string>>;
 }
 
 export default function SectionSelector({
   currentSection,
   setCurrentSection,
   sectionSize,
+  info,
+  setError,
 }: SectionSelectorProps) {
   const backAction = () => setCurrentSection((prev) => Math.max(0, prev - 1));
   const nextAction = () => {
+    setError("");
+    const error = SectionValidator({ info, currentSection });
+    if (error) {
+      setError(error);
+      return;
+    }
+
     if (currentSection == sectionSize - 1) {
       // confirm action
     } else {

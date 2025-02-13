@@ -18,7 +18,7 @@ export interface AddMedicationInfo {
      * Uses 0-6 indexing (0 = Sunday, 6 = Saturday).
      * If repetition type is "Month" and `monthlyRepetition` is "Week", this is also used.
      */
-    weeklyRepetition?: number[];
+    weeklyRepetition: number[];
     /**
      * If repetition type is "Month", specifies whether the medication repeats on a specific day or week.
      * - "Day": The medication repeats on a specific day of the month (e.g., 26th of each month).
@@ -38,7 +38,7 @@ export interface AddMedicationInfo {
   };
   dosage: {
     /** How much each dosage is (e.g. 200ml, 2 pills) */
-    amount?: string;
+    amount: string;
     /** Specifies when notifications should be sent */
     notificationFrequency: "Once / Day of Dosage" | "Per Dose";
     /** Specifies whether dosage is scheduled by count (doses per day) or interval (hours) */
