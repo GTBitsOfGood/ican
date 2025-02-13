@@ -1,6 +1,15 @@
 import fetchService from "@/http/fetchService";
-import { CreatePetBody, UpdatePetBody } from "@/services/pets";
 import { Pet, PetType } from "@/types/pet";
+
+export interface UpdatePetBody {
+  name: string;
+}
+
+export interface CreatePetBody {
+  name: string;
+  userId: string;
+  petType: PetType;
+}
 
 export const petService = {
   createPet: async (

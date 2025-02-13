@@ -34,18 +34,20 @@ export default function Home() {
       setPasswordError("");
     }
 
-    if (!errorDetected) {
-      setLoggingIn(true);
-      try {
-        const response = await authService.login(email.trim(), password.trim());
-        localStorage.setItem("token", response.token);
-        router.push("/");
-      } catch {
-        setEmailError("Login failed. Please check your credentials.");
-        setPasswordError("");
-      } finally {
-        setLoggingIn(false);
-      }
+    if (errorDetected) {
+      return errorDetected;
+    }
+
+    setLoggingIn(true);
+    try {
+      const response = await authService.login(email.trim(), password.trim());
+      localStorage.setItem("token", response.token);
+      router.push("/");
+    } catch (error) {
+      setEmailError("Login failed! " + (error as Error).message);
+      setPasswordError("");
+    } finally {
+      setLoggingIn(false);
     }
 
     return errorDetected;

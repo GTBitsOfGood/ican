@@ -8,17 +8,6 @@ import {
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
-import { PetType } from "@/types/pet";
-
-export interface UpdatePetBody {
-  name: string;
-}
-
-export interface CreatePetBody {
-  name: string;
-  userId: string;
-  petType: PetType;
-}
 
 export async function createPet(
   userId: string,

@@ -82,8 +82,8 @@ export default function ForgotPasswordPage() {
         if (response.userId) {
           setUserId(response.userId);
         }
-      } catch {
-        console.log("error found");
+      } catch (error) {
+        setError({ email: `Error! ${(error as Error).message}` });
         return;
       }
     }
@@ -92,8 +92,8 @@ export default function ForgotPasswordPage() {
       try {
         const response = await authService.verifyForgotPassword(userId, otp);
         localStorage.setItem("token", response.token);
-      } catch {
-        console.log("error found");
+      } catch (error) {
+        setError({ otp: `Error! ${(error as Error).message}` });
         return;
       }
     }
@@ -105,8 +105,8 @@ export default function ForgotPasswordPage() {
           confirmPasswordRef.current?.value as string,
         );
         router.push("/");
-      } catch {
-        console.log("error found");
+      } catch (error) {
+        setError({ password: `Error! ${(error as Error).message}` });
         return;
       }
     }

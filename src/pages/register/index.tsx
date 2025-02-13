@@ -60,24 +60,27 @@ export default function Home() {
       setConfirmPasswordError("");
     }
 
-    if (!errorDetected) {
-      setRegistering(true);
-      try {
-        const response = await authService.register(
-          name.trim(),
-          email.trim(),
-          password.trim(),
-          confirmPassword.trim(),
-        );
-        localStorage.setItem("token", response.token);
-        router.push("/");
-      } catch {
-        setEmailError("Register failed. Please check your credentials.");
-        setPasswordError("");
-      } finally {
-        setRegistering(false);
-      }
+    if (errorDetected) {
+      return errorDetected;
     }
+
+    setRegistering(true);
+    try {
+      const response = await authService.register(
+        name.trim(),
+        email.trim(),
+        password.trim(),
+        confirmPassword.trim(),
+      );
+      localStorage.setItem("token", response.token);
+      router.push("/");
+    } catch (error) {
+      setEmailError("Registration failed! " + (error as Error).message);
+      setPasswordError("");
+    } finally {
+      setRegistering(false);
+    }
+
     return errorDetected;
   };
 
