@@ -84,7 +84,7 @@ export const authService = {
     code: string,
   ): Promise<AuthResponseBody> => {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return await fetchService<AuthResponseBody>(`/auth/verify`, {
+    return await fetchService<AuthResponseBody>(`/auth/forgot-password/verify`, {
       method: "POST",
       body: JSON.stringify(verificationRequestBody),
     });
