@@ -43,3 +43,5 @@ next-env.d.ts
 .eslintcache
 bitwarden.env
 yarn.lock
+
+.idea

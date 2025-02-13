@@ -1,11 +1,11 @@
-import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import {
   createNewPet,
   deletePetByUserId,
   getPetByUserId,
   updatePetByUserId,
-} from "../db/actions/pets";
-import { Pet } from "../db/models";
+} from "@/db/actions/pets";
+import { Pet } from "@/db/models";
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
 
@@ -20,13 +20,13 @@ export interface CreatePetBody {
 
 export async function createPet(userId: string, name: string): Promise<Pet> {
   // Validate parameters
-  validateParams(userId, name);
+  await validateParams(userId, name);
 
   // Check if the user has a pet already
   const existingPet = await getPetByUserId(new ObjectId(userId));
 
   if (existingPet) {
-    throw new AlreadyExistsError("this user already has a pet");
+    throw new ConflictError("this user already has a pet");
   }
 
   const newPet = {
@@ -44,12 +44,12 @@ export async function createPet(userId: string, name: string): Promise<Pet> {
 
 export async function getPet(userId: string): Promise<Pet | null> {
   // Validate parameters
-  validateParams(userId);
+  await validateParams(userId);
 
   // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
-    throw new DoesNotExistError("This pet does not exist");
+    throw new NotFoundError("This pet does not exist");
   }
 
   return existingPet as Pet;
@@ -57,12 +57,12 @@ export async function getPet(userId: string): Promise<Pet | null> {
 
 export async function updatePet(userId: string, name: string) {
   // Validate parameters
-  validateParams(userId, name);
+  await validateParams(userId, name);
 
   // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
-    throw new DoesNotExistError("This pet does not exist");
+    throw new NotFoundError("This pet does not exist");
   }
 
   await updatePetByUserId(new ObjectId(userId), name);
@@ -70,12 +70,12 @@ export async function updatePet(userId: string, name: string) {
 
 export async function deletePet(userId: string) {
   // Validate parameters
-  validateParams(userId);
+  await validateParams(userId);
 
   // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
-    throw new DoesNotExistError("This pet does not exist");
+    throw new NotFoundError("This pet does not exist");
   }
 
   await deletePetByUserId(new ObjectId(userId));

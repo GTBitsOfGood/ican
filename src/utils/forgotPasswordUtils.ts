@@ -13,6 +13,5 @@ export function generateExpirationDate(): Date {
 }
 
 export async function generateEncryptedCode(rawCode: string): Promise<string> {
-  const encryptedCode = await bcrypt.hash(rawCode, 10);
-  return encryptedCode;
+  return await bcrypt.hash(rawCode, 10);
 }

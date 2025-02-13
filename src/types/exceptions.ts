@@ -1,56 +1,59 @@
-export class ApiError extends Error {
-  statusCode: number;
+export abstract class AppError extends Error {
+  public readonly statusCode: number;
 
-  constructor(message: string, statusCode: number) {
+  protected constructor(message: string, statusCode: number) {
     super(message);
     this.statusCode = statusCode;
+    this.name = this.constructor.name;
+
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
-export class AlreadyExistsError extends ApiError {
-  constructor(message: string) {
-    super(message, 409);
-  }
-}
-
-export class DoesNotExistError extends ApiError {
-  constructor(message: string) {
-    super(message, 404);
-  }
-}
-
-export class InvalidBodyError extends ApiError {
-  constructor(message: string) {
-    super(message, 400);
-  }
-}
-
-export class NotFoundError extends ApiError {
+export class NotFoundError extends AppError {
   constructor(message = "Resource not found") {
     super(message, 404);
   }
 }
 
-export class BadRequestError extends ApiError {
-  constructor(message = "Bad request") {
+export class InvalidArgumentsError extends AppError {
+  constructor(message = "Invalid arguments provided") {
     super(message, 400);
   }
 }
 
-export class UnauthorizedError extends ApiError {
-  constructor(message = "Unauthorized") {
+export class UnauthorizedError extends AppError {
+  constructor(message = "Unauthorized access") {
     super(message, 401);
   }
 }
 
-export class ConflictError extends ApiError {
-  constructor(message = "Conflict") {
+export class ConflictError extends AppError {
+  constructor(message = "Resource conflict") {
     super(message, 409);
   }
 }
 
-export class InternalServerError extends ApiError {
-  constructor(message = "Internal server error") {
+export class InternalError extends AppError {
+  constructor(message = "Internal error occurred") {
     super(message, 500);
+  }
+}
+
+export class ValidationError extends AppError {
+  constructor(message = "Validation failed") {
+    super(message, 422);
+  }
+}
+
+export class IllegalOperationError extends AppError {
+  constructor(message = "Illegal operation attempted") {
+    super(message, 403);
+  }
+}
+
+export class MethodNotAllowedError extends AppError {
+  constructor(message = "Method not allowed") {
+    super(message, 405);
   }
 }

@@ -1,8 +1,4 @@
-import {
-  AlreadyExistsError,
-  BadRequestError,
-  DoesNotExistError,
-} from "@/types/exceptions";
+import { ConflictError, UnauthorizedError } from "@/types/exceptions";
 import {
   passwordsAreEqual,
   validateEmail,
@@ -11,8 +7,8 @@ import {
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../db/actions/auth";
-import { User } from "../db/models";
+import { createUser, findUserByEmail } from "@/db/actions/auth";
+import { User } from "@/db/models";
 
 export interface CreateUserBody {
   name: string;
@@ -48,7 +44,7 @@ export async function validateCreateUser(
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new AlreadyExistsError("user already exists");
+    throw new ConflictError("user already exists");
   }
 
   // Hash password and create user to pass to access layer
@@ -85,14 +81,14 @@ export async function validateLogin(email: string, password: string) {
   const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
-    throw new DoesNotExistError("user does not exist");
+    throw new UnauthorizedError("user does not exist");
   }
 
   // Check if password is correct
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
-    throw new BadRequestError("password is not correct");
+    throw new UnauthorizedError("password is not correct");
   }
 
   // Create and return jwt

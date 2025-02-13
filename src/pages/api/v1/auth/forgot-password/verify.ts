@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyForgotPasswordCode } from "@/services/forgotPasswordCodes";
-import { ApiError } from "@/types/exceptions";
+import { AppError } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,7 +17,7 @@ export default async function handler(
     const token = await verifyForgotPasswordCode(userId, code);
     return res.status(200).json({ token });
   } catch (error) {
-    if (error instanceof ApiError) {
+    if (error instanceof AppError) {
       return res.status(error.statusCode).json({ error: error.message });
     }
     return res.status(500).json({ error: "Unknown error occured." });

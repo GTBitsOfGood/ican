@@ -4,27 +4,28 @@ import {
   deleteForgotPasswordCodeById,
   getForgotPasswordCodeByUserId,
   updateForgotPasswordCodeByUserId,
-} from "../db/actions/forgotPasswordCodes";
+} from "@/db/actions/forgotPasswordCodes";
 import bcrypt from "bcrypt";
-import { ForgotPasswordCode } from "../db/models";
+import { ForgotPasswordCode } from "@/db/models";
 import {
   getUserFromEmail,
   getUserFromId,
   updateUserPasswordFromId,
-} from "../db/actions/user";
-import { ApiError } from "@/types/exceptions";
+} from "@/db/actions/user";
+import {
+  AppError,
+  ConflictError,
+  InternalError,
+  InvalidArgumentsError,
+  NotFoundError,
+  UnauthorizedError,
+  ValidationError,
+} from "@/types/exceptions";
 import {
   generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
-import {
-  BadRequestError,
-  ConflictError,
-  InternalServerError,
-  NotFoundError,
-  UnauthorizedError,
-} from "@/types/exceptions";
 import { generateToken, verifyToken } from "./jwt";
 
 export async function sendPasswordCode(
@@ -53,8 +54,8 @@ export async function sendPasswordCode(
 
     return user._id;
   } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+    if (!(error instanceof AppError)) {
+      throw new InternalError("An unknown error occurred.");
     }
     throw error;
   }
@@ -65,11 +66,11 @@ export async function verifyForgotPasswordCode(
   code: string,
 ): Promise<string> {
   if (!userIdString || !userIdString.trim()) {
-    throw new BadRequestError("User ID is required.");
+    throw new InvalidArgumentsError("User ID is required.");
   }
 
   if (!code || !code.trim()) {
-    throw new BadRequestError("Code is required");
+    throw new InvalidArgumentsError("Code is required");
   }
 
   const userId = new ObjectId(userIdString);
@@ -95,11 +96,10 @@ export async function verifyForgotPasswordCode(
 
     await deleteForgotPasswordCodeById(forgotPasswordCode._id);
 
-    const token = generateToken(userId);
-    return token;
+    return generateToken(userId);
   } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+    if (!(error instanceof AppError)) {
+      throw new InternalError("An unknown error occurred.");
     }
     throw error;
   }
@@ -111,15 +111,15 @@ export async function changePassword(
   confirmPassword: string,
 ) {
   if (!newPassword || !newPassword.trim()) {
-    throw new BadRequestError("New password is required.");
+    throw new InvalidArgumentsError("New password is required.");
   }
 
   if (!confirmPassword || !confirmPassword.trim()) {
-    throw new BadRequestError("Confirm password is required");
+    throw new InvalidArgumentsError("Confirm password is required");
   }
 
   if (newPassword !== confirmPassword) {
-    throw new BadRequestError("Passwords do not match.");
+    throw new ValidationError("Passwords do not match.");
   }
 
   try {
@@ -130,8 +130,8 @@ export async function changePassword(
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await updateUserPasswordFromId(user._id, hashedPassword);
   } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+    if (!(error instanceof AppError)) {
+      throw new InternalError("An unknown error occurred.");
     }
     throw error;
   }

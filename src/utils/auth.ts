@@ -1,10 +1,10 @@
-import { InvalidBodyError } from "../types/exceptions";
 import { z } from "zod";
+import { InvalidArgumentsError, ValidationError } from "@/types/exceptions";
 
 export function validateName(name: string) {
-  if (typeof name !== "string" || name.trim() === "") {
-    throw new InvalidBodyError(
-      "Invalid request body: 'name' is required and must be a non-empty string.",
+  if (name.trim() === "") {
+    throw new InvalidArgumentsError(
+      "'name' is required and must be a non-empty string.",
     );
   }
 }
@@ -12,8 +12,8 @@ export function validateName(name: string) {
 export function validateEmail(email: string) {
   const emailSchema = z.string().email();
   if (!emailSchema.safeParse(email).success) {
-    throw new InvalidBodyError(
-      "Invalid request body: 'email' is required and must be a valid email.",
+    throw new InvalidArgumentsError(
+      "'email' is required and must be a valid email.",
     );
   }
 }
@@ -26,16 +26,16 @@ export function validatePassword(password: string) {
       /[!@#$%^&*]/.test(password)
     )
   ) {
-    throw new InvalidBodyError(
-      "Invalid request body: 'password' is required and must be greater than 6 characters and have special characters.",
+    throw new ValidationError(
+      "'password' is required and must be greater than 6 characters and have special characters.",
     );
   }
 }
 
 export function passwordsAreEqual(password: string, confirmPassword: string) {
   if (password !== confirmPassword) {
-    throw new InvalidBodyError(
-      "Invalid request body: 'password' and 'confirmPassword' must be equal.",
+    throw new ValidationError(
+      "'password' and 'confirmPassword' must be equal.",
     );
   }
 }
