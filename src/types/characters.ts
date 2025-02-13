@@ -1,9 +1,9 @@
-import { StaticImageData } from 'next/image';
-import catImg from '/public/characters/cat.png';
-import dinoImg from '/public/characters/dino.png';
-import dogImg from '/public/characters/dog.png';
-import duckImg from '/public/characters/duck.png';
-import penguinImg from '/public/characters/penguin.png';
+import { StaticImageData } from "next/image";
+import catImg from "/public/characters/cat.svg";
+import dinoImg from "/public/characters/dino.svg";
+import dogImg from "/public/characters/dog.svg";
+import duckImg from "/public/characters/duck.svg";
+import penguinImg from "/public/characters/penguin.svg";
 
 export type CharacterType = "cat" | "dino" | "dog" | "duck" | "penguin";
 
