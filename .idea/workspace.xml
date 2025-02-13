@@ -4,11 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b13392e8-c623-466f-9ad7-9e4e36dd27dc" name="Changes" comment="" />
+    <list default="true" id="b13392e8-c623-466f-9ad7-9e4e36dd27dc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/addMedicationInfo.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/addMedicationInfo.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/modal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/modal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/sectionSelector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/sectionSelector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/sectionValidator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/sectionValidator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/sections/repetitionSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/sections/repetitionSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/modals/addMedication/sections/timeSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/modals/addMedication/sections/timeSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/styles/globals.css" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript JSX File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -26,7 +42,7 @@
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "sujal/28-standardize-exceptions",
+    "git-widget-placeholder": "sujal/24-add-new-medication-modal",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -54,6 +70,7 @@
       <updated>1738857357571</updated>
       <workItem from="1738857359215" duration="76000" />
       <workItem from="1738857446314" duration="2572000" />
+      <workItem from="1739480015343" duration="531000" />
     </task>
     <servers />
   </component>

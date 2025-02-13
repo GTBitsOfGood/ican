@@ -12,6 +12,7 @@ import {
 import GeneralSection from "./sections/generalSection";
 import DosageNotificationSection from "./sections/dosageNotificationSection";
 import DosageAmountSection from "./sections/dosageAmountSection";
+import NotesSection from "./sections/notesSection";
 
 interface addMedicationModalProps {
   setAddMedicationVisibility: Dispatch<SetStateAction<boolean>>;
@@ -52,10 +53,15 @@ export default function AddMedicationModal({
       setInfo={setAddMedicationInfo}
       key={4}
     />,
-    <ReviewSection
+    <NotesSection
       info={addMedicationInfo}
       setInfo={setAddMedicationInfo}
       key={5}
+    />,
+    <ReviewSection
+      info={addMedicationInfo}
+      setInfo={setAddMedicationInfo}
+      key={6}
     />,
   ];
 
@@ -77,6 +83,7 @@ export default function AddMedicationModal({
           setCurrentSection={setCurrentSection}
           sectionSize={sections.length}
           info={addMedicationInfo}
+          setInfo={setAddMedicationInfo}
           setError={setError}
         />
       </ModalContainer>

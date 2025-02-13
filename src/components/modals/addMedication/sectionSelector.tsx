@@ -8,6 +8,7 @@ interface SectionSelectorProps {
   sectionSize: number;
   setCurrentSection: Dispatch<SetStateAction<number>>;
   info: AddMedicationInfo;
+  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
   setError: Dispatch<SetStateAction<string>>;
 }
 
@@ -16,15 +17,19 @@ export default function SectionSelector({
   setCurrentSection,
   sectionSize,
   info,
+  setInfo,
   setError,
 }: SectionSelectorProps) {
   const backAction = () => setCurrentSection((prev) => Math.max(0, prev - 1));
   const nextAction = () => {
     setError("");
-    const error = SectionValidator({ info, currentSection });
+    const { error, newInfo } = SectionValidator({ info, currentSection });
     if (error) {
       setError(error);
       return;
+    }
+    if (newInfo) {
+      setInfo(newInfo);
     }
 
     if (currentSection == sectionSize - 1) {

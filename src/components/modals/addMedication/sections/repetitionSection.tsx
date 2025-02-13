@@ -170,7 +170,10 @@ export default function RepetitionSection({
       </div>
       {info.repetition.type != "Day" && (
         <WeekDaySelector
-          disabled={info.repetition.monthlyRepetition != "Week"}
+          disabled={
+            info.repetition.type == "Month" &&
+            info.repetition.monthlyRepetition != "Week"
+          }
           selectedDays={info.repetition.weeklyRepetition || []}
           onSelect={(newDay: number) =>
             setInfo((prev) => {

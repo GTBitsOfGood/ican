@@ -64,6 +64,15 @@ export interface AddMedicationInfo {
      */
     period: "AM" | "PM";
   }[];
+  /**
+   * Specifies whether doses have times or not
+   * ONLY if dosage type is "Doses"
+   */
+  includeTimes: boolean;
+  /**
+   * General notes about the medication
+   */
+  notes: string;
 }
 
 export const initialAddMedicationInfo: AddMedicationInfo = {
@@ -87,4 +96,6 @@ export const initialAddMedicationInfo: AddMedicationInfo = {
     dosesPerDay: undefined,
   },
   times: [],
+  includeTimes: true,
+  notes: "",
 };
