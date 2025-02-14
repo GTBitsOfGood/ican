@@ -8,18 +8,21 @@ import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import { characterImages } from "@/types/characters";
 import SettingsModal from "@/components/modals/SettingsModal";
+import ChangePinModal from "@/components/modals/ChangePinModal";
 
 interface HomeProps {
-  isSettings?: boolean;
+  activeModal: string;
 }
 
-export default function Home({ isSettings = false }: HomeProps) {
+export default function Home({ activeModal = "" }: HomeProps) {
   const pet = "duck";
   return (
     <div className="min-h-screen flex flex-col relative">
       <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
         {/* Settings Modal */}
-        {isSettings && <SettingsModal isParent={true} />}
+        {activeModal === "settings" && <SettingsModal isParent={true} />}
+        {/* Change Pin Modal */}
+        {activeModal === "change-pin" && <ChangePinModal />}
         {/* Profile */}
         <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
           <ProfilePicture character="duck" />
