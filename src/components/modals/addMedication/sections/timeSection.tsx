@@ -18,7 +18,7 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
   if (info.dosage.type === "Doses") {
     return (
       <div>
-        <div className="flex flex-col gap-6 max-h-[300px] overflow-y-auto scrollbar-custom">
+        <div className="flex flex-col gap-6 max-h-[300px] ove pb-12 overflow-y-auto scrollbar-custom">
           {info.times.map((time, i) => (
             <FormControl gap={16} key={i}>
               <Label disabled={!info.includeTimes}>{`Time #${i + 1}`}</Label>

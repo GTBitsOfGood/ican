@@ -19,20 +19,6 @@ export default function RepetitionSection({
   info,
   setInfo,
 }: RepetitionSectionProps) {
-  const numberToOrdinal: Record<number, string> = {
-    1: "First",
-    2: "Second",
-    3: "Third",
-    4: "Fourth",
-  };
-
-  const ordinalToNumber: Record<string, number> = {
-    First: 1,
-    Second: 2,
-    Third: 3,
-    Fourth: 4,
-  };
-
   return (
     <div>
       <FormControl gap={16}>
@@ -83,6 +69,75 @@ export default function RepetitionSection({
           <div>
             <FormControl gap={16}>
               <CheckBox
+                className="self-start"
+                checked={info.repetition.monthlyRepetition == "Week"}
+                onChange={() =>
+                  setInfo((prev) => {
+                    const temp = { ...prev };
+                    temp.repetition.monthlyRepetition = "Week";
+                    return temp;
+                  })
+                }
+              />
+              <div className="flex flex-col justify-start items-start gap-4">
+                <FormText
+                  disabled={info.repetition.monthlyRepetition != "Week"}
+                >
+                  Repeat monthly on the
+                </FormText>
+                <FormControl gap={16}>
+                  <DropDown
+                    disabled={info.repetition.monthlyRepetition != "Week"}
+                    className="uppercase"
+                    width={180}
+                    value={info.repetition.monthlyWeekOfRepetition || "First"}
+                    setValue={(newValue: string) =>
+                      setInfo((prev) => {
+                        const temp = { ...prev };
+                        temp.repetition.monthlyWeekOfRepetition =
+                          newValue as AddMedicationInfo["repetition"]["monthlyWeekOfRepetition"];
+                        return temp;
+                      })
+                    }
+                  >
+                    <Option value="First" />
+                    <Option value="Second" />
+                    <Option value="Third" />
+                    <Option value="Fourth" />
+                  </DropDown>
+                  <DropDown
+                    disabled={info.repetition.monthlyRepetition != "Week"}
+                    className="uppercase"
+                    width={180}
+                    value={info.repetition.monthlyWeekDayOfRepetition}
+                    setValue={(newValue: string) =>
+                      setInfo((prev) => {
+                        const temp = { ...prev };
+                        temp.repetition.monthlyWeekDayOfRepetition =
+                          newValue as AddMedicationInfo["repetition"]["monthlyWeekDayOfRepetition"];
+                        return temp;
+                      })
+                    }
+                  >
+                    <Option value="Sunday" />
+                    <Option value="Monday" />
+                    <Option value="Tuesday" />
+                    <Option value="Wednesday" />
+                    <Option value="Thursday" />
+                    <Option value="Friday" />
+                    <Option value="Saturday" />
+                  </DropDown>
+                </FormControl>
+              </div>
+            </FormControl>
+            <HorizontalRule
+              ruleClassName="border-2 border-icanGreen-200"
+              textClassName="text-4xl font-bold text-icanGreen-200"
+            >
+              Or
+            </HorizontalRule>
+            <FormControl gap={16}>
+              <CheckBox
                 checked={info.repetition.monthlyRepetition == "Day"}
                 onChange={() =>
                   setInfo((prev) => {
@@ -119,61 +174,11 @@ export default function RepetitionSection({
                 className="w-16 h-[52px] text-4xl"
               />
             </FormControl>
-            <HorizontalRule
-              ruleClassName="border-2 border-icanGreen-200"
-              textClassName="text-4xl font-bold text-icanGreen-200"
-            >
-              Or
-            </HorizontalRule>
-            <FormControl gap={16}>
-              <CheckBox
-                checked={info.repetition.monthlyRepetition == "Week"}
-                onChange={() =>
-                  setInfo((prev) => {
-                    const temp = { ...prev };
-                    temp.repetition.monthlyRepetition = "Week";
-                    return temp;
-                  })
-                }
-              />
-              <FormText disabled={info.repetition.monthlyRepetition != "Week"}>
-                Repeat monthly on
-              </FormText>
-              <DropDown
-                disabled={info.repetition.monthlyRepetition != "Week"}
-                className="uppercase"
-                width={180}
-                value={
-                  numberToOrdinal[info.repetition.monthlyWeekOfRepetition || 1]
-                }
-                setValue={(newValue: string) =>
-                  setInfo((prev) => {
-                    const temp = { ...prev };
-                    temp.repetition.monthlyWeekOfRepetition = ordinalToNumber[
-                      newValue
-                    ] as AddMedicationInfo["repetition"]["monthlyWeekOfRepetition"];
-                    return temp;
-                  })
-                }
-              >
-                <Option value="First" />
-                <Option value="Second" />
-                <Option value="Third" />
-                <Option value="Fourth" />
-              </DropDown>
-              <FormText disabled={info.repetition.monthlyRepetition != "Week"}>
-                week
-              </FormText>
-            </FormControl>
           </div>
         )}
       </div>
-      {info.repetition.type != "Day(s)" && (
+      {info.repetition.type == "Week(s)" && (
         <WeekDaySelector
-          disabled={
-            info.repetition.type == "Month(s)" &&
-            info.repetition.monthlyRepetition != "Week"
-          }
           selectedDays={info.repetition.weeklyRepetition || []}
           onSelect={(newDay: number) =>
             setInfo((prev) => {

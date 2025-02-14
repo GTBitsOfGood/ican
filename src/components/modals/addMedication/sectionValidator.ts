@@ -30,12 +30,12 @@ export default function SectionValidator({
         return { error: "Enter repeat interval." };
       }
       if (
-        info.repetition.type === "Week" &&
+        info.repetition.type === "Week(s)" &&
         info.repetition.weeklyRepetition.length === 0
       ) {
         return { error: "Select repeat days for the week." };
       }
-      if (info.repetition.type === "Month") {
+      if (info.repetition.type === "Month(s)") {
         if (info.repetition.monthlyRepetition === "Day") {
           if (info.repetition.monthlyDayOfRepetition === undefined) {
             return { error: "Enter day of the month to repeat." };

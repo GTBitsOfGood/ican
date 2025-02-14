@@ -34,7 +34,15 @@ export interface AddMedicationInfo {
      * If `monthlyRepetition` is "Week", this specifies which week of the month (1-4).
      * Example: 1 means the medication is taken in the first week of the month.
      */
-    monthlyWeekOfRepetition?: number;
+    monthlyWeekOfRepetition: "First" | "Second" | "Third" | "Fourth";
+    monthlyWeekDayOfRepetition:
+      | "Sunday"
+      | "Monday"
+      | "Tuesday"
+      | "Wednesday"
+      | "Thursday"
+      | "Friday"
+      | "Saturday";
   };
   dosage: {
     /** How much each dosage is (e.g. 200ml, 2 pills) */
@@ -84,9 +92,10 @@ export const initialAddMedicationInfo: AddMedicationInfo = {
     repeatEvery: 1,
     type: "Day(s)",
     weeklyRepetition: [],
-    monthlyRepetition: "Day",
+    monthlyRepetition: "Week",
     monthlyDayOfRepetition: undefined,
-    monthlyWeekOfRepetition: undefined,
+    monthlyWeekOfRepetition: "First",
+    monthlyWeekDayOfRepetition: "Sunday",
   },
   dosage: {
     amount: "",
