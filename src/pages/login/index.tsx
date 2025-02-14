@@ -128,28 +128,14 @@ export default function Home() {
                   Login
                 </button>
               </form>
-              {/* <div className="flex flex-col gap-y-6 w-[80%]">
+              <div className="flex flex-col gap-y-6 w-[80%]">
                 <div className="flex items-center justify-center w-full">
                   <div className="border border-textGrey w-full" />
                   <div className="text-textGrey px-4">or</div>
                   <div className="border border-textGrey w-full" />
                 </div>
-                <button
-                  className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black h-12 text-[24px]/[32px] text-center mb-4"
-                  type="button"
-                >
-                  <Image
-                    src="/GoogleSocialIcon.svg"
-                    alt="Google Logo"
-                    width={30}
-                    height={30}
-                  />
-                  <div className="px-3 text-[24px]/[32px] text-[#000]">
-                    Login with Google
-                  </div>
-                </button>
-              </div> */}
-              <GoogleLoginButton />
+                <GoogleLoginButton />
+              </div>
               <div className="text-textGrey text-[20px]">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">

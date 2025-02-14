@@ -7,12 +7,12 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const { method } = req;
-  const { credential } = req.body;
+  const { name, email } = req.body;
 
   try {
     if (method == "POST") {
       try {
-        const response = await validateGoogleLogin(credential);
+        const response = await validateGoogleLogin(name, email);
         res.status(201).json(response);
       } catch (error) {
         if (error instanceof ApiError) {

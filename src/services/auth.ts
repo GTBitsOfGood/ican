@@ -10,10 +10,9 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
-import { decodeGoogleToken } from "./jwt";
 
 export interface CreateUserBody {
   name: string;
@@ -111,21 +110,22 @@ export async function validateLogin(email: string, password: string) {
   return { token };
 }
 
-export async function validateGoogleLogin(credential: string) {
-  const decodedToken = decodeGoogleToken(credential) as JwtPayload;
+export async function validateGoogleLogin(name: string, email: string) {
+  validateName(name);
+  validateEmail(email);
 
   // If user doesn't exist add them to database
-  let existingUser = await findUserByEmail(decodedToken.email);
+  let existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
     const newUser: User = {
-      name: decodedToken.name,
-      email: decodedToken.email,
+      name: name,
+      email: email,
       password: "",
     };
 
     await createUser(newUser);
-    existingUser = await findUserByEmail(decodedToken.email);
+    existingUser = await findUserByEmail(email);
   }
 
   const token = jwt.sign(

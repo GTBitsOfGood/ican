@@ -10,6 +10,7 @@ import ErrorBox from "@/components/ErrorBox";
 import { authService } from "@/http/authService";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -185,26 +186,13 @@ export default function Home() {
                 >
                   Sign Up
                 </button>
-                <div className="flex flex-col gap-y-6 w-full">
+                <div className="flex flex-col gap-y-6 w-[80%]">
                   <div className="flex items-center justify-center w-full">
                     <div className="border border-textGrey w-full" />
                     <div className="text-textGrey px-4">or</div>
                     <div className="border border-textGrey w-full" />
                   </div>
-                  <button
-                    className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black h-12 text-[24px]/[32px] text-center mb-2"
-                    type="button"
-                  >
-                    <Image
-                      src="/GoogleSocialIcon.svg"
-                      alt="Google Logo"
-                      width={30}
-                      height={30}
-                    />
-                    <div className="px-3 text-[24px]/[32px] text-[#000]">
-                      Sign Up with Google
-                    </div>
-                  </button>
+                  <GoogleLoginButton />
                 </div>
                 <div className="text-textGrey font-quantico text-[20px]">
                   Have an account?{" "}

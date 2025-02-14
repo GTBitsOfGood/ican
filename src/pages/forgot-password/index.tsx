@@ -12,9 +12,9 @@ import {
   passwordRequirementsValidation,
 } from "@/utils/validation";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { useRouter } from "next/router";
+import GoogleLoginButton from "@/components/GoogleLoginButton";
 
 const Sections = [
   {
@@ -281,18 +281,7 @@ export default function ForgotPasswordPage() {
                 <div className="text-iCAN-gray px-4">or</div>
                 <div className="border border-iCAN-gray w-full" />
               </div>
-              <button
-                className="w-full py-3 flex justify-center items-center text-[32px] bg-white gap-y-2.5 border-2 border-solid border-[#000]"
-                type="submit"
-              >
-                <Image
-                  src="/assets/GoogleSocialIcon.svg"
-                  alt="Google Logo"
-                  width={40}
-                  height={40}
-                />
-                <div className="text-[32px] text-[#000]">Login with Google</div>
-              </button>
+              <GoogleLoginButton forgotPassword={true} />
               <div className="flex justify-center items-center">
                 <div className="text-iCAN-gray text-2xl">
                   Don’t have an account?{" "}
