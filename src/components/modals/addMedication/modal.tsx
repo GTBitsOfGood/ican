@@ -60,7 +60,7 @@ export default function AddMedicationModal({
     />,
     <ReviewSection
       info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      setCurrentSection={setCurrentSection}
       key={6}
     />,
   ];
@@ -68,7 +68,7 @@ export default function AddMedicationModal({
   return (
     <ModalBackground>
       <ModalContainer
-        className="flex flex-col w-[790px] h-[700px] bg-icanBlue-200"
+        className={`flex flex-col ${currentSection == sections.length - 1 ? "w-[1400px]" : "w-[790px]"} h-[700px] bg-icanBlue-200`}
         title="Add New Medication"
         setVisibility={setAddMedicationVisibility}
       >

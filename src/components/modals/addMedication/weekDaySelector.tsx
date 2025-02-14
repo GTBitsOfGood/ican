@@ -9,11 +9,11 @@ export default function WeekDaySelector({
   onSelect,
   disabled = false,
 }: WeekDaySelectorProps) {
-  const days = ["SN", "M", "TU", "W", "TH", "F", "ST"];
+  const DAYS = ["SN", "M", "TU", "W", "TH", "F", "ST"];
 
   return (
-    <div className="flex justify-start items-center mt-6 gap-2 font-belanosima">
-      {days.map((day, index) => (
+    <div className="flex justify-center items-center mt-6 gap-2 font-belanosima">
+      {DAYS.map((day, index) => (
         <div
           key={index}
           className={`

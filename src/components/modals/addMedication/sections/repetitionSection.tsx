@@ -72,14 +72,14 @@ export default function RepetitionSection({
             })
           }
         >
-          <Option value="Day" />
-          <Option value="Week" />
-          <Option value="Month" />
+          <Option value="Day(s)" />
+          <Option value="Week(s)" />
+          <Option value="Month(s)" />
         </DropDown>
       </FormControl>
       <div className="mt-8">
-        {info.repetition.type == "Week" && <Label>Repeat on</Label>}
-        {info.repetition.type == "Month" && (
+        {info.repetition.type == "Week(s)" && <Label>Repeat on</Label>}
+        {info.repetition.type == "Month(s)" && (
           <div>
             <FormControl gap={16}>
               <CheckBox
@@ -168,10 +168,10 @@ export default function RepetitionSection({
           </div>
         )}
       </div>
-      {info.repetition.type != "Day" && (
+      {info.repetition.type != "Day(s)" && (
         <WeekDaySelector
           disabled={
-            info.repetition.type == "Month" &&
+            info.repetition.type == "Month(s)" &&
             info.repetition.monthlyRepetition != "Week"
           }
           selectedDays={info.repetition.weeklyRepetition || []}

@@ -12,7 +12,7 @@ export interface AddMedicationInfo {
      */
     repeatEvery?: number;
     /** Type of repetition */
-    type: "Day" | "Week" | "Month";
+    type: "Day(s)" | "Week(s)" | "Month(s)";
     /**
      * If repetition type is "Week", specifies which days of the week the medication is taken.
      * Uses 0-6 indexing (0 = Sunday, 6 = Saturday).
@@ -82,7 +82,7 @@ export const initialAddMedicationInfo: AddMedicationInfo = {
   },
   repetition: {
     repeatEvery: 1,
-    type: "Day",
+    type: "Day(s)",
     weeklyRepetition: [],
     monthlyRepetition: "Day",
     monthlyDayOfRepetition: undefined,

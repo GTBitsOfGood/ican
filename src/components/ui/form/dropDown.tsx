@@ -78,7 +78,7 @@ export default function DropDown({
 
       {/* Dropdown Menu */}
       {!disabled && showDropDown && (
-        <div className="absolute -left-[2px] top-[calc(100%-1px)] z-10 w-[calc(100%+4px)] bg-white border-t-0 border-2 border-black flex flex-col gap-2">
+        <div className="absolute -left-[2px] top-[calc(100%-1px)] z-10 w-[calc(100%+4px)] bg-white border-t-0 border-2 border-black flex flex-col">
           {children.map((child, index) => {
             if (index != selectedIndex) {
               return cloneElement(child, {
