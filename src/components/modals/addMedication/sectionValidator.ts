@@ -35,16 +35,12 @@ export default function SectionValidator({
       ) {
         return { error: "Select repeat days for the week." };
       }
-      if (info.repetition.type === "Month(s)") {
-        if (info.repetition.monthlyRepetition === "Day") {
-          if (info.repetition.monthlyDayOfRepetition === undefined) {
-            return { error: "Enter day of the month to repeat." };
-          }
-        } else {
-          if (info.repetition.weeklyRepetition.length === 0) {
-            return { error: "Select repeat days for the chosen week." };
-          }
-        }
+      if (
+        info.repetition.type === "Month(s)" &&
+        info.repetition.monthlyRepetition === "Day" &&
+        info.repetition.monthlyDayOfRepetition === undefined
+      ) {
+        return { error: "Enter day of the month to repeat." };
       }
       break;
     case 3: // dosage notification
