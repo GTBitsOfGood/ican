@@ -17,9 +17,10 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleEditing = async () => {
-    if (isEditing) {
+    if (isEditing && name != initialName) {
       try {
         await petService.updatePet(name, userId as string);
+        initialName = name;
         console.log("Pet data updated successfully");
       } catch (error) {
         console.error("Error updating pet data:", error);

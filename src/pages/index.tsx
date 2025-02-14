@@ -86,7 +86,19 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div>Loading...</div>
+        <div className="min-h-screen flex flex-col relative">
+          <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
+            <div className="flex justify-between space-between items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
+              <Image
+                className="ml-3 spin"
+                src="/loading.svg"
+                alt="loading"
+                width={60}
+                height={60}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </AuthorizedRoute>
   );
