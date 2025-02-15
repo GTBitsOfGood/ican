@@ -1,87 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { verifyToken } from "@/server/services/jwt";
-
-// Use rewrites to get to redirect API
-// https://nextjs.org/docs/app/api-reference/config/next-config-js/rewrites
-
-interface RouteInfo {
-  allowedMethods: {
-    [key: string]: {
-      isAuthorized: boolean;
-    };
-  };
-}
-
-type RoutesMap = {
-  [key: string]: RouteInfo;
-};
-
-// Move this routes map to somewhere else (server?)
-const routesMap: RoutesMap = {
-  "/api/v1/auth/change-password": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: true,
-      },
-    },
-  },
-  "/api/v1/auth/login": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: false,
-      },
-    },
-  },
-  "/api/v1/auth/register": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: false,
-      },
-    },
-  },
-  "/api/v1/auth/forgot-password": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: true,
-      },
-    },
-  },
-  "/api/v1/auth/forgot-password/verify": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: true,
-      },
-    },
-  },
-  "/api/v1/pets/": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: false,
-      },
-    },
-  },
-  "/api/v1/pets/{userId}": {
-    allowedMethods: {
-      GET: {
-        isAuthorized: false,
-      },
-      PATCH: {
-        isAuthorized: true,
-      },
-      DELETE: {
-        isAuthorized: true,
-      },
-    },
-  },
-};
+import { routesMap } from "@/server/routesMap";
 
 export class ReverseProxy {
-  // private getRouteInfo(url: string): RouteInfo | null {
-  //   // Potential need for regex logic for {userId}
-  //   const routeInfo = routesMap[url] ?? null;
-  //   return routeInfo
-  // }
-
   private async validateAuthorization(req: NextApiRequest) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
