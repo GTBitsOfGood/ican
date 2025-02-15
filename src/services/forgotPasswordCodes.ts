@@ -25,10 +25,11 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
+import { MailService } from "./mail";
 import { generateToken, verifyToken } from "./jwt";
 
 export async function sendPasswordCode(
-  email: string | undefined,
+  email: string, // I removed undefined from email, I don't see how it should ever be undefined
 ): Promise<ObjectId> {
   try {
     const user = await getUserFromEmail(email);
@@ -40,6 +41,19 @@ export async function sendPasswordCode(
       expirationDate,
       userId: user._id,
     };
+
+    const mailService = new MailService({
+      email: "placeholder@email.com",
+      name: "Forget Password",
+    });
+
+    await mailService.sendEmail({
+      recipient: email,
+      recipientName: user.name,
+      subject: "Password reset code",
+      body: `Your password code is: ${code}.`,
+      contentType: "text/plain",
+    });
 
     const previousForgotPasswordCode = await getForgotPasswordCodeByUserId(
       user._id,
