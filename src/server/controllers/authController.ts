@@ -7,13 +7,13 @@ import {
 } from "../services/forgotPasswordCodes";
 
 export class authController {
-  public async login(req: NextApiRequest, res: NextApiResponse) {
+  public static async login(req: NextApiRequest, res: NextApiResponse) {
     const { email, password } = req.body;
     const response = await validateLogin(email, password);
     return res.status(201).json(response);
   }
 
-  public async register(req: NextApiRequest, res: NextApiResponse) {
+  public static async register(req: NextApiRequest, res: NextApiResponse) {
     const { name, email, password, confirmPassword } = req.body;
     const response = await validateCreateUser(
       name,
@@ -24,13 +24,19 @@ export class authController {
     return res.status(201).json(response);
   }
 
-  public async forgotPassword(req: NextApiRequest, res: NextApiResponse) {
+  public static async forgotPassword(
+    req: NextApiRequest,
+    res: NextApiResponse,
+  ) {
     const { email } = req.body;
     const userId = await sendPasswordCode(email);
     return res.status(200).json({ userId });
   }
 
-  public async changePassword(req: NextApiRequest, res: NextApiResponse) {
+  public static async changePassword(
+    req: NextApiRequest,
+    res: NextApiResponse,
+  ) {
     const { password, confirmPassword } = req.body;
     // This shouldn't ever be null because we check it in the reverse proxy, will test.
     const token = req.headers.authorization?.split(" ")[1];
@@ -44,7 +50,10 @@ export class authController {
     return res.status(200).json({ message: "Password updated sucessfully!" });
   }
 
-  public async verify(req: NextApiRequest, res: NextApiResponse) {
+  public static async verifyPassword(
+    req: NextApiRequest,
+    res: NextApiResponse,
+  ) {
     const { userId, code } = req.body;
     const token = await verifyForgotPasswordCode(userId, code);
     return res.status(200).json({ token });

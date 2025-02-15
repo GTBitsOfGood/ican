@@ -20,6 +20,7 @@ import { getUserFromId } from "@/db/actions/user";
 import { ObjectId } from "mongodb";
 import { createUser, findUserByEmail } from "../../db/actions/auth";
 import { User } from "../../db/models";
+import { verifyToken } from "./jwt";
 
 export interface CreateUserBody {
   name: string;
@@ -38,6 +39,25 @@ if (!process.env.JWT_SECRET) {
 }
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
+
+// Should I pass [userId] from URL to check against here
+export function validateAuthorization(
+  authHeader: string,
+  userId: string,
+): boolean {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return false;
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const tokenUserId = verifyToken(token).userId;
+    return tokenUserId === userId; // Using === for strict comparison
+  } catch {
+    return false;
+  }
+}
 
 export async function validateCreateUser(
   name: string,

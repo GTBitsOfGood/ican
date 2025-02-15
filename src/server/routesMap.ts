@@ -1,4 +1,4 @@
-interface RouteInfo {
+export interface RouteInfo {
   allowedMethods: {
     [key: string]: {
       isAuthorized: boolean;
