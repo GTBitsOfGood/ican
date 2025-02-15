@@ -28,15 +28,7 @@
       }
     ]
   },
-
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "test/sendEmailTest.js"],
+  "exclude": ["node_modules"]
 }
 
