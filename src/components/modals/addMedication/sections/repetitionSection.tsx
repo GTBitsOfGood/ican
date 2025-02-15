@@ -164,6 +164,11 @@ export default function RepetitionSection({
                     if (!newValue) {
                       temp.repetition.monthlyDayOfRepetition = undefined;
                     } else {
+                      if (newValue > 31) {
+                        newValue = 31;
+                      } else if (newValue < 1) {
+                        newValue = 1;
+                      }
                       temp.repetition.monthlyDayOfRepetition = Number(
                         newValue,
                       ) as AddMedicationInfo["repetition"]["monthlyDayOfRepetition"];

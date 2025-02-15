@@ -48,7 +48,7 @@ export interface AddMedicationInfo {
     /** How much each dosage is (e.g. 200ml, 2 pills) */
     amount: string;
     /** Specifies when notifications should be sent */
-    notificationFrequency: "Once / Day of Dosage" | "Per Dose";
+    notificationFrequency: "Once / Day of Dosage" | "Every Dose";
     /** Specifies whether dosage is scheduled by count (doses per day) or interval (hours) */
     type: "Doses" | "Hours";
     /**

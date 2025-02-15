@@ -20,26 +20,7 @@ export default function DosageNotificationSection({
 }: DosageNotificationSectionProps) {
   return (
     <div>
-      <FormControl gap={16}>
-        <Label>Notify me</Label>
-        <DropDown
-          className="uppercase"
-          width={340}
-          value={info.dosage.notificationFrequency}
-          setValue={(newValue: string) =>
-            setInfo((prev) => {
-              const temp = { ...prev };
-              temp.dosage.notificationFrequency =
-                newValue as AddMedicationInfo["dosage"]["notificationFrequency"];
-              return temp;
-            })
-          }
-        >
-          <Option value="Once / Day of Dosage" />
-          <Option value="Per Dose" />
-        </DropDown>
-      </FormControl>
-      <div className="mt-8">
+      <div>
         <FormControl gap={16}>
           <CheckBox
             checked={info.dosage.type == "Doses"}
@@ -76,7 +57,7 @@ export default function DosageNotificationSection({
             className="w-16 h-[52px] text-4xl"
           />
           <FormText disabled={info.dosage.type != "Doses"}>
-            doses per day
+            dose(s) per day
           </FormText>
         </FormControl>
         <HorizontalRule
@@ -121,6 +102,27 @@ export default function DosageNotificationSection({
             className="w-16 h-[52px] text-4xl"
           />
           <FormText disabled={info.dosage.type != "Hours"}>hours</FormText>
+        </FormControl>
+      </div>
+      <div className="mt-8">
+        <FormControl gap={16}>
+          <Label>Notify me</Label>
+          <DropDown
+            className="uppercase"
+            width={340}
+            value={info.dosage.notificationFrequency}
+            setValue={(newValue: string) =>
+              setInfo((prev) => {
+                const temp = { ...prev };
+                temp.dosage.notificationFrequency =
+                  newValue as AddMedicationInfo["dosage"]["notificationFrequency"];
+                return temp;
+              })
+            }
+          >
+            <Option value="Once / Day of Dosage" />
+            <Option value="Every Dose" />
+          </DropDown>
         </FormControl>
       </div>
     </div>
