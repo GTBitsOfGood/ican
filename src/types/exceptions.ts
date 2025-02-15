@@ -1,56 +1,59 @@
 export class ApiError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number) {
+  constructor(message: string) {
     super(message);
-    this.statusCode = statusCode;
   }
 }
 
 export class AlreadyExistsError extends ApiError {
   constructor(message: string) {
-    super(message, 409);
+    super(message);
   }
 }
 
 export class DoesNotExistError extends ApiError {
   constructor(message: string) {
-    super(message, 404);
+    super(message);
   }
 }
 
 export class InvalidBodyError extends ApiError {
   constructor(message: string) {
-    super(message, 400);
+    super(message);
   }
 }
 
 export class NotFoundError extends ApiError {
   constructor(message = "Resource not found") {
-    super(message, 404);
+    super(message);
   }
 }
 
 export class BadRequestError extends ApiError {
   constructor(message = "Bad request") {
-    super(message, 400);
+    super(message);
   }
 }
 
 export class UnauthorizedError extends ApiError {
   constructor(message = "Unauthorized") {
-    super(message, 401);
+    super(message);
   }
 }
 
 export class ConflictError extends ApiError {
   constructor(message = "Conflict") {
-    super(message, 409);
+    super(message);
   }
 }
 
 export class InternalServerError extends ApiError {
   constructor(message = "Internal server error") {
-    super(message, 500);
+    super(message);
+  }
+}
+
+export class MethodNotAllowedError extends ApiError {
+  constructor(message = "Method not allowed") {
+    super(message);
   }
 }
