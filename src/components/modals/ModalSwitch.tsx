@@ -9,13 +9,13 @@ export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
   return (
     <div className="flex w-[9.5%] h-12 py-2 px-[0.75rem] border-2 border-white items-center">
       <div
-        className="relative w-full h-full cursor-pointer"
+        className="flex flex-col relative w-full h-full cursor-pointer gap-2"
         onClick={() => setState(!state)}
       >
         <div
-          className={`absolute left-0 cursor-pointer my-[0.125rem] w-[1.5rem] h-[1.5rem] transition-transform duration-300 ${state ? " transform translate-x-12 bg-icanGreen-300" : "transform translate-x-0 bg-icanBlue-100"} `}
+          className={`cursor-pointer my-[0.125rem] w-[1.5rem] h-[1.5rem] transition-transform duration-300 ${state ? " transform translate-x-10 bg-icanGreen-300" : "transform translate-x-0 bg-icanBlue-100"} `}
         ></div>
-        <p className={`absolute text-lg ${state ? "left-2" : "right-2"}`}>
+        <p className={`absolute text-lg ${state ? "left-0" : "right-0"}`}>
           {state ? "ON" : "OFF"}
         </p>
       </div>

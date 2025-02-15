@@ -50,7 +50,7 @@ export default function SettingsModal() {
           "hover:bg-white/5 active:bg-white/10 right-[1.5rem] rounded-full top-[0.75rem] absolute",
         header: "text-5xl mb-8",
       }}
-      className="w-[55%] h-[50%] font-quantico font-bold z-50 text-white px-4"
+      className="w-[55%] h-[55%] font-quantico font-bold z-50 text-white px-4"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -62,7 +62,14 @@ export default function SettingsModal() {
         <ModalBody>
           <div className="w-full h-[50%] flex flex-col gap-16">
             <div className="w-full h-full flex flex-col justify-center gap-4">
-              {error && <p className="text-center font-normal">{error}</p>}
+              {error && (
+                <p className="text-center font-normal">
+                  <span className="font-pixelify border-2 border-white px-2 text-xl border-solid mr-2">
+                    !
+                  </span>
+                  {error}
+                </p>
+              )}
               <div className="w-full flex">
                 <InputOTP
                   maxLength={4}
@@ -80,7 +87,7 @@ export default function SettingsModal() {
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-              <a href="forgot-pin">
+              <a className="inline-block" href="forgot-pin">
                 <button className="bg-white p-2 text-black text-xl">
                   Forgot Pin?
                 </button>
@@ -89,7 +96,7 @@ export default function SettingsModal() {
             <button
               type="submit"
               onClick={handleClick}
-              className={`self-end p-2 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
+              className={`self-end p-2 mr-4 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
             >
               {error === "" ? "Enter" : "Try Again"}
             </button>
