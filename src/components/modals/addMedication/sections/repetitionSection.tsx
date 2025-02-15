@@ -164,14 +164,14 @@ export default function RepetitionSection({
                     if (!newValue) {
                       temp.repetition.monthlyDayOfRepetition = undefined;
                     } else {
-                      if (newValue > 31) {
-                        newValue = 31;
-                      } else if (newValue < 1) {
-                        newValue = 1;
+                      let valueNum = Number(newValue);
+                      if (valueNum > 31) {
+                        valueNum = 31;
+                      } else if (valueNum < 1) {
+                        valueNum = 1;
                       }
-                      temp.repetition.monthlyDayOfRepetition = Number(
-                        newValue,
-                      ) as AddMedicationInfo["repetition"]["monthlyDayOfRepetition"];
+                      temp.repetition.monthlyDayOfRepetition =
+                        valueNum as AddMedicationInfo["repetition"]["monthlyDayOfRepetition"];
                     }
                     return temp;
                   })
