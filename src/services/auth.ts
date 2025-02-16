@@ -13,6 +13,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { createSettings } from "./settings";
+import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
   name: string;
@@ -54,13 +56,20 @@ export async function validateCreateUser(
   // Hash password and create user to pass to access layer
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // generate new random _id
+  const _id = new ObjectId();
+
   const newUser: User = {
+    _id,
     name: name,
     email: email,
     password: hashedPassword,
   };
 
   await createUser(newUser);
+
+  // create settings
+  await createSettings({ userId: _id.toString() });
 
   // Create jwt once user is successfully created
   const token = jwt.sign(

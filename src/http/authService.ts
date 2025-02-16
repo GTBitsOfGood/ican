@@ -51,6 +51,7 @@ export const authService = {
       password,
       confirmPassword,
     };
+
     return fetchService<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
