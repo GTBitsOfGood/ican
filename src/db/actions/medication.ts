@@ -11,7 +11,7 @@ export async function createNewMedication(newMedication: Medication) {
     return result;
   } catch (error) {
     throw new InternalServerError(
-      "Failed to create pet: " + (error as Error).message,
+      "Failed to create medication: " + (error as Error).message,
     );
   }
 }
@@ -26,7 +26,7 @@ export async function getMedicationById(medicationId: string) {
   return medication;
 }
 
-export async function updateMedication(
+export async function updateMedicationById(
   medicationId: string,
   updateObj: UpdateMedicationRequestBody,
 ) {
@@ -36,18 +36,24 @@ export async function updateMedication(
     .updateOne({ medicationId: medicationId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
-    throw new InternalServerError("Failed to update pet.");
+    throw new InternalServerError("Failed to update medication.");
   }
 }
 
-export async function deleteMedication(medicationId: string) {
+export async function deleteMedicationById(medicationId: string) {
   const db = client.db();
   const result = await db.collection("medication").deleteOne({ medicationId });
 
   if (result.deletedCount == 0) {
-    throw new InternalServerError("Failed to delete pet.");
+    throw new InternalServerError("Failed to delete medication.");
   }
 }
 
 // this function retrieves list of medications
-// export async function getMedications(userId: string) {}
+export async function getMedicationsByUserId(userId: string) {
+  const db = client.db();
+
+  const medication = db.collection("medication").find({ userId });
+
+  return medication;
+}

@@ -22,8 +22,10 @@ export default async function handler(
           dosesPerDay: body.dosesPerDay,
           doseIntervalInHours: body.doseIntervalInHours,
           doseTimes: body.doseTimes,
+          // assume userId comes in with request
+          userId: body.userId,
         });
-        res.status(200).json(createdMedication);
+        res.status(201).json(createdMedication);
       } catch (error) {
         if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });
