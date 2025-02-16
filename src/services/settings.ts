@@ -10,20 +10,20 @@ import {
   DoesNotExistError,
   InternalServerError,
 } from "@/types/exceptions";
-import { UpdateSettingsObject } from "@/types/settings";
+import { UpdateSettingsRequestBody } from "@/types/settings";
 import { encryptPin, validateParams } from "@/utils/settings";
 import { ObjectId } from "mongodb";
 
 export interface CreateSettingsBody {
-  userId: string;
+  userId: string | string[] | undefined;
 }
 
 export interface GetSettingsBody {
-  userId: string;
+  userId: string | string[] | undefined;
 }
 
 export interface UpdateSettingsBody {
-  userId: string;
+  userId: string | string[] | undefined;
   parentalControl?: boolean;
   notifications?: boolean;
   helpfulTips?: boolean;
@@ -31,22 +31,26 @@ export interface UpdateSettingsBody {
 }
 
 export interface UpdateSettingsPinBody {
-  userId: string;
+  userId: string | string[] | undefined;
   pin: string;
 }
 
 export async function createSettings({ userId }: CreateSettingsBody) {
   // Validate parameters
+  // every case of underined or invalid type is captured here
   await validateParams(userId);
 
-  const existingSettings = await getSettingsByUserId(new ObjectId(userId));
+  const existingSettings = await getSettingsByUserId(
+    new ObjectId(userId as string),
+  );
 
   if (existingSettings) {
     throw new AlreadyExistsError("Settings already exists for this user");
   }
 
   const newSettings: Settings = {
-    userId: new ObjectId(userId),
+    _id: new ObjectId(),
+    userId: new ObjectId(userId as string),
     helpfulTips: true,
     largeFontSize: true,
     notifications: true,
@@ -65,11 +69,12 @@ export async function createSettings({ userId }: CreateSettingsBody) {
 
 export async function getSettings({
   userId,
-}: GetSettingsBody): Promise<Settings | null> {
+}: GetSettingsBody): Promise<Settings> {
   // Validate parameters
+  // every case of underined or invalid type is captured here
   await validateParams(userId);
 
-  const settings = await getSettingsByUserId(new ObjectId(userId));
+  const settings = await getSettingsByUserId(new ObjectId(userId as string));
 
   if (!settings) {
     throw new DoesNotExistError("Settings does not exist for this user");
@@ -86,15 +91,17 @@ export async function updateSettings({
   largeFontSize,
 }: UpdateSettingsBody): Promise<void> {
   // Validate parameters
+  // every case of underined or invalid type is captured here
+
   await validateParams(userId);
 
-  const settings = await getSettingsByUserId(new ObjectId(userId));
+  const settings = await getSettingsByUserId(new ObjectId(userId as string));
 
   if (!settings) {
     throw new DoesNotExistError("Settings does not exist for this user");
   }
 
-  const updateObj: UpdateSettingsObject = {};
+  const updateObj: UpdateSettingsRequestBody = {};
 
   if (parentalControl) updateObj.parentalControl = parentalControl;
 
@@ -104,14 +111,22 @@ export async function updateSettings({
 
   if (largeFontSize) updateObj.largeFontSize = largeFontSize;
 
-  await updateSettingsByUserId(new ObjectId(userId), updateObj);
+  await updateSettingsByUserId(new ObjectId(userId as string), updateObj);
 }
 
 export async function updatePin({ userId, pin }: UpdateSettingsPinBody) {
+  // every case of underined or invalid type is captured here
+
   await validateParams(userId);
+
+  const settings = await getSettingsByUserId(new ObjectId(userId as string));
+
+  if (!settings) {
+    throw new DoesNotExistError("Settings does not exist for this user");
+  }
 
   if (pin) {
     pin = await encryptPin(pin);
-    await updateSettingsPinByUserId(new ObjectId(userId), { pin });
+    await updateSettingsPinByUserId(new ObjectId(userId as string), { pin });
   }
 }

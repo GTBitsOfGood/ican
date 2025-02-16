@@ -1,8 +1,8 @@
 import { Settings } from "@/db/models";
 import fetchService from "./fetchService";
 import {
-  UpdateSettingsObject,
-  UpdateSettingsPinObject,
+  UpdateSettingsRequestBody,
+  UpdateSettingsPinRequestBody,
 } from "@/types/settings";
 
 export const settingService = {
@@ -17,7 +17,7 @@ export const settingService = {
     helpfulTips?: boolean,
     largeFontSize?: boolean,
   ) => {
-    const updateSettingsRequestBody: UpdateSettingsObject = {
+    const updateSettingsRequestBody: UpdateSettingsRequestBody = {
       parentalControl,
       notifications,
       helpfulTips,
@@ -30,7 +30,7 @@ export const settingService = {
   },
 
   updatePin: async (userId: string, pin: string) => {
-    const updatePinRequestBody: UpdateSettingsPinObject = {
+    const updatePinRequestBody: UpdateSettingsPinRequestBody = {
       pin,
     };
     return fetchService<void>(`/settings/pin/${userId}`, {

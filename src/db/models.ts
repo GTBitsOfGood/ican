@@ -24,6 +24,7 @@ export interface Pet {
 }
 
 export interface Settings {
+  _id: ObjectId;
   userId: ObjectId;
   parentalControl: boolean;
   notifications: boolean;

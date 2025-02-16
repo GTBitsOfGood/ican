@@ -9,17 +9,13 @@ export default async function handler(
   const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof userId !== "string") {
-    return res.status(400).json({ error: "userId must be a string" });
-  }
-
   switch (method) {
     case "PATCH":
       try {
         if (!userId) {
           return res.status(400).json({ message: "Invalid user id" });
         }
-        await updatePin({ userId, ...body });
+        await updatePin({ userId, pin: body.pin });
 
         res.status(204).end();
       } catch (error) {
@@ -31,6 +27,6 @@ export default async function handler(
       }
     default:
       res.setHeader("Allow", ["PATCH"]);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }

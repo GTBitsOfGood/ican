@@ -2,8 +2,8 @@ import { InternalServerError } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import {
-  UpdateSettingsObject,
-  UpdateSettingsPinObject,
+  UpdateSettingsRequestBody,
+  UpdateSettingsPinRequestBody,
 } from "@/types/settings";
 import { Settings } from "../models";
 
@@ -32,12 +32,12 @@ export async function getSettingsByUserId(
 
 export async function updateSettingsByUserId(
   userId: ObjectId,
-  updateObj: UpdateSettingsObject,
+  updateObj: UpdateSettingsRequestBody,
 ) {
   const db = client.db();
   const result = await db
     .collection("settings")
-    .updateOne({ userId }, { $set: { updateObj } });
+    .updateOne({ userId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
     throw new InternalServerError("Failed to update user settings.");
@@ -46,12 +46,12 @@ export async function updateSettingsByUserId(
 
 export async function updateSettingsPinByUserId(
   userId: ObjectId,
-  updateObj: UpdateSettingsPinObject,
+  updateObj: UpdateSettingsPinRequestBody,
 ) {
   const db = client.db();
   const result = await db
     .collection("settings")
-    .updateOne({ userId }, { $set: { updateObj } });
+    .updateOne({ userId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
     throw new InternalServerError("Failed to update user settings pin.");

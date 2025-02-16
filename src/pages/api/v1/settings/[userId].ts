@@ -10,17 +10,10 @@ export default async function handler(
   const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof userId !== "string") {
-    return res.status(400).json({ error: "userId must be a string" });
-  }
-
   switch (method) {
     case "GET":
       try {
-        if (!userId) {
-          return res.status(400).json({ message: "Invalid user id" });
-        }
-        const settings: Settings | null = await getSettings({ userId });
+        const settings: Settings = await getSettings({ userId });
 
         res.status(200).json(settings);
       } catch (error) {
@@ -32,10 +25,13 @@ export default async function handler(
       }
     case "PATCH":
       try {
-        if (!userId) {
-          return res.status(400).json({ message: "Invalid user id" });
-        }
-        await updateSettings({ userId, ...body });
+        await updateSettings({
+          userId,
+          helpfulTips: body?.helpfulTips,
+          largeFontSize: body?.largeFontSize,
+          notifications: body?.notifications,
+          parentalControl: body?.parentalControl,
+        });
 
         res.status(204).end();
       } catch (error) {
@@ -47,6 +43,6 @@ export default async function handler(
       }
     default:
       res.setHeader("Allow", ["GET", "PATCH"]);
-      res.status(405).end(`Method ${method} Not Allowed`);
+      res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }
