@@ -39,6 +39,7 @@ class ReverseProxy {
       // Not sure how to check for dynamic userId url, as in whether to:
       // regex and for loop through all paths, or to make a radix tree (or get a npm module that does that)
       // But currently its hard coded.
+      console.log(proxy.length);
       if (proxy.length == 2 && path.startsWith("/api/v1/pets/")) {
         path = "/api/v1/pets/{userId}";
       }
@@ -54,10 +55,12 @@ class ReverseProxy {
         throw new BadRequestError(`Method not allowed: ${method}`);
       }
 
+      console.log(methodDetail.isAuthorized);
       // If authorization is required, check:
       if (methodDetail.isAuthorized) {
         const authHeader = req.headers.authorization;
-        if (!validateAuthorization(authHeader)) {
+        const auth = await validateAuthorization(authHeader);
+        if (!auth) {
           throw new UnauthorizedError("Forbidden");
         }
       }
@@ -116,6 +119,8 @@ class ReverseProxy {
         return res.status(500).json({ error: error.message });
       } else if (error instanceof MethodNotAllowedError) {
         return res.status(405).json({ error: error.message });
+      } else if (error instanceof InvalidBodyError) {
+        return res.status(400).json({ error: error.message });
       } else {
         console.error(error);
         return res.status(500).json({ error: "Internal server error" });
