@@ -9,26 +9,22 @@ export default async function handler(
   const { method } = req;
   const { name, email } = req.body;
 
+  if (method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
+    res.status(405).json({ error: `Method ${method} Not Allowed` });
+    return;
+  }
+
   try {
-    if (method == "POST") {
-      try {
-        const response = await validateGoogleLogin(name, email);
-        res.status(201).json(response);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
-        } else {
-          throw error;
-        }
-      }
-    } else {
-      // Method not allowed
-      res.setHeader("Allow", ["POST"]);
-      res.status(405).json({ error: `Method ${method} Not Allowed` });
-    }
+    const token = await validateGoogleLogin(name, email);
+    res.status(201).json({ token });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: (error as Error).message || "An unknown error occurred" });
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({
+        error: (error as Error).message || "An unknown error occurred",
+      });
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { verifyToken } from "@/services/jwt";
+import { validateToken } from "@/services/auth";
 import { ApiError, UnauthorizedError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,6 +9,7 @@ export default async function handler(
   const { authorization } = req.headers;
 
   if (req.method !== "POST") {
+    res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
@@ -18,7 +19,7 @@ export default async function handler(
     }
     const token = authorization.split(" ")[1];
 
-    const decodedToken = verifyToken(token);
+    const decodedToken = validateToken(token);
     res.status(200).json({ isValid: true, decodedToken: decodedToken });
   } catch (error) {
     if (error instanceof ApiError) {
