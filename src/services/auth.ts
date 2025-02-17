@@ -2,6 +2,7 @@ import {
   AlreadyExistsError,
   BadRequestError,
   DoesNotExistError,
+  UnauthorizedError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -13,6 +14,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { Provider } from "@/types/auth";
+import { verifyToken } from "./jwt";
+import { getUserFromId } from "@/db/actions/user";
+import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
   name: string;
@@ -56,6 +61,7 @@ export async function validateCreateUser(
 
   const newUser: User = {
     name: name,
+    provider: Provider.PASSWORD,
     email: email,
     password: hashedPassword,
   };
@@ -117,9 +123,16 @@ export async function validateGoogleLogin(name: string, email: string) {
   // If user doesn't exist add them to database
   let existingUser = await findUserByEmail(email);
 
+  if (existingUser?.provider == Provider.PASSWORD) {
+    throw new AlreadyExistsError(
+      "This user is already signed in with email and password.",
+    );
+  }
+
   if (!existingUser) {
     const newUser: User = {
       name: name,
+      provider: Provider.GOOGLE,
       email: email,
       password: "",
     };
@@ -138,5 +151,16 @@ export async function validateGoogleLogin(name: string, email: string) {
     },
   );
 
-  return { token };
+  return token;
+}
+
+export async function validateToken(token: string) {
+  const decodedToken = verifyToken(token);
+  const user = await getUserFromId(new ObjectId(decodedToken.userId));
+
+  if (!user) {
+    throw new UnauthorizedError("This user does not exist");
+  }
+
+  return decodedToken;
 }

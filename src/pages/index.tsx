@@ -88,13 +88,14 @@ export default function Home() {
       ) : (
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
-            <div className="flex justify-between space-between items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
+            <div className="flex justify-center items-center h-screen">
               <Image
-                className="ml-3 spin"
+                className="spin"
                 src="/loading.svg"
                 alt="loading"
-                width={60}
-                height={60}
+                width={100}
+                height={100}
+                style={{ filter: "brightness(0) invert(1)" }}
               />
             </div>
           </div>

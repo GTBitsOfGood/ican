@@ -118,8 +118,10 @@ export default function Home() {
                   onChange={handlePasswordChange}
                 />
                 <ErrorBox message={passwordError} />
-                <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal underline decoration-solid mb-2 [text-decoration-skip-ink:none]">
-                  Forgot Password?
+                <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
+                  <Link className="underline" href="/forgot-password">
+                    Forgot Password?
+                  </Link>
                 </p>
                 <button
                   className="w-full bg-loginGreen text-black h-12 text-[24px]/[32px] text-center mb-4"

@@ -23,11 +23,12 @@ const GoogleLoginButton = ({
         localStorage.setItem("token", response.token);
         router.push("/");
       } catch (error) {
-        console.error("Login failed:", error);
+        throw error;
       }
     },
+
     onError: () => {
-      console.error("Login failed");
+      throw new Error("Google login failed.");
     },
   });
 
