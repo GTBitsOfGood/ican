@@ -88,11 +88,11 @@ class ReverseProxy {
         case "/api/v1/pets/{userId}":
           switch (method) {
             case "GET":
-              return await petsController.getPet(req, res, userId);
+              return await petsController.getPet(req, res);
             case "PATCH":
-              return await petsController.updatePet(req, res, userId);
+              return await petsController.updatePet(req, res);
             case "DELETE":
-              return await petsController.deletePet(req, res, userId);
+              return await petsController.deletePet(req, res);
             default:
               throw new BadRequestError(`Method not allowed: ${method}`);
           }
