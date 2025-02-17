@@ -25,7 +25,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateToken, verifyToken } from "./jwt";
+import { generateToken, verifyToken } from "../services/jwt";
 
 export async function sendPasswordCode(
   email: string | undefined,
