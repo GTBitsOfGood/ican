@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { validateAuthorization } from "@/server/services/auth";
-import { routesMap, RouteInfo } from "@/server/routesMap";
-import { petsController } from "@/server/controllers/petsController";
-import { authController } from "@/server/controllers/authController";
+import { validateAuthorization } from "@/services/auth";
+import { routesMap, RouteInfo } from "@/controllers/routesMap";
+import { petsController } from "@/controllers/petsController";
+import { authController } from "@/controllers/authController";
 import {
   AlreadyExistsError,
   BadRequestError,

@@ -6,8 +6,9 @@ import {
   getPetByUserId,
   updatePetNameByUserId,
   updatePetAppearanceByPetId
-} from "../../db/actions/pets";
-import { Pet } from "../../db/models";
+} from "../db/actions/pets";
+
+import { Pet } from "../db/models";
 
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
