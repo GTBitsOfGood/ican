@@ -48,7 +48,7 @@ export const routesMap: RoutesMap = {
       },
     },
   },
-  "/api/v1/pets/": {
+  "/api/v1/pets": {
     allowedMethods: {
       POST: {
         isAuthorized: true,
