@@ -17,7 +17,7 @@ import {
 /**
  * Reverse proxy intercepts all API calls and validates path, method, and authorization before sending the call to the appropriate controller
  */
-export class ReverseProxy {
+class ReverseProxy {
   // Client -> Reverse Proxy (index.ts) -> Route Validation -> Auth Check (if required) -> Send to appropriate to Controller -> Handle Response & Errors
   public async handler(req: NextApiRequest, res: NextApiResponse) {
     try {
@@ -128,4 +128,13 @@ export class ReverseProxy {
       }
     }
   }
+}
+
+const reverseProxy = new ReverseProxy();
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  return await reverseProxy.handler(req, res);
 }
