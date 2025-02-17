@@ -19,7 +19,7 @@ export default async function handler(
     }
     const token = authorization.split(" ")[1];
 
-    const decodedToken = validateToken(token);
+    const decodedToken = await validateToken(token);
     res.status(200).json({ isValid: true, decodedToken: decodedToken });
   } catch (error) {
     if (error instanceof ApiError) {

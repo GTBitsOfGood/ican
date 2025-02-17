@@ -5,10 +5,12 @@ import { authService } from "@/http/authService";
 
 interface GoogleLoginButtonProps {
   forgotPassword?: boolean;
+  setError?: (error: string) => void;
 }
 
 const GoogleLoginButton = ({
   forgotPassword = false,
+  setError,
 }: GoogleLoginButtonProps) => {
   const router = useRouter();
 
@@ -23,7 +25,11 @@ const GoogleLoginButton = ({
         localStorage.setItem("token", response.token);
         router.push("/");
       } catch (error) {
-        throw error;
+        if (setError) {
+          setError((error as Error).message);
+        } else {
+          console.error("Login failed:", error);
+        }
       }
     },
 

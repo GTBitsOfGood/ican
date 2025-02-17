@@ -30,14 +30,14 @@ export default function Home() {
     let errorDetected = false;
 
     if (!nameIsValid(name.trim())) {
-      setNameError("Please enter a valid name");
+      setNameError("Please enter a valid name.");
       errorDetected = true;
     } else {
       setNameError("");
     }
 
     if (!emailIsValid(email.trim())) {
-      setEmailError("Please enter a valid email");
+      setEmailError("Please enter a valid email.");
       errorDetected = true;
     } else {
       setEmailError("");
@@ -45,7 +45,7 @@ export default function Home() {
 
     if (!passwordIsValid(password.trim())) {
       setPasswordError(
-        "Password must contain at least 6 characters, 1 number, & 1 symbol",
+        "Password must contain at least 6 characters, 1 number, & 1 symbol.",
       );
       errorDetected = true;
     } else {
@@ -56,7 +56,7 @@ export default function Home() {
       confirmPassword.trim() !== password.trim() ||
       !passwordIsValid(confirmPassword.trim())
     ) {
-      setConfirmPasswordError("Passwords do not match");
+      setConfirmPasswordError("Passwords do not match.");
       errorDetected = true;
     } else {
       setConfirmPasswordError("");
@@ -198,7 +198,7 @@ export default function Home() {
                     <div className="text-textGrey px-4">or</div>
                     <div className="border border-textGrey w-full" />
                   </div>
-                  <GoogleLoginButton />
+                  <GoogleLoginButton setError={setEmailError} />
                 </div>
                 <div className="text-textGrey font-quantico text-[20px]">
                   Have an account?{" "}

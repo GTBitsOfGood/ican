@@ -2,7 +2,6 @@ import {
   AlreadyExistsError,
   BadRequestError,
   DoesNotExistError,
-  UnauthorizedError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -49,14 +48,18 @@ export async function validateCreateUser(
   validateEmail(email);
   passwordsAreEqual(password, confirmPassword);
 
-  // Check if user already exists
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new AlreadyExistsError("This user already exists.");
+    if (existingUser.provider == Provider.PASSWORD) {
+      throw new AlreadyExistsError("This user already exists.");
+    } else {
+      throw new AlreadyExistsError(
+        "This user is already signed in with Google.",
+      );
+    }
   }
 
-  // Hash password and create user to pass to access layer
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser: User = {
@@ -69,7 +72,6 @@ export async function validateCreateUser(
   await createUser(newUser);
   const dbNewUser = await findUserByEmail(email);
 
-  // Create jwt once user is successfully created
   const token = jwt.sign(
     {
       userId: dbNewUser?._id,
@@ -95,6 +97,10 @@ export async function validateLogin(email: string, password: string) {
     throw new DoesNotExistError(
       "Couldn't find your account. Please sign up to create an account.",
     );
+  }
+
+  if (existingUser.provider == Provider.GOOGLE) {
+    throw new AlreadyExistsError("This user is signed in with Google.");
   }
 
   // Check if password is correct
@@ -160,11 +166,7 @@ export async function validateGoogleLogin(name: string, email: string) {
 
 export async function validateToken(token: string) {
   const decodedToken = verifyToken(token);
-  const user = await getUserFromId(new ObjectId(decodedToken.userId));
-
-  if (!user) {
-    throw new UnauthorizedError("This user does not exist.");
-  }
+  await getUserFromId(new ObjectId(decodedToken.userId));
 
   return decodedToken;
 }

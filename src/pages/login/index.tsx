@@ -22,14 +22,14 @@ export default function Home() {
     let errorDetected = false;
 
     if (!emailIsValid(email.trim())) {
-      setEmailError("Please enter a valid email");
+      setEmailError("Please enter a valid email.");
       errorDetected = true;
     } else {
       setEmailError("");
     }
     if (!passwordIsValid(password.trim())) {
       setPasswordError(
-        "Password must contain at least 6 characters, 1 number, & 1 symbol",
+        "Password must contain at least 6 characters, 1 number, & 1 symbol.",
       );
       errorDetected = true;
     } else {
@@ -142,7 +142,7 @@ export default function Home() {
                   <div className="text-textGrey px-4">or</div>
                   <div className="border border-textGrey w-full" />
                 </div>
-                <GoogleLoginButton />
+                <GoogleLoginButton setError={setEmailError} />
               </div>
               <div className="text-textGrey text-[20px]">
                 Don&apos;t have an account?{" "}

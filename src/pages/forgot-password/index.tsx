@@ -83,7 +83,7 @@ export default function ForgotPasswordPage() {
           setUserId(response.userId);
         }
       } catch (error) {
-        setError({ email: `Error! ${(error as Error).message}` });
+        setError({ email: (error as Error).message });
         return;
       }
     }
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
         const response = await authService.verifyForgotPassword(userId, otp);
         localStorage.setItem("token", response.token);
       } catch (error) {
-        setError({ otp: `Error! ${(error as Error).message}` });
+        setError({ otp: (error as Error).message });
         return;
       }
     }
