@@ -1,6 +1,8 @@
+import { HTTP_METHOD } from "next/dist/server/web/http";
+
 export interface RouteInfo {
   allowedMethods: {
-    [key: string]: {
+    [key in HTTP_METHOD]?: {
       isAuthorized: boolean;
     };
   };
@@ -50,14 +52,14 @@ export const routesMap: RoutesMap = {
   "/api/v1/pets/": {
     allowedMethods: {
       POST: {
-        isAuthorized: false,
+        isAuthorized: true,
       },
     },
   },
   "/api/v1/pets/{userId}": {
     allowedMethods: {
       GET: {
-        isAuthorized: false,
+        isAuthorized: true,
       },
       PATCH: {
         isAuthorized: true,
