@@ -12,7 +12,6 @@ type RoutesMap = {
   [key: string]: RouteInfo;
 };
 
-// Move this routes map to somewhere else (server?)
 export const routesMap: RoutesMap = {
   "/api/v1/auth/change-password": {
     allowedMethods: {
