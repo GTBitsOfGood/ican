@@ -11,6 +11,7 @@ import { authService } from "@/http/authService";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import { ApiError } from "@/types/exceptions";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -44,7 +45,7 @@ export default function Home() {
 
     if (!passwordIsValid(password.trim())) {
       setPasswordError(
-        "Must contain at least 6 characters, 1 number, & 1 symbol",
+        "Password must contain at least 6 characters, 1 number, & 1 symbol",
       );
       errorDetected = true;
     } else {
@@ -76,8 +77,13 @@ export default function Home() {
       localStorage.setItem("token", response.token);
       router.push("/");
     } catch (error) {
-      setEmailError("Registration failed! " + (error as Error).message);
-      setPasswordError("");
+      if (error instanceof ApiError && error.statusCode == 400) {
+        setPasswordError((error as Error).message);
+        setEmailError("");
+      } else {
+        setEmailError((error as Error).message);
+        setPasswordError("");
+      }
     } finally {
       setRegistering(false);
     }

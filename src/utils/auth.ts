@@ -27,7 +27,7 @@ export function validatePassword(password: string) {
     )
   ) {
     throw new InvalidBodyError(
-      "Invalid request body: 'password' is required and must be greater than 6 characters and have special characters.",
+      "Invalid request body: 'password' must contain at least 6 characters, 1 number, & 1 symbol.",
     );
   }
 }

@@ -53,7 +53,7 @@ export async function validateCreateUser(
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new AlreadyExistsError("user already exists");
+    throw new AlreadyExistsError("This user already exists.");
   }
 
   // Hash password and create user to pass to access layer
@@ -92,14 +92,18 @@ export async function validateLogin(email: string, password: string) {
   const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
-    throw new DoesNotExistError("user does not exist");
+    throw new DoesNotExistError(
+      "Couldn't find your account. Please sign up to create an account.",
+    );
   }
 
   // Check if password is correct
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
-    throw new BadRequestError("password is not correct");
+    throw new BadRequestError(
+      "Wrong password. Try again or click Forgot Password to reset it.",
+    );
   }
 
   // Create and return jwt
@@ -159,7 +163,7 @@ export async function validateToken(token: string) {
   const user = await getUserFromId(new ObjectId(decodedToken.userId));
 
   if (!user) {
-    throw new UnauthorizedError("This user does not exist");
+    throw new UnauthorizedError("This user does not exist.");
   }
 
   return decodedToken;
