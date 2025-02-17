@@ -36,7 +36,6 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function validateAuthorization(
-  userId: string,
   authHeader?: string,
 ): Promise<boolean> {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -50,11 +49,7 @@ export async function validateAuthorization(
     const tokenUserObjectId: ObjectId = new ObjectId(tokenUserId);
     const user = await getUserFromId(tokenUserObjectId);
 
-    if (!user) {
-      return false;
-    }
-
-    return tokenUserId === userId;
+    return !!user;
   } catch {
     return false;
   }
