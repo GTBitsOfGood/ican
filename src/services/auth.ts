@@ -11,8 +11,8 @@ import {
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../../db/actions/auth";
-import { User } from "../../db/models";
+import { createUser, findUserByEmail } from "../db/actions/auth";
+import { User } from "../db/models";
 import { verifyToken } from "./jwt";
 import { getUserFromId } from "@/db/actions/user";
 import { ObjectId } from "mongodb";

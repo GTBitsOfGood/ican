@@ -4,7 +4,7 @@ import {
   changePassword,
   sendPasswordCode,
   verifyForgotPasswordCode,
-} from "../services/forgotPasswordCodes";
+} from "../server/services/forgotPasswordCodes";
 
 export class authController {
   public static async login(req: NextApiRequest, res: NextApiResponse) {
