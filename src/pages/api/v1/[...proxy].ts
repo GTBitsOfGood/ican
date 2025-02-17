@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { validateAuthorization } from "@/server/services/auth";
 import { routesMap, RouteInfo } from "@/server/routesMap";
-import { petsController, authController } from "@/server/controllers";
+import { petsController } from "@/server/controllers/petsController";
+import { authController } from "@/server/controllers/authController";
 import {
   AlreadyExistsError,
   BadRequestError,
@@ -13,7 +14,7 @@ import {
   InternalServerError,
   MethodNotAllowedError,
 } from "@/types/exceptions";
-
+import { isHTTPMethod } from "next/dist/server/web/http";
 /**
  * Reverse proxy intercepts all API calls and validates path, method, and authorization before sending the call to the appropriate controller
  */
@@ -31,7 +32,7 @@ class ReverseProxy {
 
       let path = `/api/v1/${(proxy as string[]).join("/")}`;
 
-      if (!path || !method) {
+      if (!path || !method || !isHTTPMethod(method)) {
         throw new BadRequestError("Bad Request");
       }
 
@@ -47,23 +48,19 @@ class ReverseProxy {
 
       const routeInfo: RouteInfo = routesMap[path];
       if (!routeInfo) {
-        throw new NotFoundError("Route Not Found");
+        throw new NotFoundError(`Route not found: ${path}`);
       }
 
       // Check if method is allowed
       const methodDetail = routeInfo.allowedMethods[method];
       if (!methodDetail) {
-        throw new BadRequestError("Method not allowed");
+        throw new BadRequestError(`Method not allowed: ${method}`);
       }
 
       // If authorization is required, check:
       if (methodDetail.isAuthorized) {
         const authHeader = req.headers.authorization;
-        if (
-          !authHeader ||
-          !authHeader.startsWith("Bearer ") ||
-          !validateAuthorization(authHeader, userId)
-        ) {
+        if (!validateAuthorization(userId, authHeader)) {
           throw new UnauthorizedError("Forbidden");
         }
       }
@@ -85,7 +82,7 @@ class ReverseProxy {
         case "/api/v1/auth/forgot-password/verify":
           return await authController.verifyPassword(req, res);
 
-        case "/api/v1/pets/":
+        case "/api/v1/pets":
           return await petsController.createPet(req, res);
 
         case "/api/v1/pets/{userId}":
@@ -97,11 +94,11 @@ class ReverseProxy {
             case "DELETE":
               return await petsController.deletePet(req, res, userId);
             default:
-              throw new BadRequestError("Method not allowed");
+              throw new BadRequestError(`Method not allowed: ${method}`);
           }
 
         default:
-          throw new NotFoundError("Route not found");
+          throw new NotFoundError(`Route not found: ${path}`);
       }
     } catch (error) {
       if (error instanceof AlreadyExistsError) {
