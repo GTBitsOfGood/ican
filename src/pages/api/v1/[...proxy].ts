@@ -36,14 +36,11 @@ class ReverseProxy {
         throw new BadRequestError("Bad Request");
       }
 
-      let userId: string = "";
-
       // Not sure how to check for dynamic userId url, as in whether to:
       // regex and for loop through all paths, or to make a radix tree (or get a npm module that does that)
       // But currently its hard coded.
       if (proxy.length == 2 && path.startsWith("/api/v1/pets/")) {
         path = "/api/v1/pets/{userId}";
-        userId = proxy[2];
       }
 
       const routeInfo: RouteInfo = routesMap[path];
@@ -60,7 +57,7 @@ class ReverseProxy {
       // If authorization is required, check:
       if (methodDetail.isAuthorized) {
         const authHeader = req.headers.authorization;
-        if (!validateAuthorization(userId, authHeader)) {
+        if (!validateAuthorization(authHeader)) {
           throw new UnauthorizedError("Forbidden");
         }
       }
