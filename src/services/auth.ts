@@ -77,11 +77,11 @@ export async function validateCreateUser(
     throw new DoesNotExistError("user does not exist");
   }
   // Used a default name for pet
-  await createPet(userId, `${name}'s Pet`);
+  await createPet(userId, `${name}'s Pet`, "dog");
 
   const token = jwt.sign(
     {
-      userId: dbNewUser?._id,
+      userId: insertedId,
     },
     JWT_SECRET,
     {
