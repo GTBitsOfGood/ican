@@ -10,10 +10,6 @@ export default async function handler(
   const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof userId !== "string") {
-    return res.status(400).json({ error: "userId must be a string" });
-  }
-
   switch (method) {
     case "GET":
       try {

@@ -6,6 +6,7 @@ export async function validateParams(
   userId: string | string[] | undefined,
 ): Promise<void> {
   // Validate parameters
+
   if (!userId) {
     throw new InvalidBodyError("Invalid parameters: 'userId' is required.");
   }
