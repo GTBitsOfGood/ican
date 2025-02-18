@@ -13,6 +13,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { createPet } from "./pets";
 import { Provider } from "@/types/auth";
 import { verifyToken } from "./jwt";
 import { getUserFromId } from "@/db/actions/user";
@@ -69,12 +70,18 @@ export async function validateCreateUser(
     password: hashedPassword,
   };
 
-  await createUser(newUser);
-  const dbNewUser = await findUserByEmail(email);
+  // Uses userId returned by insertOne()
+  const { insertedId } = await createUser(newUser);
+  const userId = insertedId.toString();
+  if (!userId) {
+    throw new DoesNotExistError("user does not exist");
+  }
+  // Used a default name for pet
+  await createPet(userId, `${name}'s Pet`, "dog");
 
   const token = jwt.sign(
     {
-      userId: dbNewUser?._id,
+      userId: insertedId,
     },
     JWT_SECRET,
     {
