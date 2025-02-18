@@ -52,7 +52,6 @@ export default function Home() {
                 currentExp={petData.xpGained}
               />
             </div>
-
             {/* Side Bar */}
             <div className="flex flex-col gap-9 w-fit 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
               <NavButton buttonType="settings" drawButton={false} />
