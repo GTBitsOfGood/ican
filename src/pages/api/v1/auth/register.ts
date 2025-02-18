@@ -18,6 +18,7 @@ export default async function handler(
           password,
           confirmPassword,
         );
+
         res.status(201).json(response);
       } catch (error) {
         if (error instanceof ApiError) {
