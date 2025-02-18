@@ -1,9 +1,9 @@
 import Image from "next/image";
 import ProfileFrame from "../svg/ProfileFrame";
-import { CharacterType } from "@/types/characters";
+import { PetType } from "@/types/pet";
 
 interface ProfilePictureProps {
-  character: CharacterType;
+  character: PetType;
 }
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({ character }) => {
