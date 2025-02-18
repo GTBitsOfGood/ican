@@ -24,3 +24,13 @@ export interface Pet {
   coins: number;
   userId: ObjectId;
 }
+
+export interface Settings {
+  _id: ObjectId;
+  userId: ObjectId;
+  parentalControl: boolean;
+  notifications: boolean;
+  helpfulTips: boolean;
+  largeFontSize: boolean;
+  pin: string;
+}

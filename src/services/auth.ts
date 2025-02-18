@@ -13,6 +13,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
+import { createSettings } from "./settings";
 import { createPet } from "./pets";
 import { Provider } from "@/types/auth";
 import { verifyToken } from "./jwt";
@@ -63,7 +64,11 @@ export async function validateCreateUser(
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // generate new random _id
+  const _id = new ObjectId();
+
   const newUser: User = {
+    _id,
     name: name,
     provider: Provider.PASSWORD,
     email: email,
@@ -79,6 +84,10 @@ export async function validateCreateUser(
   // Used a default name for pet
   await createPet(userId, `${name}'s Pet`, "dog");
 
+  // create settings
+  await createSettings({ userId: _id.toString() });
+
+  // Create jwt once user is successfully created
   const token = jwt.sign(
     {
       userId: insertedId,
