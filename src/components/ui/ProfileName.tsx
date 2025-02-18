@@ -1,11 +1,14 @@
+import { petService } from "@/http/petService";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { useUser } from "../UserContext";
 
 interface ProfileNameProps {
   name: string;
 }
 
 const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
+  const { userId } = useUser();
   // Basic placeholder logic
   const [isEditing, setEditing] = useState(false);
   const [name, setName] = useState(initialName);
@@ -13,7 +16,17 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const toggleEditing = () => {
+  const toggleEditing = async () => {
+    if (isEditing && name != initialName) {
+      try {
+        await petService.updatePet(name, userId as string);
+        initialName = name;
+        console.log("Pet data updated successfully");
+      } catch (error) {
+        console.error("Error updating pet data:", error);
+      }
+    }
+
     setEditing((prev) => !prev);
   };
 

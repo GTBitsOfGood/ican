@@ -14,6 +14,10 @@ import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 import { createPet } from "./pets";
+import { Provider } from "@/types/auth";
+import { verifyToken } from "./jwt";
+import { getUserFromId } from "@/db/actions/user";
+import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
   name: string;
@@ -45,18 +49,23 @@ export async function validateCreateUser(
   validateEmail(email);
   passwordsAreEqual(password, confirmPassword);
 
-  // Check if user already exists
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new AlreadyExistsError("user already exists");
+    if (existingUser.provider == Provider.PASSWORD) {
+      throw new AlreadyExistsError("This user already exists.");
+    } else {
+      throw new AlreadyExistsError(
+        "This user is already signed in with Google.",
+      );
+    }
   }
 
-  // Hash password and create user to pass to access layer
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser: User = {
     name: name,
+    provider: Provider.PASSWORD,
     email: email,
     password: hashedPassword,
   };
@@ -70,10 +79,9 @@ export async function validateCreateUser(
   // Used a default name for pet
   await createPet(userId, `${name}'s Pet`);
 
-  // Create jwt once user is successfully created
   const token = jwt.sign(
     {
-      email: newUser.email,
+      userId: dbNewUser?._id,
     },
     JWT_SECRET,
     {
@@ -93,20 +101,28 @@ export async function validateLogin(email: string, password: string) {
   const existingUser = await findUserByEmail(email);
 
   if (!existingUser) {
-    throw new DoesNotExistError("user does not exist");
+    throw new DoesNotExistError(
+      "Couldn't find your account. Please sign up to create an account.",
+    );
+  }
+
+  if (existingUser.provider == Provider.GOOGLE) {
+    throw new AlreadyExistsError("This user is signed in with Google.");
   }
 
   // Check if password is correct
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!passwordMatch) {
-    throw new BadRequestError("password is not correct");
+    throw new BadRequestError(
+      "Wrong password. Try again or click Forgot Password to reset it.",
+    );
   }
 
   // Create and return jwt
   const token = jwt.sign(
     {
-      email: email,
+      userId: existingUser._id,
     },
     JWT_SECRET,
     {
@@ -115,4 +131,49 @@ export async function validateLogin(email: string, password: string) {
   );
 
   return { token };
+}
+
+export async function validateGoogleLogin(name: string, email: string) {
+  validateName(name);
+  validateEmail(email);
+
+  // If user doesn't exist add them to database
+  let existingUser = await findUserByEmail(email);
+
+  if (existingUser?.provider == Provider.PASSWORD) {
+    throw new AlreadyExistsError(
+      "This user is already signed in with email and password.",
+    );
+  }
+
+  if (!existingUser) {
+    const newUser: User = {
+      name: name,
+      provider: Provider.GOOGLE,
+      email: email,
+      password: "",
+    };
+
+    await createUser(newUser);
+    existingUser = await findUserByEmail(email);
+  }
+
+  const token = jwt.sign(
+    {
+      userId: existingUser?._id,
+    },
+    JWT_SECRET,
+    {
+      expiresIn: "1w",
+    },
+  );
+
+  return token;
+}
+
+export async function validateToken(token: string) {
+  const decodedToken = verifyToken(token);
+  await getUserFromId(new ObjectId(decodedToken.userId));
+
+  return decodedToken;
 }

@@ -12,7 +12,11 @@ export default async function handler(
   try {
     if (method == "POST") {
       try {
-        const createdPet: Pet = await createPet(body.userId, body.name);
+        const createdPet: Pet = await createPet(
+          body.userId,
+          body.name,
+          body.petType,
+        );
         res.status(200).json(createdPet);
       } catch (error) {
         if (error instanceof ApiError) {
