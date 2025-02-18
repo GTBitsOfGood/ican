@@ -1,6 +1,7 @@
 import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
 import { Medication } from "../models";
+import { ObjectId } from "mongodb";
 
 export async function createNewMedication(newMedication: Medication) {
   const db = client.db();
@@ -15,7 +16,15 @@ export async function createNewMedication(newMedication: Medication) {
   }
 }
 
-export async function getMedicationById(medicationId: string) {
+export async function getMedicationById(id: ObjectId) {
+  const db = client.db();
+
+  const medication = await db.collection("medication").findOne({ _id: id });
+
+  return medication;
+}
+
+export async function getMedicationByMedicationId(medicationId: string) {
   const db = client.db();
 
   const medication = await db
@@ -26,7 +35,7 @@ export async function getMedicationById(medicationId: string) {
 }
 
 export async function updateMedicationById(
-  medicationId: string,
+  id: ObjectId,
   updateObj: {
     formOfMedication?: string;
     medicationId?: string | string[] | undefined;
@@ -44,16 +53,16 @@ export async function updateMedicationById(
   const db = client.db();
   const result = await db
     .collection("medication")
-    .updateOne({ medicationId: medicationId }, { $set: { ...updateObj } });
+    .updateOne({ _id: id }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
     throw new InternalServerError("Failed to update medication.");
   }
 }
 
-export async function deleteMedicationById(medicationId: string) {
+export async function deleteMedicationById(id: ObjectId) {
   const db = client.db();
-  const result = await db.collection("medication").deleteOne({ medicationId });
+  const result = await db.collection("medication").deleteOne({ _id: id });
 
   if (result.deletedCount == 0) {
     throw new InternalServerError("Failed to delete medication.");
@@ -61,7 +70,7 @@ export async function deleteMedicationById(medicationId: string) {
 }
 
 // this function retrieves list of medications
-export async function getMedicationsByUserId(userId: string) {
+export async function getMedicationsByUserId(userId: ObjectId) {
   const db = client.db();
 
   const medication = db.collection("medication").find({ userId });

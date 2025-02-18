@@ -37,7 +37,7 @@ export default async function handler(
       case "PATCH":
         try {
           await updateMedication(id, {
-            formOfMedication: body?.formOfMedication,
+            formOfMedication: body.formOfMedication,
             medicationId: body.medicationId,
             repeatInterval: body.repeatInterval,
             repeatUnit: body.repeatUnit,
@@ -47,8 +47,6 @@ export default async function handler(
             dosesPerDay: body.dosesPerDay,
             doseIntervalInHours: body.doseIntervalInHours,
             doseTimes: body.doseTimes,
-            // assume userId comes in with request
-            userId: body.userId,
           });
           res.status(204).end();
         } catch (error) {

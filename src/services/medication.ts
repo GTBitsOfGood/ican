@@ -2,13 +2,14 @@ import {
   createNewMedication,
   deleteMedicationById,
   getMedicationById,
+  getMedicationByMedicationId,
   getMedicationsByUserId,
   updateMedicationById,
 } from "@/db/actions/medication";
 import { Medication } from "@/db/models";
 import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
 import { UpdateMedicationRequestBody } from "@/types/medication";
-import { validateParams } from "@/utils/medication";
+import { validateCreateParams, validateParams } from "@/utils/medication";
 import { ObjectId } from "mongodb";
 
 export async function createMedication({
@@ -50,10 +51,10 @@ export async function createMedication({
     doseTimes,
     userId,
   };
-  validateParams({
+  await validateCreateParams({
     ...medication,
   });
-  const existingMedication = await getMedicationById(medicationId as string);
+  const existingMedication = await getMedicationByMedicationId(medicationId);
 
   if (existingMedication) {
     throw new AlreadyExistsError("this medication already exists");
@@ -71,10 +72,10 @@ export async function createMedication({
   return newMedication.insertedId.toString();
 }
 
-export async function getMedication(medicationId: string): Promise<Medication> {
-  validateParams({ medicationId: medicationId });
+export async function getMedication(id: string): Promise<Medication> {
+  await validateParams({ id });
 
-  const existingMedication = await getMedicationById(medicationId as string);
+  const existingMedication = await getMedicationById(new ObjectId(id));
 
   if (!existingMedication) {
     throw new DoesNotExistError("this medication does not exist");
@@ -111,6 +112,7 @@ export async function updateMedication(
   },
 ) {
   // Validate parameters
+
   const updateObj: UpdateMedicationRequestBody = {};
   if (formOfMedication) updateObj.formOfMedication = formOfMedication;
   if (medicationId) updateObj.medicationId = medicationId;
@@ -124,13 +126,15 @@ export async function updateMedication(
   if (doseIntervalInHours) updateObj.doseIntervalInHours = doseIntervalInHours;
   if (doseTimes) updateObj.doseTimes = doseTimes;
 
+  await validateParams({ ...updateObj });
+
   // Check if the pet exists
-  const existingMedication = await getMedicationById(id);
+  const existingMedication = await getMedicationById(new ObjectId(id));
   if (!existingMedication) {
     throw new DoesNotExistError("This medication does not exist");
   }
 
-  if (formOfMedication) await updateMedicationById(id, updateObj);
+  if (formOfMedication) await updateMedicationById(new ObjectId(id), updateObj);
 }
 
 export async function deleteMedication(id: string) {
@@ -138,18 +142,18 @@ export async function deleteMedication(id: string) {
   validateParams({ id });
 
   // Check if the pet exists
-  const existingMedication = await getMedicationById(id);
+  const existingMedication = await getMedicationById(new ObjectId(id));
   if (!existingMedication) {
     throw new DoesNotExistError("This medication does not exist");
   }
 
-  await deleteMedicationById(id);
+  await deleteMedicationById(new ObjectId(id));
 }
 
 export async function getMedications(userId: string) {
   validateParams({ userId });
 
-  const medications = await getMedicationsByUserId(userId);
+  const medications = await getMedicationsByUserId(new ObjectId(userId));
   if (!medications) {
     throw new DoesNotExistError(
       "This user id does not have connected medications",
