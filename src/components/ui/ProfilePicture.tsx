@@ -1,17 +1,17 @@
 import Image from "next/image";
 import ProfileFrame from "../svg/ProfileFrame";
-import { CharacterType } from "@/types/characters";
+import { PetType } from "@/types/pet";
 
 interface ProfilePictureProps {
-  character: CharacterType;
+  character: PetType;
 }
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({ character }) => {
-  const imagePath = `/characters/${character}.png`;
+  const imagePath = `/characters/${character}.svg`;
 
   return (
     <div className="relative aspect-profile-picture w-[8rem] 4xl:w-[9.0625rem]">
-      {/* Background */}  
+      {/* Background */}
       <div className="absolute inset-2 rounded-[40px] bg-[#D2D8BF]" />
 
       {/* Character - Although it looks blurry up close if optimized */}
@@ -25,8 +25,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({ character }) => {
         />
       </div>
 
-      <ProfileFrame/>
-
+      <ProfileFrame />
     </div>
   );
 };

@@ -1,3 +1,5 @@
+import { ApiError } from "@/types/exceptions";
+
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 const BASE_URL = "/api/v1";
@@ -64,7 +66,11 @@ export default async function fetchService<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`${response.status}`);
+    const errorBody = await response.json();
+    throw new ApiError(
+      errorBody.error || `HTTP error! Status: ${response.status}`,
+      response.status,
+    );
   }
 
   if (response.status == 204) {
