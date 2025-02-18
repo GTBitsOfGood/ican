@@ -5,6 +5,7 @@ type ValidateParamsType = {
   id?: string;
   formOfMedication?: string;
   medicationId?: string;
+  repeatInterval?: number;
   repeatUnit?: string;
   repeatOn?: string[];
   repeatMonthlyOnDay?: number;
@@ -20,6 +21,7 @@ export async function validateParams({
   id,
   formOfMedication,
   medicationId,
+  repeatInterval,
   repeatUnit,
   repeatOn,
   repeatMonthlyOnDay,
@@ -31,7 +33,7 @@ export async function validateParams({
   userId,
 }: ValidateParamsType): Promise<void> {
   // Validate parameters
-  if (id && !ObjectId.isValid(id)) {
+  if (!id || (id && !ObjectId.isValid(id))) {
     throw new InvalidBodyError(
       "Invalid parameters: 'id' is required and must be a valid ObjectId.",
     );
@@ -39,57 +41,74 @@ export async function validateParams({
 
   // Validate formOfMedication only if its passed in
   if (
-    formOfMedication &&
-    (formOfMedication.trim() === "" || formOfMedication.length > 5)
+    !formOfMedication ||
+    (formOfMedication &&
+      (formOfMedication.trim() === "" || formOfMedication.length > 5))
   ) {
     throw new InvalidBodyError(
       "Invalid parameters: 'formOfMedication' is required and must be a non-empty string that has a length less than 6.",
     );
   }
-  if (medicationId && medicationId.trim() === "") {
+  if (
+    !medicationId ||
+    (medicationId &&
+      (typeof medicationId !== "string" || medicationId.trim() === ""))
+  ) {
     throw new InvalidBodyError(
       "Invalid parameters: 'medicationId' is required and must be a non-empty string.",
     );
   }
-  if (repeatUnit && repeatUnit.trim() === "") {
+
+  if (!repeatInterval || (repeatInterval && repeatInterval <= 0)) {
+    throw new InvalidBodyError(
+      "Invalid parameters: 'repeatInterval' is required and must be a positive nonzero number.",
+    );
+  }
+  if (!repeatUnit || (repeatUnit && repeatUnit.trim() === "")) {
     throw new InvalidBodyError(
       "Invalid parameters: 'repeatUnit' is required and must be a non-empty string.",
     );
   }
 
-  if (repeatOn && repeatOn.length === 0) {
+  if (!repeatOn || (repeatOn && repeatOn.length === 0)) {
     throw new InvalidBodyError(
       "Invalid parameters: 'repeatOn' is required and must be a non-empty array.",
     );
   }
-  if (repeatMonthlyOnDay && repeatMonthlyOnDay <= 0) {
+  if (!repeatMonthlyOnDay || (repeatMonthlyOnDay && repeatMonthlyOnDay <= 0)) {
     throw new InvalidBodyError(
       "Invalid parameters: 'repeatMonthlyOnDay' is required and must be positive.",
     );
   }
-  if (notificationFrequency && notificationFrequency.trim() === "") {
+  if (
+    !notificationFrequency ||
+    (notificationFrequency && notificationFrequency.trim() === "")
+  ) {
     throw new InvalidBodyError(
       "Invalid parameters: 'notificationFrequency' is required and must be a non-empty string.",
     );
   }
-  if (dosesPerDay && dosesPerDay <= 0) {
+  if (!dosesPerDay || (dosesPerDay && dosesPerDay <= 0)) {
     throw new InvalidBodyError(
       "Invalid parameters: 'dosesPerDay' is required and must be a non-empty string.",
     );
   }
-  if (doseIntervalInHours && doseIntervalInHours <= 0) {
+  if (
+    !doseIntervalInHours ||
+    (doseIntervalInHours && doseIntervalInHours <= 0)
+  ) {
     throw new InvalidBodyError(
       "Invalid parameters: 'doseIntervalInHours' is required and must be a non-empty string.",
     );
   }
 
-  if (doseTimes && doseTimes.length === 0) {
+  if (!doseTimes || (doseTimes && doseTimes.length === 0)) {
     throw new InvalidBodyError(
       "Invalid parameters: 'doseTimes' is required and must be a non-empty array.",
     );
   }
 
-  if (userId && !ObjectId.isValid(userId)) {
+  if (!userId || (userId && !ObjectId.isValid(userId))) {
     throw new InvalidBodyError(
       "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
     );

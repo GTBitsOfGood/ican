@@ -11,7 +11,7 @@ export default async function handler(
   try {
     if (method == "POST") {
       try {
-        const createdMedication = await createMedication({
+        const medicationId = await createMedication({
           formOfMedication: body?.formOfMedication,
           medicationId: body.medicationId,
           repeatInterval: body.repeatInterval,
@@ -25,7 +25,7 @@ export default async function handler(
           // assume userId comes in with request
           userId: body.userId,
         });
-        res.status(201).json(createdMedication);
+        res.status(201).json({ id: medicationId });
       } catch (error) {
         if (error instanceof ApiError) {
           res.status(error.statusCode).json({ error: error.message });

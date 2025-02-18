@@ -15,25 +15,21 @@ export default async function handler(
   }
 
   try {
-    switch (method) {
-      case "GET":
-        try {
-          const medication: Medication[] | null = await getMedications(userId);
-          res.status(200).json(medication);
-        } catch (error) {
-          if (error instanceof ApiError) {
-            res.status(error.statusCode).json({ error: error.message });
-          } else {
-            throw error;
-          }
+    if (method === "GET") {
+      try {
+        const medication: Medication[] | null = await getMedications(userId);
+        res.status(200).json(medication);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          res.status(error.statusCode).json({ error: error.message });
+        } else {
+          throw error;
         }
-
-        break;
-
-      default:
-        // Method not allowed
-        res.setHeader("Allow", ["GET", "PATCH", "DELETE"]);
-        res.status(405).json({ error: `Method ${method} Not Allowed` });
+      }
+    } else {
+      // Method not allowed
+      res.setHeader("Allow", ["GET"]);
+      res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
   } catch (error) {
     res

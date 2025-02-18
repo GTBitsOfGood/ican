@@ -1,7 +1,6 @@
 import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
 import { Medication } from "../models";
-import { UpdateMedicationRequestBody } from "@/types/medication";
 
 export async function createNewMedication(newMedication: Medication) {
   const db = client.db();
@@ -28,7 +27,19 @@ export async function getMedicationById(medicationId: string) {
 
 export async function updateMedicationById(
   medicationId: string,
-  updateObj: UpdateMedicationRequestBody,
+  updateObj: {
+    formOfMedication?: string;
+    medicationId?: string | string[] | undefined;
+    repeatInterval?: number;
+    repeatUnit?: string;
+    repeatOn?: string[];
+    repeatMonthlyOnDay?: number;
+    notificationFrequency?: string;
+    dosesPerDay?: number;
+    doseIntervalInHours?: number;
+    // string of times
+    doseTimes?: string[];
+  },
 ) {
   const db = client.db();
   const result = await db
