@@ -165,6 +165,11 @@ export async function validateGoogleLogin(name: string, email: string) {
 
     await createUser(newUser);
     existingUser = await findUserByEmail(email);
+    await createPet(
+      existingUser?._id?.toString() as string,
+      `${name}'s Pet`,
+      "dog",
+    );
   }
 
   const token = jwt.sign(
