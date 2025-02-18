@@ -25,6 +25,22 @@ export interface Pet {
   userId: ObjectId;
 }
 
+export interface Medication {
+  _id?: ObjectId;
+  formOfMedication: string;
+  medicationId: string;
+  repeatInterval: number;
+  repeatUnit: string;
+  repeatOn: string[];
+  repeatMonthlyOnDay: number;
+  notificationFrequency: string;
+  dosesPerDay: number;
+  doseIntervalInHours: number;
+  // string of times
+  doseTimes: string[];
+  userId: ObjectId;
+}
+
 export interface Settings {
   _id: ObjectId;
   userId: ObjectId;
