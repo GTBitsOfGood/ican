@@ -35,6 +35,7 @@ export async function updateSettingsByUserId(
   updateObj: UpdateSettingsRequestBody,
 ) {
   const db = client.db();
+  console.log(updateObj);
   const result = await db
     .collection("settings")
     .updateOne({ userId }, { $set: { ...updateObj } });
