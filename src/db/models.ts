@@ -50,3 +50,15 @@ export interface Settings {
   largeFontSize: boolean;
   pin: string;
 }
+
+export interface MedicationCheckIn {
+  _id: ObjectId;
+  medicationId: ObjectId;
+  expiration: Date;
+}
+
+export interface MedicationLo {
+  _id: ObjectId;
+  medicationId: ObjectId;
+  dateTaken: Date;
+}
