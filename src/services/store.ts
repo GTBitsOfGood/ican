@@ -1,4 +1,4 @@
-import { BadRequestError } from "@/types/exceptions";
+import { BadRequestError, DoesNotExistError } from "@/types/exceptions";
 import { storeItems } from "@/types/store";
 import { validateItemName, validatePetId } from "@/utils/store";
 import { getPetByPetId } from "@/db/actions/pets";
@@ -14,11 +14,11 @@ export async function validatePurchase(petId: string, itemName: string) {
   const pet = (await getPetByPetId(new ObjectId(petId))) as Pet;
 
   if (!item) {
-    throw new BadRequestError("This item does not exist.");
+    throw new DoesNotExistError("This item does not exist.");
   }
 
   if (!pet) {
-    throw new BadRequestError("This pet does not exist.");
+    throw new DoesNotExistError("This pet does not exist.");
   }
 
   if (pet.coins < item.cost) {

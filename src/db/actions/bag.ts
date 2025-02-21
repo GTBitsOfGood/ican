@@ -28,3 +28,13 @@ export async function getBagItemByPetIdAndName(
 
   return item;
 }
+
+export async function getPetBag(petId: ObjectId) {
+  const db = client.db();
+  const items = await db
+    .collection("bagItems")
+    .find({ petId: petId })
+    .toArray();
+
+  return items;
+}
