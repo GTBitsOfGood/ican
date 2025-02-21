@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { verifyForgotPasswordCode } from "@/services/forgotPasswordCodes";
+import { forgotPasswordService } from "@/services/forgotPasswordCodes";
 import { ApiError } from "@/types/exceptions";
 
 export default async function handler(
@@ -14,7 +14,10 @@ export default async function handler(
   const { userId, code } = req.body;
 
   try {
-    const token = await verifyForgotPasswordCode(userId, code);
+    const token = await forgotPasswordService.verifyForgotPasswordCode(
+      userId,
+      code,
+    );
     return res.status(200).json({ token });
   } catch (error) {
     if (error instanceof ApiError) {

@@ -24,36 +24,27 @@ export async function getMedicationById(id: ObjectId) {
   return medication;
 }
 
-export async function getMedicationByMedicationId(medicationId: string) {
+export async function getUserMedicationByMedicationId(
+  medicationId: string,
+  userId: ObjectId,
+) {
   const db = client.db();
 
   const medication = await db
     .collection("medication")
-    .findOne({ medicationId });
+    .findOne({ medicationId, userId });
 
   return medication;
 }
 
 export async function updateMedicationById(
   id: ObjectId,
-  updateObj: {
-    formOfMedication?: string;
-    medicationId?: string | string[] | undefined;
-    repeatInterval?: number;
-    repeatUnit?: string;
-    repeatOn?: string[];
-    repeatMonthlyOnDay?: number;
-    notificationFrequency?: string;
-    dosesPerDay?: number;
-    doseIntervalInHours?: number;
-    // string of times
-    doseTimes?: string[];
-  },
+  updateObj: Medication,
 ) {
   const db = client.db();
   const result = await db
     .collection("medication")
-    .updateOne({ _id: id }, { $set: { ...updateObj } });
+    .updateOne({ _id: id }, { $set: updateObj });
 
   if (result.modifiedCount == 0) {
     throw new InternalServerError("Failed to update medication.");

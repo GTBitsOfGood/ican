@@ -1,4 +1,4 @@
-import { validateCreateUser } from "@/services/auth";
+import authService from "@/services/auth";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { ApiError } from "@/types/exceptions";
 
@@ -12,7 +12,7 @@ export default async function handler(
   try {
     if (method == "POST") {
       try {
-        const response = await validateCreateUser(
+        const response = await authService.validateCreateUser(
           name,
           email,
           password,

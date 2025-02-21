@@ -10,14 +10,16 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../db/actions/auth";
+import {
+  createUser,
+  getUserFromEmail,
+  getUserFromId,
+} from "../db/actions/auth";
 import { User } from "../db/models";
-import { createSettings } from "./settings";
-import { createPet } from "./pets";
+import settingsService from "./settings";
+import { petService } from "./pets";
 import { Provider } from "@/types/auth";
-import { verifyToken } from "./jwt";
-import { getUserFromId } from "@/db/actions/user";
+import JWTService from "./jwt";
 import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
@@ -32,162 +34,142 @@ export interface LoginBody {
   password: string;
 }
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables.");
-}
+const authService = {
+  // Validate create user input and process account creation
+  async validateCreateUser(
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ) {
+    // Validate parameters
+    validateName(name);
+    validatePassword(password);
+    validateEmail(email);
+    passwordsAreEqual(password, confirmPassword);
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
+    const existingUser = await getUserFromEmail(email);
 
-export async function validateCreateUser(
-  name: string,
-  email: string,
-  password: string,
-  confirmPassword: string,
-) {
-  // Validate parameters
-  validateName(name);
-  validatePassword(password);
-  validateEmail(email);
-  passwordsAreEqual(password, confirmPassword);
-
-  const existingUser = await findUserByEmail(email);
-
-  if (existingUser) {
-    if (existingUser.provider == Provider.PASSWORD) {
-      throw new AlreadyExistsError("This user already exists.");
-    } else {
-      throw new AlreadyExistsError(
-        "This user is already signed in with Google.",
-      );
+    if (existingUser) {
+      if (existingUser.provider == Provider.PASSWORD) {
+        throw new AlreadyExistsError("This user already exists.");
+      } else {
+        throw new AlreadyExistsError(
+          "This user is already signed in with Google.",
+        );
+      }
     }
-  }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  // generate new random _id
-  const _id = new ObjectId();
-
-  const newUser: User = {
-    _id,
-    name: name,
-    provider: Provider.PASSWORD,
-    email: email,
-    password: hashedPassword,
-  };
-
-  // Uses userId returned by insertOne()
-  const { insertedId } = await createUser(newUser);
-  const userId = insertedId.toString();
-  if (!userId) {
-    throw new DoesNotExistError("user does not exist");
-  }
-  // Used a default name for pet
-  await createPet(userId, `${name}'s Pet`, "dog");
-
-  // create settings
-  await createSettings({ userId: _id.toString() });
-
-  // Create jwt once user is successfully created
-  const token = jwt.sign(
-    {
-      userId: insertedId,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
-
-  return { token };
-}
-
-export async function validateLogin(email: string, password: string) {
-  // Validate parameters
-  validateEmail(email);
-  validatePassword(password);
-
-  // Check if user exists
-  const existingUser = await findUserByEmail(email);
-
-  if (!existingUser) {
-    throw new DoesNotExistError(
-      "Couldn't find your account. Please sign up to create an account.",
-    );
-  }
-
-  if (existingUser.provider == Provider.GOOGLE) {
-    throw new AlreadyExistsError("This user is signed in with Google.");
-  }
-
-  // Check if password is correct
-  const passwordMatch = await bcrypt.compare(password, existingUser.password);
-
-  if (!passwordMatch) {
-    throw new BadRequestError(
-      "Wrong password. Try again or click Forgot Password to reset it.",
-    );
-  }
-
-  // Create and return jwt
-  const token = jwt.sign(
-    {
-      userId: existingUser._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
-
-  return { token };
-}
-
-export async function validateGoogleLogin(name: string, email: string) {
-  validateName(name);
-  validateEmail(email);
-
-  // If user doesn't exist add them to database
-  let existingUser = await findUserByEmail(email);
-
-  if (existingUser?.provider == Provider.PASSWORD) {
-    throw new AlreadyExistsError(
-      "This user is already signed in with email and password.",
-    );
-  }
-
-  if (!existingUser) {
     const newUser: User = {
       name: name,
-      provider: Provider.GOOGLE,
+      provider: Provider.PASSWORD,
       email: email,
-      password: "",
+      password: hashedPassword,
     };
 
-    await createUser(newUser);
-    existingUser = await findUserByEmail(email);
-    await createPet(
-      existingUser?._id?.toString() as string,
-      `${name}'s Pet`,
-      "dog",
+    // Uses userId returned by insertOne()
+    const { insertedId } = await createUser(newUser);
+    const userId = insertedId.toString();
+    if (!userId) {
+      throw new DoesNotExistError("user does not exist");
+    }
+    // Used a default name for pet
+    await petService.createPet(userId, `${name}'s Pet`, "dog");
+
+    // create settings
+    await settingsService.createSettings(insertedId.toString());
+
+    // Create jwt once user is successfully created
+    const token = JWTService.generateToken({ userId: insertedId }, 604800);
+
+    return { token };
+  },
+
+  // Validate login with email and password
+  async validateLogin(email: string, password: string) {
+    // Validate parameters
+    validateEmail(email);
+    validatePassword(password);
+
+    // Check if user exists
+    const existingUser = await getUserFromEmail(email);
+
+    if (!existingUser) {
+      throw new DoesNotExistError(
+        "Couldn't find your account. Please sign up to create an account.",
+      );
+    }
+
+    if (existingUser.provider == Provider.GOOGLE) {
+      throw new AlreadyExistsError("This user is signed in with Google.");
+    }
+
+    // Check if password is correct
+    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+
+    if (!passwordMatch) {
+      throw new BadRequestError(
+        "Wrong password. Try again or click Forgot Password to reset it.",
+      );
+    }
+
+    // Create and return jwt
+    const token = JWTService.generateToken(
+      { userId: existingUser._id },
+      604800,
     );
-  }
 
-  const token = jwt.sign(
-    {
-      userId: existingUser?._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+    return { token };
+  },
 
-  return token;
-}
+  // Validate login with Google
+  async validateGoogleLogin(name: string, email: string) {
+    validateName(name);
+    validateEmail(email);
 
-export async function validateToken(token: string) {
-  const decodedToken = verifyToken(token);
-  await getUserFromId(new ObjectId(decodedToken.userId));
+    // If user doesn't exist add them to database
+    let existingUser = await getUserFromEmail(email);
 
-  return decodedToken;
-}
+    if (existingUser?.provider == Provider.PASSWORD) {
+      throw new AlreadyExistsError(
+        "This user is already signed in with email and password.",
+      );
+    }
+
+    if (!existingUser) {
+      const newUser: User = {
+        name: name,
+        provider: Provider.GOOGLE,
+        email: email,
+        password: "",
+      };
+
+      await createUser(newUser);
+      existingUser = await getUserFromEmail(email);
+      await petService.createPet(
+        existingUser?._id?.toString() as string,
+        `${name}'s Pet`,
+        "dog",
+      );
+    }
+
+    const token = JWTService.generateToken(
+      { userId: existingUser?._id },
+      604800,
+    );
+
+    return token;
+  },
+
+  // Validate JWT token and ensure user exists
+  async validateToken(token: string) {
+    const decodedToken = JWTService.verifyToken(token);
+    await getUserFromId(new ObjectId(decodedToken.userId));
+
+    return decodedToken;
+  },
+};
+
+export default authService;

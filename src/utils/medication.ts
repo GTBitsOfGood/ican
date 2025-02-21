@@ -14,7 +14,7 @@ type ValidateParamsType = {
   doseIntervalInHours?: number;
   // string of times
   doseTimes?: string[];
-  userId?: string;
+  userId?: ObjectId;
 };
 
 export async function validateCreateParams({

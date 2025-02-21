@@ -1,5 +1,5 @@
 import { Pet } from "@/db/models";
-import { createPet } from "@/services/pets";
+import { petService } from "@/services/pets";
 import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -12,7 +12,7 @@ export default async function handler(
   try {
     if (method == "POST") {
       try {
-        const createdPet: Pet = await createPet(
+        const createdPet: Pet = await petService.createPet(
           body.userId,
           body.name,
           body.petType,

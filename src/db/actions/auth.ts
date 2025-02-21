@@ -1,6 +1,11 @@
-import { InternalServerError } from "@/types/exceptions";
+import { ObjectId, WithId } from "mongodb";
 import client from "../dbClient";
 import { User } from "../models";
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from "@/types/exceptions";
 
 export async function createUser(newUser: User) {
   const db = client.db();
@@ -12,8 +17,45 @@ export async function createUser(newUser: User) {
   }
 }
 
-export async function findUserByEmail(email: string): Promise<User | null> {
+export async function getUserFromEmail(
+  email: string | undefined,
+): Promise<WithId<User>> {
+  if (!email || !email.trim()) {
+    throw new BadRequestError("Invalid Email.");
+  }
+
   const db = client.db();
-  const existingUser = await db.collection("users").findOne({ email: email });
-  return existingUser as User | null;
+  const user = await db.collection<User>("users").findOne({ email });
+
+  if (!user) {
+    throw new NotFoundError("User not found.");
+  }
+
+  return user;
+}
+
+export async function getUserFromId(_id: ObjectId) {
+  const db = client.db();
+  const user = await db.collection<User>("users").findOne({ _id });
+  if (!user) {
+    throw new NotFoundError("User does not exist.");
+  }
+  return user;
+}
+
+export async function updateUserPasswordFromId(
+  _id: ObjectId,
+  newPassword: string,
+) {
+  const db = client.db();
+  const userExists = await getUserFromId(_id);
+  if (!userExists) {
+    throw new NotFoundError("User does not exist.");
+  }
+  const result = await db
+    .collection<User>("users")
+    .updateOne({ _id }, { $set: { password: newPassword } });
+  if (result.modifiedCount === 0) {
+    throw new InternalServerError("User password update failed.");
+  }
 }

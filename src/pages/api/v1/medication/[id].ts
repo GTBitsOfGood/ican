@@ -1,9 +1,5 @@
 import { Medication } from "@/db/models";
-import {
-  deleteMedication,
-  getMedication,
-  updateMedication,
-} from "@/services/medication";
+import { medicationService } from "@/services/medication";
 import { ApiError } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -22,7 +18,8 @@ export default async function handler(
     switch (method) {
       case "GET":
         try {
-          const medication: Medication | null = await getMedication(id);
+          const medication: Medication | null =
+            await medicationService.getMedication(id);
           res.status(201).json(medication);
         } catch (error) {
           if (error instanceof ApiError) {
@@ -36,18 +33,7 @@ export default async function handler(
 
       case "PATCH":
         try {
-          await updateMedication(id, {
-            formOfMedication: body.formOfMedication,
-            medicationId: body.medicationId,
-            repeatInterval: body.repeatInterval,
-            repeatUnit: body.repeatUnit,
-            repeatOn: body.repeatOn,
-            repeatMonthlyOnDay: body.repeatMonthlyOnDay,
-            notificationFrequency: body.notificationFrequency,
-            dosesPerDay: body.dosesPerDay,
-            doseIntervalInHours: body.doseIntervalInHours,
-            doseTimes: body.doseTimes,
-          });
+          await medicationService.updateMedication(id, body);
           res.status(204).end();
         } catch (error) {
           if (error instanceof ApiError) {
@@ -61,7 +47,7 @@ export default async function handler(
 
       case "DELETE":
         try {
-          await deleteMedication(id);
+          await medicationService.deleteMedication(id);
           res.status(204).end();
         } catch (error) {
           if (error instanceof ApiError) {

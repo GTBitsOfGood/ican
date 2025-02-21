@@ -5,7 +5,6 @@ import { Pet } from "../models";
 
 export async function createNewPet(newPet: Pet) {
   const db = client.db();
-
   try {
     await db.collection("pets").insertOne(newPet);
   } catch (error) {

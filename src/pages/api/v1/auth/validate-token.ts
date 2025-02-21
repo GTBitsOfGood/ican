@@ -1,4 +1,4 @@
-import { validateToken } from "@/services/auth";
+import authService from "@/services/auth";
 import { ApiError, UnauthorizedError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -19,7 +19,7 @@ export default async function handler(
     }
     const token = authorization.split(" ")[1];
 
-    const decodedToken = await validateToken(token);
+    const decodedToken = await authService.validateToken(token);
     res.status(200).json({ isValid: true, decodedToken: decodedToken });
   } catch (error) {
     if (error instanceof ApiError) {

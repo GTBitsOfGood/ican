@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { changePassword } from "@/services/forgotPasswordCodes";
+import { forgotPasswordService } from "@/services/forgotPasswordCodes";
 import { ApiError } from "@/types/exceptions";
 
 export default async function handler(
@@ -22,7 +22,11 @@ export default async function handler(
     }
 
     const token = authHeader.split(" ")[1];
-    await changePassword(token, password, confirmPassword);
+    await forgotPasswordService.changePassword(
+      token,
+      password,
+      confirmPassword,
+    );
 
     return res.status(200).json({ message: "Password updated successfully!" });
   } catch (error) {
