@@ -54,6 +54,20 @@ export async function updatePetCoinsByPetId(
   }
 }
 
+export async function updatePetAppearanceByPetId(
+  petId: ObjectId,
+  newAppearance: Pet["appearance"],
+) {
+  const db = client.db();
+  const result = await db
+    .collection("pets")
+    .updateOne({ _id: petId }, { $set: { appearance: newAppearance } });
+
+  if (result.modifiedCount == 0) {
+    throw new InternalServerError("Failed to update pet.");
+  }
+}
+
 export async function deletePetByUserId(userId: ObjectId) {
   const db = client.db();
   const result = await db.collection("pets").deleteOne({ userId: userId });
