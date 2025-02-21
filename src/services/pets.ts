@@ -3,7 +3,7 @@ import {
   createNewPet,
   deletePetByUserId,
   getPetByUserId,
-  updatePetByUserId,
+  updatePetNameByUserId,
 } from "../db/actions/pets";
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
@@ -58,7 +58,7 @@ export async function updatePet(userId: string, name: string) {
     throw new DoesNotExistError("This pet does not exist");
   }
 
-  await updatePetByUserId(new ObjectId(userId), name);
+  await updatePetNameByUserId(new ObjectId(userId), name);
 }
 
 export async function deletePet(userId: string) {

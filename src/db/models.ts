@@ -24,10 +24,10 @@ export interface Pet {
   coins: number;
   userId: ObjectId;
   appearance: {
-    clothes?: ObjectId;
-    accessories?: ObjectId;
-    background?: ObjectId;
-    food?: ObjectId;
+    clothes?: string;
+    accessories?: string;
+    background?: string;
+    food?: string;
   };
 }
 
