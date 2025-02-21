@@ -25,9 +25,13 @@ export interface Pet {
   userId: ObjectId;
   appearance: {
     clothes?: string;
-    accessories?: string;
+    accessories?: {
+      shoes?: string;
+      eyewear?: string;
+      hat?: string;
+      occupation?: string;
+    };
     background?: string;
-    food?: string;
   };
 }
 

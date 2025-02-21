@@ -2,14 +2,12 @@ import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import { InternalServerError } from "@/types/exceptions";
 import { BagItem } from "../models";
-import { updatePetCoinsByPetId } from "./pets";
 
-export async function purchaseItem(newItem: BagItem, newBalance: number) {
+export async function createBagItem(newItem: BagItem) {
   const db = client.db();
 
   try {
     await db.collection("bagItems").insertOne(newItem);
-    await updatePetCoinsByPetId(newItem.petId, newBalance);
   } catch (error) {
     throw new InternalServerError(
       "Failed to purchase item: " + (error as Error).message,

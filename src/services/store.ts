@@ -1,10 +1,10 @@
 import { BadRequestError, DoesNotExistError } from "@/types/exceptions";
 import { storeItems } from "@/types/store";
 import { validateItemName, validatePetId } from "@/utils/store";
-import { getPetByPetId } from "@/db/actions/pets";
+import { getPetByPetId, updatePetCoinsByPetId } from "@/db/actions/pets";
 import { ObjectId } from "mongodb";
 import { BagItem, Pet } from "@/db/models";
-import { getBagItemByPetIdAndName, purchaseItem } from "@/db/actions/bag";
+import { getBagItemByPetIdAndName, createBagItem } from "@/db/actions/bag";
 
 export async function validatePurchase(petId: string, itemName: string) {
   validatePetId(petId);
@@ -35,5 +35,6 @@ export async function validatePurchase(petId: string, itemName: string) {
     itemName: itemName,
   };
 
-  await purchaseItem(newItem, pet.coins - item.cost);
+  await createBagItem(newItem);
+  await updatePetCoinsByPetId(newItem.petId, pet.coins - item.cost);
 }

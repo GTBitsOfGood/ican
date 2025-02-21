@@ -12,7 +12,7 @@ import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
 import { validateItemName, validatePetId } from "@/utils/store";
 import { getBagItemByPetIdAndName } from "@/db/actions/bag";
-import { storeItems } from "@/types/store";
+import { AcessoryType, storeItems } from "@/types/store";
 
 export async function createPet(
   userId: string,
@@ -35,7 +35,13 @@ export async function createPet(
     xpLevel: 0,
     coins: 0,
     userId: new ObjectId(userId),
-    appearance: {},
+    appearance: {
+      clothes: "default clothes",
+      appearance: {
+        shoes: "default shoes",
+      },
+      background: "default background",
+    },
   };
 
   await createNewPet(newPet);
@@ -86,10 +92,22 @@ export async function validateEquipItem(petId: string, itemName: string) {
   }
 
   const prevAppearance = pet.appearance;
-  const newAppearance = {
-    ...prevAppearance,
-    [item.type]: itemName,
-  };
+  let newAppearance = {};
+
+  if (Object.values(AcessoryType).includes(item.type as AcessoryType)) {
+    newAppearance = {
+      ...prevAppearance,
+      accessories: {
+        ...prevAppearance.accessories,
+        [item.type]: itemName,
+      },
+    };
+  } else {
+    newAppearance = {
+      ...prevAppearance,
+      [item.type]: itemName,
+    };
+  }
 
   await updatePetAppearanceByPetId(new ObjectId(petId), newAppearance);
 }
