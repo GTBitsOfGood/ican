@@ -1,6 +1,6 @@
 import { Medication } from "@/db/models";
 import { medicationService } from "@/services/medication";
-import { ApiError } from "@/types/exceptions";
+import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -14,59 +14,50 @@ export default async function handler(
     return res.status(400).json({ error: "id must be a string" });
   }
 
-  try {
-    switch (method) {
-      case "GET":
-        try {
-          const medication: Medication | null =
-            await medicationService.getMedication(id);
-          res.status(201).json(medication);
-        } catch (error) {
-          if (error instanceof ApiError) {
-            res.status(error.statusCode).json({ error: error.message });
-          } else {
-            throw error;
-          }
+  switch (method) {
+    case "GET":
+      try {
+        const medication: Medication | null =
+          await medicationService.getMedication(id);
+        return res.status(201).json(medication);
+      } catch (error) {
+        if (error instanceof AppError) {
+          return res
+            .status(getStatusCode(error))
+            .json({ error: error.message });
         }
+        return res.status(500).json({ error: (error as Error).message });
+      }
 
-        break;
-
-      case "PATCH":
-        try {
-          await medicationService.updateMedication(id, body);
-          res.status(204).end();
-        } catch (error) {
-          if (error instanceof ApiError) {
-            res.status(error.statusCode).json({ error: error.message });
-          } else {
-            throw error;
-          }
+    case "PATCH":
+      try {
+        await medicationService.updateMedication(id, body);
+        return res.status(204).end();
+      } catch (error) {
+        if (error instanceof AppError) {
+          return res
+            .status(getStatusCode(error))
+            .json({ error: error.message });
         }
+        return res.status(500).json({ error: (error as Error).message });
+      }
 
-        break;
-
-      case "DELETE":
-        try {
-          await medicationService.deleteMedication(id);
-          res.status(204).end();
-        } catch (error) {
-          if (error instanceof ApiError) {
-            res.status(error.statusCode).json({ error: error.message });
-          } else {
-            throw error;
-          }
+    case "DELETE":
+      try {
+        await medicationService.deleteMedication(id);
+        return res.status(204).end();
+      } catch (error) {
+        if (error instanceof AppError) {
+          return res
+            .status(getStatusCode(error))
+            .json({ error: error.message });
         }
+        return res.status(500).json({ error: (error as Error).message });
+      }
 
-        break;
-
-      default:
-        // Method not allowed
-        res.setHeader("Allow", ["GET", "PATCH", "DELETE"]);
-        res.status(405).json({ error: `Method ${method} Not Allowed` });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: (error as Error).message || "An unknown error occurred" });
+    default:
+      // Method not allowed
+      res.setHeader("Allow", ["GET", "PATCH", "DELETE"]);
+      return res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }

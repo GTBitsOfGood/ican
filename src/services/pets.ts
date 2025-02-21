@@ -1,4 +1,4 @@
-import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import {
   createNewPet,
   deletePetByUserId,
@@ -15,7 +15,7 @@ export const petService = {
 
     const existingPet = await getPetByUserId(new ObjectId(userId));
     if (existingPet) {
-      throw new AlreadyExistsError("This user already has a pet");
+      throw new ConflictError("This user already has a pet");
     }
 
     const newPet = {
@@ -35,7 +35,7 @@ export const petService = {
     await validateParams(userId);
     const existingPet = await getPetByUserId(new ObjectId(userId));
     if (!existingPet) {
-      throw new DoesNotExistError("This pet does not exist");
+      throw new NotFoundError("This pet does not exist");
     }
     return existingPet as Pet;
   },
@@ -44,7 +44,7 @@ export const petService = {
     await validateParams(userId, name);
     const existingPet = await getPetByUserId(new ObjectId(userId));
     if (!existingPet) {
-      throw new DoesNotExistError("This pet does not exist");
+      throw new NotFoundError("This pet does not exist");
     }
     await updatePetByUserId(new ObjectId(userId), name);
   },
@@ -53,7 +53,7 @@ export const petService = {
     await validateParams(userId);
     const existingPet = await getPetByUserId(new ObjectId(userId));
     if (!existingPet) {
-      throw new DoesNotExistError("This pet does not exist");
+      throw new NotFoundError("This pet does not exist");
     }
     await deletePetByUserId(new ObjectId(userId));
   },

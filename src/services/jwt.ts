@@ -1,10 +1,8 @@
-import { InternalServerError, UnauthorizedError } from "@/types/exceptions";
+import { UnauthorizedError } from "@/types/exceptions";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 
 if (!process.env.JWT_SECRET) {
-  throw new InternalServerError(
-    'Invalid/Missing environment variable: "JWT_SECRET"',
-  );
+  throw new Error('Invalid/Missing environment variable: "JWT_SECRET"');
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -22,7 +20,7 @@ const JWTService = {
       if (error instanceof JsonWebTokenError) {
         throw new UnauthorizedError("Invalid or expired token.");
       } else {
-        throw new InternalServerError("An unknown error occurred.");
+        throw new Error("An unknown error occurred.");
       }
     }
   },
@@ -35,7 +33,7 @@ const JWTService = {
       if (error instanceof JsonWebTokenError) {
         throw new UnauthorizedError("Invalid or expired token.");
       } else {
-        throw new InternalServerError("An unknown error occurred.");
+        throw new Error("An unknown error occurred.");
       }
     }
   },

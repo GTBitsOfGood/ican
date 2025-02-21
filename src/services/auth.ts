@@ -1,7 +1,7 @@
 import {
-  AlreadyExistsError,
-  BadRequestError,
-  DoesNotExistError,
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -52,11 +52,9 @@ const authService = {
 
     if (existingUser) {
       if (existingUser.provider == Provider.PASSWORD) {
-        throw new AlreadyExistsError("This user already exists.");
+        throw new ConflictError("This user already exists.");
       } else {
-        throw new AlreadyExistsError(
-          "This user is already signed in with Google.",
-        );
+        throw new ConflictError("This user is already signed in with Google.");
       }
     }
 
@@ -73,7 +71,7 @@ const authService = {
     const { insertedId } = await createUser(newUser);
     const userId = insertedId.toString();
     if (!userId) {
-      throw new DoesNotExistError("user does not exist");
+      throw new NotFoundError("user does not exist");
     }
     // Used a default name for pet
     await petService.createPet(userId, `${name}'s Pet`, "dog");
@@ -97,20 +95,20 @@ const authService = {
     const existingUser = await getUserFromEmail(email);
 
     if (!existingUser) {
-      throw new DoesNotExistError(
+      throw new NotFoundError(
         "Couldn't find your account. Please sign up to create an account.",
       );
     }
 
     if (existingUser.provider == Provider.GOOGLE) {
-      throw new AlreadyExistsError("This user is signed in with Google.");
+      throw new ConflictError("This user is signed in with Google.");
     }
 
     // Check if password is correct
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
     if (!passwordMatch) {
-      throw new BadRequestError(
+      throw new UnauthorizedError(
         "Wrong password. Try again or click Forgot Password to reset it.",
       );
     }
@@ -133,7 +131,7 @@ const authService = {
     let existingUser = await getUserFromEmail(email);
 
     if (existingUser?.provider == Provider.PASSWORD) {
-      throw new AlreadyExistsError(
+      throw new ConflictError(
         "This user is already signed in with email and password.",
       );
     }

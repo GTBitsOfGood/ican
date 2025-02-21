@@ -1,11 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
 import client from "../dbClient";
 import { User } from "../models";
-import {
-  BadRequestError,
-  InternalServerError,
-  NotFoundError,
-} from "@/types/exceptions";
+import { InvalidArgumentsError, NotFoundError } from "@/types/exceptions";
 
 export async function createUser(newUser: User) {
   const db = client.db();
@@ -13,7 +9,7 @@ export async function createUser(newUser: User) {
     return await db.collection("users").insertOne(newUser);
   } catch (error) {
     console.error("Failed to insert new user:", error);
-    throw new InternalServerError();
+    throw new Error();
   }
 }
 
@@ -21,7 +17,7 @@ export async function getUserFromEmail(
   email: string | undefined,
 ): Promise<WithId<User>> {
   if (!email || !email.trim()) {
-    throw new BadRequestError("Invalid Email.");
+    throw new InvalidArgumentsError("Invalid Email.");
   }
 
   const db = client.db();
@@ -56,6 +52,6 @@ export async function updateUserPasswordFromId(
     .collection<User>("users")
     .updateOne({ _id }, { $set: { password: newPassword } });
   if (result.modifiedCount === 0) {
-    throw new InternalServerError("User password update failed.");
+    throw new Error("User password update failed.");
   }
 }

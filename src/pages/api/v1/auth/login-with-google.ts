@@ -1,5 +1,5 @@
 import authService from "@/services/auth";
-import { ApiError } from "@/types/exceptions";
+import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -11,20 +11,16 @@ export default async function handler(
 
   if (method !== "POST") {
     res.setHeader("Allow", ["POST"]);
-    res.status(405).json({ error: `Method ${method} Not Allowed` });
-    return;
+    return res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 
   try {
     const token = await authService.validateGoogleLogin(name, email);
     res.status(201).json({ token });
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({ error: error.message });
-    } else {
-      res.status(500).json({
-        error: (error as Error).message || "An unknown error occurred",
-      });
+    if (error instanceof AppError) {
+      return res.status(getStatusCode(error)).json({ error: error.message });
     }
+    return res.status(500).json({ error: (error as Error).message });
   }
 }

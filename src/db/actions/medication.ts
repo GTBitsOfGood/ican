@@ -1,4 +1,3 @@
-import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
 import { Medication } from "../models";
 import { ObjectId } from "mongodb";
@@ -10,9 +9,7 @@ export async function createNewMedication(newMedication: Medication) {
 
     return result;
   } catch (error) {
-    throw new InternalServerError(
-      "Failed to create medication: " + (error as Error).message,
-    );
+    throw new Error("Failed to create medication: " + (error as Error).message);
   }
 }
 
@@ -47,7 +44,7 @@ export async function updateMedicationById(
     .updateOne({ _id: id }, { $set: updateObj });
 
   if (result.modifiedCount == 0) {
-    throw new InternalServerError("Failed to update medication.");
+    throw new Error("Failed to update medication.");
   }
 }
 
@@ -56,7 +53,7 @@ export async function deleteMedicationById(id: ObjectId) {
   const result = await db.collection("medication").deleteOne({ _id: id });
 
   if (result.deletedCount == 0) {
-    throw new InternalServerError("Failed to delete medication.");
+    throw new Error("Failed to delete medication.");
   }
 }
 

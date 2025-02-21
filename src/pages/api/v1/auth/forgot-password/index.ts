@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { forgotPasswordService } from "@/services/forgotPasswordCodes";
-import { ApiError } from "@/types/exceptions";
+import { AppError, getStatusCode } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -17,9 +17,9 @@ export default async function handler(
     const userId = await forgotPasswordService.sendPasswordCode(email);
     return res.status(200).json({ userId });
   } catch (error) {
-    if (error instanceof ApiError) {
-      return res.status(error.statusCode).json({ error: error.message });
+    if (error instanceof AppError) {
+      return res.status(getStatusCode(error)).json({ error: error.message });
     }
-    return res.status(500).json({ error: "Unknown error occured." });
+    return res.status(500).json({ error: (error as Error).message });
   }
 }

@@ -6,11 +6,7 @@ import {
 } from "@/db/actions/settings";
 import { Settings } from "@/db/models";
 import { removeUndefinedKeys } from "@/lib/utils";
-import {
-  AlreadyExistsError,
-  DoesNotExistError,
-  InternalServerError,
-} from "@/types/exceptions";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import { encryptPin, validateParams } from "@/utils/settings";
 import { ObjectId } from "mongodb";
@@ -20,7 +16,7 @@ export const settingsService = {
     await validateParams(userId);
     const existingSettings = await getSettingsByUserId(new ObjectId(userId));
     if (existingSettings) {
-      throw new AlreadyExistsError("Settings already exist for this user");
+      throw new ConflictError("Settings already exist for this user");
     }
 
     const newSettings: Settings = {
@@ -35,7 +31,7 @@ export const settingsService = {
 
     const settings = await createNewSettings(newSettings);
     if (!settings) {
-      throw new InternalServerError("There was an error creating settings.");
+      throw new Error("There was an error creating settings.");
     }
     return settings;
   },
@@ -44,7 +40,7 @@ export const settingsService = {
     await validateParams(userId);
     const settings = await getSettingsByUserId(new ObjectId(userId));
     if (!settings) {
-      throw new DoesNotExistError("Settings do not exist for this user");
+      throw new NotFoundError("Settings do not exist for this user");
     }
     return settings as Settings;
   },
@@ -56,7 +52,7 @@ export const settingsService = {
       new ObjectId(updatedSettings.userId),
     );
     if (!settings) {
-      throw new DoesNotExistError("Settings do not exist for this user");
+      throw new NotFoundError("Settings do not exist for this user");
     }
     await updateSettingsByUserId(
       new ObjectId(updatedSettings.userId),
@@ -68,7 +64,7 @@ export const settingsService = {
     await validateParams(userId);
     const settings = await getSettingsByUserId(new ObjectId(userId));
     if (!settings) {
-      throw new DoesNotExistError("Settings do not exist for this user");
+      throw new NotFoundError("Settings do not exist for this user");
     }
     if (pin) {
       const encryptedPin = await encryptPin(pin);

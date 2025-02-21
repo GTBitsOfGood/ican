@@ -1,4 +1,3 @@
-import { InternalServerError } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import {
@@ -15,7 +14,7 @@ export async function createNewSettings(newSettings: Settings) {
 
     return settings;
   } catch (error) {
-    throw new InternalServerError(
+    throw new Error(
       "Failed to create user settings: " + (error as Error).message,
     );
   }
@@ -41,7 +40,7 @@ export async function updateSettingsByUserId(
     .updateOne({ userId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
-    throw new InternalServerError("Failed to update user settings.");
+    throw new Error("Failed to update user settings.");
   }
 }
 
@@ -55,6 +54,6 @@ export async function updateSettingsPinByUserId(
     .updateOne({ userId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
-    throw new InternalServerError("Failed to update user settings pin.");
+    throw new Error("Failed to update user settings pin.");
   }
 }

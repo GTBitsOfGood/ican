@@ -12,16 +12,14 @@ import {
   getUserFromId,
   updateUserPasswordFromId,
 } from "../db/actions/auth";
-import { ApiError } from "@/types/exceptions";
+import { AppError, InvalidArgumentsError } from "@/types/exceptions";
 import {
   generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
 import {
-  BadRequestError,
   ConflictError,
-  InternalServerError,
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
@@ -49,8 +47,8 @@ export const forgotPasswordService = {
       }
       return user._id;
     } catch (error) {
-      if (!(error instanceof ApiError)) {
-        throw new InternalServerError("An unknown error occurred.");
+      if (!(error instanceof AppError)) {
+        throw new Error("An unknown error occurred.");
       }
       throw error;
     }
@@ -61,8 +59,8 @@ export const forgotPasswordService = {
     code: string,
   ): Promise<string> {
     if (!userIdString?.trim())
-      throw new BadRequestError("User ID is required.");
-    if (!code?.trim()) throw new BadRequestError("Code is required.");
+      throw new InvalidArgumentsError("User ID is required.");
+    if (!code?.trim()) throw new InvalidArgumentsError("Code is required.");
 
     const userId = new ObjectId(userIdString);
     try {
@@ -83,8 +81,8 @@ export const forgotPasswordService = {
       await deleteForgotPasswordCodeById(forgotPasswordCode._id);
       return JWTService.generateToken({ userId }, 900);
     } catch (error) {
-      if (!(error instanceof ApiError)) {
-        throw new InternalServerError("An unknown error occurred.");
+      if (!(error instanceof AppError)) {
+        throw new Error("An unknown error occurred.");
       }
       throw error;
     }
@@ -96,12 +94,12 @@ export const forgotPasswordService = {
     confirmPassword: string,
   ) {
     if (!newPassword?.trim())
-      throw new BadRequestError("New password is required.");
+      throw new InvalidArgumentsError("New password is required.");
     if (!confirmPassword?.trim())
-      throw new BadRequestError("Confirm password is required.");
+      throw new InvalidArgumentsError("Confirm password is required.");
 
     if (newPassword !== confirmPassword)
-      throw new BadRequestError("Passwords do not match.");
+      throw new UnauthorizedError("Passwords do not match.");
     try {
       const decoded = JWTService.verifyToken(token);
       const userId = new ObjectId(decoded.userId);
@@ -110,8 +108,8 @@ export const forgotPasswordService = {
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await updateUserPasswordFromId(user._id, hashedPassword);
     } catch (error) {
-      if (!(error instanceof ApiError)) {
-        throw new InternalServerError("An unknown error occurred.");
+      if (!(error instanceof AppError)) {
+        throw new Error("An unknown error occurred.");
       }
       throw error;
     }

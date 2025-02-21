@@ -8,7 +8,7 @@ import {
 } from "@/db/actions/medication";
 import { Medication } from "@/db/models";
 import { removeUndefinedKeys } from "@/lib/utils";
-import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { validateCreateParams, validateParams } from "@/utils/medication";
 import { ObjectId } from "mongodb";
 
@@ -22,7 +22,7 @@ export const medicationService = {
       medication.userId,
     );
     if (existingMedication) {
-      throw new AlreadyExistsError("This medication already exists");
+      throw new ConflictError("This medication already exists");
     }
 
     const newMedication = await createNewMedication(medication);
@@ -33,7 +33,7 @@ export const medicationService = {
     await validateParams({ id });
     const existingMedication = await getMedicationById(new ObjectId(id));
     if (!existingMedication) {
-      throw new DoesNotExistError("This medication does not exist");
+      throw new NotFoundError("This medication does not exist");
     }
     return existingMedication as Medication;
   },
@@ -43,7 +43,7 @@ export const medicationService = {
     await validateParams(updatedMedication);
     const existingMedication = await getMedicationById(new ObjectId(id));
     if (!existingMedication) {
-      throw new DoesNotExistError("This medication does not exist");
+      throw new ConflictError("This medication does not exist");
     }
     if (updatedMedication.formOfMedication) {
       await updateMedicationById(new ObjectId(id), updatedMedication);
@@ -54,7 +54,7 @@ export const medicationService = {
     validateParams({ id });
     const existingMedication = await getMedicationById(new ObjectId(id));
     if (!existingMedication) {
-      throw new DoesNotExistError("This medication does not exist");
+      throw new NotFoundError("This medication does not exist");
     }
     await deleteMedicationById(new ObjectId(id));
   },
@@ -63,7 +63,7 @@ export const medicationService = {
     validateParams({ userId });
     const medications = await getMedicationsByUserId(new ObjectId(userId));
     if (!medications) {
-      throw new DoesNotExistError(
+      throw new NotFoundError(
         "This user id does not have connected medications",
       );
     }
