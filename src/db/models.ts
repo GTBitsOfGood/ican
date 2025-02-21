@@ -41,6 +41,12 @@ export interface Medication {
   userId: ObjectId;
 }
 
+export interface BagItem {
+  _id?: ObjectId;
+  petId: ObjectId;
+  itemName: string;
+}
+
 export interface Settings {
   _id: ObjectId;
   userId: ObjectId;
