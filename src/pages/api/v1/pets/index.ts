@@ -7,32 +7,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method, body } = req;
+  const { userId, name, petType } = req.body;
+
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
 
   try {
-    if (method == "POST") {
-      try {
-        const createdPet: Pet = await createPet(
-          body.userId,
-          body.name,
-          body.petType,
-        );
-        res.status(200).json(createdPet);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
-        } else {
-          throw error;
-        }
-      }
-    } else {
-      // Method not allowed
-      res.setHeader("Allow", ["POST"]);
-      res.status(405).json({ error: `Method ${method} Not Allowed` });
-    }
+    const createdPet: Pet = await createPet(userId, name, petType);
+    res.status(200).json(createdPet);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: (error as Error).message || "An unknown error occurred" });
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: (error as Error).message });
+    }
   }
 }

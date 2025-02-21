@@ -10,15 +10,11 @@ export default async function handler(
   const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof userId !== "string") {
-    return res.status(400).json({ error: "userId must be a string" });
-  }
-
   try {
     switch (method) {
       case "GET":
         try {
-          const pet: Pet | null = await getPet(userId);
+          const pet: Pet | null = await getPet(userId as string);
           res.status(200).json(pet);
         } catch (error) {
           if (error instanceof ApiError) {
@@ -32,7 +28,7 @@ export default async function handler(
 
       case "PATCH":
         try {
-          await updatePet(userId, body.name);
+          await updatePet(userId as string, body.name);
           res.status(204).end();
         } catch (error) {
           if (error instanceof ApiError) {
@@ -46,7 +42,7 @@ export default async function handler(
 
       case "DELETE":
         try {
-          await deletePet(userId);
+          await deletePet(userId as string);
           res.status(204).end();
         } catch (error) {
           if (error instanceof ApiError) {

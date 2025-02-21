@@ -6,12 +6,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method } = req;
   const { name, email } = req.body;
 
-  if (method !== "POST") {
+  if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
-    res.status(405).json({ error: `Method ${method} Not Allowed` });
+    res.status(405).json({ error: `Method Not Allowed` });
     return;
   }
 

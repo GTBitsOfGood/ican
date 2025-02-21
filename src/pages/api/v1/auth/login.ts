@@ -6,29 +6,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { method } = req;
   const { email, password } = req.body;
 
+  if (req.method !== "POST") {
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   try {
-    if (method == "POST") {
-      try {
-        const response = await validateLogin(email, password);
-        res.status(201).json(response);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
-        } else {
-          throw error;
-        }
-      }
-    } else {
-      // Method not allowed
-      res.setHeader("Allow", ["POST"]);
-      res.status(405).json({ error: `Method ${method} Not Allowed` });
-    }
+    const response = await validateLogin(email, password);
+    res.status(201).json(response);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: (error as Error).message || "An unknown error occurred" });
+    if (error instanceof ApiError) {
+      res.status(error.statusCode).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: (error as Error).message });
+    }
   }
 }
