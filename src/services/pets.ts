@@ -30,6 +30,7 @@ export async function createPet(
     xpLevel: 0,
     coins: 0,
     userId: new ObjectId(userId),
+    appearance: {},
   };
 
   await createNewPet(newPet);
