@@ -1,4 +1,4 @@
-import { InvalidBodyError } from "../types/exceptions";
+import { InvalidArgumentsError } from "../types/exceptions";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
@@ -8,10 +8,12 @@ export async function validateParams(
   // Validate parameters
 
   if (!userId) {
-    throw new InvalidBodyError("Invalid parameters: 'userId' is required.");
+    throw new InvalidArgumentsError(
+      "Invalid parameters: 'userId' is required.",
+    );
   }
   if (userId && (typeof userId !== "string" || !ObjectId.isValid(userId))) {
-    throw new InvalidBodyError(
+    throw new InvalidArgumentsError(
       "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
     );
   }
