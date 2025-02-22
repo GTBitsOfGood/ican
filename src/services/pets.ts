@@ -20,7 +20,7 @@ export interface CreatePetBody {
 
 export async function createPet(userId: string, name: string): Promise<Pet> {
   // Validate parameters
-  validateParams(userId, name);
+  await validateParams(userId, name);
 
   // Check if the user has a pet already
   const existingPet = await getPetByUserId(new ObjectId(userId));

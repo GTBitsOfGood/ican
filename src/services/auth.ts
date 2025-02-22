@@ -2,6 +2,7 @@ import {
   AlreadyExistsError,
   BadRequestError,
   DoesNotExistError,
+  InternalServerError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -10,10 +11,9 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
-import { verifyToken } from "./jwt";
+import { generateToken, verifyToken } from "./jwt";
 import { getUserFromId } from "@/db/actions/user";
 import { ObjectId } from "mongodb";
 
@@ -29,14 +29,8 @@ export interface LoginBody {
   password: string;
 }
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables.");
-}
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
-
 export async function validateAuthorization(
-  authHeader?: string,
+  authHeader: string | null,
 ): Promise<boolean> {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return false;
@@ -83,18 +77,10 @@ export async function validateCreateUser(
     password: hashedPassword,
   };
 
-  await createUser(newUser);
+  const { insertedId } = await createUser(newUser);
 
   // Create jwt once user is successfully created
-  const token = jwt.sign(
-    {
-      email: newUser.email,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(insertedId);
 
   return { token };
 }
@@ -111,6 +97,11 @@ export async function validateLogin(email: string, password: string) {
     throw new DoesNotExistError("user does not exist");
   }
 
+  // Check if _id field exists (typescript purposes)
+  if (!existingUser._id) {
+    throw new InternalServerError("User ID is missing");
+  }
+
   // Check if password is correct
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
@@ -119,15 +110,7 @@ export async function validateLogin(email: string, password: string) {
   }
 
   // Create and return jwt
-  const token = jwt.sign(
-    {
-      email: email,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(existingUser._id);
 
   return { token };
 }
