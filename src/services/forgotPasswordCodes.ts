@@ -36,13 +36,14 @@ import { MailService } from "./mail";
 import { generateToken, verifyToken } from "./jwt";
 
 export async function sendPasswordCode(
-  email: string, // I removed undefined from email, I don't see how it should ever be undefined
+  email: string | undefined,
 ): Promise<ObjectId> {
   try {
     if (!email || !email.trim()) {
       // I feel like this is checked way too often because its email | undefined for all these methods
       throw new BadRequestError("Invalid Email.");
     }
+
     const user = await getUserFromEmail(email);
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
@@ -52,19 +53,6 @@ export async function sendPasswordCode(
       expirationDate,
       userId: user._id,
     };
-
-    const mailService = new MailService({
-      email: "placeholder@email.com",
-      name: "Forget Password",
-    });
-
-    await mailService.sendEmail({
-      recipient: email,
-      recipientName: user.name,
-      subject: "Password reset code",
-      body: `Your password code is: ${code}.`,
-      contentType: "text/plain",
-    });
 
     const previousForgotPasswordCode = await getForgotPasswordCodeByUserId(
       user._id,
