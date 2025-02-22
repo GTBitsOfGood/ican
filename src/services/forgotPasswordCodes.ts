@@ -25,12 +25,20 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
+
 import { generateTemporaryToken } from "../services/jwt";
+
+import { getEmailService } from "./mail";
+
 
 export async function sendPasswordCode(
   email: string | undefined,
 ): Promise<ObjectId> {
   try {
+    if (!email || !email.trim()) {
+      // I feel like this is checked way too often because its email | undefined for all these methods
+      throw new BadRequestError("Invalid Email.");
+    }
     const user = await getUserFromEmail(email);
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
@@ -50,6 +58,9 @@ export async function sendPasswordCode(
     } else {
       await createForgotPasswordCode(newCode);
     }
+
+    const emailService = getEmailService();
+    await emailService.sendPasswordCode(email, code);
 
     return user._id;
   } catch (error) {
