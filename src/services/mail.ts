@@ -18,7 +18,6 @@ class EmailService {
 
   async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
     try {
-      // Change this so it doesn't have to be called every time
       const transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 465,
