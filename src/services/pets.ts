@@ -16,12 +16,27 @@ import { validateItemName, validatePetId } from "@/utils/store";
 import { getBagItemByPetIdAndName } from "@/db/actions/bag";
 import { AcessoryType, storeItems } from "@/types/store";
 
+
 export async function createPet(
   userId: string,
   name: string,
   petType: string,
 ): Promise<Pet> {
   await validateParams(userId, name, petType);
+
+export interface UpdatePetBody {
+  name: string;
+}
+
+export interface CreatePetBody {
+  name: string;
+  userId: string;
+}
+
+export async function createPet(userId: string, name: string): Promise<Pet> {
+  // Validate parameters
+  await validateParams(userId, name);
+
 
   // Check if the user has a pet already
   const existingPet = await getPetByUserId(new ObjectId(userId));

@@ -25,7 +25,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateToken, verifyToken } from "../services/jwt";
+import { generateTemporaryToken, verifyToken } from "../services/jwt";
 
 export async function sendPasswordCode(
   email: string | undefined,
@@ -95,7 +95,7 @@ export async function verifyForgotPasswordCode(
 
     await deleteForgotPasswordCodeById(forgotPasswordCode._id);
 
-    const token = generateToken(userId);
+    const token = generateTemporaryToken(userId);
     return token;
   } catch (error) {
     if (!(error instanceof ApiError)) {

@@ -10,6 +10,10 @@ if (!process.env.JWT_SECRET) {
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export function generateToken(userId: ObjectId): string {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1w" });
+}
+
+export function generateTemporaryToken(userId: ObjectId): string {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });
 }
 
