@@ -25,7 +25,6 @@
     "eslint-config-next": "^15.1.4",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
-    "juno-sdk": "^0.0.5",
     "lucide-react": "^0.474.0",
     "mongodb": "^6.12.0",
     "next": "15.1.4",
