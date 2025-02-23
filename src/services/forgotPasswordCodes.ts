@@ -26,7 +26,7 @@ import {
   UnauthorizedError,
 } from "@/types/exceptions";
 import { generateToken, verifyToken } from "./jwt";
-import { getEmailService } from "./mail";
+import EmailService from "./mail";
 
 export async function sendPasswordCode(
   email: string | undefined,
@@ -57,13 +57,12 @@ export async function sendPasswordCode(
       await createForgotPasswordCode(newCode);
     }
 
-    const emailService = getEmailService();
-    await emailService.sendPasswordCode(email, code);
+    await EmailService.sendPasswordCode(email, code);
 
     return user._id;
   } catch (error) {
     if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+      throw new Error("Email failed to send.");
     }
     throw error;
   }

@@ -1,33 +1,23 @@
 import { InternalServerError } from "@/types/exceptions";
-import nodemailer, { Transporter } from "nodemailer";
+import nodemailer from "nodemailer";
 
-class EmailService {
-  private transporter: Transporter;
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-    });
-  }
-
-  async sendEmail(to: string, subject: string, html: string): Promise<boolean> {
+export default class EmailService {
+  static async sendEmail(
+    to: string,
+    subject: string,
+    html: string,
+  ): Promise<boolean> {
     try {
-      const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS,
-        },
-      });
-
       const info = await transporter.sendMail({
         from: process.env.MAIL_USER,
         to,
@@ -42,7 +32,7 @@ class EmailService {
     }
   }
 
-  async sendPasswordCode(to: string, code: string): Promise<boolean> {
+  static async sendPasswordCode(to: string, code: string): Promise<boolean> {
     const subject = "iCAN Account Recovery";
 
     const html = `<h2> Someone is trying to reset your iCAN account.</h2>
@@ -51,13 +41,4 @@ class EmailService {
 
     return await this.sendEmail(to, subject, html);
   }
-}
-
-let emailService: EmailService | null = null;
-
-export function getEmailService() {
-  if (!emailService) {
-    emailService = new EmailService();
-  }
-  return emailService;
 }
