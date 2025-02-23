@@ -60,7 +60,7 @@ export async function sendPasswordCode(
     const emailSubject = "iCAN Account Recovery";
 
     const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
-    <p>Your verification code is: ${newCode}</p>
+    <p>Your verification code is: ${code}</p>
     <p>If you did not request this, you can ignore this email</p>`;
 
     await EmailService.sendEmail(email, emailSubject, emailHtml);
