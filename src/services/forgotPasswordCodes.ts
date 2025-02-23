@@ -38,6 +38,8 @@ export default class ForgotPasswordService {
         userId: user._id,
       };
 
+      console.log(code);
+
       const previousCode = await getForgotPasswordCodeByUserId(user._id);
 
       if (previousCode) {

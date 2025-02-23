@@ -127,34 +127,43 @@ export default class AuthService {
     validateName(name);
     validateEmail(email);
 
-    // If user doesn't exist add them to database
-    let existingUser = await getUserFromEmail(email);
+    let existingUser;
 
-    if (existingUser?.provider == Provider.PASSWORD) {
+    try {
+      existingUser = await getUserFromEmail(email);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        const newUser: User = {
+          name: name,
+          provider: Provider.GOOGLE,
+          email: email,
+          password: "",
+        };
+
+        await createUser(newUser);
+        existingUser = await getUserFromEmail(email);
+
+        // Optionally create a pet for the new user
+        if (existingUser?._id) {
+          await PetService.createPet(
+            existingUser._id.toString(),
+            `${name}'s Pet`,
+            "dog",
+          );
+        }
+      } else {
+        throw error;
+      }
+    }
+
+    if (existingUser?.provider === Provider.PASSWORD) {
       throw new ConflictError(
         "This user is already signed in with email and password.",
       );
     }
 
-    if (!existingUser) {
-      const newUser: User = {
-        name: name,
-        provider: Provider.GOOGLE,
-        email: email,
-        password: "",
-      };
-
-      await createUser(newUser);
-      existingUser = await getUserFromEmail(email);
-      await PetService.createPet(
-        existingUser?._id?.toString() as string,
-        `${name}'s Pet`,
-        "dog",
-      );
-    }
-
     const token = JWTService.generateToken(
-      { userId: existingUser?._id },
+      { userId: existingUser._id },
       604800,
     );
 
