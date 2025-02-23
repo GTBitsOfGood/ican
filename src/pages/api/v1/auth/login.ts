@@ -1,4 +1,4 @@
-import authService from "@/services/auth";
+import AuthService from "@/services/auth";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -11,7 +11,7 @@ export default async function handler(
 
   if (method == "POST") {
     try {
-      const response = await authService.validateLogin(email, password);
+      const response = await AuthService.validateLogin(email, password);
       return res.status(201).json(response);
     } catch (error) {
       if (error instanceof AppError) {

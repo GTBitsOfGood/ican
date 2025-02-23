@@ -1,5 +1,5 @@
 import { Medication } from "@/db/models";
-import { medicationService } from "@/services/medication";
+import MedicationService from "@/services/medication";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -18,7 +18,7 @@ export default async function handler(
     case "GET":
       try {
         const medication: Medication | null =
-          await medicationService.getMedication(id);
+          await MedicationService.getMedication(id);
         return res.status(201).json(medication);
       } catch (error) {
         if (error instanceof AppError) {
@@ -31,7 +31,7 @@ export default async function handler(
 
     case "PATCH":
       try {
-        await medicationService.updateMedication(id, body);
+        await MedicationService.updateMedication(id, body);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof AppError) {
@@ -44,7 +44,7 @@ export default async function handler(
 
     case "DELETE":
       try {
-        await medicationService.deleteMedication(id);
+        await MedicationService.deleteMedication(id);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof AppError) {

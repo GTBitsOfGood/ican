@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { forgotPasswordService } from "@/services/forgotPasswordCodes";
 import { AppError, getStatusCode } from "@/types/exceptions";
+import ForgotPasswordService from "@/services/forgotPasswordCodes";
 
 export default async function handler(
   req: NextApiRequest,
@@ -14,7 +14,7 @@ export default async function handler(
   const { email } = req.body;
 
   try {
-    const userId = await forgotPasswordService.sendPasswordCode(email);
+    const userId = await ForgotPasswordService.sendPasswordCode(email);
     return res.status(200).json({ userId });
   } catch (error) {
     if (error instanceof AppError) {

@@ -1,4 +1,4 @@
-import authService from "@/services/auth";
+import AuthService from "@/services/auth";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -15,7 +15,7 @@ export default async function handler(
   }
 
   try {
-    const token = await authService.validateGoogleLogin(name, email);
+    const token = await AuthService.validateGoogleLogin(name, email);
     res.status(201).json({ token });
   } catch (error) {
     if (error instanceof AppError) {

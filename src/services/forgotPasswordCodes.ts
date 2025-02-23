@@ -25,8 +25,8 @@ import {
 } from "@/types/exceptions";
 import JWTService from "./jwt";
 
-export const forgotPasswordService = {
-  async sendPasswordCode(email: string | undefined): Promise<ObjectId> {
+export default class ForgotPasswordService {
+  static async sendPasswordCode(email: string | undefined): Promise<ObjectId> {
     try {
       const user = await getUserFromEmail(email);
       const code = get4DigitCode();
@@ -52,9 +52,9 @@ export const forgotPasswordService = {
       }
       throw error;
     }
-  },
+  }
 
-  async verifyForgotPasswordCode(
+  static async verifyForgotPasswordCode(
     userIdString: string,
     code: string,
   ): Promise<string> {
@@ -86,9 +86,9 @@ export const forgotPasswordService = {
       }
       throw error;
     }
-  },
+  }
 
-  async changePassword(
+  static async changePassword(
     token: string,
     newPassword: string,
     confirmPassword: string,
@@ -113,5 +113,5 @@ export const forgotPasswordService = {
       }
       throw error;
     }
-  },
-};
+  }
+}

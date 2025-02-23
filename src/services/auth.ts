@@ -17,10 +17,10 @@ import {
 } from "../db/actions/auth";
 import { User } from "../db/models";
 import settingsService from "./settings";
-import { petService } from "./pets";
 import { Provider } from "@/types/auth";
 import JWTService from "./jwt";
 import { ObjectId } from "mongodb";
+import PetService from "./pets";
 
 export interface CreateUserBody {
   name: string;
@@ -34,9 +34,9 @@ export interface LoginBody {
   password: string;
 }
 
-const authService = {
+export default class AuthService {
   // Validate create user input and process account creation
-  async validateCreateUser(
+  static async validateCreateUser(
     name: string,
     email: string,
     password: string,
@@ -74,7 +74,7 @@ const authService = {
       throw new NotFoundError("user does not exist");
     }
     // Used a default name for pet
-    await petService.createPet(userId, `${name}'s Pet`, "dog");
+    await PetService.createPet(userId, `${name}'s Pet`, "dog");
 
     // create settings
     await settingsService.createSettings(insertedId.toString());
@@ -83,10 +83,10 @@ const authService = {
     const token = JWTService.generateToken({ userId: insertedId }, 604800);
 
     return { token };
-  },
+  }
 
   // Validate login with email and password
-  async validateLogin(email: string, password: string) {
+  static async validateLogin(email: string, password: string) {
     // Validate parameters
     validateEmail(email);
     validatePassword(password);
@@ -120,10 +120,10 @@ const authService = {
     );
 
     return { token };
-  },
+  }
 
   // Validate login with Google
-  async validateGoogleLogin(name: string, email: string) {
+  static async validateGoogleLogin(name: string, email: string) {
     validateName(name);
     validateEmail(email);
 
@@ -146,7 +146,7 @@ const authService = {
 
       await createUser(newUser);
       existingUser = await getUserFromEmail(email);
-      await petService.createPet(
+      await PetService.createPet(
         existingUser?._id?.toString() as string,
         `${name}'s Pet`,
         "dog",
@@ -159,15 +159,13 @@ const authService = {
     );
 
     return token;
-  },
+  }
 
   // Validate JWT token and ensure user exists
-  async validateToken(token: string) {
+  static async validateToken(token: string) {
     const decodedToken = JWTService.verifyToken(token);
     await getUserFromId(new ObjectId(decodedToken.userId));
 
     return decodedToken;
-  },
-};
-
-export default authService;
+  }
+}

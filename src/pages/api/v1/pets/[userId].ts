@@ -1,5 +1,5 @@
 import { Pet } from "@/db/models";
-import { petService } from "@/services/pets";
+import PetService from "@/services/pets";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -17,7 +17,7 @@ export default async function handler(
   switch (method) {
     case "GET":
       try {
-        const pet: Pet | null = await petService.getPet(userId);
+        const pet: Pet | null = await PetService.getPet(userId);
         return res.status(200).json(pet);
       } catch (error) {
         if (error instanceof AppError) {
@@ -30,7 +30,7 @@ export default async function handler(
 
     case "PATCH":
       try {
-        await petService.updatePet(userId, body.name);
+        await PetService.updatePet(userId, body.name);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof AppError) {
@@ -43,7 +43,7 @@ export default async function handler(
 
     case "DELETE":
       try {
-        await petService.deletePet(userId);
+        await PetService.deletePet(userId);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof AppError) {

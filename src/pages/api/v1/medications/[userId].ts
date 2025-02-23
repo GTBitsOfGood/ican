@@ -1,5 +1,5 @@
 import { Medication } from "@/db/models";
-import { medicationService } from "@/services/medication";
+import MedicationService from "@/services/medication";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -18,7 +18,7 @@ export default async function handler(
   if (method === "GET") {
     try {
       const medication: Medication[] | null =
-        await medicationService.getMedications(new ObjectId(userId));
+        await MedicationService.getMedications(new ObjectId(userId));
       return res.status(200).json(medication);
     } catch (error) {
       if (error instanceof AppError) {

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { forgotPasswordService } from "@/services/forgotPasswordCodes";
+import ForgotPasswordService from "@/services/forgotPasswordCodes";
 import { AppError, getStatusCode } from "@/types/exceptions";
 
 export default async function handler(
@@ -22,7 +22,7 @@ export default async function handler(
     }
 
     const token = authHeader.split(" ")[1];
-    await forgotPasswordService.changePassword(
+    await ForgotPasswordService.changePassword(
       token,
       password,
       confirmPassword,

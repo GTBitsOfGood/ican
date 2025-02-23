@@ -1,4 +1,4 @@
-import settingsService from "@/services/settings";
+import SettingsService from "@/services/settings";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -15,7 +15,7 @@ export default async function handler(
         if (!userId) {
           return res.status(400).json({ message: "Invalid user id" });
         }
-        await settingsService.updatePin(userId as string, body.pin);
+        await SettingsService.updatePin(userId as string, body.pin);
 
         return res.status(204).end();
       } catch (error) {

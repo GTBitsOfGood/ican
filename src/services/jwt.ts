@@ -7,12 +7,15 @@ if (!process.env.JWT_SECRET) {
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const JWTService = {
-  generateToken(payload: Record<string, unknown>, expiresIn: number): string {
+export default class JWTService {
+  static generateToken(
+    payload: Record<string, unknown>,
+    expiresIn: number,
+  ): string {
     return jwt.sign(payload, JWT_SECRET, { expiresIn });
-  },
+  }
 
-  verifyToken(token: string): { userId: string } {
+  static verifyToken(token: string): { userId: string } {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
       return decoded;
@@ -23,9 +26,9 @@ const JWTService = {
         throw new Error("An unknown error occurred.");
       }
     }
-  },
+  }
 
-  decodeGoogleToken(credential: string) {
+  static decodeGoogleToken(credential: string) {
     try {
       const decoded = jwt.decode(credential);
       return decoded;
@@ -36,7 +39,5 @@ const JWTService = {
         throw new Error("An unknown error occurred.");
       }
     }
-  },
-};
-
-export default JWTService;
+  }
+}

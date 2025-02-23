@@ -1,4 +1,4 @@
-import { medicationService } from "@/services/medication";
+import MedicationService from "@/services/medication";
 import { AppError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -10,7 +10,7 @@ export default async function handler(
 
   if (method == "POST") {
     try {
-      const id = await medicationService.createMedication(body);
+      const id = await MedicationService.createMedication(body);
       return res.status(201).json({ id });
     } catch (error) {
       if (error instanceof AppError) {
