@@ -15,7 +15,7 @@ type RoutesMap = {
 export const routesMap: RoutesMap = {
   "/api/v1/auth/change-password": {
     allowedMethods: {
-      POST: {
+      PATCH: {
         isAuthorized: true,
       },
     },
