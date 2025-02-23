@@ -27,9 +27,12 @@ import {
 } from "@/types/exceptions";
 
 
+
 import { generateTemporaryToken } from "../services/jwt";
 
-import { getEmailService } from "./mail";
+
+import EmailService from "./mail";
+
 
 
 import { MailService } from "./mail";
@@ -64,13 +67,12 @@ export async function sendPasswordCode(
       await createForgotPasswordCode(newCode);
     }
 
-    const emailService = getEmailService();
-    await emailService.sendPasswordCode(email, code);
+    await EmailService.sendPasswordCode(email, code);
 
     return user._id;
   } catch (error) {
     if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+      throw new Error("Email failed to send.");
     }
     throw error;
   }
