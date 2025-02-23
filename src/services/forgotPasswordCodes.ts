@@ -57,7 +57,13 @@ export async function sendPasswordCode(
       await createForgotPasswordCode(newCode);
     }
 
-    await EmailService.sendPasswordCode(email, code);
+    const emailSubject = "iCAN Account Recovery";
+
+    const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
+    <p>Your verification code is: ${newCode}</p>
+    <p>If you did not request this, you can ignore this email</p>`;
+
+    await EmailService.sendEmail(email, emailSubject, emailHtml);
 
     return user._id;
   } catch (error) {
