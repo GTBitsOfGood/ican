@@ -20,7 +20,7 @@ export default function Home({ activeModal = "" }: HomeProps) {
     <div className="min-h-screen flex flex-col relative">
       <div className="flex-1 bg-[url('/bg-home.png')] bg-cover bg-center bg-no-repeat">
         {/* Settings Modal */}
-        {activeModal === "settings" && <SettingsModal isParent={true} />}
+        {activeModal === "settings" && <SettingsModal />}
         {/* Change Pin Modal */}
         {activeModal === "change-pin" && <ChangePinModal />}
         {/* Profile */}

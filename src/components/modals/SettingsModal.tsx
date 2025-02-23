@@ -10,11 +10,7 @@ import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
 
-interface SettingsModalProps {
-  isParent: boolean;
-}
-
-export default function SettingsModal({ isParent }: SettingsModalProps) {
+export default function SettingsModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -24,17 +20,16 @@ export default function SettingsModal({ isParent }: SettingsModalProps) {
     onOpen();
   }, [onOpen]);
 
-  return isParent ? (
+  return parentalControlsEnabled ? (
     <Modal
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        closeButton:
-          "hover:bg-white/5 active:bg-white/10 right-[1.5rem] rounded-full top-[0.75rem] absolute",
         header: "text-5xl underline mb-8",
+        closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white px-4"
+      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -95,11 +90,10 @@ export default function SettingsModal({ isParent }: SettingsModalProps) {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        closeButton:
-          "hover:bg-white/5 active:bg-white/10 right-[1.5rem] rounded-full top-[0.75rem] absolute",
         header: "text-5xl underline mb-8",
+        closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white px-4"
+      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"

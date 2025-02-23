@@ -11,7 +11,9 @@ export default {
   theme: {
     screens: {
       mobile: "640px",
+      tablet: "860px",
       desktop: "1024px",
+      largeDesktop: "1280px",
     },
     extend: {
       keyframes: {

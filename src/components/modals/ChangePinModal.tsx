@@ -23,17 +23,6 @@ export default function SettingsModal() {
     onOpen();
   }, [onOpen]);
 
-  const OTPStyles = {
-    border: "#000",
-    width: "12vw",
-    height: "12vw",
-    fontSize: "44px",
-    color: "#000",
-    backgroundColor: error ? "#FFC3C3" : "#FFF",
-    fontWeight: "700",
-    borderRadius: "0px",
-  };
-
   const handleClick = () => {
     if (oldPin.length < 4) {
       setError("ERROR: Wrong Pin");
@@ -46,11 +35,9 @@ export default function SettingsModal() {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        closeButton:
-          "hover:bg-white/5 active:bg-white/10 right-[1.5rem] rounded-full top-[0.75rem] absolute",
-        header: "text-5xl mb-8",
+        header: "text-5xl mb-4",
       }}
-      className="w-[55%] h-[55%] font-quantico font-bold z-50 text-white px-4"
+      className="w-[55%] mobile:h-[45%] tablet:h-[47.5%] desktop:h-[50%] largeDesktop:h-[55%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -60,17 +47,10 @@ export default function SettingsModal() {
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>
         <ModalBody>
-          <div className="w-full h-[50%] flex flex-col gap-16">
+          <div className="w-full h-full flex flex-col gap-12 justify-between">
             <div className="w-full h-full flex flex-col justify-center gap-4">
-              {error && (
-                <p className="text-center font-normal">
-                  <span className="font-pixelify border-2 border-white px-2 text-xl border-solid mr-2">
-                    !
-                  </span>
-                  {error}
-                </p>
-              )}
-              <div className="w-full flex">
+              {error && <p className="text-center font-normal">{error}</p>}
+              <div className="w-full flex justify-center items-center">
                 <InputOTP
                   maxLength={4}
                   onChange={(newValue: string) => {
@@ -80,14 +60,26 @@ export default function SettingsModal() {
                   pattern={REGEXP_ONLY_DIGITS}
                 >
                   <InputOTPGroup style={{ gap: "1.25rem" }}>
-                    <InputOTPSlot index={0} style={OTPStyles} />
-                    <InputOTPSlot index={1} style={OTPStyles} />
-                    <InputOTPSlot index={2} style={OTPStyles} />
-                    <InputOTPSlot index={3} style={OTPStyles} />
+                    <InputOTPSlot
+                      index={0}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                    />
+                    <InputOTPSlot
+                      index={1}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                    />
+                    <InputOTPSlot
+                      index={2}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                    />
+                    <InputOTPSlot
+                      index={3}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                    />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-              <a className="inline-block" href="forgot-pin">
+              <a className="inline-block size-fit" href="forgot-pin">
                 <button className="bg-white p-2 text-black text-xl">
                   Forgot Pin?
                 </button>
