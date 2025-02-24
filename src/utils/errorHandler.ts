@@ -45,6 +45,7 @@ export const handleError = (error: unknown) => {
         break;
     }
   } else {
+    // Any unknown errors are defaulted to 500 and "Internal server error" and logged
     console.log("Unknown error:", error);
   }
 

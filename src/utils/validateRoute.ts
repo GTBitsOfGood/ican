@@ -1,11 +1,8 @@
-import { routesMap, RouteInfo } from "@/lib/routesMap";
-import { validateAuthorization } from "@/services/auth";
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthorizedError,
-} from "@/types/exceptions";
-import { isHTTPMethod } from "next/dist/server/web/http";
+import { getUserFromId } from "@/db/actions/user";
+import { routesMap } from "@/lib/routesMap";
+import { verifyToken } from "@/services/jwt";
+import { NotFoundError, UnauthorizedError } from "@/types/exceptions";
+import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
 // Checks if given method is in the routesMap, also checks if validation is needed
@@ -16,28 +13,28 @@ export const validateRoutes = async (
   method: string,
   path: string,
 ) => {
-  if (!path || !method || !isHTTPMethod(method)) {
-    throw new BadRequestError("Bad Request");
+  const authRequired = routesMap[path]?.allowedMethods?.[method]?.isAuthorized;
+
+  if (authRequired == null) {
+    throw new NotFoundError(`Route not found inside route map: ${path}`);
   }
 
-  // Should we keep a routesMap for every route or only the paths that need to be authenticated?
-  // Since we already technically know that the given route is valid because of the HTTP controllers
-  const routeInfo: RouteInfo = routesMap[path];
-
-  if (!routeInfo) {
-    throw new NotFoundError(`Route not found: ${path}`);
-  }
-
-  const methodDetail = routeInfo.allowedMethods[method];
-  if (!methodDetail) {
-    throw new BadRequestError(`Method not allowed: ${method}`);
-  }
-
-  if (methodDetail.isAuthorized) {
+  if (authRequired) {
     const authHeader = req.headers.get("authorization");
-    const auth = await validateAuthorization(authHeader);
-    if (!auth) {
-      throw new UnauthorizedError("Forbidden");
+    if (!authHeader?.startsWith("Bearer ")) {
+      // null or doesn't start with "Bearer "
+      throw new UnauthorizedError(
+        "Authentication token is missing or malformed",
+      );
     }
+
+    const token = authHeader.split(" ")[1];
+    const tokenUserId: string = verifyToken(token).userId; // Any expired token's error should propogate from here
+    const user = await getUserFromId(new ObjectId(tokenUserId));
+    if (!user) {
+      throw new UnauthorizedError("Token signature is invalid");
+    }
+
+    return user; // Return user if needed
   }
 };

@@ -10,7 +10,6 @@ export async function PATCH(req: NextRequest) {
 
     const { password, confirmPassword } = await req.json();
 
-    // Should we make a function for this?
     const authHeader = req.headers.get("authorization");
     if (!authHeader) {
       throw new UnauthorizedError("Forbidden");
