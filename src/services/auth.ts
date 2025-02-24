@@ -13,9 +13,7 @@ import {
 import bcrypt from "bcrypt";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
-import { generateToken, verifyToken } from "./jwt";
-import { getUserFromId } from "@/db/actions/user";
-import { ObjectId } from "mongodb";
+import { generateToken } from "./jwt";
 
 export interface CreateUserBody {
   name: string;
@@ -27,26 +25,6 @@ export interface CreateUserBody {
 export interface LoginBody {
   email: string;
   password: string;
-}
-
-export async function validateAuthorization(
-  authHeader: string | null,
-): Promise<boolean> {
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return false;
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const tokenUserId: string = verifyToken(token).userId;
-    const tokenUserObjectId: ObjectId = new ObjectId(tokenUserId);
-    const user = await getUserFromId(tokenUserObjectId);
-
-    return !!user;
-  } catch {
-    return false;
-  }
 }
 
 export async function validateCreateUser(

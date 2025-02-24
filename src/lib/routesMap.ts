@@ -1,8 +1,6 @@
-import { HTTP_METHOD } from "next/dist/server/web/http";
-
 export interface RouteInfo {
   allowedMethods: {
-    [key in HTTP_METHOD]?: {
+    [key in string]?: {
       isAuthorized: boolean;
     };
   };
