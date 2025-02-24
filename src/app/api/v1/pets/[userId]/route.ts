@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Pet } from "@/db/models";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import { UnauthorizedError } from "@/types/exceptions";
 
 // Can't use req.nextUrl.pathname to get URL so it has to be hardcoded in each dynamic route if we want to use routeMap
 const route = "/api/v1/pets/[userId]";
@@ -29,8 +30,13 @@ export async function PATCH(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUserId = await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
+    if (tokenUserId != userId) {
+      throw new UnauthorizedError(
+        "User is not permitted to modify another user's pet",
+      );
+    }
     const { name } = await req.json();
 
     await updatePet(userId, name);
@@ -47,8 +53,13 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUserId = await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
+    if (tokenUserId != userId) {
+      throw new UnauthorizedError(
+        "User is not permitted to modify another user's pet",
+      );
+    }
 
     await deletePet(userId);
 

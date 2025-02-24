@@ -30,11 +30,7 @@ export const validateRoutes = async (
 
     const token = authHeader.split(" ")[1];
     const tokenUserId: string = verifyToken(token).userId; // Any expired token's error should propogate from here
-    const user = await getUserFromId(new ObjectId(tokenUserId));
-    if (!user) {
-      throw new UnauthorizedError("Token signature is invalid");
-    }
-
-    return user; // Return user if needed
+    const user = await getUserFromId(new ObjectId(tokenUserId)); // Verify if user actually exists
+    return user._id.toString(); // Return user if needed
   }
 };
