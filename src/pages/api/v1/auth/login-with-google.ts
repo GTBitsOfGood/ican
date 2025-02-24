@@ -1,5 +1,5 @@
 import { validateGoogleLogin } from "@/services/auth";
-import { ApiError } from "@/types/exceptions";
+import { ApiError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -20,7 +20,7 @@ export default async function handler(
     res.status(201).json({ token });
   } catch (error) {
     if (error instanceof ApiError) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(getStatusCode(error)).json({ error: error.message });
     } else {
       res.status(500).json({
         error: (error as Error).message || "An unknown error occurred",

@@ -1,6 +1,6 @@
 import { Settings } from "@/db/models";
 import { getSettings, updateSettings } from "@/services/settings";
-import { ApiError } from "@/types/exceptions";
+import { ApiError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -18,7 +18,7 @@ export default async function handler(
         res.status(200).json(settings);
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }
@@ -36,7 +36,7 @@ export default async function handler(
         res.status(204).end();
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }

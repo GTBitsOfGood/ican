@@ -2,6 +2,7 @@ import {
   AlreadyExistsError,
   BadRequestError,
   DoesNotExistError,
+  InternalServerError,
 } from "@/types/exceptions";
 import {
   passwordsAreEqual,
@@ -10,15 +11,14 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
-import { createSettings } from "./settings";
 import { createPet } from "./pets";
 import { Provider } from "@/types/auth";
-import { verifyToken } from "./jwt";
+import { generateToken, verifyToken } from "./jwt";
 import { getUserFromId } from "@/db/actions/user";
 import { ObjectId } from "mongodb";
+import { createSettings } from "./settings";
 
 export interface CreateUserBody {
   name: string;
@@ -31,12 +31,6 @@ export interface LoginBody {
   email: string;
   password: string;
 }
-
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables.");
-}
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function validateCreateUser(
   name: string,
@@ -75,7 +69,6 @@ export async function validateCreateUser(
     password: hashedPassword,
   };
 
-  // Uses userId returned by insertOne()
   const { insertedId } = await createUser(newUser);
   const userId = insertedId.toString();
   if (!userId) {
@@ -88,15 +81,7 @@ export async function validateCreateUser(
   await createSettings({ userId: _id.toString() });
 
   // Create jwt once user is successfully created
-  const token = jwt.sign(
-    {
-      userId: insertedId,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(insertedId);
 
   return { token };
 }
@@ -119,6 +104,11 @@ export async function validateLogin(email: string, password: string) {
     throw new AlreadyExistsError("This user is signed in with Google.");
   }
 
+  // Check if _id field exists (typescript purposes)
+  if (!existingUser._id) {
+    throw new InternalServerError("User ID is missing");
+  }
+
   // Check if password is correct
   const passwordMatch = await bcrypt.compare(password, existingUser.password);
 
@@ -129,15 +119,7 @@ export async function validateLogin(email: string, password: string) {
   }
 
   // Create and return jwt
-  const token = jwt.sign(
-    {
-      userId: existingUser._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(existingUser._id);
 
   return { token };
 }
@@ -172,16 +154,7 @@ export async function validateGoogleLogin(name: string, email: string) {
     );
   }
 
-  const token = jwt.sign(
-    {
-      userId: existingUser?._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
-
+  const token = generateToken(existingUser!._id!);
   return token;
 }
 
