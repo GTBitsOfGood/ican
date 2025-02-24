@@ -10,10 +10,16 @@ import {
   updateMedicationById,
 } from "@/db/actions/medication";
 import { Medication, MedicationCheckIn } from "@/db/models";
-import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
+import {
+  AlreadyExistsError,
+  DoesNotExistError,
+  InvalidBodyError,
+} from "@/types/exceptions";
 import { UpdateMedicationRequestBody } from "@/types/medication";
 import { validateCreateParams, validateParams } from "@/utils/medication";
 import { ObjectId } from "mongodb";
+import { getSettings } from "./settings";
+import { validatePins } from "@/utils/settings";
 
 export async function createMedication({
   formOfMedication,
@@ -205,4 +211,28 @@ export async function createMedicationCheckIn(medicationId: string) {
   };
 
   createMedicationCheckInAction(medicationCheckIn);
+}
+
+export async function createMedicationLog(medicationId: string, pin: string) {
+  // Validate parameters
+  validateParams({ id: medicationId });
+
+  // Check if the pet exists
+  const existingMedication = (await getMedicationById(
+    new ObjectId(medicationId),
+  )) as Medication;
+
+  if (!existingMedication) {
+    throw new DoesNotExistError("This medication does not exist");
+  }
+
+  const settings = await getSettings({
+    userId: existingMedication.userId.toString(),
+  });
+
+  // check if pin related to userid is the same as the pin sent through the request body
+
+  if (!(await validatePins(settings.pin, pin))) {
+    throw new InvalidBodyError("Pin is invalid");
+  }
 }

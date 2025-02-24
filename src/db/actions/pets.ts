@@ -33,6 +33,25 @@ export async function updatePetByUserId(userId: ObjectId, name: string) {
   }
 }
 
+export async function updatePetByPetId(
+  petId: ObjectId,
+  updateObj: {
+    name?: string;
+    xpGained?: number;
+    xpLevel?: number;
+    coins?: number;
+  },
+) {
+  const db = client.db();
+  const result = await db
+    .collection("pets")
+    .updateOne({ _id: petId }, { $set: { ...updateObj } });
+
+  if (result.modifiedCount == 0) {
+    throw new InternalServerError("Failed to update pet.");
+  }
+}
+
 export async function deletePetByUserId(userId: ObjectId) {
   const db = client.db();
   const result = await db.collection("pets").deleteOne({ userId: userId });
@@ -40,4 +59,11 @@ export async function deletePetByUserId(userId: ObjectId) {
   if (result.deletedCount == 0) {
     throw new InternalServerError("Failed to delete pet.");
   }
+}
+
+export async function getPetByPetId(petId: ObjectId) {
+  const db = client.db();
+  const pet = await db.collection("pets").findOne({ petId });
+
+  return pet;
 }
