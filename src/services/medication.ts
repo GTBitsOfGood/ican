@@ -1,12 +1,15 @@
 import {
+  createMedicationCheckInAction,
   createNewMedication,
   deleteMedicationById,
+  deleteMedicationCheckInAction,
   getMedicationById,
   getMedicationByMedicationId,
+  getMedicationCheckInAction,
   getMedicationsByUserId,
   updateMedicationById,
 } from "@/db/actions/medication";
-import { Medication } from "@/db/models";
+import { Medication, MedicationCheckIn } from "@/db/models";
 import { AlreadyExistsError, DoesNotExistError } from "@/types/exceptions";
 import { UpdateMedicationRequestBody } from "@/types/medication";
 import { validateCreateParams, validateParams } from "@/utils/medication";
@@ -163,4 +166,43 @@ export async function getMedications(userId: string) {
   const medicationsArray = await medications.toArray();
 
   return medicationsArray as Array<Medication>;
+}
+
+export async function createMedicationCheckIn(medicationId: string) {
+  // Validate parameters
+  validateParams({ id: medicationId });
+
+  // Check if the pet exists
+  const existingMedication = await getMedicationById(
+    new ObjectId(medicationId),
+  );
+
+  if (!existingMedication) {
+    throw new DoesNotExistError("This medication does not exist");
+  }
+  // check if medication check in already exists and isn't expired
+
+  const existingMedicationCheckIn = await getMedicationCheckInAction(
+    new ObjectId(medicationId),
+  );
+
+  if (existingMedicationCheckIn) {
+    const checkIn = existingMedicationCheckIn as MedicationCheckIn;
+    if (checkIn.expiration.getTime() > Date.now()) {
+      return;
+    } else {
+      await deleteMedicationCheckInAction(new ObjectId(medicationId));
+    }
+  }
+  // if medication check in doesn't exist or is expired, then create one
+
+  const expiration = new Date();
+  expiration.setMinutes(expiration.getMinutes() + 15);
+
+  const medicationCheckIn: MedicationCheckIn = {
+    medicationId: new ObjectId(medicationId),
+    expiration,
+  };
+
+  createMedicationCheckInAction(medicationCheckIn);
 }

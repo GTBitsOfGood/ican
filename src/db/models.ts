@@ -52,13 +52,13 @@ export interface Settings {
 }
 
 export interface MedicationCheckIn {
-  _id: ObjectId;
+  _id?: ObjectId;
   medicationId: ObjectId;
   expiration: Date;
 }
 
-export interface MedicationLo {
-  _id: ObjectId;
+export interface MedicationLog {
+  _id?: ObjectId;
   medicationId: ObjectId;
   dateTaken: Date;
 }
