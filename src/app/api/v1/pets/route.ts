@@ -10,9 +10,9 @@ export async function POST(req: NextRequest) {
   try {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
 
-    const { userId, name } = await req.json();
+    const { userId, name, petType } = await req.json();
 
-    const createdPet: Pet = await createPet(userId, name);
+    const createdPet: Pet = await createPet(userId, name, petType);
 
     return NextResponse.json(createdPet, { status: 200 });
   } catch (error) {
