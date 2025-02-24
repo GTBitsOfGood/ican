@@ -1,5 +1,5 @@
 import { validateToken } from "@/services/auth";
-import { ApiError, UnauthorizedError } from "@/types/exceptions";
+import { ApiError, getStatusCode, UnauthorizedError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
