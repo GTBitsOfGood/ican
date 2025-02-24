@@ -69,7 +69,6 @@ export default async function fetchService<T>(
     const errorBody = await response.json();
     throw new ApiError(
       errorBody.error || `HTTP error! Status: ${response.status}`,
-      response.status,
     );
   }
 
