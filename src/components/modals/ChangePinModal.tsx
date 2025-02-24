@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 
-export default function SettingsModal() {
+export default function ChangePinModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [oldPin, setOldPin] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -35,9 +35,9 @@ export default function SettingsModal() {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        header: "text-5xl mb-4",
+        header: "text-5xl",
       }}
-      className="w-[55%] mobile:h-[45%] tablet:h-[47.5%] desktop:h-[50%] largeDesktop:h-[55%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
+      className="w-[55%] mobile:h-[52.5%] tablet:h-[55%] desktop:h-[55.5%] largeDesktop:h-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -47,9 +47,16 @@ export default function SettingsModal() {
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>
         <ModalBody>
-          <div className="w-full h-full flex flex-col gap-12 justify-between">
-            <div className="w-full h-full flex flex-col justify-center gap-4">
-              {error && <p className="text-center font-normal">{error}</p>}
+          <div className="w-full h-[80%] flex flex-col gap-8 justify-between">
+            <div className="w-full h-[80%] flex flex-col justify-center gap-4">
+              {error && (
+                <div className="flex gap-2 justify-center items-center">
+                  <div className="flex justify-center items-center border-[1px] border-solid border-white font-pixelify w-[1rem] h-[1rem]">
+                    <p>!</p>
+                  </div>
+                  <p className="text-center font-normal">{error}</p>
+                </div>
+              )}
               <div className="w-full flex justify-center items-center">
                 <InputOTP
                   maxLength={4}
@@ -58,8 +65,9 @@ export default function SettingsModal() {
                     setError("");
                   }}
                   pattern={REGEXP_ONLY_DIGITS}
+                  containerClassName="flex justify-between items-center w-full"
                 >
-                  <InputOTPGroup style={{ gap: "1.25rem" }}>
+                  <InputOTPGroup className="flex justify-between items-center w-full">
                     <InputOTPSlot
                       index={0}
                       className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
@@ -88,7 +96,7 @@ export default function SettingsModal() {
             <button
               type="submit"
               onClick={handleClick}
-              className={`self-end p-2 mr-4 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
+              className={`self-end p-2 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
             >
               {error === "" ? "Enter" : "Try Again"}
             </button>

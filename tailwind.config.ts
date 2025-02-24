@@ -30,6 +30,7 @@ export default {
         "iCAN-textfield": "#747474",
         "iCAN-gray": "#626262",
         "iCAN-Blue-300": "#2C3694",
+        "iCAN-Green": "#CEE0A0",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",

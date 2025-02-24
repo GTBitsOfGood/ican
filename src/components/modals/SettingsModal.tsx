@@ -29,7 +29,7 @@ export default function SettingsModal() {
         header: "text-5xl underline mb-8",
         closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
+      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -40,24 +40,6 @@ export default function SettingsModal() {
         <ModalHeader>Settings</ModalHeader>
         <ModalBody>
           <div className="flex flex-col items-center w-[95%] gap-16">
-            <div className="flex flex-col w-full gap-8">
-              <h3 className="font-bold text-5xl">Parental</h3>
-              <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Medications</h5>
-                <ModalNextButton link="medications" />
-              </div>
-              <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Change Pin</h5>
-                <ModalNextButton link="change-pin" />
-              </div>
-              <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Parental Controls</h5>
-                <ModalSwitch
-                  state={parentalControlsEnabled}
-                  setState={setParentalControlsEnabled}
-                />
-              </div>
-            </div>
             <div className="flex flex-col w-full gap-8">
               <h3 className="font-bold text-5xl">General</h3>
               <div className="flex justify-between items-center pl-4">
@@ -78,6 +60,24 @@ export default function SettingsModal() {
                   state={helpfulTipsEnabled}
                   setState={setHelpfulTipsEnabled}
                 />
+              </div>
+            </div>
+            <div className="flex flex-col w-full gap-8">
+              <h3 className="font-bold text-5xl">Parental</h3>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Parental Controls</h5>
+                <ModalSwitch
+                  state={parentalControlsEnabled}
+                  setState={setParentalControlsEnabled}
+                />
+              </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Medications</h5>
+                <ModalNextButton link="medications" />
+              </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Change Pin</h5>
+                <ModalNextButton link="change-pin" />
               </div>
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function SettingsModal() {
         header: "text-5xl underline mb-8",
         closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto"
+      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -106,10 +106,6 @@ export default function SettingsModal() {
           <div className="flex flex-col items-center w-[95%] gap-16">
             <div className="flex flex-col w-full gap-8">
               <h3 className="font-bold text-5xl">General</h3>
-              <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Medications</h5>
-                <ModalNextButton link="medications" />
-              </div>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Notifications</h5>
                 <ModalSwitch
@@ -138,6 +134,10 @@ export default function SettingsModal() {
                   state={parentalControlsEnabled}
                   setState={setParentalControlsEnabled}
                 />
+              </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Medications</h5>
+                <ModalNextButton link="medications" />
               </div>
             </div>
           </div>
