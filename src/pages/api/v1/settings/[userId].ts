@@ -18,7 +18,7 @@ export default async function handler(
         res.status(200).json(settings);
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }
@@ -36,7 +36,7 @@ export default async function handler(
         res.status(204).end();
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }

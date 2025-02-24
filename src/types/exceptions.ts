@@ -57,3 +57,25 @@ export class MethodNotAllowedError extends ApiError {
     super(message);
   }
 }
+
+export const getStatusCode = (error: Error): number => {
+  switch (error.name) {
+    case "BadRequestError":
+      return 400;
+    case "UnauthorizedError":
+      return 401;
+    case "NotFoundError":
+      return 404;
+    case "DoesNotExistError":
+      return 404;
+    case "MethodNotAllowedError":
+      return 405;
+    case "ConflictError":
+      return 409;
+    case "AlreadyExistsError":
+      return 409;
+    case "InternalServerError":
+    default:
+      return 500;
+  }
+};
