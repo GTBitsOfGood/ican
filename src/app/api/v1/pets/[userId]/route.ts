@@ -41,7 +41,7 @@ export async function PATCH(
 
     await updatePet(userId, name);
 
-    return new Response(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleError(error);
   }
@@ -55,7 +55,7 @@ export async function DELETE(
   try {
     const tokenUserId = await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
-    if (tokenUserId != userId) {
+    if (tokenUserId !== userId) {
       throw new UnauthorizedError(
         "User is not permitted to modify another user's pet",
       );
@@ -63,7 +63,7 @@ export async function DELETE(
 
     await deletePet(userId);
 
-    return new Response(null, { status: 204 });
+    return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleError(error);
   }

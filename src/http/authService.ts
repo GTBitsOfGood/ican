@@ -82,7 +82,7 @@ export const authService = {
       confirmPassword,
     };
     return fetchService<void>(`/auth/change-password`, {
-      method: "POST",
+      method: "PATCH",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

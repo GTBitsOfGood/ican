@@ -25,7 +25,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateTemporaryToken, verifyToken } from "../services/jwt";
+import { generateTemporaryToken } from "../services/jwt";
 
 export async function sendPasswordCode(
   email: string | undefined,
@@ -106,7 +106,7 @@ export async function verifyForgotPasswordCode(
 }
 
 export async function changePassword(
-  token: string,
+  userId: string,
   newPassword: string,
   confirmPassword: string,
 ) {
@@ -123,9 +123,7 @@ export async function changePassword(
   }
 
   try {
-    const decoded = verifyToken(token);
-    const userId = new ObjectId(decoded.userId);
-    const user = await getUserFromId(userId);
+    const user = await getUserFromId(new ObjectId(userId));
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await updateUserPasswordFromId(user._id, hashedPassword);
