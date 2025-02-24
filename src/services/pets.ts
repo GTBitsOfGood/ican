@@ -9,18 +9,12 @@ import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
 
-export interface UpdatePetBody {
-  name: string;
-}
-
-export interface CreatePetBody {
-  name: string;
-  userId: string;
-}
-
-export async function createPet(userId: string, name: string): Promise<Pet> {
-  // Validate parameters
-  await validateParams(userId, name);
+export async function createPet(
+  userId: string,
+  name: string,
+  petType: string,
+): Promise<Pet> {
+  await validateParams(userId, name, petType);
 
   // Check if the user has a pet already
   const existingPet = await getPetByUserId(new ObjectId(userId));
@@ -31,6 +25,7 @@ export async function createPet(userId: string, name: string): Promise<Pet> {
 
   const newPet = {
     name: name,
+    petType: petType,
     xpGained: 0,
     xpLevel: 0,
     coins: 0,
@@ -43,8 +38,7 @@ export async function createPet(userId: string, name: string): Promise<Pet> {
 }
 
 export async function getPet(userId: string): Promise<Pet | null> {
-  // Validate parameters
-  validateParams(userId);
+  await validateParams(userId);
 
   // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
@@ -56,10 +50,8 @@ export async function getPet(userId: string): Promise<Pet | null> {
 }
 
 export async function updatePet(userId: string, name: string) {
-  // Validate parameters
-  validateParams(userId, name);
+  await validateParams(userId, name);
 
-  // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
     throw new DoesNotExistError("This pet does not exist");
@@ -69,10 +61,8 @@ export async function updatePet(userId: string, name: string) {
 }
 
 export async function deletePet(userId: string) {
-  // Validate parameters
-  validateParams(userId);
+  await validateParams(userId);
 
-  // Check if the pet exists
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
     throw new DoesNotExistError("This pet does not exist");

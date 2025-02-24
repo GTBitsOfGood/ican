@@ -25,12 +25,18 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateTemporaryToken } from "../services/jwt";
+import { generateTemporaryToken } from "./jwt";
+import EmailService from "./mail";
 
 export async function sendPasswordCode(
   email: string | undefined,
 ): Promise<ObjectId> {
   try {
+    if (!email || !email.trim()) {
+      // I feel like this is checked way too often because its email | undefined for all these methods
+      throw new BadRequestError("Invalid Email.");
+    }
+
     const user = await getUserFromEmail(email);
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
@@ -51,10 +57,18 @@ export async function sendPasswordCode(
       await createForgotPasswordCode(newCode);
     }
 
+    const emailSubject = "iCAN Account Recovery";
+
+    const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
+    <p>Your verification code is: ${code}</p>
+    <p>If you did not request this, you can ignore this email</p>`;
+
+    await EmailService.sendEmail(email, emailSubject, emailHtml);
+
     return user._id;
   } catch (error) {
     if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+      throw new Error("Email failed to send.");
     }
     throw error;
   }

@@ -29,3 +29,16 @@ export function verifyToken(token: string): { userId: string } {
     }
   }
 }
+
+export function decodeGoogleToken(credential: string) {
+  try {
+    const decoded = jwt.decode(credential);
+    return decoded;
+  } catch (error) {
+    if (error instanceof JsonWebTokenError) {
+      throw new UnauthorizedError("Invalid or expired token.");
+    } else {
+      throw new InternalServerError("An unknown error occurred.");
+    }
+  }
+}
