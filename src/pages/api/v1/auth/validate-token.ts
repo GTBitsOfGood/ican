@@ -23,7 +23,7 @@ export default async function handler(
     res.status(200).json({ isValid: true, decodedToken: decodedToken });
   } catch (error) {
     if (error instanceof ApiError) {
-      res.status(error.statusCode).json({ error: error.message });
+      res.status(getStatusCode(error)).json({ error: error.message });
     } else {
       res.status(500).json({ error: (error as Error).message });
     }

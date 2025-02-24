@@ -21,7 +21,7 @@ export default async function handler(
         res.status(200).json(medication);
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }

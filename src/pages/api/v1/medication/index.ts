@@ -28,7 +28,7 @@ export default async function handler(
         res.status(201).json({ id });
       } catch (error) {
         if (error instanceof ApiError) {
-          res.status(error.statusCode).json({ error: error.message });
+          res.status(getStatusCode(error)).json({ error: error.message });
         } else {
           throw error;
         }
