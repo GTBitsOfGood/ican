@@ -1,6 +1,6 @@
 import { Medication } from "@/db/models";
 import { getMedications } from "@/services/medication";
-import { ApiError } from "@/types/exceptions";
+import { ApiError, getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
