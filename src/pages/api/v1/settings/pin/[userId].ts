@@ -1,5 +1,5 @@
 import SettingsService from "@/services/settings";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -19,12 +19,11 @@ export default async function handler(
 
         return res.status(204).end();
       } catch (error) {
-        if (error instanceof AppError) {
+        if (error instanceof Error) {
           return res
             .status(getStatusCode(error))
             .json({ error: error.message });
         }
-        return res.status(500).json({ error: (error as Error).message });
       }
     default:
       res.setHeader("Allow", ["PATCH"]);

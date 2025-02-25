@@ -1,6 +1,6 @@
 import { Medication } from "@/db/models";
 import MedicationService from "@/services/medication";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -21,10 +21,9 @@ export default async function handler(
         await MedicationService.getMedications(new ObjectId(userId));
       return res.status(200).json(medication);
     } catch (error) {
-      if (error instanceof AppError) {
+      if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });
       }
-      return res.status(500).json({ error: (error as Error).message });
     }
   } else {
     // Method not allowed

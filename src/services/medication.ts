@@ -1,11 +1,4 @@
-import {
-  createNewMedication,
-  deleteMedicationById,
-  getMedicationById,
-  getUserMedicationByMedicationId,
-  getMedicationsByUserId,
-  updateMedicationById,
-} from "@/db/actions/medication";
+import MedicationDAO from "@/db/actions/medication";
 import { Medication } from "@/db/models";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
@@ -17,21 +10,24 @@ export default class MedicationService {
     await validateCreateParams(medication);
     medication.userId = new ObjectId(medication.userId);
 
-    const existingMedication = await getUserMedicationByMedicationId(
-      medication.medicationId,
-      medication.userId,
-    );
+    const existingMedication =
+      await MedicationDAO.getUserMedicationByMedicationId(
+        medication.medicationId,
+        medication.userId,
+      );
     if (existingMedication) {
       throw new ConflictError("This medication already exists");
     }
 
-    const newMedication = await createNewMedication(medication);
+    const newMedication = await MedicationDAO.createNewMedication(medication);
     return newMedication.insertedId.toString();
   }
 
   static async getMedication(id: string): Promise<Medication> {
     await validateParams({ id });
-    const existingMedication = await getMedicationById(new ObjectId(id));
+    const existingMedication = await MedicationDAO.getMedicationById(
+      new ObjectId(id),
+    );
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
@@ -41,27 +37,36 @@ export default class MedicationService {
   static async updateMedication(id: string, updatedMedication: Medication) {
     updatedMedication = removeUndefinedKeys(updatedMedication);
     await validateParams(updatedMedication);
-    const existingMedication = await getMedicationById(new ObjectId(id));
+    const existingMedication = await MedicationDAO.getMedicationById(
+      new ObjectId(id),
+    );
     if (!existingMedication) {
       throw new ConflictError("This medication does not exist");
     }
     if (updatedMedication.formOfMedication) {
-      await updateMedicationById(new ObjectId(id), updatedMedication);
+      await MedicationDAO.updateMedicationById(
+        new ObjectId(id),
+        updatedMedication,
+      );
     }
   }
 
   static async deleteMedication(id: string) {
     validateParams({ id });
-    const existingMedication = await getMedicationById(new ObjectId(id));
+    const existingMedication = await MedicationDAO.getMedicationById(
+      new ObjectId(id),
+    );
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    await deleteMedicationById(new ObjectId(id));
+    await MedicationDAO.deleteMedicationById(new ObjectId(id));
   }
 
   static async getMedications(userId: ObjectId) {
     validateParams({ userId });
-    const medications = await getMedicationsByUserId(new ObjectId(userId));
+    const medications = await MedicationDAO.getMedicationsByUserId(
+      new ObjectId(userId),
+    );
     if (!medications) {
       throw new NotFoundError(
         "This user id does not have connected medications",

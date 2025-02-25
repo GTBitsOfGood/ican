@@ -8,19 +8,15 @@ import {
   validateEmail,
   validateName,
   validatePassword,
-} from "@/utils/auth";
+} from "@/utils/user";
 import bcrypt from "bcrypt";
-import {
-  createUser,
-  getUserFromEmail,
-  getUserFromId,
-} from "../db/actions/auth";
 import { User } from "../db/models";
 import settingsService from "./settings";
-import { Provider } from "@/types/auth";
+import { Provider } from "@/types/user";
 import JWTService from "./jwt";
 import { ObjectId } from "mongodb";
 import PetService from "./pets";
+import UserDAO from "@/db/actions/user";
 
 export interface CreateUserBody {
   name: string;
@@ -34,7 +30,7 @@ export interface LoginBody {
   password: string;
 }
 
-export default class AuthService {
+export default class UserService {
   // Validate create user input and process account creation
   static async validateCreateUser(
     name: string,
@@ -48,7 +44,7 @@ export default class AuthService {
     validateEmail(email);
     passwordsAreEqual(password, confirmPassword);
 
-    const existingUser = await getUserFromEmail(email);
+    const existingUser = await UserDAO.getUserFromEmail(email);
 
     if (existingUser) {
       if (existingUser.provider == Provider.PASSWORD) {
@@ -68,7 +64,7 @@ export default class AuthService {
     };
 
     // Uses userId returned by insertOne()
-    const { insertedId } = await createUser(newUser);
+    const { insertedId } = await UserDAO.createUser(newUser);
     const userId = insertedId.toString();
     if (!userId) {
       throw new NotFoundError("user does not exist");
@@ -92,7 +88,7 @@ export default class AuthService {
     validatePassword(password);
 
     // Check if user exists
-    const existingUser = await getUserFromEmail(email);
+    const existingUser = await UserDAO.getUserFromEmail(email);
 
     if (!existingUser) {
       throw new NotFoundError(
@@ -127,33 +123,22 @@ export default class AuthService {
     validateName(name);
     validateEmail(email);
 
-    let existingUser;
+    let userId;
 
-    try {
-      existingUser = await getUserFromEmail(email);
-    } catch (error) {
-      if (error instanceof NotFoundError) {
-        const newUser: User = {
-          name: name,
-          provider: Provider.GOOGLE,
-          email: email,
-          password: "",
-        };
+    const existingUser = await UserDAO.getUserFromEmail(email);
+    if (!existingUser) {
+      const newUser: User = {
+        name: name,
+        provider: Provider.GOOGLE,
+        email: email,
+        password: "",
+      };
 
-        await createUser(newUser);
-        existingUser = await getUserFromEmail(email);
-
-        // Optionally create a pet for the new user
-        if (existingUser?._id) {
-          await PetService.createPet(
-            existingUser._id.toString(),
-            `${name}'s Pet`,
-            "dog",
-          );
-        }
-      } else {
-        throw error;
-      }
+      const { insertedId } = await UserDAO.createUser(newUser);
+      userId = insertedId;
+      await PetService.createPet(userId.toString(), `${name}'s Pet`, "dog");
+    } else {
+      userId = existingUser._id;
     }
 
     if (existingUser?.provider === Provider.PASSWORD) {
@@ -162,10 +147,7 @@ export default class AuthService {
       );
     }
 
-    const token = JWTService.generateToken(
-      { userId: existingUser._id },
-      604800,
-    );
+    const token = JWTService.generateToken({ userId }, 604800);
 
     return token;
   }
@@ -173,7 +155,7 @@ export default class AuthService {
   // Validate JWT token and ensure user exists
   static async validateToken(token: string) {
     const decodedToken = JWTService.verifyToken(token);
-    await getUserFromId(new ObjectId(decodedToken.userId));
+    await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));
 
     return decodedToken;
   }

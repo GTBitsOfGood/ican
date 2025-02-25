@@ -1,48 +1,40 @@
-export abstract class AppError extends Error {
-  protected constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
-    Object.setPrototypeOf(this, new.target.prototype);
-  }
-}
-
-export class NotFoundError extends AppError {
+export class NotFoundError extends Error {
   constructor(message = "Resource not found") {
     super(message);
   }
 }
 
-export class InvalidArgumentsError extends AppError {
+export class InvalidArgumentsError extends Error {
   constructor(message = "Invalid arguments provided") {
     super(message);
   }
 }
 
-export class UnauthorizedError extends AppError {
+export class UnauthorizedError extends Error {
   constructor(message = "Unauthorized access") {
     super(message);
   }
 }
 
-export class ConflictError extends AppError {
+export class ConflictError extends Error {
   constructor(message = "Resource conflict") {
     super(message);
   }
 }
 
-export class ValidationError extends AppError {
+export class ValidationError extends Error {
   constructor(message = "Validation failed") {
     super(message);
   }
 }
 
-export class IllegalOperationError extends AppError {
+export class IllegalOperationError extends Error {
   constructor(message = "Illegal operation attempted") {
     super(message);
   }
 }
 
-export class MethodNotAllowedError extends AppError {
+export class MethodNotAllowedError extends Error {
   constructor(message = "Method not allowed") {
     super(message);
   }

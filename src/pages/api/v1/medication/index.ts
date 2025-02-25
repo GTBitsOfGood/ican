@@ -1,5 +1,5 @@
 import MedicationService from "@/services/medication";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -13,10 +13,9 @@ export default async function handler(
       const id = await MedicationService.createMedication(body);
       return res.status(201).json({ id });
     } catch (error) {
-      if (error instanceof AppError) {
+      if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });
       }
-      return res.status(500).json({ error: (error as Error).message });
     }
   } else {
     // Method not allowed

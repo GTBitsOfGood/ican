@@ -1,5 +1,5 @@
-import AuthService from "@/services/auth";
-import { AppError, getStatusCode, UnauthorizedError } from "@/types/exceptions";
+import UserService from "@/services/user";
+import { getStatusCode, UnauthorizedError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -19,12 +19,11 @@ export default async function handler(
     }
     const token = authorization.split(" ")[1];
 
-    const decodedToken = await AuthService.validateToken(token);
+    const decodedToken = await UserService.validateToken(token);
     return res.status(200).json({ isValid: true, decodedToken: decodedToken });
   } catch (error) {
-    if (error instanceof AppError) {
+    if (error instanceof Error) {
       return res.status(getStatusCode(error)).json({ error: error.message });
     }
-    return res.status(500).json({ error: (error as Error).message });
   }
 }

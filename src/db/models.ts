@@ -1,9 +1,8 @@
-import { Provider } from "@/types/auth";
 import { ObjectId } from "mongodb";
 
 export interface User {
   _id?: ObjectId;
-  provider: Provider;
+  provider: string;
   name: string;
   email: string;
   password: string;

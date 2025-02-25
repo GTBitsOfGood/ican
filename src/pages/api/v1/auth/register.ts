@@ -1,6 +1,6 @@
-import AuthService from "@/services/auth";
+import UserService from "@/services/user";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,7 +11,7 @@ export default async function handler(
 
   if (method == "POST") {
     try {
-      const response = await AuthService.validateCreateUser(
+      const response = await UserService.validateCreateUser(
         name,
         email,
         password,
@@ -20,10 +20,9 @@ export default async function handler(
 
       return res.status(201).json(response);
     } catch (error) {
-      if (error instanceof AppError) {
+      if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });
       }
-      return res.status(500).json({ error: (error as Error).message });
     }
   } else {
     // Method not allowed

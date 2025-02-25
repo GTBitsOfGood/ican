@@ -1,5 +1,5 @@
-import AuthService from "@/services/auth";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import UserService from "@/services/user";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -11,13 +11,12 @@ export default async function handler(
 
   if (method == "POST") {
     try {
-      const response = await AuthService.validateLogin(email, password);
+      const response = await UserService.validateLogin(email, password);
       return res.status(201).json(response);
     } catch (error) {
-      if (error instanceof AppError) {
+      if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });
       }
-      return res.status(500).json({ error: (error as Error).message });
     }
   } else {
     // Method not allowed

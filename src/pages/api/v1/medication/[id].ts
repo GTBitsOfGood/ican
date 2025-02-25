@@ -1,6 +1,6 @@
 import { Medication } from "@/db/models";
 import MedicationService from "@/services/medication";
-import { AppError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,12 +21,11 @@ export default async function handler(
           await MedicationService.getMedication(id);
         return res.status(201).json(medication);
       } catch (error) {
-        if (error instanceof AppError) {
+        if (error instanceof Error) {
           return res
             .status(getStatusCode(error))
             .json({ error: error.message });
         }
-        return res.status(500).json({ error: (error as Error).message });
       }
 
     case "PATCH":
@@ -34,12 +33,11 @@ export default async function handler(
         await MedicationService.updateMedication(id, body);
         return res.status(204).end();
       } catch (error) {
-        if (error instanceof AppError) {
+        if (error instanceof Error) {
           return res
             .status(getStatusCode(error))
             .json({ error: error.message });
         }
-        return res.status(500).json({ error: (error as Error).message });
       }
 
     case "DELETE":
@@ -47,12 +45,11 @@ export default async function handler(
         await MedicationService.deleteMedication(id);
         return res.status(204).end();
       } catch (error) {
-        if (error instanceof AppError) {
+        if (error instanceof Error) {
           return res
             .status(getStatusCode(error))
             .json({ error: error.message });
         }
-        return res.status(500).json({ error: (error as Error).message });
       }
 
     default:

@@ -7,8 +7,6 @@ import ErrorBox from "@/components/ErrorBox";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
-import { AppError } from "@/types/exceptions";
-import { getStatusCode } from "../../types/exceptions";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -47,12 +45,9 @@ export default function Home() {
       localStorage.setItem("token", response.token);
       router.push("/");
     } catch (error) {
-      if (error instanceof AppError && getStatusCode(error) == 400) {
+      if (error instanceof Error) {
         setPasswordError((error as Error).message);
         setEmailError("");
-      } else {
-        setEmailError((error as Error).message);
-        setPasswordError("");
       }
     } finally {
       setLoggingIn(false);

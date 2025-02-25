@@ -6,54 +6,56 @@ import {
 } from "@/types/settings";
 import { Settings } from "../models";
 
-export async function createNewSettings(newSettings: Settings) {
-  const db = client.db();
+export default class SettingsDAO {
+  static async createNewSettings(newSettings: Settings) {
+    const db = client.db();
 
-  try {
-    const settings = await db.collection("settings").insertOne(newSettings);
+    try {
+      const settings = await db.collection("settings").insertOne(newSettings);
 
-    return settings;
-  } catch (error) {
-    throw new Error(
-      "Failed to create user settings: " + (error as Error).message,
-    );
+      return settings;
+    } catch (error) {
+      throw new Error(
+        "Failed to create user settings: " + (error as Error).message,
+      );
+    }
   }
-}
 
-export async function getSettingsByUserId(
-  userId: ObjectId,
-): Promise<Settings | null> {
-  const db = client.db();
-  const settings = await db.collection("settings").findOne({ userId: userId });
+  static async getSettingsByUserId(userId: ObjectId): Promise<Settings | null> {
+    const db = client.db();
+    const settings = await db
+      .collection("settings")
+      .findOne({ userId: userId });
 
-  return settings as Settings | null;
-}
-
-export async function updateSettingsByUserId(
-  userId: ObjectId,
-  updateObj: UpdateSettingsRequestBody,
-) {
-  const db = client.db();
-  console.log(updateObj);
-  const result = await db
-    .collection("settings")
-    .updateOne({ userId }, { $set: { ...updateObj } });
-
-  if (result.modifiedCount == 0) {
-    throw new Error("Failed to update user settings.");
+    return settings as Settings | null;
   }
-}
 
-export async function updateSettingsPinByUserId(
-  userId: ObjectId,
-  updateObj: UpdateSettingsPinRequestBody,
-) {
-  const db = client.db();
-  const result = await db
-    .collection("settings")
-    .updateOne({ userId }, { $set: { ...updateObj } });
+  static async updateSettingsByUserId(
+    userId: ObjectId,
+    updateObj: UpdateSettingsRequestBody,
+  ) {
+    const db = client.db();
+    console.log(updateObj);
+    const result = await db
+      .collection("settings")
+      .updateOne({ userId }, { $set: { ...updateObj } });
 
-  if (result.modifiedCount == 0) {
-    throw new Error("Failed to update user settings pin.");
+    if (result.modifiedCount == 0) {
+      throw new Error("Failed to update user settings.");
+    }
+  }
+
+  static async updateSettingsPinByUserId(
+    userId: ObjectId,
+    updateObj: UpdateSettingsPinRequestBody,
+  ) {
+    const db = client.db();
+    const result = await db
+      .collection("settings")
+      .updateOne({ userId }, { $set: { ...updateObj } });
+
+    if (result.modifiedCount == 0) {
+      throw new Error("Failed to update user settings pin.");
+    }
   }
 }
