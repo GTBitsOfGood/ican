@@ -116,6 +116,9 @@ export const authService = {
       {
         method: "POST",
         body: JSON.stringify(verificationRequestBody),
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       },
     );
   },
