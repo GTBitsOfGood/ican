@@ -1,6 +1,6 @@
 import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
-import { Medication } from "../models";
+import { Medication, MedicationCheckIn } from "../models";
 import { ObjectId } from "mongodb";
 
 export async function createNewMedication(newMedication: Medication) {
@@ -76,4 +76,47 @@ export async function getMedicationsByUserId(userId: ObjectId) {
   const medication = db.collection("medication").find({ userId });
 
   return medication;
+}
+
+export async function createMedicationCheckInAction(
+  newMedicationCheckIn: MedicationCheckIn,
+) {
+  const db = client.db();
+  try {
+    const result = await db
+      .collection("MedicationCheckIn")
+      .insertOne(newMedicationCheckIn);
+
+    return result;
+  } catch (error) {
+    throw new InternalServerError(
+      "Failed to create medication check in: " + (error as Error).message,
+    );
+  }
+}
+
+export async function getMedicationCheckInAction(medicationId: ObjectId) {
+  const db = client.db();
+  try {
+    const result = await db
+      .collection("MedicationCheckIn")
+      .findOne({ medicationId });
+
+    return result;
+  } catch (error) {
+    throw new InternalServerError(
+      "Failed to get medication check in: " + (error as Error).message,
+    );
+  }
+}
+
+export async function deleteMedicationCheckInAction(medicationId: ObjectId) {
+  const db = client.db();
+  const result = await db
+    .collection("MedicationCheckIn")
+    .deleteOne({ medicationId });
+
+  if (result.deletedCount == 0) {
+    throw new InternalServerError("Failed to delete medication.");
+  }
 }
