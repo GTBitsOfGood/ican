@@ -5,16 +5,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { medicationId } = req.query;
+  const { id } = req.query;
   const { method, body } = req;
 
-  if (typeof medicationId !== "string") {
+  if (typeof id !== "string") {
     return res.status(400).json({ error: "id must be a string" });
   }
 
   try {
     if (method === "POST") {
-      await createMedicationLog(medicationId, body?.pin);
+      await createMedicationLog(id, body?.pin);
       res.status(204).end();
     } else {
       res.setHeader("Allow", ["POST"]);
