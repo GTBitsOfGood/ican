@@ -23,6 +23,7 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: ObjectId;
+  food: number;
 }
 
 export interface Medication {

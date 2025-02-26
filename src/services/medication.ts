@@ -9,7 +9,7 @@ import {
   getMedicationsByUserId,
   updateMedicationById,
 } from "@/db/actions/medication";
-import { Medication, MedicationCheckIn } from "@/db/models";
+import { Medication, MedicationCheckIn, Pet } from "@/db/models";
 import {
   AlreadyExistsError,
   DoesNotExistError,
@@ -20,6 +20,9 @@ import { validateCreateParams, validateParams } from "@/utils/medication";
 import { ObjectId } from "mongodb";
 import { getSettings } from "./settings";
 import { validatePins } from "@/utils/settings";
+import { updatePet } from "./pets";
+import { getPetByUserId } from "@/db/actions/pets";
+import { FOOD_INC } from "@/utils/constants";
 
 export async function createMedication({
   formOfMedication,
@@ -178,7 +181,7 @@ export async function createMedicationCheckIn(medicationId: string) {
   // Validate parameters
   validateParams({ id: medicationId });
 
-  // Check if the pet exists
+  // Check if the medication exists
   const existingMedication = await getMedicationById(
     new ObjectId(medicationId),
   );
@@ -195,9 +198,11 @@ export async function createMedicationCheckIn(medicationId: string) {
   if (existingMedicationCheckIn) {
     const checkIn = existingMedicationCheckIn as MedicationCheckIn;
     if (checkIn.expiration.getTime() > Date.now()) {
-      return;
-    } else {
+      // delete medication
       await deleteMedicationCheckInAction(new ObjectId(medicationId));
+    } else {
+      // do nothing if valid
+      return;
     }
   }
   // if medication check in doesn't exist or is expired, then create one
@@ -226,13 +231,39 @@ export async function createMedicationLog(medicationId: string, pin: string) {
     throw new DoesNotExistError("This medication does not exist");
   }
 
+  const userId = existingMedication.userId.toString();
+
   const settings = await getSettings({
-    userId: existingMedication.userId.toString(),
+    userId,
   });
 
   // check if pin related to userid is the same as the pin sent through the request body
 
   if (!(await validatePins(settings.pin, pin))) {
     throw new InvalidBodyError("Pin is invalid");
+  }
+
+  // check if medication exists
+
+  const existingMedicationCheckIn = await getMedicationCheckInAction(
+    new ObjectId(medicationId),
+  );
+
+  if (existingMedicationCheckIn) {
+    const checkIn = existingMedicationCheckIn as MedicationCheckIn;
+    if (checkIn.expiration.getTime() > Date.now()) {
+      // throw timeout error
+      throw new InvalidBodyError("The provided check in has expired.");
+    }
+
+    // delete medication check in
+
+    await deleteMedicationCheckInAction(new ObjectId(medicationId));
+
+    // find pet
+    const existingPet = (await getPetByUserId(new ObjectId(userId))) as Pet;
+
+    // add food to pet
+    updatePet(userId, { food: existingPet.food + FOOD_INC });
   }
 }

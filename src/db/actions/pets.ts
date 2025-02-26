@@ -22,11 +22,14 @@ export async function getPetByUserId(userId: ObjectId) {
   return pet;
 }
 
-export async function updatePetByUserId(userId: ObjectId, name: string) {
+export async function updatePetByUserId(
+  userId: ObjectId,
+  updateObj: { name?: string; food?: number },
+) {
   const db = client.db();
   const result = await db
     .collection("pets")
-    .updateOne({ userId: userId }, { $set: { name: name } });
+    .updateOne({ userId: userId }, { $set: { ...updateObj } });
 
   if (result.modifiedCount == 0) {
     throw new InternalServerError("Failed to update pet.");

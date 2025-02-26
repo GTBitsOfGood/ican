@@ -32,6 +32,7 @@ export async function createPet(
     xpGained: 0,
     xpLevel: 0,
     coins: 0,
+    food: 0,
     userId: new ObjectId(userId),
   };
 
@@ -52,15 +53,22 @@ export async function getPet(userId: string): Promise<Pet | null> {
   return existingPet as Pet;
 }
 
-export async function updatePet(userId: string, name: string) {
-  await validateParams({ userId, name });
+export async function updatePet(
+  userId: string,
+  { name, food }: { name?: string; food?: number },
+) {
+  await validateParams({ userId, name, food });
+
+  const updateObj: { name?: string; food?: number } = {};
+  if (name) updateObj.name = name;
+  if (food) updateObj.food = food;
 
   const existingPet = await getPetByUserId(new ObjectId(userId));
   if (!existingPet) {
     throw new DoesNotExistError("This pet does not exist");
   }
 
-  await updatePetByUserId(new ObjectId(userId), name);
+  await updatePetByUserId(new ObjectId(userId), updateObj);
 }
 
 export async function deletePet(userId: string) {
