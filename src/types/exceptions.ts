@@ -62,6 +62,8 @@ export const getStatusCode = (error: Error): number => {
   switch (error.name) {
     case "BadRequestError":
       return 400;
+    case "InvalidBodyError":
+      return 400;
     case "UnauthorizedError":
       return 401;
     case "NotFoundError":
