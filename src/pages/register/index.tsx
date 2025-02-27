@@ -11,6 +11,7 @@ import { authService } from "@/http/authService";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import { getStatusCode } from "@/types/exceptions";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -76,7 +77,10 @@ export default function Home() {
       localStorage.setItem("token", response.token);
       router.push("/");
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof Error && getStatusCode(error) == 400) {
+        setPasswordError((error as Error).message);
+        setEmailError("");
+      } else {
         setEmailError((error as Error).message);
         setPasswordError("");
       }

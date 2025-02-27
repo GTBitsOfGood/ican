@@ -15,9 +15,12 @@ import {
 import JWTService from "./jwt";
 import UserDAO from "@/db/actions/user";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
+import EmailService from "./mail";
 
 export default class ForgotPasswordService {
-  static async sendPasswordCode(email: string | undefined): Promise<ObjectId> {
+  static async sendPasswordCode(email?: string): Promise<ObjectId> {
+    // TODO: validate email
+
     const user = await UserDAO.getUserFromEmail(email);
     if (!user) {
       throw new NotFoundError("User does not exist");
@@ -42,6 +45,19 @@ export default class ForgotPasswordService {
     } else {
       await ForgotPasswordCodeDAO.createForgotPasswordCode(newCode);
     }
+
+    const emailSubject = "iCAN Account Recovery";
+
+    const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
+    <p>Your verification code is: ${code}</p>
+    <p>If you did not request this, you can ignore this email</p>`;
+
+    try {
+      await EmailService.sendEmail(email!, emailSubject, emailHtml);
+    } catch {
+      throw new Error("Email failed to send.");
+    }
+
     return user._id;
   }
 

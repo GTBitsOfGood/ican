@@ -116,6 +116,9 @@ export const authService = {
       {
         method: "POST",
         body: JSON.stringify(verificationRequestBody),
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       },
     );
   },
@@ -128,8 +131,8 @@ export const authService = {
       password,
       confirmPassword,
     };
-    return await fetchService<void>(`/auth/change-password`, {
-      method: "POST",
+    return fetchService<void>(`/auth/change-password`, {
+      method: "PATCH",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
