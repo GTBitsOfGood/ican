@@ -1,4 +1,4 @@
-import { createPet } from "@/services/pets";
+import PetService from "@/services/pets";
 import { NextRequest, NextResponse } from "next/server";
 import { Pet } from "@/db/models";
 import { handleError } from "@/utils/errorHandler";
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
     const { userId, name, petType } = await req.json();
 
-    const createdPet: Pet = await createPet(userId, name, petType);
+    const createdPet: Pet = await PetService.createPet(userId, name, petType);
 
     return NextResponse.json(createdPet, { status: 200 });
   } catch (error) {

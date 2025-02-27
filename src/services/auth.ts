@@ -30,9 +30,9 @@ export interface LoginBody {
   password: string;
 }
 
-export default class UserService {
+export default class AuthService {
   // Validate create user input and process account creation
-  static async validateCreateUser(
+  static async register(
     name: string,
     email: string,
     password: string,
@@ -82,7 +82,7 @@ export default class UserService {
   }
 
   // Validate login with email and password
-  static async validateLogin(email: string, password: string) {
+  static async login(email: string, password: string) {
     // Validate parameters
     validateEmail(email);
     validatePassword(password);
@@ -119,7 +119,7 @@ export default class UserService {
   }
 
   // Validate login with Google
-  static async validateGoogleLogin(name: string, email: string) {
+  static async loginWithGoogle(name: string, email: string) {
     validateName(name);
     validateEmail(email);
 

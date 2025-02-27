@@ -1,4 +1,4 @@
-import { changePassword } from "@/services/forgotPasswordCodes";
+import ForgotPasswordService from "@/services/forgotPasswordCodes";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,11 @@ export async function PATCH(req: NextRequest) {
         "Token was not checked when it was expected, ensure route map defines authorization.",
       );
     }
-    await changePassword(userId, password, confirmPassword);
+    await ForgotPasswordService.changePassword(
+      userId,
+      password,
+      confirmPassword,
+    );
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleError(error);

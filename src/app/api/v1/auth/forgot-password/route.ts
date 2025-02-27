@@ -1,4 +1,4 @@
-import { sendPasswordCode } from "@/services/forgotPasswordCodes";
+import ForgotPasswordService from "@/services/forgotPasswordCodes";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     const { email } = await req.json();
 
-    const userId = await sendPasswordCode(email);
+    const userId = await ForgotPasswordService.sendPasswordCode(email);
 
     return NextResponse.json({ userId }, { status: 200 });
   } catch (error) {
