@@ -5,7 +5,7 @@ import {
   getPetByPetId,
   getPetByUserId,
   updatePetNameByUserId,
-  updatePetAppearanceByPetId
+  updatePetAppearanceByPetId,
 } from "../db/actions/pets";
 
 import { Pet } from "../db/models";
@@ -20,14 +20,6 @@ import {
 import { getBagItemByPetIdAndName } from "@/db/actions/bag";
 import { AccessoryType, storeItems } from "@/types/store";
 
-
-export async function createPet(
-  userId: string,
-  name: string,
-  petType: string,
-): Promise<Pet> {
-  await validateParams(userId, name, petType);
-
 export interface UpdatePetBody {
   name: string;
 }
@@ -40,7 +32,6 @@ export interface CreatePetBody {
 export async function createPet(userId: string, name: string): Promise<Pet> {
   // Validate parameters
   await validateParams(userId, name);
-
 
   // Check if the user has a pet already
   const existingPet = await getPetByUserId(new ObjectId(userId));
