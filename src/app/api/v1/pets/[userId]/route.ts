@@ -1,7 +1,8 @@
-import { Pet } from "@/db/models";
+import { Pet } from "@/db/models/pet";
 import PetService from "@/services/pets";
 import { UnauthorizedError } from "@/types/exceptions";
 import { handleError } from "@/utils/errorHandler";
+import { WithId } from "@/utils/models";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,7 +18,7 @@ export async function GET(
     const userId: string = (await params).userId;
 
     // The service seems to already throw an error in case of a null pet, will check this later
-    const pet: Pet | null = await PetService.getPet(userId);
+    const pet: WithId<Pet> = await PetService.getPet(userId);
     return NextResponse.json(pet, { status: 200 });
   } catch (error) {
     return handleError(error);

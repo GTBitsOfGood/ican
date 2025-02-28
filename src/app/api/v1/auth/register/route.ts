@@ -1,4 +1,4 @@
-import AuthService from "@/services/auth";
+import AuthService from "@/services/user";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";

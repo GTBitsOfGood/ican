@@ -7,6 +7,8 @@ import ProfileInfo from "@/components/ui/ProfileInfo";
 import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import { characterImages } from "@/types/characters";
+import SettingsModal from "@/components/modals/SettingsModal";
+import ChangePinModal from "@/components/modals/ChangePinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import { useEffect, useState } from "react";
@@ -15,9 +17,13 @@ import { Pet } from "@/types/pet";
 
 import AddMedicationModal from "@/components/modals/addMedication/modal";
 
-export default function Home() {
+interface HomeProps {
+  activeModal: string;
+}
+
+export default function Home({ activeModal = "" }: HomeProps) {
   const [addMedicationVisible, setAddMedicationVisibility] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
@@ -44,6 +50,8 @@ export default function Home() {
 
   return (
     <AuthorizedRoute>
+      {activeModal === "settings" && <SettingsModal />}
+      {activeModal === "change-pin" && <ChangePinModal />}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
@@ -63,7 +71,6 @@ export default function Home() {
               <NavButton buttonType="help" drawButton={false} />
             </div>
           </div>
-
           {/* Navbar - VH Scaling */}
           <Navbar>
             <NavButton buttonType="store" />
@@ -89,7 +96,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {addMedicationVisible && (
+          {(activeModal === "add-new-medication" || addMedicationVisible) && (
             <AddMedicationModal
               setAddMedicationVisibility={setAddMedicationVisibility}
             />
