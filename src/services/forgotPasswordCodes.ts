@@ -1,9 +1,6 @@
-import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
-import { ForgotPasswordCode } from "../db/models";
 import { InvalidArgumentsError } from "@/types/exceptions";
 import {
-  generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
@@ -16,11 +13,14 @@ import JWTService from "./jwt";
 import UserDAO from "@/db/actions/user";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import EmailService from "./mail";
+import { Types } from "mongoose";
+import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
 
 export default class ForgotPasswordService {
-  static async sendPasswordCode(email?: string): Promise<ObjectId> {
-    // TODO: validate email
-
+  static async sendPasswordCode(
+    email: string | undefined,
+  ): Promise<Types.ObjectId> {
+    // TODO EMAIL
     const user = await UserDAO.getUserFromEmail(email);
     if (!user) {
       throw new NotFoundError("User does not exist");
@@ -29,7 +29,7 @@ export default class ForgotPasswordService {
     const expirationDate = generateExpirationDate();
 
     const newCode: ForgotPasswordCode = {
-      code: await generateEncryptedCode(code),
+      code,
       expirationDate,
       userId: user._id,
     };
@@ -69,7 +69,7 @@ export default class ForgotPasswordService {
       throw new InvalidArgumentsError("User ID is required.");
     if (!code?.trim()) throw new InvalidArgumentsError("Code is required.");
 
-    const userId = new ObjectId(userIdString);
+    const userId = new Types.ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError("User does not exist");
@@ -108,7 +108,7 @@ export default class ForgotPasswordService {
       throw new UnauthorizedError("Passwords do not match.");
 
     const decoded = JWTService.verifyToken(token);
-    const userId = new ObjectId(decoded.userId);
+    const userId = new Types.ObjectId(decoded.userId);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError("User does not exist");

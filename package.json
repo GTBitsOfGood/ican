@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.474.0",
     "mongodb": "^6.12.0",
+    "mongoose": "^8.10.2",
     "next": "15.1.4",
     "next-google-fonts": "^2.2.0",
     "nodemailer": "^6.10.0",

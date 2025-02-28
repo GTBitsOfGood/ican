@@ -1,47 +1,47 @@
-import { ObjectId, WithId } from "mongodb";
-import client from "../dbClient";
-import { User } from "../models";
 import { InvalidArgumentsError } from "@/types/exceptions";
+import UserModel, { User, UserDocument } from "../models/user";
+import { HydratedDocument, Schema, Types } from "mongoose";
+import dbConnect from "../dbConnect";
 
-export default class UserDAO {
-  static async createUser(newUser: User) {
-    const db = client.db();
+export default class UserDAO extends Schema {
+  static async createUser(
+    newUser: User,
+  ): Promise<HydratedDocument<UserDocument>> {
     try {
-      return await db.collection("users").insertOne(newUser);
+      await dbConnect();
+      return await UserModel.insertOne(newUser);
     } catch (error) {
-      console.error("Failed to insert new user:", error);
-      throw new Error();
+      console.log(error);
+      throw new Error("User creation failed. Please try again.");
     }
   }
 
-  static async getUserFromEmail(email?: string): Promise<WithId<User> | null> {
+  static async getUserFromEmail(
+    email?: string,
+  ): Promise<HydratedDocument<UserDocument> | null> {
     if (!email || !email.trim()) {
       throw new InvalidArgumentsError("Invalid Email.");
     }
-
-    const db = client.db();
-    const user = await db.collection<User>("users").findOne({ email });
-
-    if (!user) {
-      return null;
-    }
-    return user;
+    await dbConnect();
+    return await UserModel.findOne({ email });
   }
 
-  static async getUserFromId(_id: ObjectId): Promise<WithId<User> | null> {
-    const db = client.db();
-    const user = await db.collection<User>("users").findOne({ _id });
-    if (!user) {
-      return null;
-    }
-    return user;
+  static async getUserFromId(
+    _id: Types.ObjectId,
+  ): Promise<HydratedDocument<UserDocument> | null> {
+    await dbConnect();
+    return await UserModel.findById(_id);
   }
 
-  static async updateUserPasswordFromId(_id: ObjectId, newPassword: string) {
-    const db = client.db();
-    const result = await db
-      .collection<User>("users")
-      .updateOne({ _id }, { $set: { password: newPassword } });
+  static async updateUserPasswordFromId(
+    _id: Types.ObjectId,
+    newPassword: string,
+  ): Promise<void> {
+    await dbConnect();
+    const result = await UserModel.updateOne(
+      { _id },
+      { password: newPassword },
+    );
     if (result.modifiedCount === 0) {
       throw new Error("User password update failed.");
     }

@@ -1,4 +1,4 @@
-import MedicationService from "@/services/medication";
+import PetService from "@/services/pets";
 import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -6,18 +6,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id } = req.query;
+  const { userId } = req.query;
   const { method, body } = req;
 
-  if (typeof id !== "string") {
-    return res.status(400).json({ error: "id must be a string" });
+  if (typeof userId !== "string") {
+    return res.status(400).json({ error: "userId must be a string" });
   }
 
   switch (method) {
     case "GET":
       try {
-        const medication = await MedicationService.getMedication(id);
-        return res.status(201).json(medication);
+        const pet = await PetService.getPet(userId);
+        return res.status(200).json(pet);
       } catch (error) {
         if (error instanceof Error) {
           return res
@@ -28,7 +28,7 @@ export default async function handler(
 
     case "PATCH":
       try {
-        await MedicationService.updateMedication(id, body);
+        await PetService.updatePet(userId, body.name);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof Error) {
@@ -40,7 +40,7 @@ export default async function handler(
 
     case "DELETE":
       try {
-        await MedicationService.deleteMedication(id);
+        await PetService.deletePet(userId);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof Error) {

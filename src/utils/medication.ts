@@ -1,5 +1,5 @@
+import { Types } from "mongoose";
 import { InvalidArgumentsError } from "../types/exceptions";
-import { ObjectId } from "mongodb";
 
 type ValidateParamsType = {
   id?: string;
@@ -14,7 +14,7 @@ type ValidateParamsType = {
   doseIntervalInHours?: number;
   // string of times
   doseTimes?: string[];
-  userId?: ObjectId;
+  userId?: Types.ObjectId;
 };
 
 export async function validateCreateParams({
@@ -118,7 +118,7 @@ export async function validateParams({
   userId,
 }: ValidateParamsType): Promise<void> {
   // Validate parameters
-  if (id && !ObjectId.isValid(id)) {
+  if (id && !Types.ObjectId.isValid(id)) {
     throw new InvalidArgumentsError(
       "Invalid parameters: 'id' is required and must be a valid ObjectId.",
     );
@@ -184,7 +184,7 @@ export async function validateParams({
     );
   }
 
-  if (userId && !ObjectId.isValid(userId)) {
+  if (userId && !Types.ObjectId.isValid(userId)) {
     throw new InvalidArgumentsError(
       "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
     );

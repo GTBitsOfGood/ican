@@ -1,14 +1,17 @@
-import client from "../dbClient";
-import { Medication } from "../models";
-import { ObjectId } from "mongodb";
+import { HydratedDocument, Types } from "mongoose";
+import MedicationModel, {
+  Medication,
+  MedicationDocument,
+} from "../models/medication";
+import dbConnect from "../dbConnect";
 
 export default class MedicationDAO {
-  static async createNewMedication(newMedication: Medication) {
-    const db = client.db();
+  static async createNewMedication(
+    newMedication: Medication,
+  ): Promise<HydratedDocument<MedicationDocument>> {
     try {
-      const result = await db.collection("medication").insertOne(newMedication);
-
-      return result;
+      await dbConnect();
+      return await MedicationModel.insertOne(newMedication);
     } catch (error) {
       throw new Error(
         "Failed to create medication: " + (error as Error).message,
@@ -16,53 +19,43 @@ export default class MedicationDAO {
     }
   }
 
-  static async getMedicationById(id: ObjectId) {
-    const db = client.db();
-
-    const medication = await db.collection("medication").findOne({ _id: id });
-
-    return medication;
+  static async getMedicationById(
+    _id: Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument> | null> {
+    await dbConnect();
+    return await MedicationModel.findById(_id);
   }
 
   static async getUserMedicationByMedicationId(
     medicationId: string,
-    userId: ObjectId,
-  ) {
-    const db = client.db();
-
-    const medication = await db
-      .collection("medication")
-      .findOne({ medicationId, userId });
-
-    return medication;
+    userId: Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument> | null> {
+    await dbConnect();
+    return await MedicationModel.findOne({ medicationId, userId });
   }
 
-  static async updateMedicationById(id: ObjectId, updateObj: Medication) {
-    const db = client.db();
-    const result = await db
-      .collection("medication")
-      .updateOne({ _id: id }, { $set: updateObj });
-
+  static async updateMedicationById(
+    _id: Types.ObjectId,
+    updateObj: Medication,
+  ): Promise<void> {
+    await dbConnect();
+    const result = await MedicationModel.updateOne({ _id }, updateObj);
     if (result.modifiedCount == 0) {
       throw new Error("Failed to update medication.");
     }
   }
 
-  static async deleteMedicationById(id: ObjectId) {
-    const db = client.db();
-    const result = await db.collection("medication").deleteOne({ _id: id });
-
+  static async deleteMedicationById(_id: Types.ObjectId): Promise<void> {
+    await dbConnect();
+    const result = await MedicationModel.deleteOne({ _id });
     if (result.deletedCount == 0) {
       throw new Error("Failed to delete medication.");
     }
   }
 
-  // this function retrieves list of medications
-  static async getMedicationsByUserId(userId: ObjectId) {
-    const db = client.db();
-
-    const medication = db.collection("medication").find({ userId });
-
-    return medication;
+  static async getMedicationsByUserId(
+    userId: Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument>[]> {
+    return await MedicationModel.find({ userId });
   }
 }

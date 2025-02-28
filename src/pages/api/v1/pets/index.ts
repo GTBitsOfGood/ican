@@ -1,25 +1,21 @@
-import MedicationService from "@/services/medication";
+import PetService from "@/services/pets";
 import { getStatusCode } from "@/types/exceptions";
-import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { userId } = req.query;
-  const { method } = req;
+  const { method, body } = req;
 
-  if (typeof userId !== "string") {
-    return res.status(400).json({ error: "userId must be a string" });
-  }
-
-  if (method === "GET") {
+  if (method == "POST") {
     try {
-      const medications = await MedicationService.getMedications(
-        new Types.ObjectId(userId),
+      const createdPet = await PetService.createPet(
+        body.userId,
+        body.name,
+        body.petType,
       );
-      return res.status(200).json(medications);
+      return res.status(200).json(createdPet);
     } catch (error) {
       if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });
@@ -27,7 +23,7 @@ export default async function handler(
     }
   } else {
     // Method not allowed
-    res.setHeader("Allow", ["GET"]);
+    res.setHeader("Allow", ["POST"]);
     return res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }
