@@ -1,7 +1,7 @@
 import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { validateParams } from "@/utils/pets";
 import PetDAO from "@/db/actions/pets";
-import { HydratedDocument, Types } from "mongoose";
+import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import { WithId } from "@/types/models";
 
@@ -10,7 +10,7 @@ export default class PetService {
     userId: string,
     name: string,
     petType: string,
-  ): Promise<HydratedDocument<Pet>> {
+  ): Promise<WithId<Pet>> {
     await validateParams(userId, name, petType);
 
     const existingPet = await PetDAO.getPetByUserId(new Types.ObjectId(userId));
@@ -27,7 +27,7 @@ export default class PetService {
       userId: new Types.ObjectId(userId),
     };
 
-    return await PetDAO.createNewPet(newPet);
+    return (await PetDAO.createNewPet(newPet)).toObject();
   }
 
   static async getPet(userId: string): Promise<WithId<Pet> | null> {

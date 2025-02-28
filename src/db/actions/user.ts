@@ -1,9 +1,9 @@
 import { InvalidArgumentsError } from "@/types/exceptions";
 import UserModel, { User, UserDocument } from "../models/user";
-import { HydratedDocument, Schema, Types } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import dbConnect from "../dbConnect";
 
-export default class UserDAO extends Schema {
+export default class UserDAO {
   static async createUser(
     newUser: User,
   ): Promise<HydratedDocument<UserDocument>> {
