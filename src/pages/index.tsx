@@ -23,7 +23,7 @@ interface HomeProps {
 
 export default function Home({ activeModal = "" }: HomeProps) {
   const [addMedicationVisible, setAddMedicationVisibility] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
