@@ -96,7 +96,7 @@ export default function Home({ activeModal = "" }: HomeProps) {
               </div>
             </div>
           </div>
-          {addMedicationVisible && (
+          {(activeModal === "add-new-medication" || addMedicationVisible) && (
             <AddMedicationModal
               setAddMedicationVisibility={setAddMedicationVisibility}
             />
