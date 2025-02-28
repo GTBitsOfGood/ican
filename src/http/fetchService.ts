@@ -64,7 +64,10 @@ export default async function fetchService<T>(
   });
 
   if (!response.ok) {
-    throw new Error(`${response.status}`);
+    const errorBody = await response.json();
+    throw new Error(
+      errorBody.error || `HTTP error! Status: ${response.status}`,
+    );
   }
 
   if (response.status == 204) {
