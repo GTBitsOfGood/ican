@@ -1,58 +1,40 @@
-export class ApiError extends Error {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-export class AlreadyExistsError extends ApiError {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-export class DoesNotExistError extends ApiError {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-export class InvalidBodyError extends ApiError {
-  constructor(message: string) {
-    super(message);
-  }
-}
-
-export class NotFoundError extends ApiError {
+export class NotFoundError extends Error {
   constructor(message = "Resource not found") {
     super(message);
   }
 }
 
-export class BadRequestError extends ApiError {
-  constructor(message = "Bad request") {
+export class InvalidArgumentsError extends Error {
+  constructor(message = "Invalid arguments provided") {
     super(message);
   }
 }
 
-export class UnauthorizedError extends ApiError {
-  constructor(message = "Unauthorized") {
+export class UnauthorizedError extends Error {
+  constructor(message = "Unauthorized access") {
     super(message);
   }
 }
 
-export class ConflictError extends ApiError {
-  constructor(message = "Conflict") {
+export class ConflictError extends Error {
+  constructor(message = "Resource conflict") {
     super(message);
   }
 }
 
-export class InternalServerError extends ApiError {
-  constructor(message = "Internal server error") {
+export class ValidationError extends Error {
+  constructor(message = "Validation failed") {
     super(message);
   }
 }
 
-export class MethodNotAllowedError extends ApiError {
+export class IllegalOperationError extends Error {
+  constructor(message = "Illegal operation attempted") {
+    super(message);
+  }
+}
+
+export class MethodNotAllowedError extends Error {
   constructor(message = "Method not allowed") {
     super(message);
   }
@@ -60,21 +42,20 @@ export class MethodNotAllowedError extends ApiError {
 
 export const getStatusCode = (error: Error): number => {
   switch (error.name) {
-    case "BadRequestError":
+    case "NotFoundError":
+      return 404;
+    case "InvalidArgumentsError":
       return 400;
     case "UnauthorizedError":
       return 401;
-    case "NotFoundError":
-      return 404;
-    case "DoesNotExistError":
-      return 404;
-    case "MethodNotAllowedError":
-      return 405;
     case "ConflictError":
       return 409;
-    case "AlreadyExistsError":
-      return 409;
-    case "InternalServerError":
+    case "ValidationError":
+      return 422;
+    case "IllegalOperationsError":
+      return 403;
+    case "MethodNotAllowedError":
+      return 405;
     default:
       return 500;
   }

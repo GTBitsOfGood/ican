@@ -1,6 +1,6 @@
-import { getUserFromId } from "@/db/actions/user";
+import UserDAO from "@/db/actions/user";
 import { routesMap } from "@/lib/routesMap";
-import { verifyToken } from "@/services/jwt";
+import JWTService from "@/services/jwt";
 import { UnauthorizedError } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
@@ -28,8 +28,8 @@ export const validateRoutes = async (
     }
 
     const token = authHeader.substring(7);
-    const tokenUserId: string = verifyToken(token).userId; // Any expired token's error should propogate from here
-    await getUserFromId(new ObjectId(tokenUserId)); // Verify if user actually exists
+    const tokenUserId: string = JWTService.verifyToken(token).userId; // Any expired token's error should propogate from here
+    await UserDAO.getUserFromId(new ObjectId(tokenUserId)); // Verify if user actually exists
     return tokenUserId; // Would this be better as an ObjectId or String?
   }
 };

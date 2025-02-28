@@ -38,11 +38,11 @@ export interface Medication {
   doseIntervalInHours: number;
   // string of times
   doseTimes: string[];
-  userId: ObjectId;
+  userId?: ObjectId;
 }
 
 export interface Settings {
-  _id: ObjectId;
+  _id?: ObjectId;
   userId: ObjectId;
   parentalControl: boolean;
   notifications: boolean;

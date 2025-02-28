@@ -1,6 +1,7 @@
 import { Medication } from "@/db/models";
-import { getMedications } from "@/services/medication";
-import { ApiError, getStatusCode } from "@/types/exceptions";
+import MedicationService from "@/services/medication";
+import { getStatusCode } from "@/types/exceptions";
+import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -14,26 +15,19 @@ export default async function handler(
     return res.status(400).json({ error: "userId must be a string" });
   }
 
-  try {
-    if (method === "GET") {
-      try {
-        const medication: Medication[] | null = await getMedications(userId);
-        res.status(200).json(medication);
-      } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(getStatusCode(error)).json({ error: error.message });
-        } else {
-          throw error;
-        }
+  if (method === "GET") {
+    try {
+      const medication: Medication[] | null =
+        await MedicationService.getMedications(new ObjectId(userId));
+      return res.status(200).json(medication);
+    } catch (error) {
+      if (error instanceof Error) {
+        return res.status(getStatusCode(error)).json({ error: error.message });
       }
-    } else {
-      // Method not allowed
-      res.setHeader("Allow", ["GET"]);
-      res.status(405).json({ error: `Method ${method} Not Allowed` });
     }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: (error as Error).message || "An unknown error occurred" });
+  } else {
+    // Method not allowed
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }

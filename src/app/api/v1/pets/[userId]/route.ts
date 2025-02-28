@@ -1,9 +1,9 @@
-import { deletePet, getPet, updatePet } from "@/services/pets";
-import { NextRequest, NextResponse } from "next/server";
 import { Pet } from "@/db/models";
+import PetService from "@/services/pets";
+import { UnauthorizedError } from "@/types/exceptions";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
-import { UnauthorizedError } from "@/types/exceptions";
+import { NextRequest, NextResponse } from "next/server";
 
 // Can't use req.nextUrl.pathname to get URL so it has to be hardcoded in each dynamic route if we want to use routeMap
 const route = "/api/v1/pets/[userId]";
@@ -17,7 +17,7 @@ export async function GET(
     const userId: string = (await params).userId;
 
     // The service seems to already throw an error in case of a null pet, will check this later
-    const pet: Pet | null = await getPet(userId);
+    const pet: Pet | null = await PetService.getPet(userId);
     return NextResponse.json(pet, { status: 200 });
   } catch (error) {
     return handleError(error);
@@ -39,7 +39,7 @@ export async function PATCH(
     }
     const { name } = await req.json();
 
-    await updatePet(userId, name);
+    await PetService.updatePet(userId, name);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
@@ -61,7 +61,7 @@ export async function DELETE(
       );
     }
 
-    await deletePet(userId);
+    await PetService.deletePet(userId);
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {

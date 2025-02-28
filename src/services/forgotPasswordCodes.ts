@@ -1,43 +1,30 @@
 import { ObjectId } from "mongodb";
-import {
-  createForgotPasswordCode,
-  deleteForgotPasswordCodeById,
-  getForgotPasswordCodeByUserId,
-  updateForgotPasswordCodeByUserId,
-} from "../db/actions/forgotPasswordCodes";
 import bcrypt from "bcrypt";
 import { ForgotPasswordCode } from "../db/models";
-import {
-  getUserFromEmail,
-  getUserFromId,
-  updateUserPasswordFromId,
-} from "../db/actions/user";
-import { ApiError } from "@/types/exceptions";
+import { InvalidArgumentsError } from "@/types/exceptions";
 import {
   generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
 import {
-  BadRequestError,
   ConflictError,
-  InternalServerError,
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateTemporaryToken } from "./jwt";
+import JWTService from "./jwt";
+import UserDAO from "@/db/actions/user";
+import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import EmailService from "./mail";
 
-export async function sendPasswordCode(
-  email: string | undefined,
-): Promise<ObjectId> {
-  try {
-    if (!email || !email.trim()) {
-      // I feel like this is checked way too often because its email | undefined for all these methods
-      throw new BadRequestError("Invalid Email.");
-    }
+export default class ForgotPasswordService {
+  static async sendPasswordCode(email?: string): Promise<ObjectId> {
+    // TODO: validate email
 
-    const user = await getUserFromEmail(email);
+    const user = await UserDAO.getUserFromEmail(email);
+    if (!user) {
+      throw new NotFoundError("User does not exist");
+    }
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
 
@@ -47,14 +34,16 @@ export async function sendPasswordCode(
       userId: user._id,
     };
 
-    const previousForgotPasswordCode = await getForgotPasswordCodeByUserId(
-      user._id,
-    );
+    const previousCode =
+      await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
 
-    if (previousForgotPasswordCode) {
-      await updateForgotPasswordCodeByUserId(user._id, newCode);
+    if (previousCode) {
+      await ForgotPasswordCodeDAO.updateForgotPasswordCodeByUserId(
+        user._id,
+        newCode,
+      );
     } else {
-      await createForgotPasswordCode(newCode);
+      await ForgotPasswordCodeDAO.createForgotPasswordCode(newCode);
     }
 
     const emailSubject = "iCAN Account Recovery";
@@ -63,88 +52,69 @@ export async function sendPasswordCode(
     <p>Your verification code is: ${code}</p>
     <p>If you did not request this, you can ignore this email</p>`;
 
-    await EmailService.sendEmail(email, emailSubject, emailHtml);
-
-    return user._id;
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
+    try {
+      await EmailService.sendEmail(email!, emailSubject, emailHtml);
+    } catch {
       throw new Error("Email failed to send.");
     }
-    throw error;
-  }
-}
 
-export async function verifyForgotPasswordCode(
-  userIdString: string,
-  code: string,
-): Promise<string> {
-  if (!userIdString || !userIdString.trim()) {
-    throw new BadRequestError("User ID is required.");
+    return user._id;
   }
 
-  if (!code || !code.trim()) {
-    throw new BadRequestError("Code is required");
-  }
+  static async verifyForgotPasswordCode(
+    userIdString: string,
+    code: string,
+  ): Promise<string> {
+    if (!userIdString?.trim())
+      throw new InvalidArgumentsError("User ID is required.");
+    if (!code?.trim()) throw new InvalidArgumentsError("Code is required.");
 
-  const userId = new ObjectId(userIdString);
+    const userId = new ObjectId(userIdString);
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError("User does not exist");
+    }
 
-  try {
-    const user = await getUserFromId(userId);
-    const forgotPasswordCode = await getForgotPasswordCodeByUserId(user._id);
-
-    if (!forgotPasswordCode) {
+    const forgotPasswordCode =
+      await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
+    if (!forgotPasswordCode)
       throw new NotFoundError(
-        "No forgot password code found for this user id.",
+        "No forgot password code found for this user ID.",
       );
-    }
 
-    if (new Date() > forgotPasswordCode.expirationDate) {
+    if (new Date() > forgotPasswordCode.expirationDate)
       throw new ConflictError("Forgot password code has expired.");
-    }
 
     const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
-    if (!isMatch) {
-      throw new UnauthorizedError("Invalid forgot password code.");
+    if (!isMatch) throw new UnauthorizedError("Invalid forgot password code.");
+
+    await ForgotPasswordCodeDAO.deleteForgotPasswordCodeById(
+      forgotPasswordCode._id,
+    );
+    return JWTService.generateToken({ userId }, 900);
+  }
+
+  static async changePassword(
+    token: string,
+    newPassword: string,
+    confirmPassword: string,
+  ) {
+    if (!newPassword?.trim())
+      throw new InvalidArgumentsError("New password is required.");
+    if (!confirmPassword?.trim())
+      throw new InvalidArgumentsError("Confirm password is required.");
+
+    if (newPassword !== confirmPassword)
+      throw new UnauthorizedError("Passwords do not match.");
+
+    const decoded = JWTService.verifyToken(token);
+    const userId = new ObjectId(decoded.userId);
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError("User does not exist");
     }
-
-    await deleteForgotPasswordCodeById(forgotPasswordCode._id);
-
-    const token = generateTemporaryToken(userId);
-    return token;
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
-    }
-    throw error;
-  }
-}
-
-export async function changePassword(
-  userId: string,
-  newPassword: string,
-  confirmPassword: string,
-) {
-  if (!newPassword || !newPassword.trim()) {
-    throw new BadRequestError("New password is required.");
-  }
-
-  if (!confirmPassword || !confirmPassword.trim()) {
-    throw new BadRequestError("Confirm password is required");
-  }
-
-  if (newPassword !== confirmPassword) {
-    throw new BadRequestError("Passwords do not match.");
-  }
-
-  try {
-    const user = await getUserFromId(new ObjectId(userId));
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await updateUserPasswordFromId(user._id, hashedPassword);
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
-    }
-    throw error;
+    await UserDAO.updateUserPasswordFromId(user._id, hashedPassword);
   }
 }

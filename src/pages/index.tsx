@@ -81,6 +81,7 @@ export default function Home() {
                 width={characterImages[petData.petType].width}
                 height={characterImages[petData.petType].height}
                 draggable={false}
+                unoptimized={true}
                 className="select-none h-full w-auto object-contain"
               />
               <div className="absolute left-[100%] bottom-[75%]">

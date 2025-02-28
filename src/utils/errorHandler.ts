@@ -1,13 +1,11 @@
 import {
-  AlreadyExistsError,
-  BadRequestError,
-  DoesNotExistError,
-  InvalidBodyError,
+  ConflictError,
+  InvalidArgumentsError,
+  MethodNotAllowedError,
   NotFoundError,
   UnauthorizedError,
-  ConflictError,
-  InternalServerError,
-  MethodNotAllowedError,
+  ValidationError,
+  IllegalOperationError,
 } from "@/types/exceptions";
 import { NextResponse } from "next/server";
 
@@ -19,26 +17,26 @@ export const handleError = (error: unknown) => {
     // Default error message are set in @/types/exceptions
     message = error.message || message;
     switch (true) {
-      case error instanceof BadRequestError:
-      case error instanceof InvalidBodyError:
+      case error instanceof InvalidArgumentsError:
         status = 400;
         break;
       case error instanceof UnauthorizedError:
         status = 401;
         break;
-      case error instanceof DoesNotExistError:
       case error instanceof NotFoundError:
         status = 404;
         break;
       case error instanceof MethodNotAllowedError:
         status = 405;
         break;
-      case error instanceof AlreadyExistsError:
       case error instanceof ConflictError:
         status = 409;
         break;
-      case error instanceof InternalServerError:
-        status = 500;
+      case error instanceof ValidationError:
+        status = 422;
+        break;
+      case error instanceof IllegalOperationError:
+        status = 403;
         break;
       default:
         status = 500;

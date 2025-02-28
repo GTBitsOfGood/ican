@@ -1,6 +1,6 @@
 import { Settings } from "@/db/models";
-import { getSettings, updateSettings } from "@/services/settings";
-import { ApiError, getStatusCode } from "@/types/exceptions";
+import SettingsService from "@/services/settings";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -13,36 +13,38 @@ export default async function handler(
   switch (method) {
     case "GET":
       try {
-        const settings: Settings = await getSettings({ userId });
+        const settings: Settings = await SettingsService.getSettings(
+          userId as string,
+        );
 
-        res.status(200).json(settings);
+        return res.status(200).json(settings);
       } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(getStatusCode(error)).json({ error: error.message });
-        } else {
-          throw error;
+        if (error instanceof Error) {
+          return res
+            .status(getStatusCode(error))
+            .json({ error: error.message });
         }
       }
     case "PATCH":
       try {
-        await updateSettings({
-          userId,
+        await SettingsService.updateSettings({
+          userId: userId as string,
           helpfulTips: body?.helpfulTips,
           largeFontSize: body?.largeFontSize,
           notifications: body?.notifications,
           parentalControl: body?.parentalControl,
         });
 
-        res.status(204).end();
+        return res.status(204).end();
       } catch (error) {
-        if (error instanceof ApiError) {
-          res.status(getStatusCode(error)).json({ error: error.message });
-        } else {
-          throw error;
+        if (error instanceof Error) {
+          return res
+            .status(getStatusCode(error))
+            .json({ error: error.message });
         }
       }
     default:
       res.setHeader("Allow", ["GET", "PATCH"]);
-      res.status(405).json({ error: `Method ${method} Not Allowed` });
+      return res.status(405).json({ error: `Method ${method} Not Allowed` });
   }
 }

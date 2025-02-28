@@ -1,4 +1,4 @@
-import { validateCreateUser } from "@/services/auth";
+import AuthService from "@/services/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     const { name, email, password, confirmPassword } = await req.json();
 
-    const response: { token: string } = await validateCreateUser(
+    const response: { token: string } = await AuthService.register(
       name,
       email,
       password,
