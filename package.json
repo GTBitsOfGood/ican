@@ -6,19 +6,57 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install",
+    "secrets:linux": "echo Enter Bitwarden Password: && read BW_PASSWORD && (bw logout || exit 0) && export BW_SESSION=`bw login product@bitsofgood.org $BW_PASSWORD --raw` && npm run secrets:get",
+    "secrets:windows": "set /p BW_PASSWORD=Enter Bitwarden Password:&& (bw logout || VER>NUL) && npm run secrets:login",
+    "secrets:login": "FOR /F %a IN ('bw login product@bitsofgood.org %BW_PASSWORD% --raw') DO SET BW_SESSION=%a && npm run secrets:get",
+    "secrets:get": "bw sync && bw get item 1676370d-5f21-4a5a-9f1d-b266000cc319 | fx .notes > \".env.development.local\""
   },
   "dependencies": {
+    "@next/font": "^14.2.15",
+    "@phosphor-icons/react": "^2.1.7",
+
+    "@react-oauth/google": "^0.12.1",
+
+    "bcrypt": "^5.1.1",
+    "bw": "^0.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^15.1.4",
+    "input-otp": "^1.4.2",
+    "jsonwebtoken": "^9.0.2",
+    "juno-sdk": "^0.0.5",
+    "lucide-react": "^0.474.0",
+    "mongodb": "^6.12.0",
+    "next": "15.1.4",
+    "next-google-fonts": "^2.2.0",
+    "nodemailer": "^6.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.1.4"
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint-config-prettier": "^10.0.1",
+    "fx": "^35.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "prettier": "^3.4.2",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
   }
 }
