@@ -39,13 +39,7 @@ export async function createPet(
     xpLevel: 0,
     coins: 0,
     userId: new ObjectId(userId),
-    appearance: {
-      clothes: "default clothes",
-      appearance: {
-        shoes: "default shoes",
-      },
-      background: "default background",
-    },
+    appearance: {},
   };
 
   await createNewPet(newPet);

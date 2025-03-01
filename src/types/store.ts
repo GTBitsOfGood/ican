@@ -14,11 +14,6 @@ export enum AccessoryType {
 // Tentative store items
 export const storeItems = [
   {
-    itemName: "default clothes",
-    type: ItemType.CLOTHES,
-    cost: 0,
-  },
-  {
     itemName: "cool shirt",
     type: ItemType.CLOTHES,
     cost: 100,
@@ -42,11 +37,6 @@ export const storeItems = [
     itemName: "painter clothes",
     type: ItemType.CLOTHES,
     cost: 100,
-  },
-  {
-    itemName: "default shoes",
-    type: AccessoryType.SHOES,
-    cost: 0,
   },
   {
     itemName: "musician shoes",
@@ -97,10 +87,5 @@ export const storeItems = [
     itemName: "doctor accessory",
     type: AccessoryType.OCCUPATION,
     cost: 100,
-  },
-  {
-    itemName: "default background",
-    type: ItemType.BACKGROUND,
-    cost: 0,
   },
 ];
