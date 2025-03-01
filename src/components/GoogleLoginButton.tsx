@@ -69,7 +69,7 @@ const GoogleLoginButton = ({
             width={30}
             height={30}
           />
-          <div className="px-3 text-[24px]/[32px] text-[#000]">
+          <div className="px-3 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-[24px]/[32px] text-[#000]">
             Login with Google
           </div>
         </button>
