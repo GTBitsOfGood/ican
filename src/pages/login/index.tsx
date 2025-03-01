@@ -74,7 +74,7 @@ export default function Home() {
           className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[90%] short:w-[80%] tablet:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
         >
           <Image
-            className="desktop:mb-2 mobile:mb-0 short:mb-0 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
+            className="desktop:mb-2 mobile:mb-0 short:mb-0 tablet:w-[165px] tablet:h-[111px] short:w-[165px] short:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}

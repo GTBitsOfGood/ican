@@ -15,10 +15,10 @@ export default {
       desktop: "1024px",
       largeDesktop: "1280px",
       tall: {
-        raw: "(min-height: 724px)",
+        raw: "(min-height: 798px)",
       },
       short: {
-        raw: "(max-height: 724px)",
+        raw: "(max-height: 798px)",
       },
       tiny: {
         raw: "(max-height: 480px)",

@@ -1,4 +1,4 @@
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorBox from "@/components/ErrorBox";
 import Timer from "@/components/Timer";
 import {
   InputOTP,
@@ -198,7 +198,7 @@ export default function ForgotPasswordPage() {
                       placeholder="Email"
                       onChange={handleEmailChange}
                     />
-                    {error.email && <ErrorMessage message={error.email} />}
+                    {error.email && <ErrorBox message={error.email} />}
                   </>
                 )}
                 {page === 1 && (
@@ -215,7 +215,7 @@ export default function ForgotPasswordPage() {
                         <InputOTPSlot index={3} style={OTPStyles} />
                       </InputOTPGroup>
                     </InputOTP>
-                    {error.otp && <ErrorMessage message={error.otp} />}
+                    {error.otp && <ErrorBox message={error.otp} />}
                   </div>
                 )}
                 {page === 2 && (
@@ -232,7 +232,7 @@ export default function ForgotPasswordPage() {
                           ref={resetPasswordRef}
                         />
                         {error.password && (
-                          <ErrorMessage message={error.password} />
+                          <ErrorBox message={error.password} />
                         )}
                       </div>
                     </div>
@@ -248,7 +248,7 @@ export default function ForgotPasswordPage() {
                           ref={confirmPasswordRef}
                         />
                         {error.confirmPassword && (
-                          <ErrorMessage message={error.confirmPassword} />
+                          <ErrorBox message={error.confirmPassword} />
                         )}
                       </div>
                     </div>
