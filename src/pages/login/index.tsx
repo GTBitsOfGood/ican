@@ -74,7 +74,7 @@ export default function Home() {
           className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[90%] tablet:w-[80%] desktop:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
         >
           <Image
-            className="mb-4 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:w-[165px] desktop:w-[248px] desktop:h-[167px]"
+            className="mb-2 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:w-[165px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
@@ -113,7 +113,7 @@ export default function Home() {
                 />
                 <ErrorBox message={emailError} />
                 <input
-                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="password"
                   placeholder="Password"
                   name="password"

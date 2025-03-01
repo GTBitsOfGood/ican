@@ -120,7 +120,7 @@ export default function Home() {
           className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[70%] desktop:w-[45%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
         >
           <Image
-            className="mb-4"
+            className="mb-2 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:w-[165px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
@@ -147,11 +147,11 @@ export default function Home() {
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-between w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start text-[32px]/[40px] font-bold text-shadow-default text-stroke-2 text-stroke-default font-quantico mb-2">
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 short:text-stroke-1 desktop:text-stroke-2 text-stroke-default mb-2">
                   Sign Up
                 </div>
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${nameError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${nameError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
                   name="name"
                   placeholder="Name"
@@ -160,7 +160,7 @@ export default function Home() {
                 />
                 <ErrorBox message={nameError} />
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="email"
                   placeholder="Email"
                   name="email"
@@ -169,7 +169,7 @@ export default function Home() {
                 />
                 <ErrorBox message={emailError} />
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="password"
                   placeholder="Password"
                   name="password"
@@ -178,7 +178,7 @@ export default function Home() {
                 />
                 <ErrorBox message={passwordError} />
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${confirmPasswordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${confirmPasswordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="password"
                   placeholder="Confirm Password"
                   name="confirmPassword"
@@ -187,7 +187,7 @@ export default function Home() {
                 />
                 <ErrorBox message={confirmPasswordError} />
                 <button
-                  className="w-full bg-[#2C3694] text-[24px]/[32px] text-white h-12 font-quantico mb-4"
+                  className="w-full bg-[#2C3694] text-white desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
                   type="submit"
                 >
                   Sign Up
@@ -200,7 +200,7 @@ export default function Home() {
                   </div>
                   <GoogleLoginButton setError={setEmailError} />
                 </div>
-                <div className="text-textGrey font-quantico text-[20px]">
+                <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                   Have an account?{" "}
                   <Link className="underline font-quantico" href="/login">
                     Login
