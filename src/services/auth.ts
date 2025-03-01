@@ -18,6 +18,8 @@ import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 import { generateToken } from "./jwt";
 import { ObjectId } from "mongodb";
+import { verifyToken } from "./jwt";
+import { getUserFromId } from "@/db/actions/user";
 
 export interface CreateUserBody {
   name: string;
@@ -157,8 +159,8 @@ export async function validateGoogleLogin(name: string, email: string) {
   return token;
 }
 
-export async function validateToken() {
-  // const decodedToken = verifyToken(token);
-  // await getUserFromId(new ObjectId(decodedToken.userId));
-  // return decodedToken;
+export async function validateToken(token: string) {
+  const decodedToken = verifyToken(token);
+  await getUserFromId(new ObjectId(decodedToken.userId));
+  return decodedToken;
 }
