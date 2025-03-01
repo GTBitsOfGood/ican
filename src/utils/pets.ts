@@ -1,13 +1,13 @@
 import { PetType } from "@/types/pet";
 import { InvalidArgumentsError } from "../types/exceptions";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export async function validateParams(
   userId: string,
   name?: string,
   petType?: string,
 ): Promise<void> {
-  if (!ObjectId.isValid(userId)) {
+  if (!Types.ObjectId.isValid(userId)) {
     throw new InvalidArgumentsError(
       "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
     );

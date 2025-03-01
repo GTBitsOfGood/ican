@@ -9,14 +9,13 @@ import {
   validateName,
   validatePassword,
 } from "@/utils/user";
-import bcrypt from "bcrypt";
-import { User } from "../db/models";
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
-import { ObjectId } from "mongodb";
 import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
+import { User } from "@/db/models/user";
+import { Types } from "mongoose";
 
 export interface CreateUserBody {
   name: string;
@@ -37,7 +36,7 @@ export default class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ) {
+  ): Promise<{ token: string }> {
     // Validate parameters
     validateName(name);
     validatePassword(password);
@@ -54,18 +53,16 @@ export default class AuthService {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser: User = {
       name: name,
       provider: Provider.PASSWORD,
       email: email,
-      password: hashedPassword,
+      password: password,
     };
 
     // Uses userId returned by insertOne()
-    const { insertedId } = await UserDAO.createUser(newUser);
-    const userId = insertedId.toString();
+    const { _id } = await UserDAO.createUser(newUser);
+    const userId = _id.toString();
     if (!userId) {
       throw new NotFoundError("user does not exist");
     }
@@ -73,10 +70,10 @@ export default class AuthService {
     await PetService.createPet(userId, `${name}'s Pet`, "dog");
 
     // create settings
-    await settingsService.createSettings(insertedId.toString());
+    await settingsService.createSettings(_id.toString());
 
     // Create jwt once user is successfully created
-    const token = JWTService.generateToken({ userId: insertedId }, 604800);
+    const token = JWTService.generateToken({ userId: _id.toString() }, 604800);
 
     return { token };
   }
@@ -101,7 +98,7 @@ export default class AuthService {
     }
 
     // Check if password is correct
-    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+    const passwordMatch = await existingUser.comparePassword(password);
 
     if (!passwordMatch) {
       throw new UnauthorizedError(
@@ -131,11 +128,10 @@ export default class AuthService {
         name: name,
         provider: Provider.GOOGLE,
         email: email,
-        password: "",
       };
 
-      const { insertedId } = await UserDAO.createUser(newUser);
-      userId = insertedId;
+      const insertedData = await UserDAO.createUser(newUser);
+      userId = insertedData.id;
       await PetService.createPet(userId.toString(), `${name}'s Pet`, "dog");
     } else {
       userId = existingUser._id;
@@ -153,10 +149,14 @@ export default class AuthService {
   }
 
   // Validate JWT token and ensure user exists
-  static async validateToken(token: string) {
+  static async validateToken(token: string): Promise<{ userId: string }> {
     const decodedToken = JWTService.verifyToken(token);
-    await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));
-
+    const user = await UserDAO.getUserFromId(
+      new Types.ObjectId(decodedToken.userId),
+    );
+    if (!user) {
+      throw new NotFoundError("User does not exist.");
+    }
     return decodedToken;
   }
 }

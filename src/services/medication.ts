@@ -1,14 +1,15 @@
 import MedicationDAO from "@/db/actions/medication";
-import { Medication } from "@/db/models";
+import { Medication } from "@/db/models/medication";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
+import { WithId } from "@/types/models";
 import { validateCreateParams, validateParams } from "@/utils/medication";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
     await validateCreateParams(medication);
-    medication.userId = new ObjectId(medication.userId);
+    medication.userId = new Types.ObjectId(medication.userId);
 
     const existingMedication =
       await MedicationDAO.getUserMedicationByMedicationId(
@@ -20,32 +21,32 @@ export default class MedicationService {
     }
 
     const newMedication = await MedicationDAO.createNewMedication(medication);
-    return newMedication.insertedId.toString();
+    return newMedication._id.toString();
   }
 
-  static async getMedication(id: string): Promise<Medication> {
+  static async getMedication(id: string): Promise<WithId<Medication>> {
     await validateParams({ id });
     const existingMedication = await MedicationDAO.getMedicationById(
-      new ObjectId(id),
+      new Types.ObjectId(id),
     );
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    return existingMedication as Medication;
+    return existingMedication.toObject();
   }
 
   static async updateMedication(id: string, updatedMedication: Medication) {
     updatedMedication = removeUndefinedKeys(updatedMedication);
     await validateParams(updatedMedication);
     const existingMedication = await MedicationDAO.getMedicationById(
-      new ObjectId(id),
+      new Types.ObjectId(id),
     );
     if (!existingMedication) {
       throw new ConflictError("This medication does not exist");
     }
     if (updatedMedication.formOfMedication) {
       await MedicationDAO.updateMedicationById(
-        new ObjectId(id),
+        new Types.ObjectId(id),
         updatedMedication,
       );
     }
@@ -54,24 +55,26 @@ export default class MedicationService {
   static async deleteMedication(id: string) {
     validateParams({ id });
     const existingMedication = await MedicationDAO.getMedicationById(
-      new ObjectId(id),
+      new Types.ObjectId(id),
     );
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    await MedicationDAO.deleteMedicationById(new ObjectId(id));
+    await MedicationDAO.deleteMedicationById(new Types.ObjectId(id));
   }
 
-  static async getMedications(userId: ObjectId) {
+  static async getMedications(
+    userId: Types.ObjectId,
+  ): Promise<WithId<Medication>[]> {
     validateParams({ userId });
     const medications = await MedicationDAO.getMedicationsByUserId(
-      new ObjectId(userId),
+      new Types.ObjectId(userId),
     );
-    if (!medications) {
+    if (medications.length === 0) {
       throw new NotFoundError(
         "This user id does not have connected medications",
       );
     }
-    return (await medications.toArray()) as Array<Medication>;
+    return medications.map((medication) => medication.toObject());
   }
 }
