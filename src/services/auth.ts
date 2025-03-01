@@ -10,14 +10,13 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { createUser, findUserByEmail } from "../db/actions/auth";
-import { User } from "../db/models";
+
 import { createSettings } from "./settings";
 import { createPet } from "./pets";
 import { Provider } from "@/types/auth";
-import { verifyToken } from "./jwt";
-import { getUserFromId } from "@/db/actions/user";
+import { createUser, findUserByEmail } from "../db/actions/auth";
+import { User } from "../db/models";
+import { generateToken } from "./jwt";
 import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
@@ -35,8 +34,6 @@ export interface LoginBody {
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in the environment variables.");
 }
-
-const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export async function validateCreateUser(
   name: string,
@@ -88,15 +85,7 @@ export async function validateCreateUser(
   await createSettings({ userId: _id.toString() });
 
   // Create jwt once user is successfully created
-  const token = jwt.sign(
-    {
-      userId: insertedId,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(new ObjectId(userId));
 
   return { token };
 }
@@ -128,16 +117,7 @@ export async function validateLogin(email: string, password: string) {
     );
   }
 
-  // Create and return jwt
-  const token = jwt.sign(
-    {
-      userId: existingUser._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(existingUser._id!);
 
   return { token };
 }
@@ -172,22 +152,13 @@ export async function validateGoogleLogin(name: string, email: string) {
     );
   }
 
-  const token = jwt.sign(
-    {
-      userId: existingUser?._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(existingUser?._id as ObjectId);
 
   return token;
 }
 
-export async function validateToken(token: string) {
-  const decodedToken = verifyToken(token);
-  await getUserFromId(new ObjectId(decodedToken.userId));
-
-  return decodedToken;
+export async function validateToken() {
+  // const decodedToken = verifyToken(token);
+  // await getUserFromId(new ObjectId(decodedToken.userId));
+  // return decodedToken;
 }
