@@ -173,13 +173,13 @@ export default function ForgotPasswordPage() {
       <div
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
-        <div className="bg-white p-16 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center gap-y-6 short:h-screen mobile:w-11/12 tablet:w-3/4 desktop:w-7/12 largeDesktop:w-5/12">
+        <div className="bg-white p-16 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center gap-y-6 mobile:w-11/12 tablet:w-3/4 desktop:w-7/12 largeDesktop:w-5/12">
           <div className="flex flex-col gap-y-12 items-center font-quantico">
             <div className={`flex flex-col gap-y-4 items-center`}>
-              <div className="text-[#FFF] mobile:text-5xl desktop:text-[64px]/[64px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
+              <div className="text-[#FFF] short:text-[36px] mobile:text-5xl tablet:text-[48px]/[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
                 {Sections[page].header}
               </div>
-              <div className="text-black text-center mobile:text-2xl desktop:text-4xl/9 font-bold flex flex-wrap">
+              <div className="text-black text-center mobile:text-2xl tablet:text-4xl/9 font-bold flex flex-wrap">
                 {Sections[page].subheader} {page === 1 && email}
               </div>
             </div>
@@ -276,7 +276,7 @@ export default function ForgotPasswordPage() {
             )}
           </div>
           {page !== 3 && (
-            <div className="flex flex-col gap-y-6 w-full h-full font-quantico">
+            <div className="flex flex-col gap-y-6 w-[80%] h-full font-quantico">
               <div className="flex items-center justify-center w-full">
                 <div className="border border-iCAN-gray w-full" />
                 <div className="text-iCAN-gray px-4">or</div>

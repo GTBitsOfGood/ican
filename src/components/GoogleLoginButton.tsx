@@ -52,13 +52,13 @@ const GoogleLoginButton = ({
             width={40}
             height={40}
           />
-          <div className="mobile:text-lg desktop:text-[32px] text-[#000]">
+          <div className="desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-[#000]">
             Login with Google
           </div>
         </button>
       ) : (
         <button
-          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black h-12 text-[24px]/[32px] text-center mb-4"
+          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center mb-4"
           type="button"
           onClick={() => login()}
         >
