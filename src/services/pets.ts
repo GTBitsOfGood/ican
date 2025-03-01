@@ -5,7 +5,7 @@ import {
   getPetByPetId,
   getPetByUserId,
   updatePetAppearanceByPetId,
-  updatePetNameByUserId,
+  updatePetNameByUserId
 } from "../db/actions/pets";
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
