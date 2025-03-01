@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
-import { InternalServerError } from "@/types/exceptions";
 import { BagItem } from "../models";
 
 export async function createBagItem(newItem: BagItem) {
@@ -9,9 +8,7 @@ export async function createBagItem(newItem: BagItem) {
   try {
     await db.collection("bagItems").insertOne(newItem);
   } catch (error) {
-    throw new InternalServerError(
-      "Failed to purchase item: " + (error as Error).message,
-    );
+    throw new Error("Failed to purchase item: " + (error as Error).message);
   }
 }
 
@@ -29,10 +26,7 @@ export async function getBagItemByPetIdAndName(
 
 export async function getPetBag(petId: ObjectId) {
   const db = client.db();
-  const items = await db
-    .collection("bagItems")
-    .find({ petId: petId })
-    .toArray();
+  const items = await db.collection("bagItems").find({ petId }).toArray();
 
   return items;
 }

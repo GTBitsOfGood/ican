@@ -21,13 +21,13 @@ export async function validatePurchase(petId: string, itemName: string) {
     throw new DoesNotExistError("This pet does not exist.");
   }
 
-  if (pet.coins < item.cost) {
-    throw new BadRequestError("This pet does not have enough coins.");
-  }
-
   const dbItem = await getBagItemByPetIdAndName(new ObjectId(petId), itemName);
   if (dbItem) {
     throw new BadRequestError("This pet already owns this item.");
+  }
+
+  if (pet.coins < item.cost) {
+    throw new BadRequestError("This pet does not have enough coins.");
   }
 
   const newItem: BagItem = {

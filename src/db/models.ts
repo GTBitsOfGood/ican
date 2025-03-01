@@ -32,6 +32,7 @@ export interface Pet {
       occupation?: string;
     };
     background?: string;
+    food?: string;
   };
 }
 

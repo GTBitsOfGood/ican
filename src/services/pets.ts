@@ -5,7 +5,7 @@ import {
   getPetByPetId,
   getPetByUserId,
   updatePetAppearanceByPetId,
-  updatePetNameByUserId
+  updatePetNameByUserId,
 } from "../db/actions/pets";
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
@@ -87,6 +87,14 @@ export async function validateEquipItem(petId: string, itemName: string) {
   const dbItem = await getBagItemByPetIdAndName(new ObjectId(petId), itemName);
   if (!dbItem) {
     throw new DoesNotExistError("This pet does not own this item.");
+  }
+
+  if (
+    Object.values(pet.appearance).includes(item.itemName) ||
+    (pet.appearance.accessories &&
+      Object.values(pet.appearance.accessories).includes(item.itemName))
+  ) {
+    throw new AlreadyExistsError("This item is already equipped.");
   }
 
   const prevAppearance = pet.appearance;
