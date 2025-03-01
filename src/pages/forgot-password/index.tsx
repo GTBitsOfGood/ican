@@ -174,11 +174,11 @@ export default function ForgotPasswordPage() {
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
         <div
-          className={`bg-white tiny:h-[95%] short:h-[85%] ${page === 0 ? "short:w-auto tall:h-[75%]" : ""} tall:h-[90%] my-2 tablet:px-4 desktop:px-8 short:px-2 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center mobile:gap-y-4 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 mobile:w-11/12 tablet:w-5/6 desktop:w-2/3 largeDesktop:w-1/2`}
+          className={`bg-white tiny:h-[95%] short:h-[85%] ${page === 0 ? "short:w-auto tall:h-[75%]" : ""} tall:h-[90%] my-2 tablet:px-4 desktop:px-8 short:px-2 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center 2 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 mobile:w-11/12 tablet:w-5/6 desktop:w-2/3 largeDesktop:w-1/2`}
         >
-          <div className="flex flex-col desktop:gap-y-12 w-[90%] mobile:gap-y-4 tiny:gap-y-3 short:gap-y-3 mx-2 tall:gap-y-9 items-center font-quantico">
+          <div className="flex flex-col desktop:gap-y-12 w-[90%] mobile:gap-y-4 tiny:gap-y-3 short:gap-y-3 mx-2 tall:gap-y-4 items-center font-quantico">
             <div
-              className={`flex flex-col mobile:gap-y-2 desktop:gap-y-4 tiny:gap-y-2 short:gap-y-2 tall:gap-y-4 items-center`}
+              className={`flex flex-col mobile:gap-y-2 desktop:gap-y-4 tiny:gap-y-1 short:gap-y-2 tall:gap-y-4 items-center`}
             >
               <div className="text-[#FFF] mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[40px]/[48px] font-bold text-shadow-default short:text-stroke-1 mobile:text-stroke-1 desktop:text-stroke-2 text-stroke-default text-center">
                 {Sections[page].header}
@@ -189,11 +189,11 @@ export default function ForgotPasswordPage() {
             </div>
 
             {page !== 3 && (
-              <div className="flex flex-col gap-y-2 w-full">
+              <div className="flex flex-col gap-y-2 w-[90%]">
                 {page === 0 && (
                   <>
                     <input
-                      className={`w-full border-2 border-solid mobile:h-10 short:h-10 tablet:h-12 desktop:h-16 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
+                      className={`border-2 border-solid mobile:h-10 short:h-10 tablet:h-12 desktop:h-16 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
                       type="text"
                       placeholder="Email"
                       onChange={handleEmailChange}
