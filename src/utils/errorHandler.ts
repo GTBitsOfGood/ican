@@ -8,6 +8,7 @@ import {
   IllegalOperationError,
 } from "@/types/exceptions";
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 export const handleError = (error: unknown) => {
   let status = 500;
@@ -15,6 +16,16 @@ export const handleError = (error: unknown) => {
 
   if (error instanceof Error) {
     // Default error message are set in @/types/exceptions
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          errors: error.errors,
+        },
+        { status },
+      );
+    }
+    
     message = error.message || message;
     switch (true) {
       case error instanceof InvalidArgumentsError:
