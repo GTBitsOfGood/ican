@@ -42,23 +42,24 @@ const GoogleLoginButton = ({
     <>
       {forgotPassword ? (
         <button
-          className="w-full py-3 flex justify-center items-center text-[32px] bg-white gap-y-2.5 border-2 border-solid border-[#000]"
+          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 tall:h-12 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center"
           type="submit"
           onClick={() => login()}
         >
           <Image
             src="/assets/GoogleSocialIcon.svg"
             alt="Google Logo"
+            className="mobile:w-[25px] mobile:h-[25px] desktop:w-[40px] desktop:h-[40px] tiny:w-[25px] tiny:h-[25px] short:w-[25px] short:h-[25px] tall:w-[40px] tall:h-[40px]"
             width={40}
             height={40}
           />
-          <div className="desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-[#000]">
+          <div className="flex justify-center items-center desktop:h-12 mobile:h-8 tiny:h-8 short:h-8 tall:h-8 pl-2 mobile:text-[16px] desktop:text-[24px]/[32px] tiny:text-lg short:text-lg tall:text-2xl text-[#000]">
             Login with Google
           </div>
         </button>
       ) : (
         <button
-          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center mb-4"
+          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center mb-4"
           type="button"
           onClick={() => login()}
         >

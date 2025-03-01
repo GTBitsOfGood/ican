@@ -173,13 +173,15 @@ export default function ForgotPasswordPage() {
       <div
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
-        <div className="bg-white p-16 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center gap-y-6 mobile:w-11/12 tablet:w-3/4 desktop:w-7/12 largeDesktop:w-5/12">
-          <div className="flex flex-col gap-y-12 items-center font-quantico">
-            <div className={`flex flex-col gap-y-4 items-center`}>
-              <div className="text-[#FFF] short:text-[36px] mobile:text-5xl tablet:text-[48px]/[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
+        <div className="bg-white tiny:h-[95%] tiny:w-11/12 short:h-[85%] short:w-5/6 tall:h-[75%] p-16 overflow-none rounded-[64px] flex flex-col justify-center items-center mobile:gap-y-4 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 mobile:w-11/12 tablet:w-5/6 desktop:w-2/3 largeDesktop:w-1/2">
+          <div className="flex flex-col desktop:gap-y-12 mobile:gap-y-6 tiny:gap-y-6 short:gap-y-6 tall:gap-y-12 items-center font-quantico">
+            <div
+              className={`flex flex-col mobile:gap-y-2 desktop:gap-y-4 tiny:gap-y-2 short:gap-y-2 tall:gap-y-4 items-center`}
+            >
+              <div className="text-[#FFF] mobile:text-5xl tablet:text-[48px]/[48px] tiny:text-3xl short:text-3xl tall:text-5xl font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
                 {Sections[page].header}
               </div>
-              <div className="text-black text-center mobile:text-2xl tablet:text-4xl/9 font-bold flex flex-wrap">
+              <div className="text-black text-center mobile:text-2xl tablet:text-4xl/9 tiny:text-xl short:text-2xl tall:text-4xl/9 font-bold flex flex-wrap">
                 {Sections[page].subheader} {page === 1 && email}
               </div>
             </div>
@@ -251,7 +253,7 @@ export default function ForgotPasswordPage() {
               </div>
             )}
             <button
-              className="w-full py-3 flex justify-center items-center mobile:text-xl desktop:text-[32px] bg-iCAN-Blue-300"
+              className="w-full mobile:py-2 desktop:py-3 tiny:py-2 short:py-2 tall:py-3 flex justify-center items-center mobile:text-lg desktop:text-[32px] tiny:text-lg short:text-lg tall:text-[32px] bg-iCAN-Blue-300"
               onClick={incPage}
               type="submit"
             >
@@ -276,7 +278,7 @@ export default function ForgotPasswordPage() {
             )}
           </div>
           {page !== 3 && (
-            <div className="flex flex-col gap-y-6 w-[80%] h-full font-quantico">
+            <div className="flex flex-col mobile:gap-y-2 desktop:gap-y-6 tiny:gap-y-2 w-[80%] h-full font-quantico">
               <div className="flex items-center justify-center w-full">
                 <div className="border border-iCAN-gray w-full" />
                 <div className="text-iCAN-gray px-4">or</div>
@@ -284,7 +286,7 @@ export default function ForgotPasswordPage() {
               </div>
               <GoogleLoginButton forgotPassword={true} />
               <div className="flex justify-center items-center">
-                <div className="mobile:flex mobile:flex-col tablet:inline-block text-iCAN-gray mobile:text-lg desktop:text-2xl">
+                <div className="mobile:flex mobile:flex-col tablet:inline-block text-center text-iCAN-gray mobile:text-lg desktop:text-2xl tiny:text-lg short:text-lg tall:text-2xl">
                   Don’t have an account?{" "}
                   <Link href="/register" className="underline self-center">
                     Sign Up

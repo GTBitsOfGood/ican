@@ -18,7 +18,7 @@ export default {
         raw: "(min-height: 724px)",
       },
       short: {
-        raw: "(max-height: 724px)",
+        raw: "(max-height: 724px) and (min-height: 360px)",
       },
       tiny: {
         raw: "(max-height: 360px)",
