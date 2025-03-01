@@ -1,4 +1,5 @@
 import fetchService from "@/http/fetchService";
+import { WithId } from "@/types/models";
 import { Pet, PetType } from "@/types/pet";
 
 export interface UpdatePetBody {
@@ -16,13 +17,13 @@ export const petService = {
     name: string,
     userId: string,
     petType: PetType,
-  ): Promise<Pet> => {
+  ): Promise<WithId<Pet>> => {
     const CreatePetBodyRequestBody: CreatePetBody = {
       name,
       userId,
       petType,
     };
-    return fetchService<Pet>("/pets", {
+    return fetchService<WithId<Pet>>("/pets", {
       method: "POST",
       body: JSON.stringify(CreatePetBodyRequestBody),
       headers: {
@@ -31,8 +32,8 @@ export const petService = {
     });
   },
 
-  getPet: async (userId: string): Promise<Pet> => {
-    return fetchService<Pet>(`/pets/${userId}`, {
+  getPet: async (userId: string): Promise<WithId<Pet>> => {
+    return fetchService<WithId<Pet>>(`/pets/${userId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

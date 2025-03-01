@@ -1,13 +1,16 @@
-import { Settings } from "@/db/models";
+import { WithId } from "@/types/models";
 import fetchService from "./fetchService";
 import {
   UpdateSettingsRequestBody,
   UpdateSettingsPinRequestBody,
 } from "@/types/settings";
+import { Settings } from "@/db/models/settings";
 
 export const settingService = {
-  getSettings: async (userId: string): Promise<Settings> => {
-    return fetchService<Settings>(`/settings/${userId}`, { method: "GET" });
+  getSettings: async (userId: string): Promise<WithId<Settings>> => {
+    return fetchService<WithId<Settings>>(`/settings/${userId}`, {
+      method: "GET",
+    });
   },
 
   updateSettings: async (
