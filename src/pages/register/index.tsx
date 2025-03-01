@@ -117,10 +117,10 @@ export default function Home() {
     <UnauthorizedRoute>
       <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2">
         <div
-          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[70%] desktop:w-[45%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[90%] desktop:w-[45%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
         >
           <Image
-            className="mb-2 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:w-[165px] desktop:w-[248px] desktop:h-[167px]"
+            className="desktop:mb-2 mobile:mb-0 short:mb-0 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
@@ -147,7 +147,7 @@ export default function Home() {
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-between w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 short:text-stroke-1 desktop:text-stroke-2 text-stroke-default mb-2">
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 short:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 short:mb-1 desktop:mb-2">
                   Sign Up
                 </div>
                 <input
@@ -187,12 +187,12 @@ export default function Home() {
                 />
                 <ErrorBox message={confirmPasswordError} />
                 <button
-                  className="w-full bg-[#2C3694] text-white desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
+                  className="w-full bg-[#2C3694] text-white desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mobile:mb-1 short:mb-1 desktop:mb-4"
                   type="submit"
                 >
                   Sign Up
                 </button>
-                <div className="flex flex-col gap-y-6 w-[80%]">
+                <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
                   <div className="flex items-center justify-center w-full">
                     <div className="border border-textGrey w-full" />
                     <div className="text-textGrey px-4">or</div>

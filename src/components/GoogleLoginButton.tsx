@@ -42,7 +42,7 @@ const GoogleLoginButton = ({
     <>
       {forgotPassword ? (
         <button
-          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 tall:h-12 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center"
+          className="w-full mobile:gap-y-1 short:gap-y-1 desktop:gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 tall:h-12 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center"
           type="submit"
           onClick={() => login()}
         >
@@ -59,7 +59,7 @@ const GoogleLoginButton = ({
         </button>
       ) : (
         <button
-          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center mb-4"
+          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center desktop:mb-3 mobile:mb-1 short:mb-1"
           type="button"
           onClick={() => login()}
         >
