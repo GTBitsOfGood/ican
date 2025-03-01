@@ -2,12 +2,18 @@ import MedicationDAO from "@/db/actions/medication";
 import { Medication } from "@/db/models";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
-import { validateCreateParams, validateParams } from "@/utils/medication";
+import { validateParams } from "@/utils/medication";
+import {
+  validateCreateMedication,
+  validateDeleteMedication,
+  validateGetMedication,
+  validateUpdateMedication,
+} from "@/utils/serviceUtils/medicationUtil";
 import { ObjectId } from "mongodb";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
-    await validateCreateParams(medication);
+    await validateCreateMedication(medication);
     medication.userId = new ObjectId(medication.userId);
 
     const existingMedication =
@@ -24,7 +30,7 @@ export default class MedicationService {
   }
 
   static async getMedication(id: string): Promise<Medication> {
-    await validateParams({ id });
+    validateGetMedication({ id });
     const existingMedication = await MedicationDAO.getMedicationById(
       new ObjectId(id),
     );
@@ -35,8 +41,8 @@ export default class MedicationService {
   }
 
   static async updateMedication(id: string, updatedMedication: Medication) {
-    updatedMedication = removeUndefinedKeys(updatedMedication);
-    await validateParams(updatedMedication);
+    updatedMedication = removeUndefinedKeys(updatedMedication); // Need to test this with zod
+    await validateUpdateMedication({ id, ...updatedMedication });
     const existingMedication = await MedicationDAO.getMedicationById(
       new ObjectId(id),
     );
@@ -52,7 +58,7 @@ export default class MedicationService {
   }
 
   static async deleteMedication(id: string) {
-    validateParams({ id });
+    validateDeleteMedication({ id });
     const existingMedication = await MedicationDAO.getMedicationById(
       new ObjectId(id),
     );

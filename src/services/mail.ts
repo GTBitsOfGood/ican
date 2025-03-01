@@ -1,3 +1,4 @@
+import { validateSendEmail } from "@/utils/serviceUtils/mailUtil";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -17,6 +18,7 @@ export default class EmailService {
     html: string,
   ): Promise<boolean> {
     try {
+      validateSendEmail({ to, subject, html });
       const info = await transporter.sendMail({
         from: process.env.MAIL_USER,
         to,
