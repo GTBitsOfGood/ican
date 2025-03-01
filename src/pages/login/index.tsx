@@ -74,13 +74,13 @@ export default function Home() {
           className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[90%] tablet:w-[80%] desktop:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto`}
         >
           <Image
-            className="mb-4 mobile:w-[124px] mobile:h-[84px] tablet:w-[248px] tablet:h-[167px]"
+            className="mb-4 mobile:w-[165px] mobile:h-[111px] tablet:w-[248px] tablet:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
             height={167}
           />
-          <div className="self-center w-[80%] my-4 text-center text-black text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+          <div className="self-center w-[80%] my-4 text-center text-black mobile:text-xl desktop:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
             Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
           </div>
           {loggingIn ? (
@@ -100,11 +100,11 @@ export default function Home() {
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-center w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start text-[32px]/[40px] font-bold text-shadow-default text-stroke-2 text-stroke-default mb-4">
+                <div className="text-white self-start mobile:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 desktop:text-stroke-2 text-stroke-default mb-4">
                   Log In
                 </div>
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
                   placeholder="Email"
                   name="email"
@@ -113,7 +113,7 @@ export default function Home() {
                 />
                 <ErrorBox message={emailError} />
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="password"
                   placeholder="Password"
                   name="password"
@@ -122,7 +122,10 @@ export default function Home() {
                 />
                 <ErrorBox message={passwordError} />
                 <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
-                  <Link className="underline" href="/forgot-password">
+                  <Link
+                    className="mobile:text-lg desktop:text-2xl underline"
+                    href="/forgot-password"
+                  >
                     Forgot Password?
                   </Link>
                 </p>
@@ -141,7 +144,7 @@ export default function Home() {
                 </div>
                 <GoogleLoginButton setError={setEmailError} />
               </div>
-              <div className="text-textGrey text-[20px]">
+              <div className="text-textGrey mobile:text-lg desktop:text-[20px]">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">
                   Sign up

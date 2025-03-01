@@ -286,7 +286,7 @@ export default function ForgotPasswordPage() {
               <div className="flex justify-center items-center">
                 <div className="mobile:flex mobile:flex-col tablet:inline-block text-iCAN-gray mobile:text-lg desktop:text-2xl">
                   Don’t have an account?{" "}
-                  <Link href="/register" className="underlineself-center">
+                  <Link href="/register" className="underline self-center">
                     Sign Up
                   </Link>
                 </div>
