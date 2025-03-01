@@ -15,8 +15,6 @@ export const handleError = (error: unknown) => {
   let message = "Internal server error";
 
   if (error instanceof Error) {
-    // Default error message are set in @/types/exceptions
-
     if (error instanceof ZodError) {
       return NextResponse.json(
         {
@@ -25,7 +23,8 @@ export const handleError = (error: unknown) => {
         { status },
       );
     }
-    
+
+    // Default error message are set in @/types/exceptions
     message = error.message || message;
     switch (true) {
       case error instanceof InvalidArgumentsError:
