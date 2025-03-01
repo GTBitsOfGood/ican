@@ -71,10 +71,10 @@ export default function Home() {
     <UnauthorizedRoute>
       <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
         <div
-          className={`self-center flex flex-col items-center justify-center rounded-[64px] mobile:w-[70%] desktop:w-[45%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+          className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[90%] tablet:w-[80%] desktop:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto`}
         >
           <Image
-            className="mb-4"
+            className="mb-4 mobile:w-[124px] mobile:h-[84px] tablet:w-[248px] tablet:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}

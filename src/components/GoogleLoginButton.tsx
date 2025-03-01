@@ -52,7 +52,9 @@ const GoogleLoginButton = ({
             width={40}
             height={40}
           />
-          <div className="text-[32px] text-[#000]">Login with Google</div>
+          <div className="mobile:text-lg desktop:text-[32px] text-[#000]">
+            Login with Google
+          </div>
         </button>
       ) : (
         <button

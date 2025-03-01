@@ -15,6 +15,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import Link from "next/link";
 
 const Sections = [
   {
@@ -172,13 +173,13 @@ export default function ForgotPasswordPage() {
       <div
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
-        <div className="bg-white p-16 rounded-[64px] flex flex-col gap-y-6 w-5/12">
+        <div className="bg-white p-16 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center gap-y-6 short:h-screen mobile:w-11/12 tablet:w-3/4 desktop:w-7/12 largeDesktop:w-5/12">
           <div className="flex flex-col gap-y-12 items-center font-quantico">
             <div className={`flex flex-col gap-y-4 items-center`}>
-              <div className="text-[#FFF] text-[64px]/[64px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
+              <div className="text-[#FFF] mobile:text-5xl desktop:text-[64px]/[64px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
                 {Sections[page].header}
               </div>
-              <div className="text-black text-center text-4xl/9 font-bold flex flex-wrap">
+              <div className="text-black text-center mobile:text-2xl desktop:text-4xl/9 font-bold flex flex-wrap">
                 {Sections[page].subheader} {page === 1 && email}
               </div>
             </div>
@@ -188,7 +189,7 @@ export default function ForgotPasswordPage() {
                 {page === 0 && (
                   <>
                     <input
-                      className={`w-full border-2 border-solid ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 h-16`}
+                      className={`w-full border-2 border-solid mobile:text-xl mobile:placeholder:text-xl desktop:text-3xl desktop:placeholder:text-3xl ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
                       type="text"
                       placeholder="Email"
                       onChange={handleEmailChange}
@@ -250,7 +251,7 @@ export default function ForgotPasswordPage() {
               </div>
             )}
             <button
-              className="w-full py-3 flex justify-center items-center text-[32px] bg-iCAN-Blue-300"
+              className="w-full py-3 flex justify-center items-center mobile:text-xl desktop:text-[32px] bg-iCAN-Blue-300"
               onClick={incPage}
               type="submit"
             >
@@ -283,9 +284,11 @@ export default function ForgotPasswordPage() {
               </div>
               <GoogleLoginButton forgotPassword={true} />
               <div className="flex justify-center items-center">
-                <div className="text-iCAN-gray text-2xl">
+                <div className="mobile:flex mobile:flex-col tablet:inline-block text-iCAN-gray mobile:text-lg desktop:text-2xl">
                   Don’t have an account?{" "}
-                  <span className="underline cursor-pointer">Sign Up</span>
+                  <Link href="/register" className="underlineself-center">
+                    Sign Up
+                  </Link>
                 </div>
               </div>{" "}
             </div>
