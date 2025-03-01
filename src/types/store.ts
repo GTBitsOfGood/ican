@@ -4,7 +4,7 @@ export enum ItemType {
   FOOD = "food",
 }
 
-export enum AcessoryType {
+export enum AccessoryType {
   SHOES = "shoes",
   EYEWEAR = "eyewear",
   HAT = "hat",
@@ -45,57 +45,57 @@ export const storeItems = [
   },
   {
     itemName: "default shoes",
-    type: AcessoryType.SHOES,
+    type: AccessoryType.SHOES,
     cost: 0,
   },
   {
     itemName: "musician shoes",
-    type: AcessoryType.SHOES,
+    type: AccessoryType.SHOES,
     cost: 100,
   },
   {
     itemName: "astronaut shoes",
-    type: AcessoryType.SHOES,
+    type: AccessoryType.SHOES,
     cost: 100,
   },
   {
     itemName: "business shoes",
-    type: AcessoryType.SHOES,
+    type: AccessoryType.SHOES,
     cost: 100,
   },
   {
     itemName: "musician hat",
-    type: AcessoryType.HAT,
+    type: AccessoryType.HAT,
     cost: 100,
   },
   {
     itemName: "sunglasses",
-    type: AcessoryType.EYEWEAR,
+    type: AccessoryType.EYEWEAR,
     cost: 100,
   },
   {
     itemName: "business hat",
-    type: AcessoryType.HAT,
+    type: AccessoryType.HAT,
     cost: 100,
   },
   {
     itemName: "doctor hat",
-    type: AcessoryType.HAT,
+    type: AccessoryType.HAT,
     cost: 100,
   },
   {
     itemName: "painter accessory",
-    type: AcessoryType.OCCUPATION,
+    type: AccessoryType.OCCUPATION,
     cost: 100,
   },
   {
     itemName: "business accessory",
-    type: AcessoryType.OCCUPATION,
+    type: AccessoryType.OCCUPATION,
     cost: 100,
   },
   {
     itemName: "doctor accessory",
-    type: AcessoryType.OCCUPATION,
+    type: AccessoryType.OCCUPATION,
     cost: 100,
   },
   {

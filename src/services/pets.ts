@@ -10,9 +10,13 @@ import {
 import { Pet } from "../db/models";
 import { ObjectId } from "mongodb";
 import { validateParams } from "@/utils/pets";
-import { validateItemName, validatePetId } from "@/utils/store";
+import {
+  validateItemAttribute,
+  validateItemName,
+  validatePetId,
+} from "@/utils/store";
 import { getBagItemByPetIdAndName } from "@/db/actions/bag";
-import { AcessoryType, storeItems } from "@/types/store";
+import { AccessoryType, storeItems } from "@/types/store";
 
 export async function createPet(
   userId: string,
@@ -94,7 +98,7 @@ export async function validateEquipItem(petId: string, itemName: string) {
   const prevAppearance = pet.appearance;
   let newAppearance = {};
 
-  if (Object.values(AcessoryType).includes(item.type as AcessoryType)) {
+  if (Object.values(AccessoryType).includes(item.type as AccessoryType)) {
     newAppearance = {
       ...prevAppearance,
       accessories: {
@@ -106,6 +110,36 @@ export async function validateEquipItem(petId: string, itemName: string) {
     newAppearance = {
       ...prevAppearance,
       [item.type]: itemName,
+    };
+  }
+
+  await updatePetAppearanceByPetId(new ObjectId(petId), newAppearance);
+}
+
+export async function validateUnequip(petId: string, attribute: string) {
+  validatePetId(petId);
+  validateItemAttribute(attribute);
+
+  const pet = (await getPetByPetId(new ObjectId(petId))) as Pet;
+  if (!pet) {
+    throw new DoesNotExistError("This pet does not exist.");
+  }
+
+  const prevAppearance = pet.appearance;
+  let newAppearance = {};
+
+  if (Object.values(AccessoryType).includes(attribute as AccessoryType)) {
+    newAppearance = {
+      ...prevAppearance,
+      accessories: {
+        ...prevAppearance.accessories,
+        [attribute]: null,
+      },
+    };
+  } else {
+    newAppearance = {
+      ...prevAppearance,
+      [attribute]: null,
     };
   }
 
