@@ -23,5 +23,6 @@ export async function encryptPin(pin: string): Promise<string> {
 }
 
 export async function validatePins(pinHash: string, pinToCheck: string) {
-  return bcrypt.compareSync(pinToCheck, pinHash);
+  console.log(pinHash);
+  return await bcrypt.compare(pinToCheck, pinHash);
 }

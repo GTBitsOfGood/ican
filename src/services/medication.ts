@@ -1,5 +1,6 @@
 import {
   createMedicationCheckInAction,
+  createMedicationLogAction,
   createNewMedication,
   deleteMedicationById,
   deleteMedicationCheckInAction,
@@ -9,7 +10,7 @@ import {
   getMedicationsByUserId,
   updateMedicationById,
 } from "@/db/actions/medication";
-import { Medication, MedicationCheckIn, Pet } from "@/db/models";
+import { Medication, MedicationCheckIn, MedicationLog, Pet } from "@/db/models";
 import {
   AlreadyExistsError,
   DoesNotExistError,
@@ -237,6 +238,8 @@ export async function createMedicationLog(medicationId: string, pin: string) {
     userId,
   });
 
+  console.log(pin);
+
   // check if pin related to userid is the same as the pin sent through the request body
 
   if (!(await validatePins(settings.pin, pin))) {
@@ -249,21 +252,33 @@ export async function createMedicationLog(medicationId: string, pin: string) {
     new ObjectId(medicationId),
   );
 
-  if (existingMedicationCheckIn) {
-    const checkIn = existingMedicationCheckIn as MedicationCheckIn;
-    if (checkIn.expiration.getTime() > Date.now()) {
-      // throw timeout error
-      throw new InvalidBodyError("The provided check in has expired.");
-    }
-
-    // delete medication check in
-
-    await deleteMedicationCheckInAction(new ObjectId(medicationId));
-
-    // find pet
-    const existingPet = (await getPetByUserId(new ObjectId(userId))) as Pet;
-
-    // add food to pet
-    updatePet(userId, { food: existingPet.food + FOOD_INC });
+  if (!existingMedicationCheckIn) {
+    throw new InvalidBodyError(
+      "There is no check in associated with this medication for this user.",
+    );
   }
+
+  const checkIn = existingMedicationCheckIn as MedicationCheckIn;
+  if (checkIn.expiration.getTime() <= Date.now()) {
+    // throw timeout error
+    throw new InvalidBodyError("The provided check in has expired.");
+  }
+
+  // delete medication check in
+
+  await deleteMedicationCheckInAction(new ObjectId(medicationId));
+
+  // find pet
+  const existingPet = (await getPetByUserId(new ObjectId(userId))) as Pet;
+
+  // add food to pet
+  await updatePet(userId, { food: existingPet.food + FOOD_INC });
+
+  const medicationCheckIn: MedicationLog = {
+    medicationId: new ObjectId(medicationId),
+    dateTaken: new Date(),
+  };
+
+  // create medication log in
+  await createMedicationLogAction(medicationCheckIn);
 }

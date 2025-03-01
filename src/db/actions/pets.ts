@@ -66,7 +66,7 @@ export async function deletePetByUserId(userId: ObjectId) {
 
 export async function getPetByPetId(petId: ObjectId) {
   const db = client.db();
-  const pet = await db.collection("pets").findOne({ petId });
+  const pet = await db.collection("pets").findOne({ _id: petId });
 
   return pet;
 }

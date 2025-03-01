@@ -91,7 +91,7 @@ export async function feedPet(petId: string) {
   }
 
   const updatedPet: Pet = existingPet;
-  if (updatedPet.xpGained > LEVEL_THRESHOLD - XP_GAIN) {
+  if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
     updatedPet.xpLevel += 1;
     updatedPet.xpGained = (XP_GAIN + updatedPet.xpGained) % LEVEL_THRESHOLD;
   } else {

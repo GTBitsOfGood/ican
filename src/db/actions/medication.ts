@@ -1,6 +1,6 @@
 import { InternalServerError } from "@/types/exceptions";
 import client from "../dbClient";
-import { Medication, MedicationCheckIn } from "../models";
+import { Medication, MedicationCheckIn, MedicationLog } from "../models";
 import { ObjectId } from "mongodb";
 
 export async function createNewMedication(newMedication: Medication) {
@@ -91,6 +91,23 @@ export async function createMedicationCheckInAction(
   } catch (error) {
     throw new InternalServerError(
       "Failed to create medication check in: " + (error as Error).message,
+    );
+  }
+}
+
+export async function createMedicationLogAction(
+  newMedicationLog: MedicationLog,
+) {
+  const db = client.db();
+  try {
+    const result = await db
+      .collection("MedicationLog")
+      .insertOne(newMedicationLog);
+
+    return result;
+  } catch (error) {
+    throw new InternalServerError(
+      "Failed to create medication log: " + (error as Error).message,
     );
   }
 }
