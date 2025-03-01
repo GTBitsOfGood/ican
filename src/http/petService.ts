@@ -47,4 +47,10 @@ export const petService = {
       method: "DELETE",
     });
   },
+
+  feedPet: async (petId: string): Promise<void> => {
+    return fetchService<void>(`/pet/${petId}/feed`, {
+      method: "PATCH",
+    });
+  },
 };
