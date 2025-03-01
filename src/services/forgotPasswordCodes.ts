@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 import { ForgotPasswordCode } from "../db/models";
-import { InvalidArgumentsError } from "@/types/exceptions";
 import {
   generateEncryptedCode,
   generateExpirationDate,
@@ -16,10 +15,15 @@ import JWTService from "./jwt";
 import UserDAO from "@/db/actions/user";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import EmailService from "./mail";
+import {
+  validateChangePassword,
+  validateSendPasswordCode,
+  validateVerifyForgotPasswordCode,
+} from "@/utils/serviceUtils/forgotPasswordCodesServiceUtil";
 
 export default class ForgotPasswordService {
   static async sendPasswordCode(email?: string): Promise<ObjectId> {
-    // TODO: validate email
+    validateSendPasswordCode({ email });
 
     const user = await UserDAO.getUserFromEmail(email);
     if (!user) {
@@ -65,9 +69,7 @@ export default class ForgotPasswordService {
     userIdString: string,
     code: string,
   ): Promise<string> {
-    if (!userIdString?.trim())
-      throw new InvalidArgumentsError("User ID is required.");
-    if (!code?.trim()) throw new InvalidArgumentsError("Code is required.");
+    validateVerifyForgotPasswordCode({ userIdString, code });
 
     const userId = new ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
@@ -99,13 +101,7 @@ export default class ForgotPasswordService {
     newPassword: string,
     confirmPassword: string,
   ) {
-    if (!newPassword?.trim())
-      throw new InvalidArgumentsError("New password is required.");
-    if (!confirmPassword?.trim())
-      throw new InvalidArgumentsError("Confirm password is required.");
-
-    if (newPassword !== confirmPassword)
-      throw new UnauthorizedError("Passwords do not match.");
+    validateChangePassword({ token, newPassword, confirmPassword });
 
     const decoded = JWTService.verifyToken(token);
     const userId = new ObjectId(decoded.userId);

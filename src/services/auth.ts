@@ -3,12 +3,6 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import {
-  passwordsAreEqual,
-  validateEmail,
-  validateName,
-  validatePassword,
-} from "@/utils/user";
 import bcrypt from "bcrypt";
 import { User } from "../db/models";
 import settingsService from "./settings";
@@ -17,6 +11,11 @@ import JWTService from "./jwt";
 import { ObjectId } from "mongodb";
 import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
+import {
+  validateLogin,
+  validateLoginWithGoogle,
+  validateRegister,
+} from "@/utils/serviceUtils/authServiceUtil";
 
 export interface CreateUserBody {
   name: string;
@@ -39,10 +38,12 @@ export default class AuthService {
     confirmPassword: string,
   ) {
     // Validate parameters
-    validateName(name);
-    validatePassword(password);
-    validateEmail(email);
-    passwordsAreEqual(password, confirmPassword);
+    validateRegister({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
 
     const existingUser = await UserDAO.getUserFromEmail(email);
 
@@ -84,8 +85,10 @@ export default class AuthService {
   // Validate login with email and password
   static async login(email: string, password: string) {
     // Validate parameters
-    validateEmail(email);
-    validatePassword(password);
+    validateLogin({
+      email,
+      password,
+    });
 
     // Check if user exists
     const existingUser = await UserDAO.getUserFromEmail(email);
@@ -120,8 +123,10 @@ export default class AuthService {
 
   // Validate login with Google
   static async loginWithGoogle(name: string, email: string) {
-    validateName(name);
-    validateEmail(email);
+    validateLoginWithGoogle({
+      name,
+      email,
+    });
 
     let userId;
 
