@@ -29,7 +29,11 @@ export interface CreatePetBody {
   userId: string;
 }
 
-export async function createPet(userId: string, name: string): Promise<Pet> {
+export async function createPet(
+  userId: string,
+  name: string,
+  petType: string,
+): Promise<Pet> {
   // Validate parameters
   await validateParams(userId, name);
 

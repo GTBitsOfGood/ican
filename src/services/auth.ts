@@ -11,7 +11,6 @@ import {
   validatePassword,
 } from "@/utils/auth";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 import { createSettings } from "./settings";
 import { createPet } from "./pets";
@@ -19,6 +18,7 @@ import { Provider } from "@/types/auth";
 import { createUser, findUserByEmail } from "../db/actions/auth";
 import { User } from "../db/models";
 import { generateToken } from "./jwt";
+import { ObjectId } from "mongodb";
 
 export interface CreateUserBody {
   name: string;
@@ -69,7 +69,6 @@ export async function validateCreateUser(
     password: hashedPassword,
   };
 
-
   // Uses userId returned by insertOne()
   const { insertedId } = await createUser(newUser);
   const userId = insertedId.toString();
@@ -83,20 +82,7 @@ export async function validateCreateUser(
   await createSettings({ userId: _id.toString() });
 
   // Create jwt once user is successfully created
-  const token = jwt.sign(
-    {
-      userId: insertedId,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
-
-const { insertedId } = await createUser(newUser);
-
-  // Create jwt once user is successfully created
-  const token = generateToken(insertedId);
+  const token = generateToken(new ObjectId(userId));
 
   return { token };
 }
@@ -133,17 +119,6 @@ export async function validateLogin(email: string, password: string) {
     );
   }
 
-  // Create and return jwt
-  const token = jwt.sign(
-    {
-      userId: existingUser._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
-
   const token = generateToken(existingUser._id);
 
   return { token };
@@ -179,22 +154,13 @@ export async function validateGoogleLogin(name: string, email: string) {
     );
   }
 
-  const token = jwt.sign(
-    {
-      userId: existingUser?._id,
-    },
-    JWT_SECRET,
-    {
-      expiresIn: "1w",
-    },
-  );
+  const token = generateToken(existingUser?._id as ObjectId);
 
   return token;
 }
 
-export async function validateToken(token: string) {
-  const decodedToken = verifyToken(token);
-  await getUserFromId(new ObjectId(decodedToken.userId));
-
-  return decodedToken;
+export async function validateToken() {
+  // const decodedToken = verifyToken(token);
+  // await getUserFromId(new ObjectId(decodedToken.userId));
+  // return decodedToken;
 }
