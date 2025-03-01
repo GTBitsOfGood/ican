@@ -26,17 +26,9 @@ import {
   UnauthorizedError,
 } from "@/types/exceptions";
 
-
-
 import { generateTemporaryToken } from "../services/jwt";
 
-
 import EmailService from "./mail";
-
-
-
-import { MailService } from "./mail";
-import { generateToken, verifyToken } from "./jwt";
 
 export async function sendPasswordCode(
   email: string | undefined,
