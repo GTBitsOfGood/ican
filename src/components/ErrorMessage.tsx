@@ -6,7 +6,7 @@ type Props = {
 
 export default function ErrorMessage({ message }: Props) {
   return (
-    <div className="text-black gap-x-2 flex items-center text-2xl">
+    <div className="flex self-start text-black mb-2 mobile:text-[12px] short:text-[12px] tablet:text-[16px]">
       <span>
         <Image
           src="assets/ErrorIcon.svg"

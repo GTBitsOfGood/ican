@@ -1,7 +1,7 @@
 const FeedButton = ({}) => {
   return (
     <button
-      className="relative aspect-feed-button min-w-52 4xl:w-[16.5rem] cursor-pointer"
+      className="relative aspect-feed-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer"
       type="button"
     >
       <div
@@ -14,7 +14,7 @@ const FeedButton = ({}) => {
           shadow-inner border-4 border-t-0 border-[#b7c982]/40"
         >
           <div className="h-full w-full flex justify-center items-center">
-            <span className="font-quantico text-center text-white text-5xl 4xl:text-6xl font-bold leading-9 text-stroke-4 text-stroke-[#516C05] text-shadow-[#798C3F] paint-stroke letter-spacing-ui">
+            <span className="font-quantico text-center text-white mobile:text-xl tablet:text-2xl desktop:text-4xl largeDesktop:text-5xl 4xl:text-6xl font-bold leading-9 text-stroke-4 text-stroke-[#516C05] text-shadow-[#798C3F] paint-stroke letter-spacing-ui">
               {" "}
               FEED{" "}
             </span>
