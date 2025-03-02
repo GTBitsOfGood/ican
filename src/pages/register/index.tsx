@@ -117,10 +117,10 @@ export default function Home() {
     <UnauthorizedRoute>
       <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2">
         <div
-          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[90%] tiny:w-[90%] short:w-[80%] desktop:w-[50%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[85%] tiny:w-[80%] minimized:w-[65%] short:w-[55%] desktop:w-[50%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
         >
           <Image
-            className="desktop:mb-1 mobile:mb-0 short:mb-0 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
+            className="desktop:mb-1 mobile:mb-0 minimized:mb-0 mobile:w-[165px] mobile:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
@@ -147,7 +147,7 @@ export default function Home() {
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-between w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 short:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 short:mb-1 desktop:mb-2">
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 minimized:mb-1 desktop:mb-2">
                   Sign Up
                 </div>
                 <input
