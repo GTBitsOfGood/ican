@@ -70,10 +70,9 @@ export default class SettingsService {
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
-    console.log({ ...validatedSettings, userId });
     await SettingsDAO.updateSettingsByUserId(userId, {
       ...validatedSettings,
-      userId,
+      userId, // Replaces the string userId with the objectId
     });
   }
 
