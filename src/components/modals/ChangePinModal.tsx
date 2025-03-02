@@ -13,8 +13,12 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { settingService } from "@/http/settingService";
+import { useUser } from "../UserContext";
 
 export default function ChangePinModal() {
+  const { userId } = useUser();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [oldPin, setOldPin] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -23,9 +27,24 @@ export default function ChangePinModal() {
     onOpen();
   }, [onOpen]);
 
-  const handleClick = () => {
+  // Currently only updates pin, the logic here should be changed in the future
+  const handleClick = async () => {
     if (oldPin.length < 4) {
-      setError("ERROR: Wrong Pin");
+      setError("ERROR: Pin must be 4 digits");
+      return;
+    }
+    if (!userId) {
+      setError("You must be logged in to perform this action");
+      return;
+    }
+    try {
+      await settingService.updatePin(userId, oldPin);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(`Error: ${error.message}`);
+      } else {
+        setError(`Unexpected error occured.`);
+      }
     }
   };
 
