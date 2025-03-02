@@ -160,6 +160,7 @@ export default class AuthService {
 
   // Validate JWT token and ensure user exists
   static async validateToken(token: string) {
+    console.log(token);
     validateTokenInput({ token });
     const decodedToken = JWTService.verifyToken(token);
     await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));

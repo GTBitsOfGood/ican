@@ -39,7 +39,9 @@ export const loginWithGoogleSchema = z.object({
   email: emailSchema,
 });
 
-export const validateTokenSchema = tokenSchema;
+export const validateTokenSchema = z.object({
+  token: tokenSchema,
+});
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

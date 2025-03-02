@@ -6,10 +6,9 @@ export const generateTokenSchema = z.object({
 
   expiresIn: z.number().int().positive(),
 });
+export const verifyTokenSchema = z.object({ token: tokenSchema });
 
-export const verifyTokenSchema = tokenSchema;
-
-export const decodeGoogleTokenSchema = tokenSchema;
+export const decodeGoogleTokenSchema = z.object({ credential: tokenSchema });
 
 export type GenerateTokenInput = z.infer<typeof generateTokenSchema>;
 export type VerifyTokenInput = z.infer<typeof verifyTokenSchema>;
