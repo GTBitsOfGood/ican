@@ -23,9 +23,17 @@ export default class SettingsDAO {
 
   static async getSettingsByUserId(userId: ObjectId): Promise<Settings | null> {
     const db = client.db();
+    console.log(typeof userId);
+    console.log(userId);
     const settings = await db
       .collection("settings")
       .findOne({ userId: userId });
+    // console.log(
+    //   await db
+    //     .collection("settings")
+    //     .find()
+    //     .toArray()
+    // );
 
     return settings as Settings | null;
   }

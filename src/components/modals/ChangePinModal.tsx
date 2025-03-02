@@ -39,6 +39,8 @@ export default function ChangePinModal() {
     }
     try {
       await settingService.updatePin(userId, oldPin);
+      console.log("Pin successfully changed");
+      // What to do upon successful submission?
     } catch (error) {
       if (error instanceof Error) {
         setError(`Error: ${error.message}`);
