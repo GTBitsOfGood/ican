@@ -37,11 +37,11 @@ export const createMedicationSchema = z.object({
     .array(z.string())
     .nonempty("Dose times must be a non-empty array"),
 
-  userId: objectIdSchema,
+  userId: objectIdSchema("UserId"),
 });
 
 const updateMedicationSchema = z.object({
-  id: objectIdSchema.optional(),
+  id: objectIdSchema("medicationId").optional(),
 
   formOfMedication: z
     .string()
@@ -94,11 +94,11 @@ const updateMedicationSchema = z.object({
     .min(1, "Dose times must be a non-empty array")
     .optional(),
 
-  userId: objectIdSchema.optional(),
+  userId: objectIdSchema("userId").optional(),
 });
 
-export const getMedicationSchema = objectIdSchema;
-export const deleteMedicationSchema = objectIdSchema;
+export const getMedicationSchema = objectIdSchema("medicationId");
+export const deleteMedicationSchema = objectIdSchema("medicationId");
 
 export type CreateMedication = z.infer<typeof createMedicationSchema>;
 export type GetMedication = z.infer<typeof getMedicationSchema>;

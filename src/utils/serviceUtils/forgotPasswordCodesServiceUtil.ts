@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { emailSchema, passwordSchema } from "./commonSchemaUtil";
+import {
+  emailSchema,
+  objectIdSchema,
+  passwordSchema,
+} from "./commonSchemaUtil";
 
 export const sendPasswordCodeSchema = z.object({
   email: emailSchema,
@@ -8,14 +12,16 @@ export const sendPasswordCodeSchema = z.object({
 export const verifyForgotPasswordCodeSchema = z.object({
   userId: z.string().trim().nonempty(),
 
-  code: z.string(),
+  code: z.string().regex(/^\d+$/, {
+    message: "Code must contain only numbers",
+  }),
 });
 
 export const changePasswordSchema = z
   .object({
-    token: z.string(),
+    userId: objectIdSchema("userId"),
     newPassword: passwordSchema,
-    confirmPassword: z.string(),
+    confirmPassword: passwordSchema,
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message:

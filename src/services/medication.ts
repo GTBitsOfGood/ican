@@ -42,7 +42,7 @@ export default class MedicationService {
 
   static async updateMedication(id: string, updatedMedication: Medication) {
     updatedMedication = removeUndefinedKeys(updatedMedication); // Need to test this with zod
-    await validateUpdateMedication({ id, ...updatedMedication });
+    validateUpdateMedication({ id, ...updatedMedication });
     const existingMedication = await MedicationDAO.getMedicationById(
       new ObjectId(id),
     );

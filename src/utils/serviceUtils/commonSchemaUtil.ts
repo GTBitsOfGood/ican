@@ -26,11 +26,20 @@ const isValidObjectId = (value: string): boolean => {
   return ObjectId.isValid(value);
 };
 
-export const objectIdSchema = z.string().refine(isValidObjectId, {
-  message: "Must be a valid ObjectId",
-});
+/**
+ * ObjectIdSchema is a general schema used to validate a string and check if converting it to an ObjectId is valid,
+ * it does not check whether or not the ObjectId exists.
+ * @param fieldName The name of the ObjectID displayed by the message
+ * @returns An error message if the string is not a valid ObjectId
+ */
+export const objectIdSchema = (fieldName = "ID") =>
+  z.string().refine(isValidObjectId, {
+    message: `Invalid ${fieldName}: must be a valid ObjectId`,
+  });
 
-// export const userIdSchema = z
-//   .string()
-//   .trim()
-//   .nonempty()
+// Very basic format validation, actual verification is assigned to services/auth.ts
+export const tokenSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, {
+    message: "Invalid JWT format",
+  });

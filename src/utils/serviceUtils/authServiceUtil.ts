@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { passwordSchema, emailSchema } from "./commonSchemaUtil";
+import { passwordSchema, emailSchema, tokenSchema } from "./commonSchemaUtil";
 
 export const registerSchema = z
   .object({
@@ -14,7 +14,7 @@ export const registerSchema = z
 
     password: passwordSchema,
 
-    confirmPassword: z.string(),
+    confirmPassword: passwordSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message:
@@ -39,9 +39,12 @@ export const loginWithGoogleSchema = z.object({
   email: emailSchema,
 });
 
+export const validateTokenSchema = tokenSchema;
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type LoginWithGoogleInput = z.infer<typeof loginWithGoogleSchema>;
+export type ValidateTokenInput = z.infer<typeof validateTokenSchema>;
 
 export const validateRegister = (data: unknown): RegisterInput => {
   return registerSchema.parse(data);
@@ -55,4 +58,8 @@ export const validateLoginWithGoogle = (
   data: unknown,
 ): LoginWithGoogleInput => {
   return loginWithGoogleSchema.parse(data);
+};
+
+export const validateTokenInput = (data: unknown): ValidateTokenInput => {
+  return validateTokenSchema.parse(data);
 };

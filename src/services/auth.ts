@@ -15,6 +15,7 @@ import {
   validateLogin,
   validateLoginWithGoogle,
   validateRegister,
+  validateTokenInput,
 } from "@/utils/serviceUtils/authServiceUtil";
 
 export interface CreateUserBody {
@@ -159,6 +160,7 @@ export default class AuthService {
 
   // Validate JWT token and ensure user exists
   static async validateToken(token: string) {
+    validateTokenInput({ token });
     const decodedToken = JWTService.verifyToken(token);
     await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));
 
