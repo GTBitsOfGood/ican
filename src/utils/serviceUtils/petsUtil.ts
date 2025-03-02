@@ -7,7 +7,7 @@ const isValidPetType = (petType: string): boolean => {
 };
 
 export const createPetSchema = z.object({
-  userId: objectIdSchema,
+  userId: objectIdSchema("UserId"),
 
   name: z.string().trim().nonempty(),
 
@@ -17,17 +17,17 @@ export const createPetSchema = z.object({
 });
 
 export const updatePetSchema = z.object({
-  userId: objectIdSchema,
+  userId: objectIdSchema("UserId"),
 
   name: z.string().trim().nonempty(),
 });
 
 export const getPetSchema = z.object({
-  userId: objectIdSchema,
+  userId: objectIdSchema("UserId"),
 });
 
 export const deletePetSchema = z.object({
-  userId: objectIdSchema,
+  userId: objectIdSchema("UserId"),
 
   name: z.string().trim().nonempty(),
 });
