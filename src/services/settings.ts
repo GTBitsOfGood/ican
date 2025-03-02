@@ -56,10 +56,11 @@ export default class SettingsService {
     updatedSettings: UpdateSettingsRequestBody,
   ) {
     updatedSettings = removeUndefinedKeys(updatedSettings);
-    if (Object.keys(updatedSettings).length === 0) {
-      // Return early if no settings to update
-      return;
-    }
+    // Or should we just let it throw an error for this case?
+    // if (Object.keys(updatedSettings).length === 0) {
+    //   // Return early if no settings to update
+    //   return;
+    // }
     const validatedSettings = validateUpdateSettings({
       userId: userIdString,
       ...updatedSettings,
@@ -69,7 +70,11 @@ export default class SettingsService {
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
-    await SettingsDAO.updateSettingsByUserId(userId, updatedSettings);
+    console.log({ ...validatedSettings, userId });
+    await SettingsDAO.updateSettingsByUserId(userId, {
+      ...validatedSettings,
+      userId,
+    });
   }
 
   static async updatePin(userId: string, pin: string) {

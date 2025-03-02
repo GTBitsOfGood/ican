@@ -1,8 +1,8 @@
 import { ObjectId } from "mongodb";
 import client from "../dbClient";
 import {
-  UpdateSettingsRequestBody,
   UpdateSettingsPinRequestBody,
+  UpdateSettingsBody,
 } from "@/types/settings";
 import { Settings } from "../models";
 
@@ -32,7 +32,7 @@ export default class SettingsDAO {
 
   static async updateSettingsByUserId(
     userId: ObjectId,
-    updateObj: UpdateSettingsRequestBody,
+    updateObj: UpdateSettingsBody,
   ) {
     const db = client.db();
     const result = await db
