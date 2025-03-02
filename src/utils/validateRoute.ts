@@ -30,6 +30,6 @@ export const validateRoutes = async (
     const token = authHeader.substring(7);
     const tokenUserId: string = JWTService.verifyToken(token).userId; // Any expired token's error should propogate from here
     await UserDAO.getUserFromId(new ObjectId(tokenUserId)); // Verify if user actually exists
-    return tokenUserId; // Would this be better as an ObjectId or String?
+    return tokenUserId; // Currently defaults to returning the string, but can be changed to return the actual UserObject
   }
 };

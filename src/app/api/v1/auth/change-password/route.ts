@@ -12,8 +12,8 @@ export async function PATCH(req: NextRequest) {
     );
     const { password, confirmPassword } = await req.json();
 
+    // There is the option of having changePassword take an optional userId, then let the schema check there
     if (!userId) {
-      // Not sure what error to throw here, it would only realistically happen when route maps authorization doesn't match up
       throw new Error(
         "Token was not checked when it was expected, ensure route map defines authorization.",
       );

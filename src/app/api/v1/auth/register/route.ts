@@ -8,7 +8,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
-
     const { name, email, password, confirmPassword } = await req.json();
 
     const response: { token: string } = await AuthService.register(
