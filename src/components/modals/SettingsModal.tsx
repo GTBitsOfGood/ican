@@ -9,16 +9,60 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
+import { settingService } from "@/http/settingService";
+import { useUser } from "../UserContext";
 
 export default function SettingsModal() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { userId } = useUser();
+
+  const { isOpen, onOpen, onClose: onCloseDefault } = useDisclosure();
   const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [helpfulTipsEnabled, setHelpfulTipsEnabled] = useState(false);
 
   useEffect(() => {
     onOpen();
-  }, [onOpen]);
+
+    if (userId) {
+      settingService
+        .getSettings(userId)
+        .then((settings) => {
+          setParentalControlsEnabled(settings.parentalControl);
+          setNotificationsEnabled(settings.notifications);
+          setHelpfulTipsEnabled(settings.helpfulTips);
+        })
+        .catch((error) => console.log(error));
+    }
+  }, [userId, onOpen]);
+
+  const handleClose = () => {
+    if (!userId) {
+      // Don't know what to do in this instance, this just doesn't save it
+      console.log("User is not signed in");
+      onCloseDefault();
+      return;
+    }
+    try {
+      // No await as I don't want user waiting for the save to happen
+      settingService
+        .updateSettings(
+          userId,
+          parentalControlsEnabled,
+          notificationsEnabled,
+          helpfulTipsEnabled,
+        )
+        .then(() => {
+          console.log("Settings saved successfully");
+        })
+        .catch((error) => {
+          console.log("Error saving settings:", error);
+        });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      onCloseDefault();
+    }
+  };
 
   return parentalControlsEnabled ? (
     <Modal
@@ -31,10 +75,10 @@ export default function SettingsModal() {
       }}
       className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
@@ -95,10 +139,10 @@ export default function SettingsModal() {
       }}
       className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>

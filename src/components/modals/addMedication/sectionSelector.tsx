@@ -10,6 +10,7 @@ interface SectionSelectorProps {
   info: AddMedicationInfo;
   setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
   setError: Dispatch<SetStateAction<string>>;
+  onSubmit: (medicationInfo: AddMedicationInfo) => void;
 }
 
 export default function SectionSelector({
@@ -19,6 +20,7 @@ export default function SectionSelector({
   info,
   setInfo,
   setError,
+  onSubmit,
 }: SectionSelectorProps) {
   const backAction = () => setCurrentSection((prev) => Math.max(0, prev - 1));
   const nextAction = () => {
@@ -33,7 +35,7 @@ export default function SectionSelector({
     }
 
     if (currentSection == sectionSize - 1) {
-      // confirm action
+      onSubmit(info);
     } else {
       setCurrentSection((prev) => Math.min(sectionSize - 1, prev + 1));
     }
