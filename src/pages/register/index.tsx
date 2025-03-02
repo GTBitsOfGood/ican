@@ -117,7 +117,7 @@ export default function Home() {
     <UnauthorizedRoute>
       <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2">
         <div
-          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[90%] short:w-[90%] desktop:w-[45%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[90%] tiny:w-[90%] short:w-[80%] desktop:w-[50%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
         >
           <Image
             className="desktop:mb-1 mobile:mb-0 short:mb-0 mobile:w-[165px] mobile:h-[111px] short:w-[165px] short:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
