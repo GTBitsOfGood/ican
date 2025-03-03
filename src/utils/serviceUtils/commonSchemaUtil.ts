@@ -43,3 +43,14 @@ export const tokenSchema = z
   .regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/, {
     message: "Invalid JWT format",
   });
+
+/**
+ * createValidateFunction simplifies creating basic validation functions by returning a constant that can be used to validate data to a schema
+ * @param schema zod-schema that for the validation function
+ * @returns validation function that can be used to validate data to a schema
+ */
+export function createValidateFunction<T extends z.ZodType>(schema: T) {
+  return (data: unknown): z.infer<T> => {
+    return schema.parse(data);
+  };
+}

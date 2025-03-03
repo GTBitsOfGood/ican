@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { passwordSchema, emailSchema, tokenSchema } from "./commonSchemaUtil";
+import {
+  passwordSchema,
+  emailSchema,
+  tokenSchema,
+  createValidateFunction,
+} from "./commonSchemaUtil";
 
 export const registerSchema = z
   .object({
@@ -48,20 +53,28 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type LoginWithGoogleInput = z.infer<typeof loginWithGoogleSchema>;
 export type ValidateTokenInput = z.infer<typeof validateTokenSchema>;
 
-export const validateRegister = (data: unknown): RegisterInput => {
-  return registerSchema.parse(data);
-};
+// export const validateRegister = (data: unknown): RegisterInput => {
+//   return registerSchema.parse(data);
+// };
 
-export const validateLogin = (data: unknown): LoginInput => {
-  return loginSchema.parse(data);
-};
+// export const validateLogin = (data: unknown): LoginInput => {
+//   return loginSchema.parse(data);
+// };
 
-export const validateLoginWithGoogle = (
-  data: unknown,
-): LoginWithGoogleInput => {
-  return loginWithGoogleSchema.parse(data);
-};
+// export const validateLoginWithGoogle = (
+//   data: unknown,
+// ): LoginWithGoogleInput => {
+//   return loginWithGoogleSchema.parse(data);
+// };
 
-export const validateTokenInput = (data: unknown): ValidateTokenInput => {
-  return validateTokenSchema.parse(data);
-};
+// export const validateTokenInput = (data: unknown): ValidateTokenInput => {
+//   return validateTokenSchema.parse(data);
+// };
+
+// Both can be used and are the same
+export const validateRegister = createValidateFunction(registerSchema);
+export const validateLogin = createValidateFunction(loginSchema);
+export const validateLoginWithGoogle = createValidateFunction(
+  loginWithGoogleSchema,
+);
+export const validateTokenInput = createValidateFunction(tokenSchema);

@@ -94,6 +94,8 @@ const updateMedicationSchema = z.object({
     .min(1, "Dose times must be a non-empty array")
     .optional(),
 
+  notes: z.string().optional(),
+
   userId: objectIdSchema("userId").optional(),
 });
 
