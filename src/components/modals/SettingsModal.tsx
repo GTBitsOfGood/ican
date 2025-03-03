@@ -15,35 +15,48 @@ import { useUser } from "../UserContext";
 export default function SettingsModal() {
   const { userId } = useUser();
 
-  const { isOpen, onOpen, onClose: onCloseDefault } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [helpfulTipsEnabled, setHelpfulTipsEnabled] = useState(false);
+  const [settingsChanged, setSettingsChanged] = useState(false);
 
   useEffect(() => {
     onOpen();
-
-    if (userId) {
-      settingService
-        .getSettings(userId)
-        .then((settings) => {
-          setParentalControlsEnabled(settings.parentalControl);
-          setNotificationsEnabled(settings.notifications);
-          setHelpfulTipsEnabled(settings.helpfulTips);
-        })
-        .catch((error) => console.log(error));
-    }
-  }, [userId, onOpen]);
-
-  const handleClose = () => {
     if (!userId) {
-      // Don't know what to do in this instance, this just doesn't save it
-      console.log("User is not signed in");
-      onCloseDefault();
+      return;
+    }
+    settingService
+      .getSettings(userId)
+      .then((settings) => {
+        setParentalControlsEnabled(settings.parentalControl);
+        setNotificationsEnabled(settings.notifications);
+        setHelpfulTipsEnabled(settings.helpfulTips);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [userId]);
+
+  // Ensures we only PATCH when user makes the change, not the initial load
+  // But its honestly way too many requests if a kid decides to toggle the button for fun
+  const handleSettingChange =
+    <T,>(setter: React.Dispatch<React.SetStateAction<T>>) =>
+    (value: React.SetStateAction<T>): void => {
+      setter(value);
+      setSettingsChanged(true);
+    };
+
+  useEffect(() => {
+    if (!settingsChanged) {
+      return;
+    }
+    if (!userId) {
+      console.log("Save Unsuccessful: User is not signed in");
       return;
     }
     try {
-      // No await as I don't want user waiting for the save to happen
+      // Ignore waiting
       settingService
         .updateSettings(
           userId,
@@ -58,11 +71,9 @@ export default function SettingsModal() {
           console.log("Error saving settings:", error);
         });
     } catch (error) {
-      console.log(error);
-    } finally {
-      onCloseDefault();
+      console.log("Error saving settings:", error);
     }
-  };
+  }, [parentalControlsEnabled, notificationsEnabled, helpfulTipsEnabled]);
 
   return parentalControlsEnabled ? (
     <Modal
@@ -75,10 +86,10 @@ export default function SettingsModal() {
       }}
       className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={handleClose} />}
+      closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
@@ -90,7 +101,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Notifications</h5>
                 <ModalSwitch
                   state={notificationsEnabled}
-                  setState={setNotificationsEnabled}
+                  setState={handleSettingChange(setNotificationsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -102,7 +113,7 @@ export default function SettingsModal() {
                 </div>
                 <ModalSwitch
                   state={helpfulTipsEnabled}
-                  setState={setHelpfulTipsEnabled}
+                  setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
             </div>
@@ -112,7 +123,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Parental Controls</h5>
                 <ModalSwitch
                   state={parentalControlsEnabled}
-                  setState={setParentalControlsEnabled}
+                  setState={handleSettingChange(setParentalControlsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -139,10 +150,10 @@ export default function SettingsModal() {
       }}
       className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={handleClose} />}
+      closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
@@ -154,7 +165,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Notifications</h5>
                 <ModalSwitch
                   state={notificationsEnabled}
-                  setState={setNotificationsEnabled}
+                  setState={handleSettingChange(setNotificationsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -166,7 +177,7 @@ export default function SettingsModal() {
                 </div>
                 <ModalSwitch
                   state={helpfulTipsEnabled}
-                  setState={setHelpfulTipsEnabled}
+                  setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
             </div>
@@ -176,7 +187,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Parental Controls</h5>
                 <ModalSwitch
                   state={parentalControlsEnabled}
-                  setState={setParentalControlsEnabled}
+                  setState={handleSettingChange(setParentalControlsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">

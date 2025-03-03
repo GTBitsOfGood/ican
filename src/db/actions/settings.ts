@@ -23,17 +23,9 @@ export default class SettingsDAO {
 
   static async getSettingsByUserId(userId: ObjectId): Promise<Settings | null> {
     const db = client.db();
-    console.log(typeof userId);
-    console.log(userId);
     const settings = await db
       .collection("settings")
       .findOne({ userId: userId });
-    // console.log(
-    //   await db
-    //     .collection("settings")
-    //     .find()
-    //     .toArray()
-    // );
 
     return settings as Settings | null;
   }
@@ -43,10 +35,9 @@ export default class SettingsDAO {
     updateObj: UpdateSettingsRequestBody,
   ) {
     const db = client.db();
-    console.log(updateObj);
     const result = await db
       .collection("settings")
-      .updateOne({ userId }, { $set: { ...updateObj } });
+      .updateOne({ userId }, { $set: { ...updateObj, userId } });
 
     if (result.modifiedCount == 0) {
       throw new Error("Failed to update user settings.");
