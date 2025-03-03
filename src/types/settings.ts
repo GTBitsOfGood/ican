@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 // used to define update object for mongodb
 export interface UpdateSettingsRequestBody {
   parentalControl?: boolean;
@@ -7,7 +9,7 @@ export interface UpdateSettingsRequestBody {
 }
 
 export interface UpdateSettingsBody extends UpdateSettingsRequestBody {
-  userId?: string;
+  userId: ObjectId;
 }
 
 export type UpdateSettingsPinRequestBody = {
