@@ -1,6 +1,4 @@
-export interface CreateMedicationRequestBody {
-  userId: string;
-
+export interface MedicationInfo {
   formOfMedication: string; // medicationInfo.general.form
   medicationId: string; // medicationInfo.general.medicationId
 
@@ -18,13 +16,8 @@ export interface CreateMedicationRequestBody {
     time: string;
     period: "AM" | "PM";
   }[];
+}
 
-  /**
-   * Discrepencies between frontend and backend:
-   * dosageAmount: string; -> Not in backend
-   * notes: string; -> Not in backend
-   * includeTimes: boolean; -> I don't think this one matters
-   * monthlyWeekOfRepetition?: string; //
-   * monthlyWeekDayOfRepetition?: string;
-   */
+export interface CreateMedicationRequestBody extends MedicationInfo {
+  userId: string;
 }

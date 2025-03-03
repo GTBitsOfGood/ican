@@ -15,6 +15,7 @@ import DosageAmountSection from "./sections/dosageAmountSection";
 import NotesSection from "./sections/notesSection";
 import { medicationService } from "@/http/medicationService";
 import { useUser } from "@/components/UserContext";
+import { parseAddMedication } from "@/utils/parseAddMedition";
 
 interface addMedicationModalProps {
   setAddMedicationVisibility: Dispatch<SetStateAction<boolean>>;
@@ -69,15 +70,18 @@ export default function AddMedicationModal({
     />,
   ];
 
-  const handleSubmitMedication = async (medicationInfo: AddMedicationInfo) => {
+  const handleSubmitMedication = async (
+    addMedicationInfo: AddMedicationInfo,
+  ) => {
     if (!userId) {
       setError("User ID is missing. Please make sure you're logged in.");
       return;
     }
     try {
+      const parsedMedicationInfo = parseAddMedication(addMedicationInfo);
       await medicationService.createMedication(
         userId as string,
-        medicationInfo,
+        parsedMedicationInfo,
       );
     } catch (error) {
       if (error instanceof Error) {
