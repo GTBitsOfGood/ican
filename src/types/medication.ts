@@ -16,6 +16,8 @@ export interface MedicationInfo {
     time: string;
     period: "AM" | "PM";
   }[];
+
+  notes: string;
 }
 
 export interface CreateMedicationRequestBody extends MedicationInfo {

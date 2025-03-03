@@ -85,6 +85,8 @@ export const parseAddMedication = (
     doseIntervalInHours: medicationInfo.dosage.hourlyInterval,
 
     doseTimes: medicationInfo.times,
+
+    notes: medicationInfo.notes,
   };
 
   return medicationBody;
