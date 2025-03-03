@@ -10,10 +10,19 @@ export default {
   ],
   theme: {
     screens: {
-      mobile: "640px",
-      tablet: "860px",
+      mobile: "320px",
+      tablet: "768px",
       desktop: "1024px",
       largeDesktop: "1280px",
+      minimized: {
+        raw: "(max-height: 640px)",
+      },
+      short: {
+        raw: "(max-height: 800px)",
+      },
+      tiny: {
+        raw: "(max-height: 480px)",
+      },
     },
     extend: {
       keyframes: {

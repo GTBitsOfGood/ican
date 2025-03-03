@@ -74,16 +74,16 @@ export default function Home() {
     <UnauthorizedRoute>
       <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
         <div
-          className={`self-center flex flex-col items-center justify-center rounded-[64px] mobile:w-[70%] desktop:w-[45%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
+          className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
         >
           <Image
-            className="mb-4"
+            className="desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
             height={167}
           />
-          <div className="self-center w-[80%] my-4 text-center text-black text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+          <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
             Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
           </div>
           {loggingIn ? (
@@ -103,11 +103,11 @@ export default function Home() {
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-center w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start text-[32px]/[40px] font-bold text-shadow-default text-stroke-2 text-stroke-default mb-4">
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-4">
                   Log In
                 </div>
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
                   placeholder="Email"
                   name="email"
@@ -116,7 +116,7 @@ export default function Home() {
                 />
                 <ErrorBox message={emailError} />
                 <input
-                  className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="password"
                   placeholder="Password"
                   name="password"
@@ -125,18 +125,21 @@ export default function Home() {
                 />
                 <ErrorBox message={passwordError} />
                 <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
-                  <Link className="underline" href="/forgot-password">
+                  <Link
+                    className=" desktop:text-2xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
+                    href="/forgot-password"
+                  >
                     Forgot Password?
                   </Link>
                 </p>
                 <button
-                  className="w-full bg-loginGreen text-black h-12 text-[24px]/[32px] text-center mb-4"
+                  className="w-full bg-loginGreen text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
                   type="submit"
                 >
                   Login
                 </button>
               </form>
-              <div className="flex flex-col gap-y-6 w-[80%]">
+              <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
                 <div className="flex items-center justify-center w-full">
                   <div className="border border-textGrey w-full" />
                   <div className="text-textGrey px-4">or</div>
@@ -144,7 +147,7 @@ export default function Home() {
                 </div>
                 <GoogleLoginButton setError={setEmailError} />
               </div>
-              <div className="text-textGrey text-[20px]">
+              <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">
                   Sign up
