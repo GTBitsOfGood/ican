@@ -5,7 +5,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import {
   emailValidation,
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
     if (page == 0) {
       try {
         console.log(email);
-        const response = await authService.forgotPassword(email);
+        const response = await AuthHTTPClient.forgotPassword(email);
         if (response.userId) {
           setUserId(response.userId);
         }
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 1) {
       try {
-        const response = await authService.verifyForgotPassword(userId, otp);
+        const response = await AuthHTTPClient.verifyForgotPassword(userId, otp);
         localStorage.setItem("token", response.token);
       } catch (error) {
         setError({ otp: (error as Error).message });
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 2) {
       try {
-        await authService.changePassword(
+        await AuthHTTPClient.changePassword(
           resetPasswordRef.current?.value as string,
           confirmPasswordRef.current?.value as string,
         );
@@ -157,7 +157,7 @@ export default function ForgotPasswordPage() {
   const handleTimerReset = async () => {
     if (time === 0) {
       try {
-        await authService.forgotPassword(email);
+        await AuthHTTPClient.forgotPassword(email);
       } catch {
         console.error("error occured");
         return;

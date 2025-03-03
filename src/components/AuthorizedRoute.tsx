@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import React from "react";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import { useUser } from "./UserContext";
 import Image from "next/image";
 
@@ -26,7 +26,7 @@ export default function AuthorizedRoute({
       }
 
       try {
-        const response = await authService.validateToken();
+        const response = await AuthHTTPClient.validateToken();
         setUserId(response.decodedToken?.userId);
       } catch (error) {
         console.log("error with validation: ", error);

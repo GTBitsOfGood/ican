@@ -1,6 +1,6 @@
 import { InvalidArgumentsError } from "../types/exceptions";
 import { ObjectId } from "mongodb";
-import bcrypt from "bcrypt";
+import ERRORS from "./errorMessages";
 
 export async function validateParams(
   userId: string | string[] | undefined,
@@ -8,18 +8,9 @@ export async function validateParams(
   // Validate parameters
 
   if (!userId) {
-    throw new InvalidArgumentsError(
-      "Invalid parameters: 'userId' is required.",
-    );
+    throw new InvalidArgumentsError(ERRORS.SETTINGS.INVALID_ARGUMENTS.UserID);
   }
   if (userId && (typeof userId !== "string" || !ObjectId.isValid(userId))) {
-    throw new InvalidArgumentsError(
-      "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
-    );
+    throw new InvalidArgumentsError(ERRORS.SETTINGS.INVALID_ARGUMENTS.UserID);
   }
-}
-
-export async function encryptPin(pin: string): Promise<string> {
-  const code = await bcrypt.hash(pin, 10);
-  return code;
 }
