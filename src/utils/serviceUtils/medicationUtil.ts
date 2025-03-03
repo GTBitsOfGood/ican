@@ -99,11 +99,19 @@ const updateMedicationSchema = z.object({
   userId: objectIdSchema("userId").optional(),
 });
 
-export const getMedicationSchema = objectIdSchema("medicationId");
-export const deleteMedicationSchema = objectIdSchema("medicationId");
+export const getMedicationSchema = z.object({
+  id: objectIdSchema("medicationId"),
+});
+export const deleteMedicationSchema = z.object({
+  id: objectIdSchema("medicationId"),
+});
+export const getMedicationsSchema = z.object({
+  userId: objectIdSchema("userId"),
+});
 
 export type CreateMedication = z.infer<typeof createMedicationSchema>;
 export type GetMedication = z.infer<typeof getMedicationSchema>;
+export type GetMedications = z.infer<typeof getMedicationsSchema>;
 export type DeleteMedication = z.infer<typeof deleteMedicationSchema>;
 export type UpdateMedication = z.infer<typeof updateMedicationSchema>;
 
@@ -121,4 +129,8 @@ export const validateDeleteMedication = (data: unknown): DeleteMedication => {
 
 export const validateUpdateMedication = (data: unknown): UpdateMedication => {
   return updateMedicationSchema.parse(data);
+};
+
+export const validateGetMedications = (data: unknown): GetMedications => {
+  return getMedicationsSchema.parse(data);
 };

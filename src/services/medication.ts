@@ -2,11 +2,11 @@ import MedicationDAO from "@/db/actions/medication";
 import { Medication } from "@/db/models";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
-import { validateParams } from "@/utils/medication";
 import {
   validateCreateMedication,
   validateDeleteMedication,
   validateGetMedication,
+  validateGetMedications,
   validateUpdateMedication,
 } from "@/utils/serviceUtils/medicationUtil";
 import { ObjectId } from "mongodb";
@@ -68,8 +68,8 @@ export default class MedicationService {
     await MedicationDAO.deleteMedicationById(new ObjectId(id));
   }
 
-  static async getMedications(userId: ObjectId) {
-    validateParams({ userId });
+  static async getMedications(userId: string) {
+    validateGetMedications({ userId });
     const medications = await MedicationDAO.getMedicationsByUserId(
       new ObjectId(userId),
     );
