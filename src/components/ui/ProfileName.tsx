@@ -1,4 +1,4 @@
-import { petService } from "@/http/petHTTPClient";
+import PetHTTPClient from "@/http/petHTTPClient";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "../UserContext";
@@ -19,7 +19,7 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   const toggleEditing = async () => {
     if (isEditing && name != initialName) {
       try {
-        await petService.updatePet(name, userId as string);
+        await PetHTTPClient.updatePet(name, userId as string);
         initialName = name;
         console.log("Pet data updated successfully");
       } catch (error) {
