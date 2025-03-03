@@ -93,6 +93,7 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
   } else {
     return (
       <div>
+        {/* Bug: Need to check whether time is empty, or else clicking next then back crashes the application */}
         <FormSubtitle>
           Tell us when you want to take your first dose, and we will calculate
           the times for your next doses!

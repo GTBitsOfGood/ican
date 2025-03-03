@@ -38,6 +38,7 @@ export interface Medication {
   doseIntervalInHours: number;
   // string of times
   doseTimes: string[];
+  notes: string;
   userId?: ObjectId;
 }
 

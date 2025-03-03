@@ -35,6 +35,7 @@ export default class SettingsService {
 
   static async getSettings(userId: string): Promise<Settings> {
     await validateParams(userId);
+    console.log(userId);
     const settings = await SettingsDAO.getSettingsByUserId(
       new ObjectId(userId),
     );
