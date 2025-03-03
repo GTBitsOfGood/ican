@@ -1,4 +1,4 @@
-import fetchService from "./fetchService";
+import fetchHTTPClient from "./fetchHTTPClient";
 
 export interface LoginRequestBody {
   email: string;
@@ -55,63 +55,66 @@ export interface ValidateTokenResponseBody {
   decodedToken: { userId: string };
 }
 
-export const authService = {
-  login: async (email: string, password: string): Promise<AuthResponseBody> => {
+export default class AuthHTTPClient {
+  static async login(
+    email: string,
+    password: string,
+  ): Promise<AuthResponseBody> {
     const loginRequestBody: LoginRequestBody = { email, password };
-    return await fetchService<AuthResponseBody>(`/auth/login`, {
+    return await fetchHTTPClient<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
     });
-  },
+  }
 
-  loginWithGoogle: async (userInfo: UserInfo): Promise<AuthResponseBody> => {
+  static async loginWithGoogle(userInfo: UserInfo): Promise<AuthResponseBody> {
     const loginRequestBody: LoginWithGoogleRequestBody = {
       name: userInfo.name,
       email: userInfo.email,
     };
-    return await fetchService<AuthResponseBody>(`/auth/login-with-google`, {
+    return await fetchHTTPClient<AuthResponseBody>(`/auth/login-with-google`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
     });
-  },
+  }
 
-  register: async (
+  static async register(
     name: string,
     email: string,
     password: string,
     confirmPassword: string,
-  ): Promise<AuthResponseBody> => {
+  ): Promise<AuthResponseBody> {
     const registrationRequestBody: RegistrationRequestBody = {
       name,
       email,
       password,
       confirmPassword,
     };
-    return await fetchService<AuthResponseBody>(`/auth/register`, {
+    return await fetchHTTPClient<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
     });
-  },
+  }
 
-  forgotPassword: async (
+  static async forgotPassword(
     email: string,
-  ): Promise<ForgotPasswordResponseBody> => {
+  ): Promise<ForgotPasswordResponseBody> {
     const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
-    return await fetchService<ForgotPasswordResponseBody>(
+    return await fetchHTTPClient<ForgotPasswordResponseBody>(
       `/auth/forgot-password`,
       {
         method: "POST",
         body: JSON.stringify(forgotPasswordRequestBody),
       },
     );
-  },
+  }
 
-  verifyForgotPassword: async (
+  static async verifyForgotPassword(
     userId: string,
     code: string,
-  ): Promise<AuthResponseBody> => {
+  ): Promise<AuthResponseBody> {
     const verificationRequestBody: VerificationRequestBody = { userId, code };
-    return await fetchService<AuthResponseBody>(
+    return await fetchHTTPClient<AuthResponseBody>(
       `/auth/forgot-password/verify`,
       {
         method: "POST",
@@ -121,27 +124,27 @@ export const authService = {
         },
       },
     );
-  },
+  }
 
-  changePassword: async (
+  static async changePassword(
     password: string,
     confirmPassword: string,
-  ): Promise<void> => {
+  ): Promise<void> {
     const changePasswordRequestBody: ChangePasswordRequestBody = {
       password,
       confirmPassword,
     };
-    return fetchService<void>(`/auth/change-password`, {
+    return fetchHTTPClient<void>(`/auth/change-password`, {
       method: "PATCH",
       body: JSON.stringify(changePasswordRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-  },
+  }
 
-  validateToken: async (): Promise<ValidateTokenResponseBody> => {
-    return await fetchService<ValidateTokenResponseBody>(
+  static async validateToken(): Promise<ValidateTokenResponseBody> {
+    return await fetchHTTPClient<ValidateTokenResponseBody>(
       `/auth/validate-token`,
       {
         method: "POST",
@@ -151,9 +154,9 @@ export const authService = {
         body: JSON.stringify({}),
       },
     );
-  },
+  }
 
-  getGoogleUserInfo: async (access_token: string) => {
+  static async getGoogleUserInfo(access_token: string) {
     try {
       const response = await fetch(
         "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -166,5 +169,5 @@ export const authService = {
     } catch (error) {
       console.error("Google Login Failed: " + (error as Error).message);
     }
-  },
-};
+  }
+}

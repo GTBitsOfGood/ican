@@ -9,14 +9,13 @@ import {
   validateName,
   validatePassword,
 } from "@/utils/user";
-import bcrypt from "bcrypt";
-import { User } from "../db/models";
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
-import { ObjectId } from "mongodb";
 import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
+import { User } from "@/db/models/user";
+import HashingService from "./hashing";
 
 export interface CreateUserBody {
   name: string;
@@ -37,7 +36,7 @@ export default class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ) {
+  ): Promise<string> {
     // Validate parameters
     validateName(name);
     validatePassword(password);
@@ -54,35 +53,32 @@ export default class AuthService {
       }
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const newUser: User = {
       name: name,
       provider: Provider.PASSWORD,
       email: email,
-      password: hashedPassword,
+      password: await HashingService.hash(password),
     };
 
     // Uses userId returned by insertOne()
-    const { insertedId } = await UserDAO.createUser(newUser);
-    const userId = insertedId.toString();
-    if (!userId) {
+    const { _id } = await UserDAO.createUser(newUser);
+    if (!_id) {
       throw new NotFoundError("user does not exist");
     }
     // Used a default name for pet
-    await PetService.createPet(userId, `${name}'s Pet`, "dog");
+    await PetService.createPet(_id.toString(), `${name}'s Pet`, "dog");
 
     // create settings
-    await settingsService.createSettings(insertedId.toString());
+    await settingsService.createSettings(_id.toString());
 
     // Create jwt once user is successfully created
-    const token = JWTService.generateToken({ userId: insertedId }, 604800);
+    const token = JWTService.generateToken({ userId: _id.toString() }, 604800);
 
-    return { token };
+    return token;
   }
 
   // Validate login with email and password
-  static async login(email: string, password: string) {
+  static async login(email: string, password: string): Promise<string> {
     // Validate parameters
     validateEmail(email);
     validatePassword(password);
@@ -101,7 +97,10 @@ export default class AuthService {
     }
 
     // Check if password is correct
-    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+    const passwordMatch = await HashingService.compare(
+      existingUser.password as string,
+      password,
+    );
 
     if (!passwordMatch) {
       throw new UnauthorizedError(
@@ -111,11 +110,11 @@ export default class AuthService {
 
     // Create and return jwt
     const token = JWTService.generateToken(
-      { userId: existingUser._id },
+      { userId: existingUser._id.toString() },
       604800,
     );
 
-    return { token };
+    return token;
   }
 
   // Validate login with Google
@@ -131,14 +130,13 @@ export default class AuthService {
         name: name,
         provider: Provider.GOOGLE,
         email: email,
-        password: "",
       };
 
-      const { insertedId } = await UserDAO.createUser(newUser);
-      userId = insertedId;
-      await PetService.createPet(userId.toString(), `${name}'s Pet`, "dog");
+      const insertedData = await UserDAO.createUser(newUser);
+      userId = insertedData._id.toString();
+      await PetService.createPet(userId, `${name}'s Pet`, "dog");
     } else {
-      userId = existingUser._id;
+      userId = existingUser._id.toString();
     }
 
     if (existingUser?.provider === Provider.PASSWORD) {
@@ -153,10 +151,12 @@ export default class AuthService {
   }
 
   // Validate JWT token and ensure user exists
-  static async validateToken(token: string) {
+  static async validateToken(token: string): Promise<string> {
     const decodedToken = JWTService.verifyToken(token);
-    await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));
-
-    return decodedToken;
+    const user = await UserDAO.getUserFromId(decodedToken.userId);
+    if (!user) {
+      throw new NotFoundError("User does not exist.");
+    }
+    return decodedToken.userId;
   }
 }

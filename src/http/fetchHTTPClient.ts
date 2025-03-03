@@ -48,7 +48,7 @@ function verifyFetchRequest(method: HttpMethod, request: RequestInit): void {
  * @param request RequestInit object, body is expected to be stringified beforehand
  * @returns <T> Promise type
  */
-export default async function fetchService<T>(
+export default async function fetchHTTPClient<T>(
   endpoint: string,
   request: RequestInit = {},
 ): Promise<T> {

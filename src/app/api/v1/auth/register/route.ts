@@ -11,14 +11,14 @@ export async function POST(req: NextRequest) {
 
     const { name, email, password, confirmPassword } = await req.json();
 
-    const response: { token: string } = await AuthService.register(
+    const response = await AuthService.register(
       name,
       email,
       password,
       confirmPassword,
     );
 
-    return NextResponse.json(response, { status: 201 });
+    return NextResponse.json({ token: response }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

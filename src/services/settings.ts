@@ -1,24 +1,22 @@
 import SettingsDAO from "@/db/actions/settings";
-import { Settings } from "@/db/models";
+import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
+import { WithId } from "@/types/models";
 import { UpdateSettingsBody } from "@/types/settings";
 import { encryptPin, validateParams } from "@/utils/settings";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export default class SettingsService {
-  static async createSettings(userId: string) {
+  static async createSettings(userId: string): Promise<WithId<Settings>> {
     await validateParams(userId);
-    const existingSettings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+    const existingSettings = await SettingsDAO.getSettingsByUserId(userId);
     if (existingSettings) {
       throw new ConflictError("Settings already exist for this user");
     }
 
     const newSettings: Settings = {
-      _id: new ObjectId(),
-      userId: new ObjectId(userId),
+      userId: new Types.ObjectId(userId),
       helpfulTips: true,
       largeFontSize: true,
       notifications: true,
@@ -30,46 +28,44 @@ export default class SettingsService {
     if (!settings) {
       throw new Error("There was an error creating settings.");
     }
-    return settings;
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
-  static async getSettings(userId: string): Promise<Settings> {
+  static async getSettings(userId: string): Promise<WithId<Settings>> {
     await validateParams(userId);
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
-    return settings as Settings;
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
-  static async updateSettings(updatedSettings: UpdateSettingsBody) {
+  static async updateSettings(
+    updatedSettings: UpdateSettingsBody,
+  ): Promise<void> {
     updatedSettings = removeUndefinedKeys(updatedSettings);
     await validateParams(updatedSettings.userId);
     const settings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(updatedSettings.userId),
+      updatedSettings.userId as string,
     );
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
     await SettingsDAO.updateSettingsByUserId(
-      new ObjectId(updatedSettings.userId),
+      updatedSettings.userId as string,
       updatedSettings,
     );
   }
 
-  static async updatePin(userId: string, pin: string) {
+  static async updatePin(userId: string, pin: string): Promise<void> {
     await validateParams(userId);
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
     if (pin) {
       const encryptedPin = await encryptPin(pin);
-      await SettingsDAO.updateSettingsPinByUserId(new ObjectId(userId), {
+      await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
       });
     }

@@ -1,4 +1,3 @@
-import { Pet } from "@/db/models";
 import PetService from "@/services/pets";
 import { UnauthorizedError } from "@/types/exceptions";
 import { handleError } from "@/utils/errorHandler";
@@ -17,7 +16,7 @@ export async function GET(
     const userId: string = (await params).userId;
 
     // The service seems to already throw an error in case of a null pet, will check this later
-    const pet: Pet | null = await PetService.getPet(userId);
+    const pet = await PetService.getPet(userId);
     return NextResponse.json(pet, { status: 200 });
   } catch (error) {
     return handleError(error);

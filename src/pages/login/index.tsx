@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { emailIsValid, passwordIsValid } from "@/utils/validation";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import ErrorBox from "@/components/ErrorBox";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
@@ -42,7 +42,10 @@ export default function Home() {
 
     setLoggingIn(true);
     try {
-      const response = await authService.login(email.trim(), password.trim());
+      const response = await AuthHTTPClient.login(
+        email.trim(),
+        password.trim(),
+      );
       localStorage.setItem("token", response.token);
       router.push("/");
     } catch (error) {
