@@ -146,12 +146,12 @@ export default class AuthService {
   }
 
   // Validate JWT token and ensure user exists
-  static async validateToken(token: string): Promise<string> {
+  static async validateToken(token: string): Promise<{ userId: string }> {
     const decodedToken = JWTService.verifyToken(token);
     const user = await UserDAO.getUserFromId(decodedToken.userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
-    return decodedToken.userId;
+    return decodedToken;
   }
 }
