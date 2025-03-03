@@ -1,6 +1,5 @@
 import MedicationService from "@/services/medication";
 import { getStatusCode } from "@/types/exceptions";
-import { Types } from "mongoose";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -16,9 +15,7 @@ export default async function handler(
 
   if (method === "GET") {
     try {
-      const medications = await MedicationService.getMedications(
-        new Types.ObjectId(userId),
-      );
+      const medications = await MedicationService.getMedications(userId);
       return res.status(200).json(medications);
     } catch (error) {
       if (error instanceof Error) {

@@ -7,13 +7,8 @@ export default class UserDAO {
   static async createUser(
     newUser: User,
   ): Promise<HydratedDocument<UserDocument>> {
-    try {
-      await dbConnect();
-      return await UserModel.insertOne(newUser);
-    } catch (error) {
-      console.log(error);
-      throw new Error("User creation failed. Please try again.");
-    }
+    await dbConnect();
+    return await UserModel.insertOne(newUser);
   }
 
   static async getUserFromEmail(
@@ -27,19 +22,21 @@ export default class UserDAO {
   }
 
   static async getUserFromId(
-    _id: Types.ObjectId,
+    id: string | Types.ObjectId,
   ): Promise<HydratedDocument<UserDocument> | null> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
     return await UserModel.findById(_id);
   }
 
   static async updateUserPasswordFromId(
-    _id: Types.ObjectId,
+    id: string | Types.ObjectId,
     newPassword: string,
   ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
     const result = await UserModel.updateOne(
-      { _id },
+      { _id: _id },
       { password: newPassword },
     );
     if (result.modifiedCount === 0) {

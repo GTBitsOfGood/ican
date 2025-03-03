@@ -14,9 +14,11 @@ export default class ForgotPasswordCodeDAO {
   }
 
   static async updateForgotPasswordCodeByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
     updatedCode: ForgotPasswordCode,
   ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     const result = await ForgotPasswordCodeModel.updateOne(
       { userId },
@@ -31,17 +33,22 @@ export default class ForgotPasswordCodeDAO {
   }
 
   static async getForgotPasswordCodeByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
   ): Promise<HydratedDocument<ForgotPasswordCodeDocument> | null> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     return ForgotPasswordCodeModel.findOne({ userId });
   }
 
   static async deleteForgotPasswordCodeById(
-    _id: Types.ObjectId,
-  ): Promise<boolean> {
+    id: string | Types.ObjectId,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
     const result = await ForgotPasswordCodeModel.deleteOne({ _id });
-    return result.deletedCount > 0;
+    if (result.deletedCount == 0) {
+      throw new Error("Failed to delete forgot password code.");
+    }
   }
 }

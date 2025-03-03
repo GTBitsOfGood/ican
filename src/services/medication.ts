@@ -26,55 +26,48 @@ export default class MedicationService {
 
   static async getMedication(id: string): Promise<WithId<Medication>> {
     await validateParams({ id });
-    const existingMedication = await MedicationDAO.getMedicationById(
-      new Types.ObjectId(id),
-    );
+    const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    return existingMedication.toObject();
+    return {
+      ...existingMedication.toObject(),
+      _id: existingMedication._id.toString(),
+    };
   }
 
   static async updateMedication(id: string, updatedMedication: Medication) {
     updatedMedication = removeUndefinedKeys(updatedMedication);
     await validateParams(updatedMedication);
-    const existingMedication = await MedicationDAO.getMedicationById(
-      new Types.ObjectId(id),
-    );
+    const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
       throw new ConflictError("This medication does not exist");
     }
     if (updatedMedication.formOfMedication) {
-      await MedicationDAO.updateMedicationById(
-        new Types.ObjectId(id),
-        updatedMedication,
-      );
+      await MedicationDAO.updateMedicationById(id, updatedMedication);
     }
   }
 
   static async deleteMedication(id: string) {
     validateParams({ id });
-    const existingMedication = await MedicationDAO.getMedicationById(
-      new Types.ObjectId(id),
-    );
+    const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    await MedicationDAO.deleteMedicationById(new Types.ObjectId(id));
+    await MedicationDAO.deleteMedicationById(id);
   }
 
-  static async getMedications(
-    userId: Types.ObjectId,
-  ): Promise<WithId<Medication>[]> {
-    validateParams({ userId });
-    const medications = await MedicationDAO.getMedicationsByUserId(
-      new Types.ObjectId(userId),
-    );
+  static async getMedications(_userId: string): Promise<WithId<Medication>[]> {
+    validateParams({ userId: _userId });
+    const medications = await MedicationDAO.getMedicationsByUserId(_userId);
     if (medications.length === 0) {
       throw new NotFoundError(
         "This user id does not have connected medications",
       );
     }
-    return medications.map((medication) => medication.toObject());
+    return medications.map((medication) => ({
+      ...medication.toObject(),
+      _id: medication._id.toString(),
+    }));
   }
 }

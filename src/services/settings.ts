@@ -10,9 +10,7 @@ import { Types } from "mongoose";
 export default class SettingsService {
   static async createSettings(userId: string): Promise<WithId<Settings>> {
     await validateParams(userId);
-    const existingSettings = await SettingsDAO.getSettingsByUserId(
-      new Types.ObjectId(userId),
-    );
+    const existingSettings = await SettingsDAO.getSettingsByUserId(userId);
     if (existingSettings) {
       throw new ConflictError("Settings already exist for this user");
     }
@@ -30,18 +28,16 @@ export default class SettingsService {
     if (!settings) {
       throw new Error("There was an error creating settings.");
     }
-    return settings.toObject();
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
   static async getSettings(userId: string): Promise<WithId<Settings>> {
     await validateParams(userId);
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new Types.ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
-    return settings.toObject();
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
   static async updateSettings(
@@ -50,28 +46,26 @@ export default class SettingsService {
     updatedSettings = removeUndefinedKeys(updatedSettings);
     await validateParams(updatedSettings.userId);
     const settings = await SettingsDAO.getSettingsByUserId(
-      new Types.ObjectId(updatedSettings.userId),
+      updatedSettings.userId as string,
     );
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
     await SettingsDAO.updateSettingsByUserId(
-      new Types.ObjectId(updatedSettings.userId),
+      updatedSettings.userId as string,
       updatedSettings,
     );
   }
 
   static async updatePin(userId: string, pin: string): Promise<void> {
     await validateParams(userId);
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new Types.ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError("Settings do not exist for this user");
     }
     if (pin) {
       const encryptedPin = await encryptPin(pin);
-      await SettingsDAO.updateSettingsByUserId(new Types.ObjectId(userId), {
+      await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
       });
     }

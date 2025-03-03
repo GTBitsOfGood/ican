@@ -1,4 +1,4 @@
-import { petService } from "@/http/petService";
+import { petService } from "@/http/petHTTPClient";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useUser } from "../UserContext";

@@ -1,5 +1,4 @@
-import { Document, model, models, Schema, Types, UpdateQuery } from "mongoose";
-import bcrypt from "bcrypt";
+import { Document, model, models, Schema, Types } from "mongoose";
 
 export interface User {
   name: string;
@@ -10,7 +9,6 @@ export interface User {
 
 export interface UserDocument extends User, Document {
   _id: Types.ObjectId;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<UserDocument>({
@@ -19,27 +17,6 @@ const userSchema = new Schema<UserDocument>({
   password: { type: String, required: false },
   provider: { type: String, required: true },
 });
-
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  if (this.password === undefined) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-userSchema.pre("updateOne", async function (next) {
-  const update = this.getUpdate() as UpdateQuery<UserDocument>;
-  if (update?.password) {
-    update.password = await bcrypt.hash(update.password, 10);
-  }
-  next();
-});
-
-userSchema.methods.comparePassword = async function (
-  candidatePassword: string,
-): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
-};
 
 const UserModel = models.User || model<UserDocument>("User", userSchema);
 

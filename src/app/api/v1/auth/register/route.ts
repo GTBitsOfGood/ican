@@ -1,4 +1,4 @@
-import AuthService from "@/services/user";
+import AuthService from "@/services/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       confirmPassword,
     );
 
-    return NextResponse.json(response, { status: 201 });
+    return NextResponse.json({ token: response }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

@@ -21,16 +21,20 @@ export default class SettingsDAO {
   }
 
   static async getSettingsByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
   ): Promise<HydratedDocument<SettingsDocument> | null> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     return await SettingsModel.findOne({ userId });
   }
 
   static async updateSettingsByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
     updateObj: UpdateSettingsRequestBody | UpdateSettingsPinRequestBody,
   ) {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     const result = await SettingsModel.updateOne({ userId }, updateObj);
     if (result.modifiedCount == 0) {

@@ -15,6 +15,7 @@ import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import EmailService from "./mail";
 import { Types } from "mongoose";
 import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
+import HashingService from "./hashing";
 
 export default class ForgotPasswordService {
   static async sendPasswordCode(
@@ -27,9 +28,10 @@ export default class ForgotPasswordService {
     }
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
+    const encryptedCode = await HashingService.hash(code);
 
     const newCode: ForgotPasswordCode = {
-      code,
+      code: encryptedCode,
       expirationDate,
       userId: user._id,
     };
@@ -47,7 +49,6 @@ export default class ForgotPasswordService {
     }
 
     const emailSubject = "iCAN Account Recovery";
-
     const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
     <p>Your verification code is: ${code}</p>
     <p>If you did not request this, you can ignore this email</p>`;
@@ -62,14 +63,13 @@ export default class ForgotPasswordService {
   }
 
   static async verifyForgotPasswordCode(
-    userIdString: string,
+    userId: string,
     code: string,
   ): Promise<string> {
-    if (!userIdString?.trim())
+    if (!userId?.trim())
       throw new InvalidArgumentsError("User ID is required.");
     if (!code?.trim()) throw new InvalidArgumentsError("Code is required.");
 
-    const userId = new Types.ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError("User does not exist");
@@ -108,8 +108,7 @@ export default class ForgotPasswordService {
       throw new UnauthorizedError("Passwords do not match.");
 
     const decoded = JWTService.verifyToken(token);
-    const userId = new Types.ObjectId(decoded.userId);
-    const user = await UserDAO.getUserFromId(userId);
+    const user = await UserDAO.getUserFromId(decoded.userId);
     if (!user) {
       throw new NotFoundError("User does not exist");
     }

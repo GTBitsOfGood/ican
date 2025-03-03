@@ -1,4 +1,4 @@
-import AuthService from "@/services/user";
+import AuthService from "@/services/auth";
 import { getStatusCode, UnauthorizedError } from "@/types/exceptions";
 import { NextApiRequest, NextApiResponse } from "next";
 

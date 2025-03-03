@@ -15,16 +15,20 @@ export default class PetDAO {
   }
 
   static async getPetByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
   ): Promise<HydratedDocument<PetDocument> | null> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     return await PetModel.findOne({ userId });
   }
 
   static async updatePetByUserId(
-    userId: Types.ObjectId,
+    _userId: string | Types.ObjectId,
     name: string,
   ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     const result = await PetModel.updateOne({ userId }, { name });
     if (result.modifiedCount == 0) {
@@ -32,7 +36,11 @@ export default class PetDAO {
     }
   }
 
-  static async deletePetByUserId(userId: Types.ObjectId): Promise<void> {
+  static async deletePetByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
     const result = await PetModel.deleteOne({ userId });
     if (result.deletedCount == 0) {

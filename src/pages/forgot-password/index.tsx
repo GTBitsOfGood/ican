@@ -5,7 +5,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { authService } from "@/http/authService";
+import { authService } from "@/http/authHTTPClient";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import {
   emailValidation,
