@@ -5,19 +5,14 @@ import {
 import SettingsModel, { Settings, SettingsDocument } from "../models/settings";
 import { HydratedDocument, Types } from "mongoose";
 import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
 export default class SettingsDAO {
   static async createNewSettings(
     newSettings: Settings,
   ): Promise<HydratedDocument<SettingsDocument>> {
     await dbConnect();
-    try {
-      return await SettingsModel.insertOne(newSettings);
-    } catch (error) {
-      throw new Error(
-        "Failed to create user settings: " + (error as Error).message,
-      );
-    }
+    return await SettingsModel.insertOne(newSettings);
   }
 
   static async getSettingsByUserId(
@@ -38,7 +33,7 @@ export default class SettingsDAO {
     await dbConnect();
     const result = await SettingsModel.updateOne({ userId }, updateObj);
     if (result.modifiedCount == 0) {
-      throw new Error("Failed to update user settings.");
+      throw new Error(ERRORS.SETTINGS.FAILURE.UPDATE);
     }
   }
 }

@@ -1,6 +1,7 @@
 import PetService from "@/services/pets";
 import { UnauthorizedError } from "@/types/exceptions";
 import { handleError } from "@/utils/errorHandler";
+import ERRORS from "@/utils/errorMessages";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -32,9 +33,7 @@ export async function PATCH(
     const tokenUserId = await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
     if (tokenUserId != userId) {
-      throw new UnauthorizedError(
-        "User is not permitted to modify another user's pet",
-      );
+      throw new UnauthorizedError(ERRORS.PET.UNAUTHORIZED);
     }
     const { name } = await req.json();
 
@@ -55,9 +54,7 @@ export async function DELETE(
     const tokenUserId = await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
     if (tokenUserId !== userId) {
-      throw new UnauthorizedError(
-        "User is not permitted to modify another user's pet",
-      );
+      throw new UnauthorizedError(ERRORS.PET.UNAUTHORIZED);
     }
 
     await PetService.deletePet(userId);

@@ -2,6 +2,7 @@ import { InvalidArgumentsError } from "@/types/exceptions";
 import UserModel, { User, UserDocument } from "../models/user";
 import { HydratedDocument, Types } from "mongoose";
 import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
 export default class UserDAO {
   static async createUser(
@@ -15,7 +16,7 @@ export default class UserDAO {
     email?: string,
   ): Promise<HydratedDocument<UserDocument> | null> {
     if (!email || !email.trim()) {
-      throw new InvalidArgumentsError("Invalid Email.");
+      throw new InvalidArgumentsError(ERRORS.USER.INVALID_ARGUMENTS.EMAIL);
     }
     await dbConnect();
     return await UserModel.findOne({ email });
@@ -40,7 +41,7 @@ export default class UserDAO {
       { password: newPassword },
     );
     if (result.modifiedCount === 0) {
-      throw new Error("User password update failed.");
+      throw new Error(ERRORS.USER.FAILURE.PASSWORD_UPDATE);
     }
   }
 }

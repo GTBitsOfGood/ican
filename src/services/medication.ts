@@ -3,6 +3,7 @@ import { Medication } from "@/db/models/medication";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { WithId } from "@/types/models";
+import ERRORS from "@/utils/errorMessages";
 import { validateCreateParams, validateParams } from "@/utils/medication";
 import { Types } from "mongoose";
 
@@ -17,7 +18,7 @@ export default class MedicationService {
         medication.userId,
       );
     if (existingMedication) {
-      throw new ConflictError("This medication already exists");
+      throw new ConflictError(ERRORS.MEDICATION.CONFLICT);
     }
 
     const newMedication = await MedicationDAO.createNewMedication(medication);
@@ -28,7 +29,7 @@ export default class MedicationService {
     await validateParams({ id });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
-      throw new NotFoundError("This medication does not exist");
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND);
     }
     return {
       ...existingMedication.toObject(),
@@ -41,7 +42,7 @@ export default class MedicationService {
     await validateParams(updatedMedication);
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
-      throw new ConflictError("This medication does not exist");
+      throw new ConflictError(ERRORS.MEDICATION.NOT_FOUND);
     }
     if (updatedMedication.formOfMedication) {
       await MedicationDAO.updateMedicationById(id, updatedMedication);
@@ -52,7 +53,7 @@ export default class MedicationService {
     validateParams({ id });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
-      throw new NotFoundError("This medication does not exist");
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND);
     }
     await MedicationDAO.deleteMedicationById(id);
   }
@@ -60,11 +61,6 @@ export default class MedicationService {
   static async getMedications(_userId: string): Promise<WithId<Medication>[]> {
     validateParams({ userId: _userId });
     const medications = await MedicationDAO.getMedicationsByUserId(_userId);
-    if (medications.length === 0) {
-      throw new NotFoundError(
-        "This user id does not have connected medications",
-      );
-    }
     return medications.map((medication) => ({
       ...medication.toObject(),
       _id: medication._id.toString(),

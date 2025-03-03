@@ -4,6 +4,7 @@ import PetDAO from "@/db/actions/pets";
 import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import { WithId } from "@/types/models";
+import ERRORS from "@/utils/errorMessages";
 
 export default class PetService {
   static async createPet(
@@ -15,7 +16,7 @@ export default class PetService {
 
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (existingPet) {
-      throw new ConflictError("This user already has a pet");
+      throw new ConflictError(ERRORS.PET.CONFLICT);
     }
 
     const newPet = {
@@ -35,7 +36,7 @@ export default class PetService {
     await validateParams(userId);
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
     return { ...existingPet.toObject(), _id: existingPet._id.toString() };
   }
@@ -44,7 +45,7 @@ export default class PetService {
     await validateParams(userId, name);
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
     await PetDAO.updatePetByUserId(userId, name);
   }
@@ -53,7 +54,7 @@ export default class PetService {
     await validateParams(userId);
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
     await PetDAO.deletePetByUserId(userId);
   }

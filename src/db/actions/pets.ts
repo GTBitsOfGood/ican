@@ -1,17 +1,14 @@
 import { HydratedDocument, Types } from "mongoose";
 import PetModel, { Pet, PetDocument } from "../models/pet";
 import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
 export default class PetDAO {
   static async createNewPet(
     newPet: Pet,
   ): Promise<HydratedDocument<PetDocument>> {
     await dbConnect();
-    try {
-      return await PetModel.insertOne(newPet);
-    } catch (error) {
-      throw new Error("Failed to create pet: " + (error as Error).message);
-    }
+    return await PetModel.insertOne(newPet);
   }
 
   static async getPetByUserId(
@@ -32,7 +29,7 @@ export default class PetDAO {
     await dbConnect();
     const result = await PetModel.updateOne({ userId }, { name });
     if (result.modifiedCount == 0) {
-      throw new Error("Failed to update pet.");
+      throw new Error(ERRORS.PET.FAILURE.UPDATE);
     }
   }
 
@@ -44,7 +41,7 @@ export default class PetDAO {
     await dbConnect();
     const result = await PetModel.deleteOne({ userId });
     if (result.deletedCount == 0) {
-      throw new Error("Failed to delete pet.");
+      throw new Error(ERRORS.PET.FAILURE.DELETE);
     }
   }
 }

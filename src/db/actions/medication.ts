@@ -4,19 +4,14 @@ import MedicationModel, {
   MedicationDocument,
 } from "../models/medication";
 import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
 export default class MedicationDAO {
   static async createNewMedication(
     newMedication: Medication,
   ): Promise<HydratedDocument<MedicationDocument>> {
-    try {
-      await dbConnect();
-      return await MedicationModel.insertOne(newMedication);
-    } catch (error) {
-      throw new Error(
-        "Failed to create medication: " + (error as Error).message,
-      );
-    }
+    await dbConnect();
+    return await MedicationModel.insertOne(newMedication);
   }
 
   static async getMedicationById(
@@ -45,7 +40,7 @@ export default class MedicationDAO {
     await dbConnect();
     const result = await MedicationModel.updateOne({ _id }, updateObj);
     if (result.modifiedCount == 0) {
-      throw new Error("Failed to update medication.");
+      throw new Error(ERRORS.MEDICATION.FAILURE.UPDATE);
     }
   }
 
@@ -56,7 +51,7 @@ export default class MedicationDAO {
     await dbConnect();
     const result = await MedicationModel.deleteOne({ _id });
     if (result.deletedCount == 0) {
-      throw new Error("Failed to delete medication.");
+      throw new Error(ERRORS.MEDICATION.FAILURE.DELETE);
     }
   }
 

@@ -16,6 +16,7 @@ import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
+import ERRORS from "@/utils/errorMessages";
 
 export interface CreateUserBody {
   name: string;
@@ -47,9 +48,9 @@ export default class AuthService {
 
     if (existingUser) {
       if (existingUser.provider == Provider.PASSWORD) {
-        throw new ConflictError("This user already exists.");
+        throw new ConflictError(ERRORS.USER.CONFLICT.USER);
       } else {
-        throw new ConflictError("This user is already signed in with Google.");
+        throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
       }
     }
 
@@ -63,7 +64,7 @@ export default class AuthService {
     // Uses userId returned by insertOne()
     const { _id } = await UserDAO.createUser(newUser);
     if (!_id) {
-      throw new NotFoundError("user does not exist");
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     // Used a default name for pet
     await PetService.createPet(_id.toString(), `${name}'s Pet`, "dog");
@@ -87,13 +88,11 @@ export default class AuthService {
     const existingUser = await UserDAO.getUserFromEmail(email);
 
     if (!existingUser) {
-      throw new NotFoundError(
-        "Couldn't find your account. Please sign up to create an account.",
-      );
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
     if (existingUser.provider == Provider.GOOGLE) {
-      throw new ConflictError("This user is signed in with Google.");
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
     }
 
     // Check if password is correct
@@ -103,9 +102,7 @@ export default class AuthService {
     );
 
     if (!passwordMatch) {
-      throw new UnauthorizedError(
-        "Wrong password. Try again or click Forgot Password to reset it.",
-      );
+      throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
     }
 
     // Create and return jwt
@@ -140,9 +137,7 @@ export default class AuthService {
     }
 
     if (existingUser?.provider === Provider.PASSWORD) {
-      throw new ConflictError(
-        "This user is already signed in with email and password.",
-      );
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.PASSWORD);
     }
 
     const token = JWTService.generateToken({ userId }, 604800);
@@ -155,7 +150,7 @@ export default class AuthService {
     const decodedToken = JWTService.verifyToken(token);
     const user = await UserDAO.getUserFromId(decodedToken.userId);
     if (!user) {
-      throw new NotFoundError("User does not exist.");
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     return decodedToken.userId;
   }

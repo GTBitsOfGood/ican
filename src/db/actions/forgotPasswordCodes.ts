@@ -4,6 +4,7 @@ import ForgotPasswordCodeModel, {
   ForgotPasswordCode,
 } from "../models/forgotPasswordCode";
 import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
 export default class ForgotPasswordCodeDAO {
   static async createForgotPasswordCode(
@@ -28,7 +29,7 @@ export default class ForgotPasswordCodeDAO {
       },
     );
     if (result.modifiedCount === 0) {
-      throw new Error("Failed to update forgot password code.");
+      throw new Error(ERRORS.FORGOTPASSWORDCODE.FAILURE.UPDATE);
     }
   }
 
@@ -48,7 +49,7 @@ export default class ForgotPasswordCodeDAO {
     await dbConnect();
     const result = await ForgotPasswordCodeModel.deleteOne({ _id });
     if (result.deletedCount == 0) {
-      throw new Error("Failed to delete forgot password code.");
+      throw new Error(ERRORS.FORGOTPASSWORDCODE.FAILURE.DELETE);
     }
   }
 }
