@@ -3,20 +3,19 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import MedicationService from "@/services/medication";
 
-// Why is it that creating a pet specifically doesn't use UserId in the URL?
-// Create Pet
+const route = "/api/v1/medication/[medicationId]/check-in";
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
+    await validateRoutes(req, req.method, route);
 
-    await MedicationService.createMedicationCheckIn(
-      (await params).medicationId,
-    );
+    const medicationId = (await params).medicationId;
+    await MedicationService.createMedicationCheckIn(medicationId);
 
-    return NextResponse.json({ status: 204 });
+    return NextResponse.json({}, { status: 201 });
   } catch (error) {
     return handleError(error);
   }
