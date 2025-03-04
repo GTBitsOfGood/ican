@@ -35,7 +35,7 @@ export default function UnauthorizedRoute({
     };
 
     validateToken();
-  }, [router]);
+  }, [router, setUserId]);
 
   return (
     <>

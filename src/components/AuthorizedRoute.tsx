@@ -38,7 +38,7 @@ export default function AuthorizedRoute({
     };
 
     validateToken();
-  }, [router]);
+  }, [router, setUserId]);
 
   return (
     <>

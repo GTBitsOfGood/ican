@@ -1,5 +1,5 @@
 import { PetType } from "@/types/pet";
-import { InvalidBodyError } from "../types/exceptions";
+import { InvalidArgumentsError } from "../types/exceptions";
 import { ObjectId } from "mongodb";
 
 export async function validateParams({
@@ -16,32 +16,32 @@ export async function validateParams({
   food?: number;
 }): Promise<void> {
   if (userId && !ObjectId.isValid(userId)) {
-    throw new InvalidBodyError(
+    throw new InvalidArgumentsError(
       "Invalid parameters: 'userId' must be a valid ObjectId.",
     );
   }
 
   // Validate name & petType only if its passed in
   if (name && (typeof name !== "string" || name.trim() === "")) {
-    throw new InvalidBodyError(
+    throw new InvalidArgumentsError(
       "Invalid parameters: 'name' must be a non-empty string.",
     );
   }
 
   if (petType && !Object.values(PetType).includes(petType as PetType)) {
-    throw new InvalidBodyError(
-      "Invalid parameters: 'petType'  must conform to PetType enum.",
+    throw new InvalidArgumentsError(
+      "Invalid parameters: 'petType' must conform to PetType enum.",
     );
   }
 
   if (petId && !ObjectId.isValid(petId)) {
-    throw new InvalidBodyError(
-      "Invalid parameters: 'petId' must be a valid ObjectId.",
+    throw new InvalidArgumentsError(
+      "Invalid parameters: 'petId' must be a non-empty string.",
     );
   }
 
   if (food && food < 0) {
-    throw new InvalidBodyError(
+    throw new InvalidArgumentsError(
       "Invalid parameters: 'food' must be a valid number.",
     );
   }
