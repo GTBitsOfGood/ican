@@ -1,4 +1,4 @@
-import { feedPet } from "@/services/pets";
+import PetService from "@/services/pets";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -14,7 +14,7 @@ export default async function handler(
 
   try {
     if (method === "PATCH") {
-      await feedPet(petId);
+      await PetService.feedPet(petId);
       res.status(204).end();
     } else {
       res.setHeader("Allow", ["PATCH"]);

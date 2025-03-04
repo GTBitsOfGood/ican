@@ -47,7 +47,7 @@ export default class PetService {
     if (!existingPet) {
       throw new NotFoundError("This pet does not exist");
     }
-    await PetDAO.updatePetByUserId(new ObjectId(userId), name);
+    await PetDAO.updatePetByUserId(new ObjectId(userId), { name });
   }
 
   static async deletePet(userId: string) {

@@ -19,11 +19,20 @@ export default class PetDAO {
     return pet;
   }
 
-  static async updatePetByUserId(userId: ObjectId, name: string) {
+  static async updatePetByUserId(
+    userId: ObjectId,
+    updateObj: {
+      name?: string;
+      xpGained?: number;
+      xpLevel?: number;
+      coins?: number;
+      food?: number;
+    },
+  ) {
     const db = client.db();
     const result = await db
       .collection("pets")
-      .updateOne({ userId: userId }, { $set: { name: name } });
+      .updateOne({ userId: userId }, { $set: { ...updateObj } });
 
     if (result.modifiedCount == 0) {
       throw new Error("Failed to update pet.");
@@ -46,6 +55,7 @@ export default class PetDAO {
       xpGained?: number;
       xpLevel?: number;
       coins?: number;
+      food?: number;
     },
   ) {
     const db = client.db();

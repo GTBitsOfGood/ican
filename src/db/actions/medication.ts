@@ -98,7 +98,7 @@ export default class MedicationDAO {
     }
   }
 
-  static async getMedicationCheckInAction(medicationId: ObjectId) {
+  static async getMedicationCheckIn(medicationId: ObjectId) {
     const db = client.db();
     try {
       const result = await db
@@ -113,7 +113,7 @@ export default class MedicationDAO {
     }
   }
 
-  static async deleteMedicationCheckInAction(medicationId: ObjectId) {
+  static async deleteMedicationCheckIn(medicationId: ObjectId) {
     const db = client.db();
     const result = await db
       .collection("MedicationCheckIn")
