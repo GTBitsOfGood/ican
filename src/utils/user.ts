@@ -4,21 +4,18 @@ import {
   ValidationError,
 } from "../types/exceptions";
 import { z } from "zod";
+import ERRORS from "./errorMessages";
 
 export function validateName(name: string) {
   if (typeof name !== "string" || name.trim() === "") {
-    throw new InvalidArgumentsError(
-      "Invalid request body: 'name' is required and must be a non-empty string.",
-    );
+    throw new InvalidArgumentsError(ERRORS.USER.INVALID_ARGUMENTS.NAME);
   }
 }
 
 export function validateEmail(email: string) {
   const emailSchema = z.string().email();
   if (!emailSchema.safeParse(email).success) {
-    throw new InvalidArgumentsError(
-      "Invalid request body: 'email' is required and must be a valid email.",
-    );
+    throw new InvalidArgumentsError(ERRORS.USER.INVALID_ARGUMENTS.EMAIL);
   }
 }
 
@@ -30,16 +27,12 @@ export function validatePassword(password: string) {
       /[!@#$%^&*]/.test(password)
     )
   ) {
-    throw new ValidationError(
-      "Invalid request body: 'password' must contain at least 6 characters, 1 number, & 1 symbol.",
-    );
+    throw new ValidationError(ERRORS.USER.INVALID_ARGUMENTS.PASSWORD);
   }
 }
 
 export function passwordsAreEqual(password: string, confirmPassword: string) {
   if (password !== confirmPassword) {
-    throw new ConflictError(
-      "Invalid request body: 'password' and 'confirmPassword' must be equal.",
-    );
+    throw new ConflictError(ERRORS.USER.CONFLICT.PASSWORD);
   }
 }

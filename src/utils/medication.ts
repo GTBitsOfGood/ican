@@ -1,5 +1,6 @@
+import { Types } from "mongoose";
 import { InvalidArgumentsError } from "../types/exceptions";
-import { ObjectId } from "mongodb";
+import ERRORS from "./errorMessages";
 
 type ValidateParamsType = {
   id?: string;
@@ -14,7 +15,7 @@ type ValidateParamsType = {
   doseIntervalInHours?: number;
   // string of times
   doseTimes?: string[];
-  userId?: ObjectId;
+  userId?: string | Types.ObjectId;
 };
 
 export async function validateCreateParams({
@@ -33,57 +34,57 @@ export async function validateCreateParams({
   // Ensure required parameters are not nullish
   if (!formOfMedication) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'formOfMedication' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
     );
   }
   if (!medicationId) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'medicationId' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID,
     );
   }
   if (repeatInterval == null) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatInterval' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_INTERVAL,
     );
   }
   if (!repeatUnit) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatUnit' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
     );
   }
   if (repeatOn == null) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatOn' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_ON,
     );
   }
   if (repeatMonthlyOnDay == null) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatMonthlyOnDay' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_MONTHLY_ON_DAY,
     );
   }
   if (!notificationFrequency) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'notificationFrequency' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
     );
   }
   if (dosesPerDay == null) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'dosesPerDay' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_PER_DAY,
     );
   }
   if (doseIntervalInHours == null) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'doseIntervalInHours' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSE_INTERVAL_IN_HOURS,
     );
   }
   if (doseTimes == null || doseTimes.length === 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'doseTimes' is required and must be a non-empty array.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSE_TIMES,
     );
   }
   if (!userId) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'userId' is required.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.USER_ID,
     );
   }
 
@@ -118,16 +119,14 @@ export async function validateParams({
   userId,
 }: ValidateParamsType): Promise<void> {
   // Validate parameters
-  if (id && !ObjectId.isValid(id)) {
-    throw new InvalidArgumentsError(
-      "Invalid parameters: 'id' is required and must be a valid ObjectId.",
-    );
+  if (id && !Types.ObjectId.isValid(id)) {
+    throw new InvalidArgumentsError(ERRORS.MEDICATION.INVALID_ARGUMENTS.ID);
   }
 
   // Validate formOfMedication only if its passed in
   if (formOfMedication && formOfMedication.trim() === "") {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'formOfMedication' is required and must be a non-empty string that has a length less than 6.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
     );
   }
   if (
@@ -137,56 +136,56 @@ export async function validateParams({
       medicationId.length > 5)
   ) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'medicationId' is required and must be a non-empty string that has a length less than 6.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID,
     );
   }
 
   if (repeatInterval && repeatInterval <= 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatInterval' is required and must be a positive nonzero number.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_INTERVAL,
     );
   }
   if (repeatUnit && repeatUnit.trim() === "") {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatUnit' is required and must be a non-empty string.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
     );
   }
 
   if (repeatOn && repeatOn.length === 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatOn' is required and must be a non-empty array.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_ON,
     );
   }
   if (repeatMonthlyOnDay && repeatMonthlyOnDay <= 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'repeatMonthlyOnDay' is required and must be positive.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_MONTHLY_ON_DAY,
     );
   }
   if (notificationFrequency && notificationFrequency.trim() === "") {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'notificationFrequency' is required and must be a non-empty string.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
     );
   }
   if (dosesPerDay && dosesPerDay <= 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'dosesPerDay' is required and must be a non-empty string.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_PER_DAY,
     );
   }
   if (doseIntervalInHours && doseIntervalInHours <= 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'doseIntervalInHours' is required and must be a non-empty string.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSE_INTERVAL_IN_HOURS,
     );
   }
 
   if (doseTimes && doseTimes.length === 0) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'doseTimes' is required and must be a non-empty array.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSE_TIMES,
     );
   }
 
-  if (userId && !ObjectId.isValid(userId)) {
+  if (userId && !Types.ObjectId.isValid(userId)) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'userId' is required and must be a valid ObjectId.",
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.USER_ID,
     );
   }
 }

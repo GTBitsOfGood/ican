@@ -12,7 +12,7 @@ import ChangePinModal from "@/components/modals/ChangePinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import { useEffect, useState } from "react";
-import { petService } from "@/http/petService";
+import PetHTTPClient from "@/http/petHTTPClient";
 import { Pet } from "@/types/pet";
 
 import AddMedicationModal from "@/components/modals/addMedication/modal";
@@ -32,7 +32,7 @@ export default function Home({ activeModal = "" }: HomeProps) {
     const getPetData = async () => {
       if (userId) {
         try {
-          const pet = await petService.getPet(userId);
+          const pet = await PetHTTPClient.getPet(userId);
           if (pet) {
             setPetData(pet);
             console.log("Fetched pet data:", pet);

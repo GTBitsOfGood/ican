@@ -1,3 +1,4 @@
+import ERRORS from "@/utils/errorMessages";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -27,7 +28,7 @@ export default class EmailService {
       console.log("Email sent:", info.messageId);
       return true;
     } catch {
-      throw new Error("Email failed to send.");
+      throw new Error(ERRORS.MAIL.FAILURE);
     }
   }
 }

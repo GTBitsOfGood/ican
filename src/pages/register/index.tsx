@@ -7,7 +7,7 @@ import {
   passwordIsValid,
 } from "../../utils/validation";
 import ErrorBox from "@/components/ErrorBox";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
@@ -68,7 +68,7 @@ export default function Home() {
 
     setRegistering(true);
     try {
-      const response = await authService.register(
+      const response = await AuthHTTPClient.register(
         name.trim(),
         email.trim(),
         password.trim(),
