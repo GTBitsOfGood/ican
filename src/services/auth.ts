@@ -3,20 +3,20 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import {
-  passwordsAreEqual,
-  validateEmail,
-  validateName,
-  validatePassword,
-} from "@/utils/user";
-import bcrypt from "bcrypt";
-import { User } from "../db/models";
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
-import { ObjectId } from "mongodb";
 import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
+import {
+  validateLogin,
+  validateLoginWithGoogle,
+  validateRegister,
+  validateTokenInput,
+} from "@/utils/serviceUtils/authServiceUtil";
+import { User } from "@/db/models/user";
+import HashingService from "./hashing";
+import ERRORS from "@/utils/errorMessages";
 
 export interface CreateUserBody {
   name: string;
@@ -37,91 +37,92 @@ export default class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ) {
+  ): Promise<string> {
     // Validate parameters
-    validateName(name);
-    validatePassword(password);
-    validateEmail(email);
-    passwordsAreEqual(password, confirmPassword);
+    validateRegister({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
 
     const existingUser = await UserDAO.getUserFromEmail(email);
 
     if (existingUser) {
       if (existingUser.provider == Provider.PASSWORD) {
-        throw new ConflictError("This user already exists.");
+        throw new ConflictError(ERRORS.USER.CONFLICT.USER);
       } else {
-        throw new ConflictError("This user is already signed in with Google.");
+        throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
       }
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser: User = {
       name: name,
       provider: Provider.PASSWORD,
       email: email,
-      password: hashedPassword,
+      password: await HashingService.hash(password),
     };
 
     // Uses userId returned by insertOne()
-    const { insertedId } = await UserDAO.createUser(newUser);
-    const userId = insertedId.toString();
-    if (!userId) {
-      throw new NotFoundError("user does not exist");
+    const { _id } = await UserDAO.createUser(newUser);
+    if (!_id) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     // Used a default name for pet
-    await PetService.createPet(userId, `${name}'s Pet`, "dog");
+    await PetService.createPet(_id.toString(), `${name}'s Pet`, "dog");
 
     // create settings
-    await settingsService.createSettings(insertedId.toString());
+    await settingsService.createSettings(_id.toString());
 
     // Create jwt once user is successfully created
-    const token = JWTService.generateToken({ userId: insertedId }, 604800);
+    const token = JWTService.generateToken({ userId: _id.toString() }, 604800);
 
-    return { token };
+    return token;
   }
 
-  // Validate login with email and password
-  static async login(email: string, password: string) {
+  static async login(email: string, password: string): Promise<string> {
     // Validate parameters
-    validateEmail(email);
-    validatePassword(password);
+    validateLogin({
+      email,
+      password,
+    });
 
     // Check if user exists
     const existingUser = await UserDAO.getUserFromEmail(email);
 
     if (!existingUser) {
-      throw new NotFoundError(
-        "Couldn't find your account. Please sign up to create an account.",
-      );
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
     if (existingUser.provider == Provider.GOOGLE) {
-      throw new ConflictError("This user is signed in with Google.");
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
     }
 
     // Check if password is correct
-    const passwordMatch = await bcrypt.compare(password, existingUser.password);
+    const passwordMatch = await HashingService.compare(
+      existingUser.password as string,
+      password,
+    );
 
     if (!passwordMatch) {
-      throw new UnauthorizedError(
-        "Wrong password. Try again or click Forgot Password to reset it.",
-      );
+      throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
     }
 
     // Create and return jwt
     const token = JWTService.generateToken(
-      { userId: existingUser._id },
+      { userId: existingUser._id.toString() },
       604800,
     );
 
-    return { token };
+    return token;
   }
 
   // Validate login with Google
   static async loginWithGoogle(name: string, email: string) {
-    validateName(name);
-    validateEmail(email);
+    validateLoginWithGoogle({
+      name,
+      email,
+    });
 
     let userId;
 
@@ -131,20 +132,17 @@ export default class AuthService {
         name: name,
         provider: Provider.GOOGLE,
         email: email,
-        password: "",
       };
 
-      const { insertedId } = await UserDAO.createUser(newUser);
-      userId = insertedId;
-      await PetService.createPet(userId.toString(), `${name}'s Pet`, "dog");
+      const insertedData = await UserDAO.createUser(newUser);
+      userId = insertedData._id.toString();
+      await PetService.createPet(userId, `${name}'s Pet`, "dog");
     } else {
-      userId = existingUser._id;
+      userId = existingUser._id.toString();
     }
 
     if (existingUser?.provider === Provider.PASSWORD) {
-      throw new ConflictError(
-        "This user is already signed in with email and password.",
-      );
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.PASSWORD);
     }
 
     const token = JWTService.generateToken({ userId }, 604800);
@@ -153,10 +151,13 @@ export default class AuthService {
   }
 
   // Validate JWT token and ensure user exists
-  static async validateToken(token: string) {
+  static async validateToken(token: string): Promise<{ userId: string }> {
+    validateTokenInput({ token });
     const decodedToken = JWTService.verifyToken(token);
-    await UserDAO.getUserFromId(new ObjectId(decodedToken.userId));
-
+    const user = await UserDAO.getUserFromId(decodedToken.userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
     return decodedToken;
   }
 }

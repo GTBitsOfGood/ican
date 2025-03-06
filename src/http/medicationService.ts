@@ -1,5 +1,9 @@
+import fetchHTTPClient from "@/http/fetchHTTPClient";
 import { MedicationInfo } from "@/types/medication";
-import fetchService from "./fetchService";
+
+export interface MedicationLogBody {
+  pin: string;
+}
 
 export const medicationService = {
   createMedication: async (userId: string, medicationInfo: MedicationInfo) => {
@@ -10,6 +14,23 @@ export const medicationService = {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
+    });
+  },
+      
+  medicationCheckIn: async (medicationId: string): Promise<void> => {
+    return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
+      method: "POST",
+    });
+  },
+
+  medicationLog: async (medicationId: string, pin: string): Promise<void> => {
+    const medicationLogBody: MedicationLogBody = {
+      pin,
+    };
+    
+    return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
+      method: "POST",
+      body: JSON.stringify(medicationLogBody),
     });
   },
 };

@@ -1,3 +1,5 @@
+import { validateSendEmail } from "@/utils/serviceUtils/mailUtil";
+import ERRORS from "@/utils/errorMessages";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
@@ -17,6 +19,7 @@ export default class EmailService {
     html: string,
   ): Promise<boolean> {
     try {
+      validateSendEmail({ to, subject, html });
       const info = await transporter.sendMail({
         from: process.env.MAIL_USER,
         to,
@@ -27,7 +30,7 @@ export default class EmailService {
       console.log("Email sent:", info.messageId);
       return true;
     } catch {
-      throw new Error("Email failed to send.");
+      throw new Error(ERRORS.MAIL.FAILURE);
     }
   }
 }

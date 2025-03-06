@@ -66,4 +66,25 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/medication/[medicationId]/log": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/medication/[medicationId]/check-in": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/pet/[petId]/feed": {
+    allowedMethods: {
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
 };

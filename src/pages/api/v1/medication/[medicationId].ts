@@ -1,4 +1,4 @@
-import { Medication } from "@/db/models";
+import { Medication } from "@/db/models/medication";
 import MedicationService from "@/services/medication";
 import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -7,18 +7,18 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { id } = req.query;
+  const { medicationId } = req.query;
   const { method, body } = req;
 
-  if (typeof id !== "string") {
-    return res.status(400).json({ error: "id must be a string" });
+  if (typeof medicationId !== "string") {
+    return res.status(400).json({ error: "medicationId must be a string" });
   }
 
   switch (method) {
     case "GET":
       try {
         const medication: Medication | null =
-          await MedicationService.getMedication(id);
+          await MedicationService.getMedication(medicationId);
         return res.status(201).json(medication);
       } catch (error) {
         if (error instanceof Error) {
@@ -30,7 +30,7 @@ export default async function handler(
 
     case "PATCH":
       try {
-        await MedicationService.updateMedication(id, body);
+        await MedicationService.updateMedication(medicationId, body);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof Error) {
@@ -42,7 +42,7 @@ export default async function handler(
 
     case "DELETE":
       try {
-        await MedicationService.deleteMedication(id);
+        await MedicationService.deleteMedication(medicationId);
         return res.status(204).end();
       } catch (error) {
         if (error instanceof Error) {

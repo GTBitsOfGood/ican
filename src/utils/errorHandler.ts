@@ -8,12 +8,22 @@ import {
   IllegalOperationError,
 } from "@/types/exceptions";
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 export const handleError = (error: unknown) => {
   let status = 500;
   let message = "Internal server error";
 
   if (error instanceof Error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        {
+          errors: error.errors,
+        },
+        { status },
+      );
+    }
+
     // Default error message are set in @/types/exceptions
     message = error.message || message;
     switch (true) {

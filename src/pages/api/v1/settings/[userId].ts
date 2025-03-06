@@ -1,4 +1,3 @@
-import { Settings } from "@/db/models";
 import SettingsService from "@/services/settings";
 import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -13,9 +12,7 @@ export default async function handler(
   switch (method) {
     case "GET":
       try {
-        const settings: Settings = await SettingsService.getSettings(
-          userId as string,
-        );
+        const settings = await SettingsService.getSettings(userId as string);
 
         return res.status(200).json(settings);
       } catch (error) {
@@ -27,8 +24,7 @@ export default async function handler(
       }
     case "PATCH":
       try {
-        await SettingsService.updateSettings({
-          userId: userId as string,
+        await SettingsService.updateSettings(userId as string, {
           helpfulTips: body?.helpfulTips,
           largeFontSize: body?.largeFontSize,
           notifications: body?.notifications,
