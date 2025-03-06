@@ -8,7 +8,7 @@ export interface MedicationLogBody {
 export const medicationService = {
   createMedication: async (userId: string, medicationInfo: MedicationInfo) => {
     const createMedicationBody = { ...medicationInfo, userId };
-    return await fetchService("/medication", {
+    return await fetchHTTPClient("/medication", {
       method: "POST",
       body: JSON.stringify(createMedicationBody),
       headers: {
@@ -16,7 +16,7 @@ export const medicationService = {
       },
     });
   },
-      
+
   medicationCheckIn: async (medicationId: string): Promise<void> => {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
@@ -27,7 +27,7 @@ export const medicationService = {
     const medicationLogBody: MedicationLogBody = {
       pin,
     };
-    
+
     return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),

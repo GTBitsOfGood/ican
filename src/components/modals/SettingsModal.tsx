@@ -9,7 +9,7 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
-import { settingService } from "@/http/settingService";
+import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
 
 export default function SettingsModal() {
@@ -26,8 +26,7 @@ export default function SettingsModal() {
     if (!userId) {
       return;
     }
-    settingService
-      .getSettings(userId)
+    SettingsHTTPClient.getSettings(userId)
       .then((settings) => {
         setParentalControlsEnabled(settings.parentalControl);
         setNotificationsEnabled(settings.notifications);
@@ -36,7 +35,7 @@ export default function SettingsModal() {
       .catch((error) => {
         console.log(error);
       });
-  }, [userId]);
+  }, [userId, onOpen]);
 
   // Ensures we only PATCH when user makes the change, not the initial load
   // But its honestly way too many requests if a kid decides to toggle the button for fun
@@ -57,13 +56,12 @@ export default function SettingsModal() {
     }
     try {
       // Ignore waiting
-      settingService
-        .updateSettings(
-          userId,
-          parentalControlsEnabled,
-          notificationsEnabled,
-          helpfulTipsEnabled,
-        )
+      SettingsHTTPClient.updateSettings(
+        userId,
+        parentalControlsEnabled,
+        notificationsEnabled,
+        helpfulTipsEnabled,
+      )
         .then(() => {
           console.log("Settings saved successfully");
         })
@@ -73,7 +71,13 @@ export default function SettingsModal() {
     } catch (error) {
       console.log("Error saving settings:", error);
     }
-  }, [parentalControlsEnabled, notificationsEnabled, helpfulTipsEnabled]);
+  }, [
+    parentalControlsEnabled,
+    notificationsEnabled,
+    helpfulTipsEnabled,
+    settingsChanged,
+    userId,
+  ]);
 
   return parentalControlsEnabled ? (
     <Modal

@@ -13,7 +13,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { settingService } from "@/http/settingService";
+import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
 
 export default function ChangePinModal() {
@@ -38,7 +38,7 @@ export default function ChangePinModal() {
       return;
     }
     try {
-      await settingService.updatePin(userId, oldPin);
+      await SettingsHTTPClient.updatePin(userId, oldPin);
       console.log("Pin successfully changed");
       // What to do upon successful submission?
     } catch (error) {
