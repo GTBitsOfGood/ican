@@ -104,7 +104,7 @@ export default class MedicationService {
 
     if (existingMedicationCheckIn) {
       const checkIn = existingMedicationCheckIn as MedicationCheckIn;
-      if (checkIn.expiration.getTime() > Date.now()) {
+      if (checkIn.expiration.getTime() <= Date.now()) {
         // delete medication
         await MedicationDAO.deleteMedicationCheckIn(new ObjectId(medicationId));
       } else {
