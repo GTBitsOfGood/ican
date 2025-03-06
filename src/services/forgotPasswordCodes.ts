@@ -1,4 +1,3 @@
-import { InvalidArgumentsError } from "@/types/exceptions";
 import {
   generateExpirationDate,
   get4DigitCode,
@@ -12,6 +11,11 @@ import JWTService from "./jwt";
 import UserDAO from "@/db/actions/user";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import EmailService from "./mail";
+import {
+  validateChangePassword,
+  validateSendPasswordCode,
+  validateVerifyForgotPasswordCode,
+} from "@/utils/serviceUtils/forgotPasswordCodesServiceUtil";
 import { Types } from "mongoose";
 import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
 import HashingService from "./hashing";
@@ -21,7 +25,7 @@ export default class ForgotPasswordService {
   static async sendPasswordCode(
     email: string | undefined,
   ): Promise<Types.ObjectId> {
-    // TODO EMAIL
+    validateSendPasswordCode({ email });
     const user = await UserDAO.getUserFromEmail(email);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
@@ -66,14 +70,7 @@ export default class ForgotPasswordService {
     userId: string,
     code: string,
   ): Promise<string> {
-    if (!userId?.trim())
-      throw new InvalidArgumentsError(
-        ERRORS.FORGOTPASSWORDCODE.INVALID_ARGUMENTS.USER_ID,
-      );
-    if (!code?.trim())
-      throw new InvalidArgumentsError(
-        ERRORS.FORGOTPASSWORDCODE.INVALID_ARGUMENTS.CODE,
-      );
+    validateVerifyForgotPasswordCode({ userId, code });
 
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
@@ -99,26 +96,19 @@ export default class ForgotPasswordService {
   }
 
   static async changePassword(
-    token: string,
+    userIdString: string, // This was actually parsed in the Controller's validate path
     newPassword: string,
     confirmPassword: string,
   ) {
-    if (!newPassword?.trim())
-      throw new InvalidArgumentsError(
-        ERRORS.FORGOTPASSWORDCODE.INVALID_ARGUMENTS.NEW_PASSWORD,
-      );
-    if (!confirmPassword?.trim())
-      throw new InvalidArgumentsError(
-        ERRORS.FORGOTPASSWORDCODE.INVALID_ARGUMENTS.CONFIRM_PASSWORD,
-      );
+    validateChangePassword({
+      userId: userIdString,
+      newPassword,
+      confirmPassword,
+    });
 
-    if (newPassword !== confirmPassword)
-      throw new UnauthorizedError(
-        ERRORS.FORGOTPASSWORDCODE.UNAUTHORIZED.PASSWORD,
-      );
-
-    const decoded = JWTService.verifyToken(token);
-    const user = await UserDAO.getUserFromId(decoded.userId);
+    // const decoded = JWTService.verifyToken(token);
+    const userId = new Types.ObjectId(userIdString);
+    const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }

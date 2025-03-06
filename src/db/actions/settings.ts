@@ -1,6 +1,6 @@
 import {
-  UpdateSettingsRequestBody,
   UpdateSettingsPinRequestBody,
+  UpdateSettingsRequestBody,
 } from "@/types/settings";
 import SettingsModel, { Settings, SettingsDocument } from "../models/settings";
 import { HydratedDocument, Types } from "mongoose";

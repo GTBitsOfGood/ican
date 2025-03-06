@@ -1,10 +1,15 @@
 import { ConflictError, NotFoundError } from "@/types/exceptions";
-import { validateParams } from "@/utils/pets";
+import {
+  validateCreatePet,
+  validateDeletePet,
+  validateGetPet,
+  validateUpdatePet,
+} from "@/utils/serviceUtils/petsUtil";
 import PetDAO from "@/db/actions/pets";
 import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
-import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
+import { WithId } from "@/types/models";
 
 export default class PetService {
   static async createPet(
@@ -12,7 +17,7 @@ export default class PetService {
     name: string,
     petType: string,
   ): Promise<WithId<Pet>> {
-    await validateParams(userId, name, petType);
+    await validateCreatePet({ userId, name, petType });
 
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (existingPet) {
@@ -33,7 +38,7 @@ export default class PetService {
   }
 
   static async getPet(userId: string): Promise<WithId<Pet> | null> {
-    await validateParams(userId);
+    await validateGetPet({ userId });
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
@@ -42,8 +47,9 @@ export default class PetService {
   }
 
   static async updatePet(userId: string, name: string): Promise<void> {
-    await validateParams(userId, name);
+    await validateUpdatePet({ userId, name });
     const existingPet = await PetDAO.getPetByUserId(userId);
+
     if (!existingPet) {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
@@ -51,8 +57,9 @@ export default class PetService {
   }
 
   static async deletePet(userId: string): Promise<void> {
-    await validateParams(userId);
+    await validateDeletePet({ userId });
     const existingPet = await PetDAO.getPetByUserId(userId);
+
     if (!existingPet) {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }

@@ -3,17 +3,17 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import {
-  passwordsAreEqual,
-  validateEmail,
-  validateName,
-  validatePassword,
-} from "@/utils/user";
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
 import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
+import {
+  validateLogin,
+  validateLoginWithGoogle,
+  validateRegister,
+  validateTokenInput,
+} from "@/utils/serviceUtils/authServiceUtil";
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
@@ -39,10 +39,12 @@ export default class AuthService {
     confirmPassword: string,
   ): Promise<string> {
     // Validate parameters
-    validateName(name);
-    validatePassword(password);
-    validateEmail(email);
-    passwordsAreEqual(password, confirmPassword);
+    validateRegister({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
 
     const existingUser = await UserDAO.getUserFromEmail(email);
 
@@ -81,8 +83,10 @@ export default class AuthService {
   // Validate login with email and password
   static async login(email: string, password: string): Promise<string> {
     // Validate parameters
-    validateEmail(email);
-    validatePassword(password);
+    validateLogin({
+      email,
+      password,
+    });
 
     // Check if user exists
     const existingUser = await UserDAO.getUserFromEmail(email);
@@ -116,8 +120,10 @@ export default class AuthService {
 
   // Validate login with Google
   static async loginWithGoogle(name: string, email: string) {
-    validateName(name);
-    validateEmail(email);
+    validateLoginWithGoogle({
+      name,
+      email,
+    });
 
     let userId;
 
@@ -147,6 +153,7 @@ export default class AuthService {
 
   // Validate JWT token and ensure user exists
   static async validateToken(token: string): Promise<{ userId: string }> {
+    validateTokenInput({ token });
     const decodedToken = JWTService.verifyToken(token);
     const user = await UserDAO.getUserFromId(decodedToken.userId);
     if (!user) {

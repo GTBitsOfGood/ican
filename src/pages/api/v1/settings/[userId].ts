@@ -24,8 +24,7 @@ export default async function handler(
       }
     case "PATCH":
       try {
-        await SettingsService.updateSettings({
-          userId: userId as string,
+        await SettingsService.updateSettings(userId as string, {
           helpfulTips: body?.helpfulTips,
           largeFontSize: body?.largeFontSize,
           notifications: body?.notifications,
