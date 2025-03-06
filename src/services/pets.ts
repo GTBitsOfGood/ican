@@ -1,5 +1,12 @@
 import { ConflictError, NotFoundError } from "@/types/exceptions";
 import {
+  validateItemAttribute,
+  validateItemName,
+  validatePetId,
+} from "@/utils/store";
+import { getBagItemByPetIdAndName } from "@/db/actions/bag";
+import { AccessoryType, storeItems } from "@/types/store";
+import {
   validateCreatePet,
   validateDeletePet,
   validateGetPet,
@@ -10,6 +17,7 @@ import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
 import { WithId } from "@/types/models";
+import { ObjectId } from "mongodb";
 
 export default class PetService {
   static async createPet(
@@ -31,6 +39,7 @@ export default class PetService {
       xpLevel: 0,
       coins: 0,
       userId: new Types.ObjectId(userId),
+      appearance: {},
     };
 
     const insertedPet = await PetDAO.createNewPet(newPet);
@@ -53,6 +62,7 @@ export default class PetService {
     if (!existingPet) {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
+
     await PetDAO.updatePetByUserId(userId, name);
   }
 
@@ -65,4 +75,82 @@ export default class PetService {
     }
     await PetDAO.deletePetByUserId(userId);
   }
+}
+
+export async function validateEquipItem(petId: string, itemName: string) {
+  validatePetId(petId);
+  validateItemName(itemName);
+
+  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
+  if (!pet) {
+    throw new NotFoundError("This pet does not exist.");
+  }
+
+  const item = storeItems.find((item) => item.itemName === itemName);
+  if (!item) {
+    throw new NotFoundError("This item does not exist.");
+  }
+
+  const dbItem = await getBagItemByPetIdAndName(new ObjectId(petId), itemName);
+  if (!dbItem) {
+    throw new NotFoundError("This pet does not own this item.");
+  }
+
+  if (
+    Object.values(pet.appearance).includes(item.itemName) ||
+    (pet.appearance.accessories &&
+      Object.values(pet.appearance.accessories).includes(item.itemName))
+  ) {
+    throw new ConflictError("This item is already equipped.");
+  }
+
+  const prevAppearance = pet.appearance;
+  let newAppearance = {};
+
+  if (Object.values(AccessoryType).includes(item.type as AccessoryType)) {
+    newAppearance = {
+      ...prevAppearance,
+      accessories: {
+        ...prevAppearance.accessories,
+        [item.type]: itemName,
+      },
+    };
+  } else {
+    newAppearance = {
+      ...prevAppearance,
+      [item.type]: itemName,
+    };
+  }
+
+  await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
+}
+
+export async function validateUnequip(petId: string, attribute: string) {
+  validatePetId(petId);
+  validateItemAttribute(attribute);
+
+  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
+  if (!pet) {
+    throw new NotFoundError("This pet does not exist.");
+  }
+
+  const prevAppearance = pet.appearance;
+  let newAppearance = {};
+
+  if (Object.values(AccessoryType).includes(attribute as AccessoryType)) {
+    newAppearance = {
+      ...prevAppearance,
+      accessories: {
+        ...prevAppearance.accessories,
+        [attribute]: null,
+      },
+    };
+  } else {
+    newAppearance = {
+      ...prevAppearance,
+      [attribute]: null,
+    };
+  }
+
+  await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
 }

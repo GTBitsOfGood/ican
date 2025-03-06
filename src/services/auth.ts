@@ -80,7 +80,6 @@ export default class AuthService {
     return token;
   }
 
-  // Validate login with email and password
   static async login(email: string, password: string): Promise<string> {
     // Validate parameters
     validateLogin({

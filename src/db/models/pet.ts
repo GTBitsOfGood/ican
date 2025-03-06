@@ -7,6 +7,17 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: Types.ObjectId;
+  appearance: {
+    clothes?: string;
+    accessories?: {
+      shoes?: string;
+      eyewear?: string;
+      hat?: string;
+      occupation?: string;
+    };
+    background?: string;
+    food?: string;
+  };
 }
 
 export interface PetDocument extends Pet, Document {
@@ -24,6 +35,23 @@ const petSchema = new Schema<PetDocument>({
     required: true,
     index: true,
     ref: "User",
+  },
+  appearance: {
+    type: new Schema({
+      clothes: { type: String },
+      accessories: {
+        type: new Schema({
+          shoes: { type: String },
+          eyewear: { type: String },
+          hat: { type: String },
+          occupation: { type: String },
+        }),
+        default: {},
+      },
+      background: { type: String },
+      food: { type: String },
+    }),
+    default: {},
   },
 });
 
