@@ -77,4 +77,4 @@ export const validateLogin = createValidateFunction(loginSchema);
 export const validateLoginWithGoogle = createValidateFunction(
   loginWithGoogleSchema,
 );
-export const validateTokenInput = createValidateFunction(tokenSchema);
+export const validateTokenInput = createValidateFunction(validateTokenSchema);
