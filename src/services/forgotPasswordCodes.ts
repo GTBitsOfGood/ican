@@ -1,138 +1,119 @@
-import { ObjectId } from "mongodb";
 import {
-  createForgotPasswordCode,
-  deleteForgotPasswordCodeById,
-  getForgotPasswordCodeByUserId,
-  updateForgotPasswordCodeByUserId,
-} from "../db/actions/forgotPasswordCodes";
-import bcrypt from "bcrypt";
-import { ForgotPasswordCode } from "../db/models";
-import {
-  getUserFromEmail,
-  getUserFromId,
-  updateUserPasswordFromId,
-} from "../db/actions/user";
-import { ApiError } from "@/types/exceptions";
-import {
-  generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
 import {
-  BadRequestError,
   ConflictError,
-  InternalServerError,
   NotFoundError,
   UnauthorizedError,
 } from "@/types/exceptions";
-import { generateToken, verifyToken } from "./jwt";
+import JWTService from "./jwt";
+import UserDAO from "@/db/actions/user";
+import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
+import EmailService from "./mail";
+import {
+  validateChangePassword,
+  validateSendPasswordCode,
+  validateVerifyForgotPasswordCode,
+} from "@/utils/serviceUtils/forgotPasswordCodesServiceUtil";
+import { Types } from "mongoose";
+import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
+import HashingService from "./hashing";
+import ERRORS from "@/utils/errorMessages";
 
-export async function sendPasswordCode(
-  email: string | undefined,
-): Promise<ObjectId> {
-  try {
-    const user = await getUserFromEmail(email);
+export default class ForgotPasswordService {
+  static async sendPasswordCode(
+    email: string | undefined,
+  ): Promise<Types.ObjectId> {
+    validateSendPasswordCode({ email });
+    const user = await UserDAO.getUserFromEmail(email);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
+    const encryptedCode = await HashingService.hash(code);
 
     const newCode: ForgotPasswordCode = {
-      code: await generateEncryptedCode(code),
+      code: encryptedCode,
       expirationDate,
       userId: user._id,
     };
 
-    const previousForgotPasswordCode = await getForgotPasswordCodeByUserId(
-      user._id,
-    );
+    const previousCode =
+      await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
 
-    if (previousForgotPasswordCode) {
-      await updateForgotPasswordCodeByUserId(user._id, newCode);
+    if (previousCode) {
+      await ForgotPasswordCodeDAO.updateForgotPasswordCodeByUserId(
+        user._id,
+        newCode,
+      );
     } else {
-      await createForgotPasswordCode(newCode);
+      await ForgotPasswordCodeDAO.createForgotPasswordCode(newCode);
+    }
+
+    const emailSubject = "iCAN Account Recovery";
+    const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
+    <p>Your verification code is: ${code}</p>
+    <p>If you did not request this, you can ignore this email</p>`;
+
+    try {
+      await EmailService.sendEmail(email!, emailSubject, emailHtml);
+    } catch {
+      throw new Error(ERRORS.MAIL.FAILURE);
     }
 
     return user._id;
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
-    }
-    throw error;
-  }
-}
-
-export async function verifyForgotPasswordCode(
-  userIdString: string,
-  code: string,
-): Promise<string> {
-  if (!userIdString || !userIdString.trim()) {
-    throw new BadRequestError("User ID is required.");
   }
 
-  if (!code || !code.trim()) {
-    throw new BadRequestError("Code is required");
-  }
+  static async verifyForgotPasswordCode(
+    userId: string,
+    code: string,
+  ): Promise<string> {
+    validateVerifyForgotPasswordCode({ userId, code });
 
-  const userId = new ObjectId(userIdString);
-
-  try {
-    const user = await getUserFromId(userId);
-    const forgotPasswordCode = await getForgotPasswordCodeByUserId(user._id);
-
-    if (!forgotPasswordCode) {
-      throw new NotFoundError(
-        "No forgot password code found for this user id.",
-      );
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
-    if (new Date() > forgotPasswordCode.expirationDate) {
-      throw new ConflictError("Forgot password code has expired.");
-    }
+    const forgotPasswordCode =
+      await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
+    if (!forgotPasswordCode)
+      throw new NotFoundError(ERRORS.FORGOTPASSWORDCODE.NOT_FOUND);
 
-    const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
-    if (!isMatch) {
-      throw new UnauthorizedError("Invalid forgot password code.");
-    }
+    if (new Date() > forgotPasswordCode.expirationDate)
+      throw new ConflictError(ERRORS.FORGOTPASSWORDCODE.CONFLICT);
 
-    await deleteForgotPasswordCodeById(forgotPasswordCode._id);
+    const isMatch = await HashingService.compare(code, forgotPasswordCode.code);
+    if (!isMatch)
+      throw new UnauthorizedError(ERRORS.FORGOTPASSWORDCODE.UNAUTHORIZED.CODE);
 
-    const token = generateToken(userId);
-    return token;
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
-    }
-    throw error;
-  }
-}
-
-export async function changePassword(
-  token: string,
-  newPassword: string,
-  confirmPassword: string,
-) {
-  if (!newPassword || !newPassword.trim()) {
-    throw new BadRequestError("New password is required.");
+    await ForgotPasswordCodeDAO.deleteForgotPasswordCodeById(
+      forgotPasswordCode._id,
+    );
+    return JWTService.generateToken({ userId }, 900);
   }
 
-  if (!confirmPassword || !confirmPassword.trim()) {
-    throw new BadRequestError("Confirm password is required");
-  }
+  static async changePassword(
+    userIdString: string, // This was actually parsed in the Controller's validate path
+    newPassword: string,
+    confirmPassword: string,
+  ) {
+    validateChangePassword({
+      userId: userIdString,
+      newPassword,
+      confirmPassword,
+    });
 
-  if (newPassword !== confirmPassword) {
-    throw new BadRequestError("Passwords do not match.");
-  }
-
-  try {
-    const decoded = verifyToken(token);
-    const userId = new ObjectId(decoded.userId);
-    const user = await getUserFromId(userId);
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await updateUserPasswordFromId(user._id, hashedPassword);
-  } catch (error) {
-    if (!(error instanceof ApiError)) {
-      throw new InternalServerError("An unknown error occurred.");
+    // const decoded = JWTService.verifyToken(token);
+    const userId = new Types.ObjectId(userIdString);
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
-    throw error;
+
+    const hashedPassword = await HashingService.hash(newPassword);
+    await UserDAO.updateUserPasswordFromId(user._id, hashedPassword);
   }
 }

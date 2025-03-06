@@ -1,52 +1,55 @@
-import { ObjectId } from "mongodb";
-import client from "../dbClient";
-import { ForgotPasswordCode } from "../models";
-import { InternalServerError } from "@/types/exceptions";
+import { HydratedDocument, Types } from "mongoose";
+import ForgotPasswordCodeModel, {
+  ForgotPasswordCodeDocument,
+  ForgotPasswordCode,
+} from "../models/forgotPasswordCode";
+import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
-export async function createForgotPasswordCode(newCode: ForgotPasswordCode) {
-  const db = client.db();
-  await db
-    .collection<ForgotPasswordCode>("forgotPasswordCodes")
-    .insertOne(newCode);
-}
+export default class ForgotPasswordCodeDAO {
+  static async createForgotPasswordCode(
+    newCode: ForgotPasswordCode,
+  ): Promise<HydratedDocument<ForgotPasswordCodeDocument>> {
+    await dbConnect();
+    return await ForgotPasswordCodeModel.insertOne(newCode);
+  }
 
-export async function updateForgotPasswordCodeByUserId(
-  userId: ObjectId,
-  updatedCode: ForgotPasswordCode,
-) {
-  const db = client.db();
-  const result = await db
-    .collection<ForgotPasswordCode>("forgotPasswordCodes")
-    .updateOne(
+  static async updateForgotPasswordCodeByUserId(
+    _userId: string | Types.ObjectId,
+    updatedCode: ForgotPasswordCode,
+  ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    const result = await ForgotPasswordCodeModel.updateOne(
       { userId },
       {
-        $set: {
-          code: updatedCode.code,
-          expirationDate: updatedCode.expirationDate,
-        },
+        code: updatedCode.code,
+        expirationDate: updatedCode.expirationDate,
       },
     );
-  if (result.modifiedCount === 0) {
-    throw new InternalServerError("Failed to update forgot password code.");
+    if (result.modifiedCount === 0) {
+      throw new Error(ERRORS.FORGOTPASSWORDCODE.FAILURE.UPDATE);
+    }
   }
-}
 
-export async function getForgotPasswordCodeByUserId(
-  userId: ObjectId,
-): Promise<ForgotPasswordCode | null> {
-  const db = client.db();
-  const code = await db
-    .collection<ForgotPasswordCode>("forgotPasswordCodes")
-    .findOne({ userId });
-  return code;
-}
+  static async getForgotPasswordCodeByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<HydratedDocument<ForgotPasswordCodeDocument> | null> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    return ForgotPasswordCodeModel.findOne({ userId });
+  }
 
-export async function deleteForgotPasswordCodeById(
-  _id: ObjectId | undefined,
-): Promise<boolean> {
-  const db = client.db();
-  const result = await db
-    .collection<ForgotPasswordCode>("forgotPasswordCodes")
-    .deleteOne({ _id });
-  return result.deletedCount > 0;
+  static async deleteForgotPasswordCodeById(
+    id: string | Types.ObjectId,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await ForgotPasswordCodeModel.deleteOne({ _id });
+    if (result.deletedCount == 0) {
+      throw new Error(ERRORS.FORGOTPASSWORDCODE.FAILURE.DELETE);
+    }
+  }
 }

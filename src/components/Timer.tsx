@@ -19,7 +19,7 @@ export default function Timer({ time, setTime }: TimerProps) {
   }, [time, setTime]);
 
   return (
-    <div className="text-iCAN-gray text-[32px]">
+    <div className="text-iCAN-gray mobile:text-xl short:text-xl tablet:text-[28px]">
       0:{time >= 10 ? time : `0${time}`}
     </div>
   );

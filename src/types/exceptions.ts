@@ -1,85 +1,61 @@
-export class ApiError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode: number) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-export class AlreadyExistsError extends ApiError {
-  constructor(message: string) {
-    super(message, 409);
-  }
-}
-
-export class DoesNotExistError extends ApiError {
-  constructor(message: string) {
-    super(message, 404);
-  }
-}
-
-export class InvalidBodyError extends ApiError {
-  constructor(message: string) {
-    super(message, 400);
-  }
-}
-
-export class NotFoundError extends ApiError {
+export class NotFoundError extends Error {
   constructor(message = "Resource not found") {
-    super(message, 404);
+    super(message);
   }
 }
 
-export class BadRequestError extends ApiError {
-  constructor(message = "Bad request") {
-    super(message, 400);
+export class InvalidArgumentsError extends Error {
+  constructor(message = "Invalid arguments provided") {
+    super(message);
   }
 }
 
-export class UnauthorizedError extends ApiError {
-  constructor(message = "Unauthorized") {
-    super(message, 401);
+export class UnauthorizedError extends Error {
+  constructor(message = "Unauthorized access") {
+    super(message);
   }
 }
 
-export class ConflictError extends ApiError {
-  constructor(message = "Conflict") {
-    super(message, 409);
+export class ConflictError extends Error {
+  constructor(message = "Resource conflict") {
+    super(message);
   }
 }
 
-export class InternalServerError extends ApiError {
-  constructor(message = "Internal server error") {
-    super(message, 500);
+export class ValidationError extends Error {
+  constructor(message = "Validation failed") {
+    super(message);
   }
 }
 
-export class MethodNotAllowedError extends ApiError {
+export class IllegalOperationError extends Error {
+  constructor(message = "Illegal operation attempted") {
+    super(message);
+  }
+}
+
+export class MethodNotAllowedError extends Error {
   constructor(message = "Method not allowed") {
-    super(message, 405);
+    super(message);
   }
 }
 
 export const getStatusCode = (error: Error): number => {
   switch (error.name) {
-    case "BadRequestError":
-      return 400;
-    case "InvalidBodyError":
+    case "NotFoundError":
+      return 404;
+    case "InvalidArgumentsError":
       return 400;
     case "UnauthorizedError":
       return 401;
-    case "NotFoundError":
-      return 404;
-    case "DoesNotExistError":
-      return 404;
-    case "MethodNotAllowedError":
-      return 405;
     case "ConflictError":
       return 409;
-    case "AlreadyExistsError":
-      return 409;
-    case "InternalServerError":
+    case "ValidationError":
+      return 422;
+    case "IllegalOperationsError":
+      return 403;
+    case "MethodNotAllowedError":
+      return 405;
     default:
       return 500;
   }

@@ -10,8 +10,19 @@ export default {
   ],
   theme: {
     screens: {
-      mobile: "640px",
+      mobile: "320px",
+      tablet: "768px",
       desktop: "1024px",
+      largeDesktop: "1280px",
+      minimized: {
+        raw: "(max-height: 640px)",
+      },
+      short: {
+        raw: "(max-height: 800px)",
+      },
+      tiny: {
+        raw: "(max-height: 480px)",
+      },
     },
     extend: {
       keyframes: {
@@ -28,6 +39,7 @@ export default {
         "iCAN-textfield": "#747474",
         "iCAN-gray": "#626262",
         "iCAN-Blue-300": "#2C3694",
+        "iCAN-Green": "#CEE0A0",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
@@ -125,7 +137,7 @@ export default {
     },
   },
   plugins: [
-    function ({ addUtilities, matchUtilities }: PluginAPI) {
+    function ({ addBase, addUtilities, matchUtilities }: PluginAPI) {
       addUtilities({
         ".text-stroke-1": {
           "-webkit-text-stroke-width": "1px",
@@ -183,6 +195,12 @@ export default {
         },
         { type: ["any"] },
       );
+      addBase({
+        ":root": {
+          "--font-quantico": "'Quantico', sans-serif",
+          "--font-pixelify": "'Pixelify Sans', sans-serif",
+        },
+      });
     },
   ],
 } satisfies Config;

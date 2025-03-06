@@ -1,79 +1,65 @@
-import { InternalServerError } from "@/types/exceptions";
-import client from "../dbClient";
-import { Medication } from "../models";
-import { ObjectId } from "mongodb";
+import { HydratedDocument, Types } from "mongoose";
+import MedicationModel, {
+  Medication,
+  MedicationDocument,
+} from "../models/medication";
+import dbConnect from "../dbConnect";
+import ERRORS from "@/utils/errorMessages";
 
-export async function createNewMedication(newMedication: Medication) {
-  const db = client.db();
-  try {
-    const result = await db.collection("medication").insertOne(newMedication);
-
-    return result;
-  } catch (error) {
-    throw new InternalServerError(
-      "Failed to create medication: " + (error as Error).message,
-    );
+export default class MedicationDAO {
+  static async createNewMedication(
+    newMedication: Medication,
+  ): Promise<HydratedDocument<MedicationDocument>> {
+    await dbConnect();
+    return await MedicationModel.insertOne(newMedication);
   }
-}
 
-export async function getMedicationById(id: ObjectId) {
-  const db = client.db();
-
-  const medication = await db.collection("medication").findOne({ _id: id });
-
-  return medication;
-}
-
-export async function getMedicationByMedicationId(medicationId: string) {
-  const db = client.db();
-
-  const medication = await db
-    .collection("medication")
-    .findOne({ medicationId });
-
-  return medication;
-}
-
-export async function updateMedicationById(
-  id: ObjectId,
-  updateObj: {
-    formOfMedication?: string;
-    medicationId?: string | string[] | undefined;
-    repeatInterval?: number;
-    repeatUnit?: string;
-    repeatOn?: string[];
-    repeatMonthlyOnDay?: number;
-    notificationFrequency?: string;
-    dosesPerDay?: number;
-    doseIntervalInHours?: number;
-    // string of times
-    doseTimes?: string[];
-  },
-) {
-  const db = client.db();
-  const result = await db
-    .collection("medication")
-    .updateOne({ _id: id }, { $set: { ...updateObj } });
-
-  if (result.modifiedCount == 0) {
-    throw new InternalServerError("Failed to update medication.");
+  static async getMedicationById(
+    id: string | Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument> | null> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    return await MedicationModel.findById(_id);
   }
-}
 
-export async function deleteMedicationById(id: ObjectId) {
-  const db = client.db();
-  const result = await db.collection("medication").deleteOne({ _id: id });
-
-  if (result.deletedCount == 0) {
-    throw new InternalServerError("Failed to delete medication.");
+  static async getUserMedicationByMedicationId(
+    medicationId: string,
+    _userId: string | Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument> | null> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    return await MedicationModel.findOne({ medicationId, userId });
   }
-}
 
-// this function retrieves list of medications
-export async function getMedicationsByUserId(userId: ObjectId) {
-  const db = client.db();
+  static async updateMedicationById(
+    id: string | Types.ObjectId,
+    updateObj: Medication,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await MedicationModel.updateOne({ _id }, updateObj);
+    if (result.modifiedCount == 0) {
+      throw new Error(ERRORS.MEDICATION.FAILURE.UPDATE);
+    }
+  }
 
-  const medication = db.collection("medication").find({ userId });
+  static async deleteMedicationById(
+    id: string | Types.ObjectId,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await MedicationModel.deleteOne({ _id });
+    if (result.deletedCount == 0) {
+      throw new Error(ERRORS.MEDICATION.FAILURE.DELETE);
+    }
+  }
 
-  return medication;
+  static async getMedicationsByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<HydratedDocument<MedicationDocument>[]> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    return await MedicationModel.find({ userId });
+  }
 }

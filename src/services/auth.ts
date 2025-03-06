@@ -1,25 +1,22 @@
 import {
-  AlreadyExistsError,
-  BadRequestError,
-  DoesNotExistError,
+  ConflictError,
+  NotFoundError,
+  UnauthorizedError,
 } from "@/types/exceptions";
+import settingsService from "./settings";
+import { Provider } from "@/types/user";
+import JWTService from "./jwt";
+import PetService from "./pets";
+import UserDAO from "@/db/actions/user";
 import {
-  passwordsAreEqual,
-  validateEmail,
-  validateName,
-  validatePassword,
-} from "@/utils/auth";
-import bcrypt from "bcrypt";
-
-import { createSettings } from "./settings";
-import { createPet } from "./pets";
-import { Provider } from "@/types/auth";
-import { createUser, findUserByEmail } from "../db/actions/auth";
-import { User } from "../db/models";
-import { generateToken } from "./jwt";
-import { ObjectId } from "mongodb";
-import { verifyToken } from "./jwt";
-import { getUserFromId } from "@/db/actions/user";
+  validateLogin,
+  validateLoginWithGoogle,
+  validateRegister,
+  validateTokenInput,
+} from "@/utils/serviceUtils/authServiceUtil";
+import { User } from "@/db/models/user";
+import HashingService from "./hashing";
+import ERRORS from "@/utils/errorMessages";
 
 export interface CreateUserBody {
   name: string;
@@ -33,134 +30,134 @@ export interface LoginBody {
   password: string;
 }
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables.");
-}
+export default class AuthService {
+  // Validate create user input and process account creation
+  static async register(
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string,
+  ): Promise<string> {
+    // Validate parameters
+    validateRegister({
+      name,
+      email,
+      password,
+      confirmPassword,
+    });
 
-export async function validateCreateUser(
-  name: string,
-  email: string,
-  password: string,
-  confirmPassword: string,
-) {
-  // Validate parameters
-  validateName(name);
-  validatePassword(password);
-  validateEmail(email);
-  passwordsAreEqual(password, confirmPassword);
+    const existingUser = await UserDAO.getUserFromEmail(email);
 
-  const existingUser = await findUserByEmail(email);
-
-  if (existingUser) {
-    if (existingUser.provider == Provider.PASSWORD) {
-      throw new AlreadyExistsError("This user already exists.");
-    } else {
-      throw new AlreadyExistsError(
-        "This user is already signed in with Google.",
-      );
+    if (existingUser) {
+      if (existingUser.provider == Provider.PASSWORD) {
+        throw new ConflictError(ERRORS.USER.CONFLICT.USER);
+      } else {
+        throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
+      }
     }
-  }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // generate new random _id
-  const _id = new ObjectId();
-
-  const newUser: User = {
-    _id,
-    name: name,
-    provider: Provider.PASSWORD,
-    email: email,
-    password: hashedPassword,
-  };
-
-  // Uses userId returned by insertOne()
-  const { insertedId } = await createUser(newUser);
-  const userId = insertedId.toString();
-  if (!userId) {
-    throw new DoesNotExistError("user does not exist");
-  }
-  // Used a default name for pet
-  await createPet(userId, `${name}'s Pet`, "dog");
-
-  // create settings
-  await createSettings({ userId: _id.toString() });
-
-  // Create jwt once user is successfully created
-  const token = generateToken(new ObjectId(userId));
-
-  return { token };
-}
-
-export async function validateLogin(email: string, password: string) {
-  // Validate parameters
-  validateEmail(email);
-  validatePassword(password);
-
-  // Check if user exists
-  const existingUser = await findUserByEmail(email);
-
-  if (!existingUser) {
-    throw new DoesNotExistError(
-      "Couldn't find your account. Please sign up to create an account.",
-    );
-  }
-
-  if (existingUser.provider == Provider.GOOGLE) {
-    throw new AlreadyExistsError("This user is signed in with Google.");
-  }
-
-  // Check if password is correct
-  const passwordMatch = await bcrypt.compare(password, existingUser.password);
-
-  if (!passwordMatch) {
-    throw new BadRequestError(
-      "Wrong password. Try again or click Forgot Password to reset it.",
-    );
-  }
-
-  const token = generateToken(existingUser._id!);
-
-  return { token };
-}
-
-export async function validateGoogleLogin(name: string, email: string) {
-  validateName(name);
-  validateEmail(email);
-
-  // If user doesn't exist add them to database
-  let existingUser = await findUserByEmail(email);
-
-  if (existingUser?.provider == Provider.PASSWORD) {
-    throw new AlreadyExistsError(
-      "This user is already signed in with email and password.",
-    );
-  }
-
-  if (!existingUser) {
     const newUser: User = {
       name: name,
-      provider: Provider.GOOGLE,
+      provider: Provider.PASSWORD,
       email: email,
-      password: "",
+      password: await HashingService.hash(password),
     };
 
-    await createUser(newUser);
-    existingUser = await findUserByEmail(email);
-    await createPet(
-      existingUser?._id?.toString() as string,
-      `${name}'s Pet`,
-      "dog",
-    );
+    // Uses userId returned by insertOne()
+    const { _id } = await UserDAO.createUser(newUser);
+    if (!_id) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+    // Used a default name for pet
+    await PetService.createPet(_id.toString(), `${name}'s Pet`, "dog");
+
+    // create settings
+    await settingsService.createSettings(_id.toString());
+
+    // Create jwt once user is successfully created
+    const token = JWTService.generateToken({ userId: _id.toString() }, 604800);
+
+    return token;
   }
 
-  const token = generateToken(existingUser?._id as ObjectId);
+  static async login(email: string, password: string): Promise<string> {
+    // Validate parameters
+    validateLogin({
+      email,
+      password,
+    });
 
-  return token;
-}
+    // Check if user exists
+    const existingUser = await UserDAO.getUserFromEmail(email);
 
-export async function validateToken(token: string) {
-  const decodedToken = verifyToken(token);
-  await getUserFromId(new ObjectId(decodedToken.userId));
-  return decodedToken;
+    if (!existingUser) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    if (existingUser.provider == Provider.GOOGLE) {
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
+    }
+
+    // Check if password is correct
+    const passwordMatch = await HashingService.compare(
+      existingUser.password as string,
+      password,
+    );
+
+    if (!passwordMatch) {
+      throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
+    }
+
+    // Create and return jwt
+    const token = JWTService.generateToken(
+      { userId: existingUser._id.toString() },
+      604800,
+    );
+
+    return token;
+  }
+
+  // Validate login with Google
+  static async loginWithGoogle(name: string, email: string) {
+    validateLoginWithGoogle({
+      name,
+      email,
+    });
+
+    let userId;
+
+    const existingUser = await UserDAO.getUserFromEmail(email);
+    if (!existingUser) {
+      const newUser: User = {
+        name: name,
+        provider: Provider.GOOGLE,
+        email: email,
+      };
+
+      const insertedData = await UserDAO.createUser(newUser);
+      userId = insertedData._id.toString();
+      await PetService.createPet(userId, `${name}'s Pet`, "dog");
+    } else {
+      userId = existingUser._id.toString();
+    }
+
+    if (existingUser?.provider === Provider.PASSWORD) {
+      throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.PASSWORD);
+    }
+
+    const token = JWTService.generateToken({ userId }, 604800);
+
+    return token;
+  }
+
+  // Validate JWT token and ensure user exists
+  static async validateToken(token: string): Promise<{ userId: string }> {
+    validateTokenInput({ token });
+    const decodedToken = JWTService.verifyToken(token);
+    const user = await UserDAO.getUserFromId(decodedToken.userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+    return decodedToken;
+  }
 }

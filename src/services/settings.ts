@@ -1,133 +1,91 @@
-import {
-  createNewSettings,
-  getSettingsByUserId,
-  updateSettingsByUserId,
-  updateSettingsPinByUserId,
-} from "@/db/actions/settings";
-import { Settings } from "@/db/models";
-import {
-  AlreadyExistsError,
-  DoesNotExistError,
-  InternalServerError,
-} from "@/types/exceptions";
+import SettingsDAO from "@/db/actions/settings";
+import { Settings } from "@/db/models/settings";
+import { removeUndefinedKeys } from "@/lib/utils";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
-import { encryptPin, validateParams } from "@/utils/settings";
-import { ObjectId } from "mongodb";
+import {
+  validateCreateSettings,
+  validateGetSettings,
+  validateUpdatePin,
+  validateUpdateSettings,
+} from "@/utils/serviceUtils/settingsUtil";
+import { WithId } from "@/types/models";
+import ERRORS from "@/utils/errorMessages";
+import { Types } from "mongoose";
+import HashingService from "./hashing";
 
-export interface CreateSettingsBody {
-  userId: string | string[] | undefined;
-}
+export default class SettingsService {
+  static async createSettings(userId: string): Promise<WithId<Settings>> {
+    validateCreateSettings({ userId });
 
-export interface GetSettingsBody {
-  userId: string | string[] | undefined;
-}
+    const existingSettings = await SettingsDAO.getSettingsByUserId(userId);
+    if (existingSettings) {
+      throw new ConflictError(ERRORS.SETTINGS.CONFLICT);
+    }
 
-export interface UpdateSettingsBody {
-  userId: string | string[] | undefined;
-  parentalControl?: boolean;
-  notifications?: boolean;
-  helpfulTips?: boolean;
-  largeFontSize?: boolean;
-}
+    const newSettings: Settings = {
+      userId: new Types.ObjectId(userId),
+      helpfulTips: true,
+      largeFontSize: true,
+      notifications: true,
+      parentalControl: true,
+      pin: "0000",
+    };
 
-export interface UpdateSettingsPinBody {
-  userId: string | string[] | undefined;
-  pin: string;
-}
-
-export async function createSettings({ userId }: CreateSettingsBody) {
-  // Validate parameters
-  // every case of underined or invalid type is captured here
-  await validateParams(userId);
-
-  const existingSettings = await getSettingsByUserId(
-    new ObjectId(userId as string),
-  );
-
-  if (existingSettings) {
-    throw new AlreadyExistsError("Settings already exists for this user");
+    const settings = await SettingsDAO.createNewSettings(newSettings);
+    if (!settings) {
+      throw new Error(ERRORS.SETTINGS.FAILURE.CREATE);
+    }
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
-  const newSettings: Settings = {
-    _id: new ObjectId(),
-    userId: new ObjectId(userId as string),
-    helpfulTips: true,
-    largeFontSize: true,
-    notifications: true,
-    parentalControl: true,
-    pin: "0000",
-  };
+  static async getSettings(userId: string): Promise<WithId<Settings>> {
+    validateGetSettings({ userId });
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
 
-  const settings = await createNewSettings(newSettings);
-
-  if (!settings) {
-    throw new InternalServerError("There was an error making settings.");
+    if (!settings) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+    }
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
-  return settings;
-}
+  // Seperated variables concerning query vs body
+  static async updateSettings(
+    userIdString: string,
+    updatedSettings: UpdateSettingsRequestBody,
+  ): Promise<void> {
+    updatedSettings = removeUndefinedKeys(updatedSettings);
+    // Or should we just let it throw an error for this case?
+    // if (Object.keys(updatedSettings).length === 0) {
+    //   // Return early if no settings to update
+    //   return;
+    // }
+    const validatedSettings = validateUpdateSettings({
+      userId: userIdString,
+      ...updatedSettings,
+    });
+    const settings = await SettingsDAO.getSettingsByUserId(userIdString);
+    if (!settings) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+    }
 
-export async function getSettings({
-  userId,
-}: GetSettingsBody): Promise<Settings> {
-  // Validate parameters
-  // every case of underined or invalid type is captured here
-  await validateParams(userId);
-
-  const settings = await getSettingsByUserId(new ObjectId(userId as string));
-
-  if (!settings) {
-    throw new DoesNotExistError("Settings does not exist for this user");
+    await SettingsDAO.updateSettingsByUserId(userIdString, {
+      ...validatedSettings,
+    });
   }
 
-  return settings as Settings;
-}
+  static async updatePin(userId: string, pin: string) {
+    await validateUpdatePin({ userId });
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
+    if (!settings) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+    }
 
-export async function updateSettings({
-  userId,
-  parentalControl,
-  notifications,
-  helpfulTips,
-  largeFontSize,
-}: UpdateSettingsBody): Promise<void> {
-  // Validate parameters
-  // every case of underined or invalid type is captured here
-
-  await validateParams(userId);
-
-  const settings = await getSettingsByUserId(new ObjectId(userId as string));
-
-  if (!settings) {
-    throw new DoesNotExistError("Settings does not exist for this user");
-  }
-
-  const updateObj: UpdateSettingsRequestBody = {};
-
-  if (parentalControl !== undefined)
-    updateObj.parentalControl = parentalControl;
-
-  if (notifications !== undefined) updateObj.notifications = notifications;
-
-  if (helpfulTips !== undefined) updateObj.helpfulTips = helpfulTips;
-
-  if (largeFontSize !== undefined) updateObj.largeFontSize = largeFontSize;
-
-  await updateSettingsByUserId(new ObjectId(userId as string), updateObj);
-}
-
-export async function updatePin({ userId, pin }: UpdateSettingsPinBody) {
-  // every case of underined or invalid type is captured here
-
-  await validateParams(userId);
-
-  const settings = await getSettingsByUserId(new ObjectId(userId as string));
-
-  if (!settings) {
-    throw new DoesNotExistError("Settings does not exist for this user");
-  }
-
-  if (pin) {
-    pin = await encryptPin(pin);
-    await updateSettingsPinByUserId(new ObjectId(userId as string), { pin });
+    if (pin) {
+      const encryptedPin = await HashingService.hash(pin);
+      await SettingsDAO.updateSettingsByUserId(userId, {
+        pin: encryptedPin,
+      });
+    }
   }
 }

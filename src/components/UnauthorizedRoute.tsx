@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import { useUser } from "./UserContext";
 import Image from "next/image";
 
@@ -23,7 +23,7 @@ export default function UnauthorizedRoute({
       }
 
       try {
-        const response = await authService.validateToken();
+        const response = await AuthHTTPClient.validateToken();
         setUserId(response.decodedToken?.userId);
         router.push("/");
       } catch (error) {
@@ -35,7 +35,7 @@ export default function UnauthorizedRoute({
     };
 
     validateToken();
-  }, [router]);
+  }, [router, setUserId]);
 
   return (
     <>
