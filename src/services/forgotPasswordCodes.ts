@@ -1,8 +1,4 @@
-import { ObjectId } from "mongodb";
-import bcrypt from "bcrypt";
-import { ForgotPasswordCode } from "../db/models";
 import {
-  generateEncryptedCode,
   generateExpirationDate,
   get4DigitCode,
 } from "@/utils/forgotPasswordUtils";
@@ -20,20 +16,26 @@ import {
   validateSendPasswordCode,
   validateVerifyForgotPasswordCode,
 } from "@/utils/serviceUtils/forgotPasswordCodesServiceUtil";
+import { Types } from "mongoose";
+import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
+import HashingService from "./hashing";
+import ERRORS from "@/utils/errorMessages";
 
 export default class ForgotPasswordService {
-  static async sendPasswordCode(email?: string): Promise<ObjectId> {
+  static async sendPasswordCode(
+    email: string | undefined,
+  ): Promise<Types.ObjectId> {
     validateSendPasswordCode({ email });
-
     const user = await UserDAO.getUserFromEmail(email);
     if (!user) {
-      throw new NotFoundError("User does not exist");
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
+    const encryptedCode = await HashingService.hash(code);
 
     const newCode: ForgotPasswordCode = {
-      code: await generateEncryptedCode(code),
+      code: encryptedCode,
       expirationDate,
       userId: user._id,
     };
@@ -51,7 +53,6 @@ export default class ForgotPasswordService {
     }
 
     const emailSubject = "iCAN Account Recovery";
-
     const emailHtml = `<h2> Someone is trying to reset your iCAN account.</h2>
     <p>Your verification code is: ${code}</p>
     <p>If you did not request this, you can ignore this email</p>`;
@@ -59,36 +60,34 @@ export default class ForgotPasswordService {
     try {
       await EmailService.sendEmail(email!, emailSubject, emailHtml);
     } catch {
-      throw new Error("Email failed to send.");
+      throw new Error(ERRORS.MAIL.FAILURE);
     }
 
     return user._id;
   }
 
   static async verifyForgotPasswordCode(
-    userIdString: string,
+    userId: string,
     code: string,
   ): Promise<string> {
-    validateVerifyForgotPasswordCode({ userIdString, code });
+    validateVerifyForgotPasswordCode({ userId, code });
 
-    const userId = new ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
-      throw new NotFoundError("User does not exist");
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
     const forgotPasswordCode =
       await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
     if (!forgotPasswordCode)
-      throw new NotFoundError(
-        "No forgot password code found for this user ID.",
-      );
+      throw new NotFoundError(ERRORS.FORGOTPASSWORDCODE.NOT_FOUND);
 
     if (new Date() > forgotPasswordCode.expirationDate)
-      throw new ConflictError("Forgot password code has expired.");
+      throw new ConflictError(ERRORS.FORGOTPASSWORDCODE.CONFLICT);
 
-    const isMatch = await bcrypt.compare(code, forgotPasswordCode.code);
-    if (!isMatch) throw new UnauthorizedError("Invalid forgot password code.");
+    const isMatch = await HashingService.compare(code, forgotPasswordCode.code);
+    if (!isMatch)
+      throw new UnauthorizedError(ERRORS.FORGOTPASSWORDCODE.UNAUTHORIZED.CODE);
 
     await ForgotPasswordCodeDAO.deleteForgotPasswordCodeById(
       forgotPasswordCode._id,
@@ -108,13 +107,13 @@ export default class ForgotPasswordService {
     });
 
     // const decoded = JWTService.verifyToken(token);
-    const userId = new ObjectId(userIdString);
+    const userId = new Types.ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
-      throw new NotFoundError("User does not exist");
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await HashingService.hash(newPassword);
     await UserDAO.updateUserPasswordFromId(user._id, hashedPassword);
   }
 }

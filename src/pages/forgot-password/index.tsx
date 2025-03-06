@@ -1,11 +1,11 @@
-import ErrorMessage from "@/components/ErrorMessage";
+import ErrorBox from "@/components/ErrorBox";
 import Timer from "@/components/Timer";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { authService } from "@/http/authService";
+import AuthHTTPClient from "@/http/authHTTPClient";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import {
   emailValidation,
@@ -15,6 +15,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
+import Link from "next/link";
 
 const Sections = [
   {
@@ -78,7 +79,7 @@ export default function ForgotPasswordPage() {
     if (page == 0) {
       try {
         console.log(email);
-        const response = await authService.forgotPassword(email);
+        const response = await AuthHTTPClient.forgotPassword(email);
         if (response.userId) {
           setUserId(response.userId);
         }
@@ -90,7 +91,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 1) {
       try {
-        const response = await authService.verifyForgotPassword(userId, otp);
+        const response = await AuthHTTPClient.verifyForgotPassword(userId, otp);
         localStorage.setItem("token", response.token);
       } catch (error) {
         setError({ otp: (error as Error).message });
@@ -100,7 +101,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 2) {
       try {
-        await authService.changePassword(
+        await AuthHTTPClient.changePassword(
           resetPasswordRef.current?.value as string,
           confirmPasswordRef.current?.value as string,
         );
@@ -157,7 +158,7 @@ export default function ForgotPasswordPage() {
   const handleTimerReset = async () => {
     if (time === 0) {
       try {
-        await authService.forgotPassword(email);
+        await AuthHTTPClient.forgotPassword(email);
       } catch {
         console.error("error occured");
         return;
@@ -172,28 +173,32 @@ export default function ForgotPasswordPage() {
       <div
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
-        <div className="bg-white p-16 rounded-[64px] flex flex-col gap-y-6 w-5/12">
-          <div className="flex flex-col gap-y-12 items-center font-quantico">
-            <div className={`flex flex-col gap-y-4 items-center`}>
-              <div className="text-[#FFF] text-[64px]/[64px] font-bold text-shadow-default text-stroke-2 text-stroke-default text-center">
+        <div
+          className={`bg-white tiny:h-[95%] short:h-[85%] ${page === 0 ? "short:w-auto tall:h-[75%]" : ""} tall:h-[90%] my-2 tablet:px-4 desktop:px-8 short:px-2 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center 2 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 mobile:w-11/12 tablet:w-5/6 desktop:w-2/3 largeDesktop:w-1/2`}
+        >
+          <div className="flex flex-col desktop:gap-y-12 w-[90%] mobile:gap-y-4 tiny:gap-y-3 short:gap-y-3 mx-2 tall:gap-y-4 items-center font-quantico">
+            <div
+              className={`flex flex-col mobile:gap-y-2 desktop:gap-y-4 tiny:gap-y-1 short:gap-y-2 tall:gap-y-4 items-center`}
+            >
+              <div className="text-[#FFF] mobile:text-3xl tiny:text-xl short:text-3xl desktop:text-[40px]/[48px] font-bold text-shadow-default short:text-stroke-1 mobile:text-stroke-1 desktop:text-stroke-2 text-stroke-default text-center">
                 {Sections[page].header}
               </div>
-              <div className="text-black text-center text-4xl/9 font-bold flex flex-wrap">
+              <div className="text-black text-center mobile:text-xl short:text-xl tablet:text-[28px] font-bold flex flex-wrap">
                 {Sections[page].subheader} {page === 1 && email}
               </div>
             </div>
 
             {page !== 3 && (
-              <div className="flex flex-col gap-y-2 w-full">
+              <div className="flex flex-col gap-y-2 w-[90%]">
                 {page === 0 && (
                   <>
                     <input
-                      className={`w-full border-2 border-solid ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 h-16`}
+                      className={`border-2 border-solid mobile:h-10 short:h-10 tablet:h-12 desktop:h-16 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] ${!error.email ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
                       type="text"
                       placeholder="Email"
                       onChange={handleEmailChange}
                     />
-                    {error.email && <ErrorMessage message={error.email} />}
+                    {error.email && <ErrorBox message={error.email} />}
                   </>
                 )}
                 {page === 1 && (
@@ -210,38 +215,40 @@ export default function ForgotPasswordPage() {
                         <InputOTPSlot index={3} style={OTPStyles} />
                       </InputOTPGroup>
                     </InputOTP>
-                    {error.otp && <ErrorMessage message={error.otp} />}
+                    {error.otp && <ErrorBox message={error.otp} />}
                   </div>
                 )}
                 {page === 2 && (
-                  <div className="flex flex-col gap-y-9">
-                    <div className="flex flex-col gap-y-4">
-                      <div className="text-2xl text-[#000]">New Password</div>
+                  <div className="flex flex-col tiny:gap-y-1 short:gap-y-2 mobile:gap-y-2 desktop:gap-y-5">
+                    <div className="flex flex-col mobile:gap-y-2 short:gap-y-1 desktop:gap-y-4">
+                      <div className="mobile:text-lg short:text-lg desktop:text-2xl text-[#000]">
+                        New Password
+                      </div>
                       <div>
                         <input
-                          className={`w-full border-2 border-solid ${!error.password ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 h-16`}
+                          className={`w-full border-2 border-solid mobile:h-10 short:h-10 tablet:h-12 desktop:h-16 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] ${!error.password ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
                           type="password"
                           placeholder="Password"
                           ref={resetPasswordRef}
                         />
                         {error.password && (
-                          <ErrorMessage message={error.password} />
+                          <ErrorBox message={error.password} />
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col gap-y-4">
-                      <div className="text-2xl text-[#000]">
+                    <div className="flex flex-col mobile:gap-y-2 short:gap-y-1 desktop:gap-y-4">
+                      <div className="mobile:text-lg short:text-lg desktop:text-2xl text-[#000]">
                         Confirm New Password
                       </div>
                       <div>
                         <input
-                          className={`w-full border-2 border-solid ${!error.confirmPassword ? "border--iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 h-16`}
+                          className={`w-full border-2 border-solid mobile:h-10 short:h-10 tablet:h-12 desktop:h-16 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] ${!error.confirmPassword ? "border-iCAN-textfield text-iCAN-textfield placeholder:text-iCAN-textfield" : "border-iCAN-error text-iCAN-error placeholder:text-iCAN-error"} bg-white px-[10px] py-4 mobile:h-12 desktop:h-16`}
                           type="password"
                           placeholder="Confirm Password"
                           ref={confirmPasswordRef}
                         />
                         {error.confirmPassword && (
-                          <ErrorMessage message={error.confirmPassword} />
+                          <ErrorBox message={error.confirmPassword} />
                         )}
                       </div>
                     </div>
@@ -250,21 +257,21 @@ export default function ForgotPasswordPage() {
               </div>
             )}
             <button
-              className="w-full py-3 flex justify-center items-center text-[32px] bg-iCAN-Blue-300"
+              className="w-[90%] mobile:py-2 desktop:py-3 tiny:py-2 short:py-2 tall:py-3 flex justify-center items-center tablet:h-12 mobile:h-8 short:h-8 tablet:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] bg-iCAN-Blue-300"
               onClick={incPage}
               type="submit"
             >
               {ButtonStates[page]}
             </button>
             {page === 1 && (
-              <div className="flex justify-center font-quantico">
+              <div className="flex justify-center font-quantico mobile:text-xl short:text-xl tablet:text-[28px]">
                 {/* Add variable color here when timer goes down to 0 */}
                 <div
-                  className="flex gap-2 items-center"
+                  className="flex gap-2 items-center mobile:text-xl short:text-xl tablet:text-[28px]"
                   onClick={handleTimerReset}
                 >
                   <div
-                    className={`${time > 0 ? "text-[rgba(98,98,98,0.5)]" : "text-iCAN-gray cursor-pointer underline hover:text-black"} text-[32px] flex items-center`}
+                    className={`${time > 0 ? "text-[rgba(98,98,98,0.5)]" : "text-iCAN-gray cursor-pointer underline hover:text-black"} mobile:text-xl short:text-xl tablet:text-[28px] flex items-center`}
                     onClick={handleTimerReset}
                   >
                     Send code again{" "}
@@ -275,7 +282,7 @@ export default function ForgotPasswordPage() {
             )}
           </div>
           {page !== 3 && (
-            <div className="flex flex-col gap-y-6 w-full h-full font-quantico">
+            <div className="flex flex-col mobile:gap-y-2 short:gap-y-1 desktop:gap-y-3 tiny:gap-y-0 w-[80%] h-auto font-quantico">
               <div className="flex items-center justify-center w-full">
                 <div className="border border-iCAN-gray w-full" />
                 <div className="text-iCAN-gray px-4">or</div>
@@ -283,9 +290,11 @@ export default function ForgotPasswordPage() {
               </div>
               <GoogleLoginButton forgotPassword={true} />
               <div className="flex justify-center items-center">
-                <div className="text-iCAN-gray text-2xl">
+                <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                   Don’t have an account?{" "}
-                  <span className="underline cursor-pointer">Sign Up</span>
+                  <Link href="/register" className="underline self-center">
+                    Sign Up
+                  </Link>
                 </div>
               </div>{" "}
             </div>

@@ -4,6 +4,7 @@ import {
   validateGenerateToken,
   validateVerifyToken,
 } from "@/utils/serviceUtils/jwtUtil";
+import ERRORS from "@/utils/errorMessages";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 
 if (!process.env.JWT_SECRET) {
@@ -28,9 +29,9 @@ export default class JWTService {
       return decoded;
     } catch (error) {
       if (error instanceof JsonWebTokenError) {
-        throw new UnauthorizedError("Invalid or expired token.");
+        throw new UnauthorizedError(ERRORS.JWT.UNAUTHORIZED);
       } else {
-        throw new Error("An unknown error occurred.");
+        throw new Error();
       }
     }
   }
@@ -42,9 +43,9 @@ export default class JWTService {
       return decoded;
     } catch (error) {
       if (error instanceof JsonWebTokenError) {
-        throw new UnauthorizedError("Invalid or expired token.");
+        throw new UnauthorizedError(ERRORS.JWT.UNAUTHORIZED);
       } else {
-        throw new Error("An unknown error occurred.");
+        throw new Error();
       }
     }
   }

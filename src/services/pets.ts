@@ -1,25 +1,27 @@
 import { ConflictError, NotFoundError } from "@/types/exceptions";
-import { Pet } from "../db/models";
-import { ObjectId } from "mongodb";
-import PetDAO from "@/db/actions/pets";
 import {
   validateCreatePet,
   validateDeletePet,
   validateGetPet,
   validateUpdatePet,
 } from "@/utils/serviceUtils/petsUtil";
+import PetDAO from "@/db/actions/pets";
+import { Types } from "mongoose";
+import { Pet } from "@/db/models/pet";
+import ERRORS from "@/utils/errorMessages";
+import { WithId } from "@/types/models";
 
 export default class PetService {
   static async createPet(
     userId: string,
     name: string,
     petType: string,
-  ): Promise<Pet> {
+  ): Promise<WithId<Pet>> {
     await validateCreatePet({ userId, name, petType });
 
-    const existingPet = await PetDAO.getPetByUserId(new ObjectId(userId));
+    const existingPet = await PetDAO.getPetByUserId(userId);
     if (existingPet) {
-      throw new ConflictError("This user already has a pet");
+      throw new ConflictError(ERRORS.PET.CONFLICT);
     }
 
     const newPet = {
@@ -28,37 +30,39 @@ export default class PetService {
       xpGained: 0,
       xpLevel: 0,
       coins: 0,
-      userId: new ObjectId(userId),
+      userId: new Types.ObjectId(userId),
     };
 
-    await PetDAO.createNewPet(newPet);
-    return newPet;
+    const insertedPet = await PetDAO.createNewPet(newPet);
+    return { ...insertedPet.toObject(), _id: insertedPet._id.toString() };
   }
 
-  static async getPet(userId: string): Promise<Pet | null> {
+  static async getPet(userId: string): Promise<WithId<Pet> | null> {
     await validateGetPet({ userId });
-    const existingPet = await PetDAO.getPetByUserId(new ObjectId(userId));
+    const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
-    return existingPet as Pet;
+    return { ...existingPet.toObject(), _id: existingPet._id.toString() };
   }
 
-  static async updatePet(userId: string, name: string) {
+  static async updatePet(userId: string, name: string): Promise<void> {
     await validateUpdatePet({ userId, name });
-    const existingPet = await PetDAO.getPetByUserId(new ObjectId(userId));
+    const existingPet = await PetDAO.getPetByUserId(userId);
+
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
-    await PetDAO.updatePetByUserId(new ObjectId(userId), name);
+    await PetDAO.updatePetByUserId(userId, name);
   }
 
-  static async deletePet(userId: string) {
+  static async deletePet(userId: string): Promise<void> {
     await validateDeletePet({ userId });
-    const existingPet = await PetDAO.getPetByUserId(new ObjectId(userId));
+    const existingPet = await PetDAO.getPetByUserId(userId);
+
     if (!existingPet) {
-      throw new NotFoundError("This pet does not exist");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
-    await PetDAO.deletePetByUserId(new ObjectId(userId));
+    await PetDAO.deletePetByUserId(userId);
   }
 }

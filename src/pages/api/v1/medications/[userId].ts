@@ -1,4 +1,3 @@
-import { Medication } from "@/db/models";
 import MedicationService from "@/services/medication";
 import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -16,9 +15,8 @@ export default async function handler(
 
   if (method === "GET") {
     try {
-      const medication: Medication[] | null =
-        await MedicationService.getMedications(userId);
-      return res.status(200).json(medication);
+      const medications = await MedicationService.getMedications(userId);
+      return res.status(200).json(medications);
     } catch (error) {
       if (error instanceof Error) {
         return res.status(getStatusCode(error)).json({ error: error.message });

@@ -1,5 +1,5 @@
 import SettingsDAO from "@/db/actions/settings";
-import { Settings } from "@/db/models";
+import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
 import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
@@ -9,22 +9,22 @@ import {
   validateUpdatePin,
   validateUpdateSettings,
 } from "@/utils/serviceUtils/settingsUtil";
-import { encryptPin } from "@/utils/settings";
-import { ObjectId } from "mongodb";
+import { WithId } from "@/types/models";
+import ERRORS from "@/utils/errorMessages";
+import { Types } from "mongoose";
+import HashingService from "./hashing";
 
 export default class SettingsService {
-  static async createSettings(userId: string) {
+  static async createSettings(userId: string): Promise<WithId<Settings>> {
     validateCreateSettings({ userId });
-    const existingSettings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+
+    const existingSettings = await SettingsDAO.getSettingsByUserId(userId);
     if (existingSettings) {
-      throw new ConflictError("Settings already exist for this user");
+      throw new ConflictError(ERRORS.SETTINGS.CONFLICT);
     }
 
     const newSettings: Settings = {
-      _id: new ObjectId(),
-      userId: new ObjectId(userId),
+      userId: new Types.ObjectId(userId),
       helpfulTips: true,
       largeFontSize: true,
       notifications: true,
@@ -34,27 +34,26 @@ export default class SettingsService {
 
     const settings = await SettingsDAO.createNewSettings(newSettings);
     if (!settings) {
-      throw new Error("There was an error creating settings.");
+      throw new Error(ERRORS.SETTINGS.FAILURE.CREATE);
     }
-    return settings;
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
-  static async getSettings(userId: string): Promise<Settings> {
+  static async getSettings(userId: string): Promise<WithId<Settings>> {
     validateGetSettings({ userId });
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
+
     if (!settings) {
-      throw new NotFoundError("Settings do not exist for this user");
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
     }
-    return settings as Settings;
+    return { ...settings.toObject(), _id: settings._id.toString() };
   }
 
   // Seperated variables concerning query vs body
   static async updateSettings(
     userIdString: string,
     updatedSettings: UpdateSettingsRequestBody,
-  ) {
+  ): Promise<void> {
     updatedSettings = removeUndefinedKeys(updatedSettings);
     // Or should we just let it throw an error for this case?
     // if (Object.keys(updatedSettings).length === 0) {
@@ -65,28 +64,26 @@ export default class SettingsService {
       userId: userIdString,
       ...updatedSettings,
     });
-    const userId = new ObjectId(validatedSettings.userId);
-    const settings = await SettingsDAO.getSettingsByUserId(userId);
+    const settings = await SettingsDAO.getSettingsByUserId(userIdString);
     if (!settings) {
-      throw new NotFoundError("Settings do not exist for this user");
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
     }
-    await SettingsDAO.updateSettingsByUserId(userId, {
+
+    await SettingsDAO.updateSettingsByUserId(userIdString, {
       ...validatedSettings,
-      userId, // Replaces the string userId with the objectId
     });
   }
 
   static async updatePin(userId: string, pin: string) {
     await validateUpdatePin({ userId });
-    const settings = await SettingsDAO.getSettingsByUserId(
-      new ObjectId(userId),
-    );
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
-      throw new NotFoundError("Settings do not exist for this user");
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
     }
+
     if (pin) {
-      const encryptedPin = await encryptPin(pin);
-      await SettingsDAO.updateSettingsPinByUserId(new ObjectId(userId), {
+      const encryptedPin = await HashingService.hash(pin);
+      await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
       });
     }
