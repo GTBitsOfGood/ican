@@ -13,6 +13,9 @@ import GeneralSection from "./sections/generalSection";
 import DosageNotificationSection from "./sections/dosageNotificationSection";
 import DosageAmountSection from "./sections/dosageAmountSection";
 import NotesSection from "./sections/notesSection";
+import { medicationService } from "@/http/medicationService";
+import { useUser } from "@/components/UserContext";
+import { parseAddMedication } from "@/utils/parseAddMedition";
 
 interface addMedicationModalProps {
   setAddMedicationVisibility: Dispatch<SetStateAction<boolean>>;
@@ -21,6 +24,8 @@ interface addMedicationModalProps {
 export default function AddMedicationModal({
   setAddMedicationVisibility,
 }: addMedicationModalProps) {
+  const { userId } = useUser();
+
   const [addMedicationInfo, setAddMedicationInfo] = useState<AddMedicationInfo>(
     initialAddMedicationInfo,
   );
@@ -65,6 +70,29 @@ export default function AddMedicationModal({
     />,
   ];
 
+  const handleSubmitMedication = async (
+    addMedicationInfo: AddMedicationInfo,
+  ) => {
+    if (!userId) {
+      setError("User ID is missing. Please make sure you're logged in.");
+      return;
+    }
+    try {
+      const parsedMedicationInfo = parseAddMedication(addMedicationInfo);
+      await medicationService.createMedication(
+        userId as string,
+        parsedMedicationInfo,
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(`Failed to add medication: ${error.message}`);
+      } else {
+        setError("An unexpected error occurred while adding the medication");
+      }
+      console.log(error);
+    }
+  };
+
   return (
     <ModalBackground>
       <ModalContainer
@@ -85,6 +113,7 @@ export default function AddMedicationModal({
           info={addMedicationInfo}
           setInfo={setAddMedicationInfo}
           setError={setError}
+          onSubmit={handleSubmitMedication}
         />
       </ModalContainer>
     </ModalBackground>

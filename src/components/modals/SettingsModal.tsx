@@ -9,16 +9,75 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
+import SettingsHTTPClient from "@/http/settingsHTTPClient";
+import { useUser } from "../UserContext";
 
 export default function SettingsModal() {
+  const { userId } = useUser();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [parentalControlsEnabled, setParentalControlsEnabled] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [helpfulTipsEnabled, setHelpfulTipsEnabled] = useState(false);
+  const [settingsChanged, setSettingsChanged] = useState(false);
 
   useEffect(() => {
     onOpen();
-  }, [onOpen]);
+    if (!userId) {
+      return;
+    }
+    SettingsHTTPClient.getSettings(userId)
+      .then((settings) => {
+        setParentalControlsEnabled(settings.parentalControl);
+        setNotificationsEnabled(settings.notifications);
+        setHelpfulTipsEnabled(settings.helpfulTips);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [userId, onOpen]);
+
+  // Ensures we only PATCH when user makes the change, not the initial load
+  // But its honestly way too many requests if a kid decides to toggle the button for fun
+  const handleSettingChange =
+    <T,>(setter: React.Dispatch<React.SetStateAction<T>>) =>
+    (value: React.SetStateAction<T>): void => {
+      setter(value);
+      setSettingsChanged(true);
+    };
+
+  useEffect(() => {
+    if (!settingsChanged) {
+      return;
+    }
+    if (!userId) {
+      console.log("Save Unsuccessful: User is not signed in");
+      return;
+    }
+    try {
+      // Ignore waiting
+      SettingsHTTPClient.updateSettings(
+        userId,
+        parentalControlsEnabled,
+        notificationsEnabled,
+        helpfulTipsEnabled,
+      )
+        .then(() => {
+          console.log("Settings saved successfully");
+        })
+        .catch((error) => {
+          console.log("Error saving settings:", error);
+        });
+    } catch (error) {
+      console.log("Error saving settings:", error);
+    }
+  }, [
+    parentalControlsEnabled,
+    notificationsEnabled,
+    helpfulTipsEnabled,
+    settingsChanged,
+    userId,
+  ]);
 
   return parentalControlsEnabled ? (
     <Modal
@@ -46,7 +105,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Notifications</h5>
                 <ModalSwitch
                   state={notificationsEnabled}
-                  setState={setNotificationsEnabled}
+                  setState={handleSettingChange(setNotificationsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -58,7 +117,7 @@ export default function SettingsModal() {
                 </div>
                 <ModalSwitch
                   state={helpfulTipsEnabled}
-                  setState={setHelpfulTipsEnabled}
+                  setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
             </div>
@@ -68,7 +127,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Parental Controls</h5>
                 <ModalSwitch
                   state={parentalControlsEnabled}
-                  setState={setParentalControlsEnabled}
+                  setState={handleSettingChange(setParentalControlsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -110,7 +169,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Notifications</h5>
                 <ModalSwitch
                   state={notificationsEnabled}
-                  setState={setNotificationsEnabled}
+                  setState={handleSettingChange(setNotificationsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
@@ -122,7 +181,7 @@ export default function SettingsModal() {
                 </div>
                 <ModalSwitch
                   state={helpfulTipsEnabled}
-                  setState={setHelpfulTipsEnabled}
+                  setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
             </div>
@@ -132,7 +191,7 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Parental Controls</h5>
                 <ModalSwitch
                   state={parentalControlsEnabled}
-                  setState={setParentalControlsEnabled}
+                  setState={handleSettingChange(setParentalControlsEnabled)}
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
