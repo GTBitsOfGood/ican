@@ -24,6 +24,17 @@ export interface Pet {
   coins: number;
   userId: ObjectId;
   food: number;
+  appearance: {
+    clothes?: string;
+    accessories?: {
+      shoes?: string;
+      eyewear?: string;
+      hat?: string;
+      occupation?: string;
+    };
+    background?: string;
+    food?: string;
+  };
 }
 
 export interface Medication {
@@ -39,11 +50,17 @@ export interface Medication {
   doseIntervalInHours: number;
   // string of times
   doseTimes: string[];
-  userId?: ObjectId;
+  userId: ObjectId;
+}
+
+export interface BagItem {
+  _id?: ObjectId;
+  petId: ObjectId;
+  itemName: string;
 }
 
 export interface Settings {
-  _id?: ObjectId;
+  _id: ObjectId;
   userId: ObjectId;
   parentalControl: boolean;
   notifications: boolean;

@@ -1,4 +1,4 @@
-import { Medication } from "@/db/models";
+import { Medication } from "@/db/models/medication";
 import MedicationService from "@/services/medication";
 import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";

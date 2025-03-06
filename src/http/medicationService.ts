@@ -1,4 +1,4 @@
-import fetchService from "@/http/fetchService";
+import fetchHTTPClient from "@/http/fetchHTTPClient";
 
 export interface MedicationLogBody {
   pin: string;
@@ -6,7 +6,7 @@ export interface MedicationLogBody {
 
 export const medicationService = {
   medicationCheckIn: async (medicationId: string): Promise<void> => {
-    return fetchService<void>(`/medication/${medicationId}/check-in`, {
+    return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
     });
   },
@@ -15,7 +15,7 @@ export const medicationService = {
     const medicationLogBody: MedicationLogBody = {
       pin,
     };
-    return fetchService<void>(`/medication/${medicationId}/log`, {
+    return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
     });

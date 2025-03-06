@@ -1,4 +1,5 @@
-import fetchService from "@/http/fetchService";
+import fetchHTTPClient from "@/http/fetchHTTPClient";
+import { WithId } from "@/types/models";
 import { Pet, PetType } from "@/types/pet";
 
 export interface UpdatePetBody {
@@ -11,58 +12,58 @@ export interface CreatePetBody {
   petType: PetType;
 }
 
-export const petService = {
-  createPet: async (
+export default class PetHTTPClient {
+  static async createPet(
     name: string,
     userId: string,
     petType: PetType,
-  ): Promise<Pet> => {
+  ): Promise<WithId<Pet>> {
     const CreatePetBodyRequestBody: CreatePetBody = {
       name,
       userId,
       petType,
     };
-    return fetchService<Pet>("/pets", {
+    return fetchHTTPClient<WithId<Pet>>("/pets", {
       method: "POST",
       body: JSON.stringify(CreatePetBodyRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-  },
+  }
 
-  getPet: async (userId: string): Promise<Pet> => {
-    return fetchService<Pet>(`/pets/${userId}`, {
+  static async getPet(userId: string): Promise<WithId<Pet>> {
+    return fetchHTTPClient<WithId<Pet>>(`/pets/${userId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-  },
+  }
 
-  updatePet: async (name: string, userId: string): Promise<void> => {
+  static async updatePet(name: string, userId: string): Promise<void> {
     const updatePetRequestBody: UpdatePetBody = { name };
-    return fetchService<void>(`/pets/${userId}`, {
+    return fetchHTTPClient<void>(`/pets/${userId}`, {
       method: "PATCH",
       body: JSON.stringify(updatePetRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-  },
+  }
 
-  deletePet: async (userId: string): Promise<void> => {
-    return fetchService<void>(`/pets/${userId}`, {
+  static async deletePet(userId: string): Promise<void> {
+    return fetchHTTPClient<void>(`/pets/${userId}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
-  },
+  }
 
-  feedPet: async (petId: string): Promise<void> => {
-    return fetchService<void>(`/pet/${petId}/feed`, {
+  static async feedPet(petId: string): Promise<void> {
+    return fetchHTTPClient<void>(`/pet/${petId}/feed`, {
       method: "PATCH",
     });
-  },
-};
+  }
+}

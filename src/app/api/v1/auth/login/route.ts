@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     const response = await AuthService.login(email, password);
 
-    return NextResponse.json(response, { status: 201 });
+    return NextResponse.json({ token: response }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

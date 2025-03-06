@@ -12,7 +12,7 @@ import ChangePinModal from "@/components/modals/ChangePinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import { useEffect, useState } from "react";
-import { petService } from "@/http/petService";
+import PetHTTPClient from "@/http/petHTTPClient";
 import { Pet } from "@/types/pet";
 
 import AddMedicationModal from "@/components/modals/addMedication/modal";
@@ -32,7 +32,7 @@ export default function Home({ activeModal = "" }: HomeProps) {
     const getPetData = async () => {
       if (userId) {
         try {
-          const pet = await petService.getPet(userId);
+          const pet = await PetHTTPClient.getPet(userId);
           if (pet) {
             setPetData(pet);
             console.log("Fetched pet data:", pet);
@@ -56,7 +56,7 @@ export default function Home({ activeModal = "" }: HomeProps) {
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
             {/* Profile */}
-            <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
+            <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
               <ProfilePicture character={petData.petType} />
               <ProfileInfo
                 name={petData.name}
@@ -80,8 +80,8 @@ export default function Home({ activeModal = "" }: HomeProps) {
           </Navbar>
 
           {/* Character, speech bubble is made relative to the image */}
-          <div className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
-            <div className="relative min-h-60 w-full h-full">
+          <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
+            <div className="relative w-full h-full">
               <Image
                 src={characterImages[petData.petType]}
                 alt="pet"
@@ -89,9 +89,9 @@ export default function Home({ activeModal = "" }: HomeProps) {
                 height={characterImages[petData.petType].height}
                 draggable={false}
                 unoptimized={true}
-                className="select-none h-full w-auto object-contain"
+                className="select-none mobile:h-[30%] tablet:h-[55%] desktop:h-[75%] largeDesktop:h-full w-auto object-contain"
               />
-              <div className="absolute left-[100%] bottom-[75%]">
+              <div className="absolute mobile:bottom-[90%] left-[90%] tablet:bottom-[75%]">
                 <Bubble />
               </div>
             </div>

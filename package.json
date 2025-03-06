@@ -14,7 +14,7 @@
     "secrets:get": "bw sync && bw get item 1676370d-5f21-4a5a-9f1d-b266000cc319 | fx .notes > \".env.development.local\""
   },
   "dependencies": {
-    "@heroui/react": "^2.6.14",
+    "@heroui/react": "^2.7.4",
     "@next/font": "^14.2.15",
     "@phosphor-icons/react": "^2.1.7",
     "@react-oauth/google": "^0.12.1",
@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.474.0",
     "mongodb": "^6.12.0",
+    "mongoose": "^8.10.2",
     "motion": "^12.4.7",
     "next": "15.1.4",
     "next-google-fonts": "^2.2.0",
@@ -37,7 +38,7 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.1"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

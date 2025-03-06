@@ -40,23 +40,27 @@ export class MethodNotAllowedError extends Error {
   }
 }
 
-export const getStatusCode = (error: Error): number => {
-  switch (error.name) {
-    case "NotFoundError":
-      return 404;
-    case "InvalidArgumentsError":
-      return 400;
-    case "UnauthorizedError":
-      return 401;
-    case "ConflictError":
-      return 409;
-    case "ValidationError":
-      return 422;
-    case "IllegalOperationsError":
-      return 403;
-    case "MethodNotAllowedError":
-      return 405;
-    default:
-      return 500;
+export const getStatusCode = (error: Error | unknown): number => {
+  if (error instanceof Error) {
+    switch (error.name) {
+      case "NotFoundError":
+        return 404;
+      case "InvalidArgumentsError":
+        return 400;
+      case "UnauthorizedError":
+        return 401;
+      case "ConflictError":
+        return 409;
+      case "ValidationError":
+        return 422;
+      case "IllegalOperationsError":
+        return 403;
+      case "MethodNotAllowedError":
+        return 405;
+      default:
+        return 500;
+    }
   }
+
+  return 500;
 };
