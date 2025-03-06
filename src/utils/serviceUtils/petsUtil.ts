@@ -32,10 +32,15 @@ export const deletePetSchema = z.object({
   name: z.string().trim().nonempty(),
 });
 
+export const feedPetSchema = z.object({
+  petId: objectIdSchema("PetId"),
+});
+
 export type CreatePetInput = z.infer<typeof createPetSchema>;
 export type UpdatePetInput = z.infer<typeof updatePetSchema>;
 export type GetPetInput = z.infer<typeof getPetSchema>;
 export type DeletePetInput = z.infer<typeof deletePetSchema>;
+export type FeedPetInput = z.infer<typeof feedPetSchema>;
 
 export const validateCreatePet = (data: unknown): CreatePetInput => {
   return createPetSchema.parse(data);
@@ -51,4 +56,8 @@ export const validateGetPet = (data: unknown): GetPetInput => {
 
 export const validateDeletePet = (data: unknown): DeletePetInput => {
   return deletePetSchema.parse(data);
+};
+
+export const validateFeedPet = (data: unknown): FeedPetInput => {
+  return feedPetSchema.parse(data);
 };

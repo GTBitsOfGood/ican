@@ -23,6 +23,7 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: ObjectId;
+  food: number;
   appearance: {
     clothes?: string;
     accessories?: {
@@ -66,4 +67,16 @@ export interface Settings {
   helpfulTips: boolean;
   largeFontSize: boolean;
   pin: string;
+}
+
+export interface MedicationCheckIn {
+  _id?: ObjectId;
+  medicationId: ObjectId;
+  expiration: Date;
+}
+
+export interface MedicationLog {
+  _id?: ObjectId;
+  medicationId: ObjectId;
+  dateTaken: Date;
 }

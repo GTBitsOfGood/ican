@@ -1,3 +1,6 @@
+import client from "../dbClient";
+import { MedicationCheckIn, MedicationLog } from "../models";
+import { ObjectId } from "mongodb";
 import { HydratedDocument, Types } from "mongoose";
 import MedicationModel, {
   Medication,
@@ -61,5 +64,63 @@ export default class MedicationDAO {
     const userId =
       _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     return await MedicationModel.find({ userId });
+  }
+
+  static async createMedicationCheckIn(
+    newMedicationCheckIn: MedicationCheckIn,
+  ) {
+    const db = client.db();
+    try {
+      const result = await db
+        .collection("MedicationCheckIn")
+        .insertOne(newMedicationCheckIn);
+
+      return result;
+    } catch (error) {
+      throw new Error(
+        "Failed to create medication check in: " + (error as Error).message,
+      );
+    }
+  }
+
+  static async createMedicationLog(newMedicationLog: MedicationLog) {
+    const db = client.db();
+    try {
+      const result = await db
+        .collection("MedicationLog")
+        .insertOne(newMedicationLog);
+
+      return result;
+    } catch (error) {
+      throw new Error(
+        "Failed to create medication log: " + (error as Error).message,
+      );
+    }
+  }
+
+  static async getMedicationCheckIn(medicationId: ObjectId) {
+    const db = client.db();
+    try {
+      const result = await db
+        .collection("MedicationCheckIn")
+        .findOne({ medicationId });
+
+      return result;
+    } catch (error) {
+      throw new Error(
+        "Failed to get medication check in: " + (error as Error).message,
+      );
+    }
+  }
+
+  static async deleteMedicationCheckIn(medicationId: ObjectId) {
+    const db = client.db();
+    const result = await db
+      .collection("MedicationCheckIn")
+      .deleteOne({ medicationId });
+
+    if (result.deletedCount == 0) {
+      throw new Error("Failed to delete medication.");
+    }
   }
 }

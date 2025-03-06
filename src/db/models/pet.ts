@@ -7,6 +7,7 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: Types.ObjectId;
+  food: number;
   appearance: {
     clothes?: string;
     accessories?: {
@@ -27,14 +28,19 @@ export interface PetDocument extends Pet, Document {
 const petSchema = new Schema<PetDocument>({
   petType: { type: String, required: true },
   name: { type: String, required: true },
-  xpGained: { type: Number, required: true },
-  xpLevel: { type: Number, required: true },
-  coins: { type: Number, required: true },
+  xpGained: { type: Number, required: true, default: 0 },
+  xpLevel: { type: Number, required: true, default: 1 },
+  coins: { type: Number, required: true, default: 0 },
   userId: {
     type: Schema.Types.ObjectId,
     required: true,
     index: true,
     ref: "User",
+  },
+  food: {
+    type: Number,
+    required: true,
+    default: 0,
   },
   appearance: {
     type: new Schema({

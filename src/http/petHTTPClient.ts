@@ -60,4 +60,10 @@ export default class PetHTTPClient {
       },
     });
   }
+
+  static async feedPet(petId: string): Promise<void> {
+    return fetchHTTPClient<void>(`/pet/${petId}/feed`, {
+      method: "PATCH",
+    });
+  }
 }

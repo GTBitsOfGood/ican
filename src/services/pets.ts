@@ -9,10 +9,12 @@ import { AccessoryType, storeItems } from "@/types/store";
 import {
   validateCreatePet,
   validateDeletePet,
+  validateFeedPet,
   validateGetPet,
   validateUpdatePet,
 } from "@/utils/serviceUtils/petsUtil";
 import PetDAO from "@/db/actions/pets";
+import { LEVEL_THRESHOLD, XP_GAIN } from "@/utils/constants";
 import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
@@ -38,6 +40,7 @@ export default class PetService {
       xpGained: 0,
       xpLevel: 0,
       coins: 0,
+      food: 0,
       userId: new Types.ObjectId(userId),
       appearance: {},
     };
@@ -63,7 +66,7 @@ export default class PetService {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
 
-    await PetDAO.updatePetByUserId(userId, name);
+    await PetDAO.updatePetByUserId(userId, { name });
   }
 
   static async deletePet(userId: string): Promise<void> {
@@ -74,6 +77,30 @@ export default class PetService {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
     await PetDAO.deletePetByUserId(userId);
+  }
+
+  static async feedPet(petId: string) {
+    await validateFeedPet({ petId });
+
+    const existingPet = (await PetDAO.getPetByPetId(
+      new ObjectId(petId),
+    )) as Pet;
+    if (!existingPet) {
+      throw new NotFoundError("This pet does not exist");
+    }
+
+    const updatedPet: Pet = existingPet;
+    if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
+      updatedPet.xpLevel += 1;
+      updatedPet.xpGained = (XP_GAIN + updatedPet.xpGained) % LEVEL_THRESHOLD;
+    } else {
+      updatedPet.xpGained += XP_GAIN;
+    }
+
+    await PetDAO.updatePetByPetId(new ObjectId(petId), {
+      xpGained: updatedPet.xpGained,
+      xpLevel: updatedPet.xpLevel,
+    });
   }
 }
 

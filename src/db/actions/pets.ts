@@ -22,12 +22,18 @@ export default class PetDAO {
 
   static async updatePetByUserId(
     _userId: string | Types.ObjectId,
-    name: string,
+    updateObj: {
+      name?: string;
+      xpGained?: number;
+      xpLevel?: number;
+      coins?: number;
+      food?: number;
+    },
   ): Promise<void> {
     const userId =
       _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
-    const result = await PetModel.updateOne({ userId }, { name });
+    const result = await PetModel.updateOne({ userId }, updateObj);
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
     }
@@ -98,6 +104,30 @@ export default class PetDAO {
     );
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
+    }
+  }
+
+  static async updatePetByPetId(
+    _petId: string | Types.ObjectId,
+    updateObj: {
+      name?: string;
+      xpGained?: number;
+      xpLevel?: number;
+      coins?: number;
+      food?: number;
+    },
+  ): Promise<void> {
+    const petId =
+      _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
+
+    await dbConnect();
+    const result = await PetModel.updateOne({ id: petId }, updateObj);
+    if (result.modifiedCount == 0) {
+      throw new Error(ERRORS.PET.FAILURE.UPDATE);
+    }
+
+    if (result.modifiedCount == 0) {
+      throw new Error("Failed to update pet.");
     }
   }
 }

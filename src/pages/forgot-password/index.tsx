@@ -116,7 +116,6 @@ export default function ForgotPasswordPage() {
   };
 
   const isFormValid = (): boolean => {
-    console.log("here");
     let isValid = true;
     const errorObj: Record<string, string> = {};
 
