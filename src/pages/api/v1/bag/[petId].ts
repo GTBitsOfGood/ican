@@ -1,6 +1,6 @@
 import { BagItem } from "@/db/models";
 import { validateBagRequest } from "@/services/bag";
-import { ApiError, getStatusCode } from "@/types/exceptions";
+import { getStatusCode } from "@/types/exceptions";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -18,10 +18,6 @@ export default async function handler(
     const items: [BagItem] = await validateBagRequest(petId as string);
     res.status(200).json({ items: items });
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(getStatusCode(error)).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: (error as Error).message });
-    }
+    res.status(getStatusCode(error)).json({ error: (error as Error).message });
   }
 }
