@@ -14,24 +14,79 @@ export default function Store() {
   const [petData, setPetData] = useState<Pet | null>(null);
   const [purchaseDisabled, setPurchaseDisabled] = useState(true);
 
+  // const storeItems = {
+  //   clothes: [
+  //     {
+  //       itemName: "cool shirt",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "surgeon clothes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "astronaut clothes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "business clothes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "painter clothes",
+  //       cost: 100,
+  //     },
+  //   ],
+  //   accessories: [
+  //     {
+  //       itemName: "musician shoes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "astronaut shoes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "business shoes",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "musician hat",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "sunglasses",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "business hat",
+  //       cost: 100,
+  //     },
+  //     {
+  //       itemName: "doctor hat",
+  //       cost: 100,
+  //     },
+  //   ],
+  // };
+
   const tabData = [
     {
-      title: "Tab 1",
+      title: "Clothes",
       image: "/path/to/image1.png",
       content: <div>Content for Tab 1</div>,
     },
     {
-      title: "Tab 2",
+      title: "Accessories",
       image: "/path/to/image2.png",
       content: <div>Content for Tab 2</div>,
     },
     {
-      title: "Tab 3",
+      title: "Backgrounds",
       image: "/path/to/image2.png",
       content: <div>Content for Tab 2</div>,
     },
     {
-      title: "Tab 4",
+      title: "Food",
       image: "/path/to/image2.png",
       content: <div>Content for Tab 2</div>,
     },
@@ -112,7 +167,7 @@ export default function Store() {
                 x
               </div>
             </div>
-            <div className="mt-5 mx-6">
+            <div className="mt-5 mx-[31px]">
               <StoreTabs tabs={tabData} />
             </div>
           </div>
