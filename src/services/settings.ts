@@ -75,7 +75,7 @@ export default class SettingsService {
   }
 
   static async updatePin(userId: string, pin: string) {
-    await validateUpdatePin({ userId });
+    await validateUpdatePin({ userId, pin });
     const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
