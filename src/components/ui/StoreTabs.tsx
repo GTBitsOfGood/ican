@@ -36,7 +36,7 @@ const StoreTabs: React.FC<DynamicTabsProps> = ({ tabs }) => {
                   : "mx-[3vw]"
             }`}
           >
-            <img src={tab.image} className="mx-auto w-10 h-10 mb-2" />
+            <img src={tab.image} className="mx-auto w-[67px] mb-2" />
             <span className="font-quantico text-[24px] font-bold">
               {tab.title}
             </span>

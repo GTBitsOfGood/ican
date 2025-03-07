@@ -7,6 +7,7 @@ import { Pet } from "@/types/pet";
 import { useEffect, useState } from "react";
 import { characterImages } from "@/types/characters";
 import StoreTabs from "@/components/ui/StoreTabs";
+import StoreTabContent from "@/components/ui/StoreTabContent";
 
 export default function Store() {
   const router = useRouter();
@@ -14,80 +15,85 @@ export default function Store() {
   const [petData, setPetData] = useState<Pet | null>(null);
   const [purchaseDisabled, setPurchaseDisabled] = useState(true);
 
-  // const storeItems = {
-  //   clothes: [
-  //     {
-  //       itemName: "cool shirt",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "surgeon clothes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "astronaut clothes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "business clothes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "painter clothes",
-  //       cost: 100,
-  //     },
-  //   ],
-  //   accessories: [
-  //     {
-  //       itemName: "musician shoes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "astronaut shoes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "business shoes",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "musician hat",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "sunglasses",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "business hat",
-  //       cost: 100,
-  //     },
-  //     {
-  //       itemName: "doctor hat",
-  //       cost: 100,
-  //     },
-  //   ],
-  // };
+  const storeItems = {
+    clothes: [
+      {
+        name: "cool shirt",
+        image: "/store/Cool_Shirt.svg",
+        cost: 100,
+      },
+      {
+        name: "doctor clothes",
+        image: "/store/Doctor_Clothes.svg",
+        cost: 100,
+      },
+      {
+        name: "astronaut clothes",
+        image: "/store/Astronaut_Clothes.svg",
+        cost: 100,
+      },
+      {
+        name: "business clothes",
+        image: "/store/Business_Clothes.svg",
+        cost: 100,
+      },
+      {
+        name: "painter clothes",
+        image: "/store/Painter_Clothes.svg",
+        cost: 100,
+      },
+    ],
+    accessories: [
+      {
+        itemName: "musician shoes",
+        cost: 100,
+      },
+      {
+        itemName: "astronaut shoes",
+        cost: 100,
+      },
+      {
+        itemName: "business shoes",
+        cost: 100,
+      },
+      {
+        itemName: "musician hat",
+        cost: 100,
+      },
+      {
+        itemName: "sunglasses",
+        cost: 100,
+      },
+      {
+        itemName: "business hat",
+        cost: 100,
+      },
+      {
+        itemName: "doctor hat",
+        cost: 100,
+      },
+    ],
+  };
 
   const tabData = [
     {
       title: "Clothes",
-      image: "/path/to/image1.png",
-      content: <div>Content for Tab 1</div>,
+      image: "/store/Clothes.svg",
+      content: <StoreTabContent items={storeItems.clothes} />,
     },
     {
       title: "Accessories",
-      image: "/path/to/image2.png",
+      image: "/store/Accessories.svg",
       content: <div>Content for Tab 2</div>,
     },
     {
       title: "Backgrounds",
-      image: "/path/to/image2.png",
+      image: "/store/Backgrounds.svg",
       content: <div>Content for Tab 2</div>,
     },
     {
       title: "Food",
-      image: "/path/to/image2.png",
+      image: "/store/Food.svg",
       content: <div>Content for Tab 2</div>,
     },
   ];
