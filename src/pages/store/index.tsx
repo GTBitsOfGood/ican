@@ -14,33 +14,49 @@ export default function Store() {
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
   const [purchaseDisabled, setPurchaseDisabled] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<{
+    displayName?: string;
+    name?: string;
+    description?: string;
+    cost?: number;
+  } | null>(null);
 
   const storeItems = {
     clothes: [
       {
-        name: "Cool Shirt",
+        displayName: "Cool Shirt",
+        name: "cool shirt",
         image: "/store/Cool_Shirt.svg",
         cost: 100,
+        description: "Cool shirt",
       },
       {
-        name: "Doctor",
+        displayName: "Scrubs",
+        name: "doctor clothes",
         image: "/store/Doctor_Clothes.svg",
         cost: 100,
+        description: "Help save lives as a doctor or nurse!",
       },
       {
-        name: "Astronaut",
+        displayName: "Astronaut",
+        name: "astronaut clothes",
         image: "/store/Astronaut_Clothes.svg",
         cost: 100,
+        description: "Explore the planets and galaxies with this spacesuit!",
       },
       {
-        name: "Business",
+        displayName: "Business",
+        name: "business clothes",
         image: "/store/Business_Clothes.svg",
         cost: 100,
+        description: "Create economic growth through innovation! ",
       },
       {
-        name: "Painter",
+        displayName: "Painter",
+        name: "painter clothes",
         image: "/store/Painter_Clothes.svg",
         cost: 100,
+        description: "Create beautiful art using your imagination!",
       },
     ],
     accessories: [
@@ -79,7 +95,12 @@ export default function Store() {
     {
       title: "Clothes",
       image: "/store/Clothes.svg",
-      content: <StoreTabContent items={storeItems.clothes} />,
+      content: (
+        <StoreTabContent
+          items={storeItems.clothes}
+          onSelectItem={setSelectedItem}
+        />
+      ),
     },
     {
       title: "Accessories",
@@ -126,10 +147,14 @@ export default function Store() {
         <div className="flex">
           <div className="flex flex-col w-[26%] h-screen p-4 bg-[#E6E8F9]">
             <div className="text-[64px] text-center font-bold text-icanBlue-300 font-quantico leading-none">
-              Select Item
+              {selectedItem
+                ? selectedItem.displayName || selectedItem.name
+                : "Select Item"}
             </div>
             <div className="text-4xl text-center text-icanBlue-300 font-quantico">
-              Click item to learn more!
+              {selectedItem
+                ? selectedItem.description
+                : "Click item to learn more!"}
             </div>
             <div className="flex-1 flex items-center justify-center max-w-[250px] mx-auto">
               <Image
@@ -144,7 +169,7 @@ export default function Store() {
             <div className="mx-auto">
               <button
                 // onClick={action}
-                disabled={purchaseDisabled}
+                disabled={purchaseDisabled || !selectedItem}
                 className="font-quantico px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300"
                 type="button"
               >

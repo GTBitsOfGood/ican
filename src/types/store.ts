@@ -19,7 +19,7 @@ export const storeItems = [
     cost: 100,
   },
   {
-    itemName: "surgeon clothes",
+    itemName: "doctor clothes",
     type: ItemType.CLOTHES,
     cost: 100,
   },

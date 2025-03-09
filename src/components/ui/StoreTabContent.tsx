@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
 interface StoreItem {
+  displayName: string;
   name: string;
   image: string;
   cost: number;
-  //description: string;
+  description: string;
 }
 
 interface StoreTabContentProps {
@@ -42,7 +43,7 @@ const StoreTabContent: React.FC<StoreTabContentProps> = ({
           </div>
           <img src={item.image} alt={item.name} className="w-[150px]" />
           <div className="mt-[10px] font-quantico text-center text-black text-[36px] font-bold leading-none">
-            {item.name}
+            {item.displayName}
           </div>
         </div>
       ))}
