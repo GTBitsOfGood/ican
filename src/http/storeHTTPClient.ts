@@ -11,6 +11,10 @@ export interface EquipItemBody {
   itemName: string;
 }
 
+export interface UnequipBody {
+  attribute: string;
+}
+
 export default class StoreHTTPClient {
   static async purchaseItem(petId: string, itemName: string): Promise<void> {
     const PurchaseItemRequestBody: PurchaseItemBody = {
@@ -39,9 +43,22 @@ export default class StoreHTTPClient {
     const EquipItemRequestBody: EquipItemBody = {
       itemName,
     };
-    return fetchHTTPClient<void>(`/bag/${petId}`, {
+    return fetchHTTPClient<void>(`/pet/equip-item/${petId}`, {
       method: "GET",
       body: JSON.stringify(EquipItemRequestBody),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  }
+
+  static async unequipItem(petId: string, attribute: string): Promise<void> {
+    const UnequipRequestBody: UnequipBody = {
+      attribute,
+    };
+    return fetchHTTPClient<void>(`/pet/unequip/${petId}`, {
+      method: "GET",
+      body: JSON.stringify(UnequipRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

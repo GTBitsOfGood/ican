@@ -8,17 +8,19 @@ import { useEffect, useState } from "react";
 import { characterImages } from "@/types/characters";
 import StoreTabs from "@/components/ui/StoreTabs";
 import StoreTabContent from "@/components/ui/StoreTabContent";
+import StoreHTTPClient from "@/http/storeHTTPClient";
 
 export default function Store() {
   const router = useRouter();
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
-  const [purchaseDisabled, setPurchaseDisabled] = useState(true);
+  const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{
-    displayName?: string;
-    name?: string;
-    description?: string;
-    cost?: number;
+    displayName: string;
+    name: string;
+    description: string;
+    cost: number;
+    image: string;
   } | null>(null);
 
   const storeItems = {
@@ -119,6 +121,26 @@ export default function Store() {
     },
   ];
 
+  const purchaseItem = async () => {
+    try {
+      await StoreHTTPClient.purchaseItem(
+        petData?._id as string,
+        selectedItem?.name as string,
+      );
+
+      setPetData({
+        ...(petData as Pet),
+        coins: (petData?.coins || 0) - (selectedItem?.cost || 0),
+      });
+
+      setShowPurchasedScreen(true);
+
+      console.log("Item successfully purchased");
+    } catch (error) {
+      console.error("Error purchasing item", error);
+    }
+  };
+
   useEffect(() => {
     const getPetData = async () => {
       if (userId) {
@@ -133,8 +155,6 @@ export default function Store() {
         } catch (error) {
           console.error("Error fetching pet data:", error);
         }
-
-        setPurchaseDisabled(false);
       }
     };
 
@@ -144,12 +164,45 @@ export default function Store() {
   return (
     <AuthorizedRoute>
       {petData ? (
-        <div className="flex">
+        <div
+          className="flex relative"
+          onClick={() => {
+            if (showPurchasedScreen) {
+              setShowPurchasedScreen(false);
+              setSelectedItem(null);
+            }
+          }}
+        >
+          {showPurchasedScreen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="relative">
+                <Image
+                  src="/store/Buy_Message.svg"
+                  alt="Purchase Successful"
+                  width={1032}
+                  height={606}
+                  className="object-contain"
+                />
+                {selectedItem && selectedItem.image && (
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[32%]">
+                    <Image
+                      src={selectedItem.image}
+                      alt={selectedItem.displayName}
+                      width={150}
+                      height={86}
+                      className="object-contain mx-auto"
+                    />
+                    <div className="mt-[10px] font-quantico text-center text-black text-[36px] font-bold leading-none">
+                      {selectedItem.displayName}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <div className="flex flex-col w-[26%] h-screen p-4 bg-[#E6E8F9]">
             <div className="text-[64px] text-center font-bold text-icanBlue-300 font-quantico leading-none">
-              {selectedItem
-                ? selectedItem.displayName || selectedItem.name
-                : "Select Item"}
+              {selectedItem ? selectedItem.displayName : "Select Item"}
             </div>
             <div className="text-4xl text-center text-icanBlue-300 font-quantico">
               {selectedItem
@@ -168,9 +221,9 @@ export default function Store() {
             </div>
             <div className="mx-auto">
               <button
-                // onClick={action}
-                disabled={purchaseDisabled || !selectedItem}
-                className="font-quantico px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300"
+                onClick={purchaseItem}
+                disabled={!selectedItem || petData.coins < selectedItem.cost}
+                className={`font-quantico ${selectedItem && petData.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300`}
                 type="button"
               >
                 Purchase
