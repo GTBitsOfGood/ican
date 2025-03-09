@@ -84,7 +84,10 @@ export default class PetDAO {
       _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
     await dbConnect();
 
-    const result = await PetModel.updateOne({ petId }, { coins: newBalance });
+    const result = await PetModel.updateOne(
+      { _id: petId },
+      { coins: newBalance },
+    );
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
     }
@@ -99,7 +102,7 @@ export default class PetDAO {
     await dbConnect();
 
     const result = await PetModel.updateOne(
-      { petId },
+      { _id: petId },
       { appearance: newAppearance },
     );
     if (result.modifiedCount == 0) {
@@ -121,7 +124,7 @@ export default class PetDAO {
       _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
 
     await dbConnect();
-    const result = await PetModel.updateOne({ id: petId }, updateObj);
+    const result = await PetModel.updateOne({ _id: petId }, updateObj);
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
     }
