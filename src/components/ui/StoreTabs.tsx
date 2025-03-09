@@ -45,8 +45,11 @@ const StoreTabs: React.FC<DynamicTabsProps> = ({ tabs }) => {
       </TabList>
 
       {tabs.map((tab, index) => (
-        <TabPanel key={index} className="border-x-2 border-white bg-[#7D83B2]">
-          {tab.content}
+        <TabPanel
+          key={index}
+          className="border-x-2 border-white bg-[#7D83B2] h-auto max-h-[80vh] flex flex-col"
+        >
+          <div className="overflow-y-auto flex-1">{tab.content}</div>
         </TabPanel>
       ))}
     </Tabs>

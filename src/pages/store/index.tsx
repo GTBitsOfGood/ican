@@ -18,27 +18,27 @@ export default function Store() {
   const storeItems = {
     clothes: [
       {
-        name: "cool shirt",
+        name: "Cool Shirt",
         image: "/store/Cool_Shirt.svg",
         cost: 100,
       },
       {
-        name: "doctor clothes",
+        name: "Doctor",
         image: "/store/Doctor_Clothes.svg",
         cost: 100,
       },
       {
-        name: "astronaut clothes",
+        name: "Astronaut",
         image: "/store/Astronaut_Clothes.svg",
         cost: 100,
       },
       {
-        name: "business clothes",
+        name: "Business",
         image: "/store/Business_Clothes.svg",
         cost: 100,
       },
       {
-        name: "painter clothes",
+        name: "Painter",
         image: "/store/Painter_Clothes.svg",
         cost: 100,
       },
