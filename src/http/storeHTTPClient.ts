@@ -30,8 +30,8 @@ export default class StoreHTTPClient {
     });
   }
 
-  static async getPetBag(petId: string): Promise<WithId<BagItem>[]> {
-    return fetchHTTPClient<WithId<BagItem>[]>(`/bag/${petId}`, {
+  static async getPetBag(petId: string): Promise<{ items: WithId<BagItem>[] }> {
+    return fetchHTTPClient<{ items: WithId<BagItem>[] }>(`/bag/${petId}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

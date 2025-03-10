@@ -9,11 +9,14 @@ import { characterImages } from "@/types/characters";
 import StoreTabs from "@/components/ui/StoreTabs";
 import StoreTabContent from "@/components/ui/StoreTabContent";
 import StoreHTTPClient from "@/http/storeHTTPClient";
+import { BagItem } from "@/db/models";
+import { Types } from "mongoose";
 
 export default function Store() {
   const router = useRouter();
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
+  const [petBag, setPetBag] = useState<BagItem[]>([]);
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<{
     displayName: string;
@@ -22,6 +25,32 @@ export default function Store() {
     cost: number;
     image: string;
   } | null>(null);
+
+  useEffect(() => {
+    const getPetData = async () => {
+      if (userId) {
+        try {
+          const pet = await PetHTTPClient.getPet(userId);
+          const petBag = (await StoreHTTPClient.getPetBag(pet._id)).items;
+          if (pet) {
+            setPetData(pet);
+          } else {
+            console.log("No pet data found for userId:", userId);
+          }
+
+          if (petBag) {
+            setPetBag(petBag);
+          } else {
+            console.log("No bag");
+          }
+        } catch (error) {
+          console.error("Error fetching pet data:", error);
+        }
+      }
+    };
+
+    getPetData();
+  }, [userId]);
 
   const storeItems = {
     clothes: [
@@ -99,7 +128,10 @@ export default function Store() {
       image: "/store/Clothes.svg",
       content: (
         <StoreTabContent
-          items={storeItems.clothes}
+          items={storeItems.clothes.filter(
+            (item) =>
+              !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
+          )}
           onSelectItem={setSelectedItem}
         />
       ),
@@ -133,6 +165,14 @@ export default function Store() {
         coins: (petData?.coins || 0) - (selectedItem?.cost || 0),
       });
 
+      setPetBag((prevBag) => [
+        ...prevBag,
+        {
+          itemName: selectedItem?.name as string,
+          petId: new Types.ObjectId(petData?._id),
+        },
+      ]);
+
       setShowPurchasedScreen(true);
 
       console.log("Item successfully purchased");
@@ -141,29 +181,9 @@ export default function Store() {
     }
   };
 
-  useEffect(() => {
-    const getPetData = async () => {
-      if (userId) {
-        try {
-          const pet = await PetHTTPClient.getPet(userId);
-          if (pet) {
-            setPetData(pet);
-            console.log("Fetched pet data:", pet);
-          } else {
-            console.log("No pet data found for userId:", userId);
-          }
-        } catch (error) {
-          console.error("Error fetching pet data:", error);
-        }
-      }
-    };
-
-    getPetData();
-  }, [userId]);
-
   return (
     <AuthorizedRoute>
-      {petData ? (
+      {petData && petBag ? (
         <div
           className="flex relative"
           onClick={() => {
