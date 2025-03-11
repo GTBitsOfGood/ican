@@ -11,6 +11,7 @@ import StoreTabContent from "@/components/ui/StoreTabContent";
 import StoreHTTPClient from "@/http/storeHTTPClient";
 import { BagItem } from "@/db/models";
 import { Types } from "mongoose";
+import { AccessoryType, ItemType } from "@/types/store";
 
 export default function Store() {
   const router = useRouter();
@@ -57,7 +58,8 @@ export default function Store() {
       {
         displayName: "Cool Shirt",
         name: "cool shirt",
-        image: "/store/Cool_Shirt.svg",
+        type: ItemType.CLOTHES,
+        image: "/store/clothes/Cool_Shirt.svg",
         cost: 100,
         level: 0,
         description: "Cool shirt",
@@ -65,7 +67,8 @@ export default function Store() {
       {
         displayName: "Scrubs",
         name: "doctor clothes",
-        image: "/store/Doctor_Clothes.svg",
+        type: ItemType.CLOTHES,
+        image: "/store/clothes/Doctor.svg",
         cost: 100,
         level: 0,
         description: "Help save lives as a doctor or nurse!",
@@ -73,7 +76,8 @@ export default function Store() {
       {
         displayName: "Astronaut",
         name: "astronaut clothes",
-        image: "/store/Astronaut_Clothes.svg",
+        type: ItemType.CLOTHES,
+        image: "/store/clothes/Astronaut.svg",
         cost: 100,
         level: 0,
         description: "Explore the planets and galaxies with this spacesuit!",
@@ -81,15 +85,17 @@ export default function Store() {
       {
         displayName: "Business",
         name: "business clothes",
-        image: "/store/Business_Clothes.svg",
+        type: ItemType.CLOTHES,
+        image: "/store/clothes/Business.svg",
         cost: 100,
         level: 0,
-        description: "Create economic growth through innovation! ",
+        description: "Create economic growth through innovation!",
       },
       {
         displayName: "Painter",
         name: "painter clothes",
-        image: "/store/Painter_Clothes.svg",
+        type: ItemType.CLOTHES,
+        image: "/store/clothes/Painter.svg",
         cost: 100,
         level: 0,
         description: "Create beautiful art using your imagination!",
@@ -97,6 +103,7 @@ export default function Store() {
       {
         displayName: "Future Item",
         name: "future item",
+        type: ItemType.CLOTHES,
         image: "",
         cost: 100,
         level: 2,
@@ -105,6 +112,7 @@ export default function Store() {
       {
         displayName: "Locked",
         name: "blah blah",
+        type: ItemType.CLOTHES,
         image: "",
         cost: 100,
         level: 2,
@@ -113,32 +121,158 @@ export default function Store() {
     ],
     accessories: [
       {
-        itemName: "musician shoes",
+        displayName: "Musician Shoes",
+        name: "musician shoes",
+        type: AccessoryType.SHOES,
+        image: "/store/shoes/Musician.svg",
         cost: 100,
+        level: 0,
+        description: "Musician...",
       },
       {
-        itemName: "astronaut shoes",
+        displayName: "Astronaut Shoes",
+        name: "astronaut shoes",
+        type: AccessoryType.SHOES,
+        image: "/store/shoes/Astronaut.svg",
         cost: 100,
+        level: 0,
+        description: "Explore the planets and galaxies with this spacesuit!",
       },
       {
-        itemName: "business shoes",
+        displayName: "Business Shoes",
+        name: "business shoes",
+        type: AccessoryType.SHOES,
+        image: "/store/shoes/Business.svg",
         cost: 100,
+        level: 0,
+        description: "Create economic growth through innovation!",
       },
       {
-        itemName: "musician hat",
+        displayName: "Musician Hat",
+        name: "musician hat",
+        type: AccessoryType.HAT,
+        image: "/store/hats/Musician.svg",
         cost: 100,
+        level: 0,
+        description: "Musician...",
       },
       {
-        itemName: "sunglasses",
+        displayName: "Business Hat",
+        name: "business hat",
+        type: AccessoryType.HAT,
+        image: "/store/hats/Business.svg",
         cost: 100,
+        level: 0,
+        description: "Create economic growth through innovation!",
       },
       {
-        itemName: "business hat",
+        displayName: "Doctor Hat",
+        name: "doctor hat",
+        type: AccessoryType.HAT,
+        image: "/store/hats/Doctor.svg",
         cost: 100,
+        level: 0,
+        description: "Help save lives as a doctor or nurse!",
       },
+      // {
+      //   displayName: "First Aid",
+      //   name: "doctor accessory",
+      //   type: AccessoryType.OCCUPATION,
+      //   image: "/store/occupation/Doctor.svg",
+      //   cost: 100,
+      //   level: 0,
+      //   description: "Help save lives as a doctor or nurse!",
+      // },
+      // {
+      //   displayName: "Briefcase",
+      //   name: "business accessory",
+      //   type: AccessoryType.OCCUPATION,
+      //   image: "/store/occupation/Business.svg",
+      //   cost: 100,
+      //   level: 0,
+      //   description: "Create economic growth through innovation!",
+      // },
+    ],
+    backgrounds: [
       {
-        itemName: "doctor hat",
+        displayName: "Apple Tree",
+        name: "apple tree",
+        type: ItemType.BACKGROUND,
+        image: "/store/backgrounds/Apple_Tree.svg",
         cost: 100,
+        level: 0,
+        description: "Enjoy a sunny day with yummy apples!",
+      },
+    ],
+    foods: [
+      {
+        displayName: "Avocado",
+        name: "avocado",
+        type: ItemType.FOOD,
+        image: "/store/foods/Avocado.svg",
+        cost: 100,
+        level: 0,
+        description: "A fresh avocado...",
+      },
+
+      {
+        displayName: "Bread",
+        name: "bread",
+        type: ItemType.FOOD,
+        image: "/store/foods/Bread.svg",
+        cost: 100,
+        level: 0,
+        description: "A loaf of bread...",
+      },
+
+      {
+        displayName: "Burger",
+        name: "burger",
+        type: ItemType.FOOD,
+        image: "/store/foods/Burger.svg",
+        cost: 100,
+        level: 0,
+        description: "A delicious burger...",
+      },
+
+      {
+        displayName: "Cupcake",
+        name: "cupcake",
+        type: ItemType.FOOD,
+        image: "/store/foods/Cupcake.svg",
+        cost: 100,
+        level: 0,
+        description: "A sweet cupcake...",
+      },
+
+      {
+        displayName: "Egg",
+        name: "egg",
+        type: ItemType.FOOD,
+        image: "/store/foods/Egg.svg",
+        cost: 100,
+        level: 2,
+        description: "A single egg...",
+      },
+
+      {
+        displayName: "Fries",
+        name: "fries",
+        type: ItemType.FOOD,
+        image: "/store/foods/Fries.svg",
+        cost: 100,
+        level: 2,
+        description: "Crispy fries...",
+      },
+
+      {
+        displayName: "Lemonade",
+        name: "lemonade",
+        type: ItemType.FOOD,
+        image: "/store/foods/Lemonade.svg",
+        cost: 100,
+        level: 2,
+        description: "Refreshing lemonade...",
       },
     ],
   };
@@ -146,7 +280,7 @@ export default function Store() {
   const tabData = [
     {
       title: "Clothes",
-      image: "/store/Clothes.svg",
+      image: "/store/categories/Clothes.svg",
       content: (
         <StoreTabContent
           items={storeItems.clothes.filter(
@@ -160,18 +294,45 @@ export default function Store() {
     },
     {
       title: "Accessories",
-      image: "/store/Accessories.svg",
-      content: <div>Content for Tab 2</div>,
+      image: "/store/categories/Accessories.svg",
+      content: (
+        <StoreTabContent
+          items={storeItems.accessories.filter(
+            (item) =>
+              !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
+          )}
+          petLevel={petData?.xpLevel as number}
+          onSelectItem={setSelectedItem}
+        />
+      ),
     },
     {
       title: "Backgrounds",
-      image: "/store/Backgrounds.svg",
-      content: <div>Content for Tab 2</div>,
+      image: "/store/categories/Backgrounds.svg",
+      content: (
+        <StoreTabContent
+          items={storeItems.backgrounds.filter(
+            (item) =>
+              !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
+          )}
+          petLevel={petData?.xpLevel as number}
+          onSelectItem={setSelectedItem}
+        />
+      ),
     },
     {
       title: "Food",
-      image: "/store/Food.svg",
-      content: <div>Content for Tab 2</div>,
+      image: "/store/categories/Food.svg",
+      content: (
+        <StoreTabContent
+          items={storeItems.foods.filter(
+            (item) =>
+              !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
+          )}
+          petLevel={petData?.xpLevel as number}
+          onSelectItem={setSelectedItem}
+        />
+      ),
     },
   ];
 
@@ -264,11 +425,11 @@ export default function Store() {
 
               {/* Selected item image (top layer) */}
               {selectedItem && (
-                <div className="absolute translate-x-[4%] translate-y-[78%] flex items-center justify-center z-20">
+                <div className="absolute translate-x-[4%] translate-y-[82%] flex items-center justify-center z-20">
                   <img
                     src={selectedItem.image}
                     alt={selectedItem.name || "Item"}
-                    width={150}
+                    width={140}
                     draggable="false"
                     className="object-contain pointer-events-none select-none"
                   />

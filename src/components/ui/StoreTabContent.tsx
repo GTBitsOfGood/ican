@@ -1,8 +1,10 @@
+import { AccessoryType, ItemType } from "@/types/store";
 import React, { useEffect, useState } from "react";
 
 interface StoreItem {
   displayName: string;
   name: string;
+  type: ItemType | AccessoryType;
   image: string;
   cost: number;
   level: number;

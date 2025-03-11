@@ -59,17 +59,17 @@ export const storeItems = [
     cost: 100,
   },
   {
-    itemName: "sunglasses",
-    type: AccessoryType.EYEWEAR,
-    cost: 100,
-  },
-  {
     itemName: "business hat",
     type: AccessoryType.HAT,
     cost: 100,
   },
   {
     itemName: "doctor hat",
+    type: AccessoryType.HAT,
+    cost: 100,
+  },
+  {
+    itemName: "musician hat",
     type: AccessoryType.HAT,
     cost: 100,
   },
@@ -86,6 +86,41 @@ export const storeItems = [
   {
     itemName: "doctor accessory",
     type: AccessoryType.OCCUPATION,
+    cost: 100,
+  },
+  {
+    itemName: "avocado",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "bread",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "burger",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "cupcake",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "egg",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "fries",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "lemonade",
+    type: ItemType.FOOD,
     cost: 100,
   },
 ];
