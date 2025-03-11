@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 
-// Why is it that creating a pet specifically doesn't use UserId in the URL?
 // Create Pet
 export async function POST(req: NextRequest) {
   try {

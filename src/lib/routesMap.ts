@@ -80,9 +80,43 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/medication": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/medication/[medicationId]": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+      PATCH: {
+        isAuthorized: true,
+      },
+      DELETE: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/medications/[userId]": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/pet/[petId]/feed": {
     allowedMethods: {
       PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/store/purchase-items": {
+    allowedMethods: {
+      POST: {
         isAuthorized: true,
       },
     },
