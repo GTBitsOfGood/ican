@@ -8,15 +8,24 @@ interface TabData {
   content: React.ReactNode;
 }
 
-interface DynamicTabsProps {
+interface TabsProps {
   tabs: TabData[];
+  onSelectTab?: () => void;
 }
 
-const StoreTabs: React.FC<DynamicTabsProps> = ({ tabs }) => {
+const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   return (
-    <Tabs selectedIndex={selectedIndex} onSelect={setSelectedIndex}>
+    <Tabs
+      selectedIndex={selectedIndex}
+      onSelect={(index) => {
+        setSelectedIndex(index);
+        if (onSelectTab) {
+          onSelectTab();
+        }
+      }}
+    >
       <TabList className="flex justify-between border-bottom-0">
         {tabs.map((tab, index) => (
           <Tab
@@ -36,7 +45,12 @@ const StoreTabs: React.FC<DynamicTabsProps> = ({ tabs }) => {
                   : "mx-[3vw]"
             }`}
           >
-            <img src={tab.image} className="mx-auto w-[67px] mb-2" />
+            <img
+              src={tab.image}
+              alt={tab.title}
+              draggable="false"
+              className="mx-auto w-[67px] mb-2"
+            />
             <span className="font-quantico text-[24px] font-bold">
               {tab.title}
             </span>
@@ -56,4 +70,4 @@ const StoreTabs: React.FC<DynamicTabsProps> = ({ tabs }) => {
   );
 };
 
-export default StoreTabs;
+export default InventoryTabs;

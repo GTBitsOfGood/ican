@@ -1,7 +1,7 @@
 import { AccessoryType, ItemType } from "@/types/store";
 import React, { useEffect, useState } from "react";
 
-interface StoreItem {
+export interface StoreItem {
   displayName: string;
   name: string;
   type: ItemType | AccessoryType;
@@ -17,7 +17,7 @@ interface StoreTabContentProps {
   onSelectItem?: (item: StoreItem) => void;
 }
 
-const StoreTabContent: React.FC<StoreTabContentProps> = ({
+const InventoryTabContent: React.FC<StoreTabContentProps> = ({
   items,
   petLevel,
   onSelectItem,
@@ -53,7 +53,12 @@ const StoreTabContent: React.FC<StoreTabContentProps> = ({
             <div className="bg-[#FFFFFF66] w-[130px] h-[48px] mx-auto mb-[30px] text-center text-black text-[36px] font-bold font-quantico">
               {item.cost}
             </div>
-            <img src={item.image} alt={item.name} className="w-[150px]" />
+            <img
+              src={item.image}
+              alt={item.name}
+              draggable="false"
+              className="w-[150px]"
+            />
             <div className="mt-[10px] font-quantico text-center text-black text-[36px] font-bold leading-none">
               {item.displayName}
             </div>
@@ -78,4 +83,4 @@ const StoreTabContent: React.FC<StoreTabContentProps> = ({
   );
 };
 
-export default StoreTabContent;
+export default InventoryTabContent;

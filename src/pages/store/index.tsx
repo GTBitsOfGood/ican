@@ -5,13 +5,15 @@ import { useUser } from "@/components/UserContext";
 import PetHTTPClient from "@/http/petHTTPClient";
 import { Pet } from "@/types/pet";
 import { useEffect, useState } from "react";
-import { characterImages } from "@/types/characters";
-import StoreTabs from "@/components/ui/StoreTabs";
-import StoreTabContent from "@/components/ui/StoreTabContent";
+import InventoryTabs from "@/components/ui/InventoryTabs";
+import InventoryTabContent, {
+  StoreItem,
+} from "@/components/ui/InventoryTabContent";
 import StoreHTTPClient from "@/http/storeHTTPClient";
 import { BagItem } from "@/db/models";
 import { Types } from "mongoose";
 import { AccessoryType, ItemType } from "@/types/store";
+import InventoryLeftPanel from "@/components/ui/InventoryLeftPanel";
 
 export default function Store() {
   const router = useRouter();
@@ -19,13 +21,7 @@ export default function Store() {
   const [petData, setPetData] = useState<Pet | null>(null);
   const [petBag, setPetBag] = useState<BagItem[]>([]);
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<{
-    displayName: string;
-    name: string;
-    description: string;
-    cost: number;
-    image: string;
-  } | null>(null);
+  const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
 
   useEffect(() => {
     const getPetData = async () => {
@@ -174,24 +170,24 @@ export default function Store() {
         level: 0,
         description: "Help save lives as a doctor or nurse!",
       },
-      // {
-      //   displayName: "First Aid",
-      //   name: "doctor accessory",
-      //   type: AccessoryType.OCCUPATION,
-      //   image: "/store/occupation/Doctor.svg",
-      //   cost: 100,
-      //   level: 0,
-      //   description: "Help save lives as a doctor or nurse!",
-      // },
-      // {
-      //   displayName: "Briefcase",
-      //   name: "business accessory",
-      //   type: AccessoryType.OCCUPATION,
-      //   image: "/store/occupation/Business.svg",
-      //   cost: 100,
-      //   level: 0,
-      //   description: "Create economic growth through innovation!",
-      // },
+      {
+        displayName: "First Aid",
+        name: "doctor accessory",
+        type: AccessoryType.OCCUPATION,
+        image: "/store/occupation/Doctor.svg",
+        cost: 100,
+        level: 2,
+        description: "Help save lives as a doctor or nurse!",
+      },
+      {
+        displayName: "Briefcase",
+        name: "business accessory",
+        type: AccessoryType.OCCUPATION,
+        image: "/store/occupation/Business.svg",
+        cost: 100,
+        level: 2,
+        description: "Create economic growth through innovation!",
+      },
     ],
     backgrounds: [
       {
@@ -206,6 +202,15 @@ export default function Store() {
     ],
     foods: [
       {
+        displayName: "Pizza",
+        name: "pizza",
+        type: ItemType.FOOD,
+        image: "/store/foods/Pizza.svg",
+        cost: 100,
+        level: 0,
+        description: "Pizza...",
+      },
+      {
         displayName: "Avocado",
         name: "avocado",
         type: ItemType.FOOD,
@@ -214,7 +219,6 @@ export default function Store() {
         level: 0,
         description: "A fresh avocado...",
       },
-
       {
         displayName: "Bread",
         name: "bread",
@@ -224,7 +228,6 @@ export default function Store() {
         level: 0,
         description: "A loaf of bread...",
       },
-
       {
         displayName: "Burger",
         name: "burger",
@@ -234,7 +237,6 @@ export default function Store() {
         level: 0,
         description: "A delicious burger...",
       },
-
       {
         displayName: "Cupcake",
         name: "cupcake",
@@ -244,7 +246,6 @@ export default function Store() {
         level: 0,
         description: "A sweet cupcake...",
       },
-
       {
         displayName: "Egg",
         name: "egg",
@@ -254,7 +255,6 @@ export default function Store() {
         level: 2,
         description: "A single egg...",
       },
-
       {
         displayName: "Fries",
         name: "fries",
@@ -264,7 +264,6 @@ export default function Store() {
         level: 2,
         description: "Crispy fries...",
       },
-
       {
         displayName: "Lemonade",
         name: "lemonade",
@@ -282,7 +281,7 @@ export default function Store() {
       title: "Clothes",
       image: "/store/categories/Clothes.svg",
       content: (
-        <StoreTabContent
+        <InventoryTabContent
           items={storeItems.clothes.filter(
             (item) =>
               !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
@@ -296,7 +295,7 @@ export default function Store() {
       title: "Accessories",
       image: "/store/categories/Accessories.svg",
       content: (
-        <StoreTabContent
+        <InventoryTabContent
           items={storeItems.accessories.filter(
             (item) =>
               !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
@@ -310,7 +309,7 @@ export default function Store() {
       title: "Backgrounds",
       image: "/store/categories/Backgrounds.svg",
       content: (
-        <StoreTabContent
+        <InventoryTabContent
           items={storeItems.backgrounds.filter(
             (item) =>
               !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
@@ -324,7 +323,7 @@ export default function Store() {
       title: "Food",
       image: "/store/categories/Food.svg",
       content: (
-        <StoreTabContent
+        <InventoryTabContent
           items={storeItems.foods.filter(
             (item) =>
               !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
@@ -403,53 +402,25 @@ export default function Store() {
               </div>
             </div>
           )}
-          <div className="flex flex-col w-[26%] h-screen p-4 bg-[#E6E8F9]">
-            <div className="text-[64px] text-center font-bold text-icanBlue-300 font-quantico leading-none">
-              {selectedItem ? selectedItem.displayName : "Select Item"}
-            </div>
-            <div className="text-4xl text-center text-icanBlue-300 font-quantico">
-              {selectedItem
-                ? selectedItem.description
-                : "Click item to learn more!"}
-            </div>
-            <div className="flex-1 flex items-center justify-center max-w-[250px] mx-auto relative">
-              {/* Pet image (bottom layer) */}
-              <Image
-                src={`/characters/${petData.petType}.svg`}
-                alt={`${petData.petType}`}
-                width={characterImages[petData.petType].width}
-                height={characterImages[petData.petType].height}
-                draggable="false"
-                className="object-contain pointer-events-none select-none relative z-10"
-              />
-
-              {/* Selected item image (top layer) */}
-              {selectedItem && (
-                <div className="absolute translate-x-[4%] translate-y-[82%] flex items-center justify-center z-20">
-                  <img
-                    src={selectedItem.image}
-                    alt={selectedItem.name || "Item"}
-                    width={140}
-                    draggable="false"
-                    className="object-contain pointer-events-none select-none"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="mx-auto">
-              <button
-                onClick={purchaseItem}
-                disabled={!selectedItem || petData.coins < selectedItem.cost}
-                className={`font-quantico ${selectedItem && petData.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300`}
-                type="button"
-              >
-                Purchase
-              </button>
-            </div>
+          <div className="w-[26%]">
+            <InventoryLeftPanel
+              petData={petData}
+              selectedItem={selectedItem}
+              button={
+                <button
+                  onClick={purchaseItem}
+                  disabled={!selectedItem || petData.coins < selectedItem.cost}
+                  className={`font-quantico ${selectedItem && petData.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300`}
+                  type="button"
+                >
+                  Purchase
+                </button>
+              }
+            />
           </div>
           <div className="w-[74%] h-screen bg-[#4C539B]">
             <div className="flex justify-between items-center">
-              <div className="flex justify-center w-[281px] ml-[31px] py-2 mt-[40px] font-quantico text-black font-bold text-center text-4xl bg-[#E6E8F9] border-[3px] border-black">
+              <div className="flex justify-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-4xl bg-[#E6E8F9] border-[3px] border-black">
                 Balance:
                 <Image
                   src="/icons/Coin.svg"
@@ -469,7 +440,10 @@ export default function Store() {
               </div>
             </div>
             <div className="mt-5 mx-[31px]">
-              <StoreTabs tabs={tabData} />
+              <InventoryTabs
+                tabs={tabData}
+                onSelectTab={() => setSelectedItem(null)}
+              />
             </div>
           </div>
         </div>
