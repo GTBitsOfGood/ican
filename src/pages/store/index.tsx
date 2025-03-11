@@ -59,6 +59,7 @@ export default function Store() {
         name: "cool shirt",
         image: "/store/Cool_Shirt.svg",
         cost: 100,
+        level: 0,
         description: "Cool shirt",
       },
       {
@@ -66,6 +67,7 @@ export default function Store() {
         name: "doctor clothes",
         image: "/store/Doctor_Clothes.svg",
         cost: 100,
+        level: 0,
         description: "Help save lives as a doctor or nurse!",
       },
       {
@@ -73,6 +75,7 @@ export default function Store() {
         name: "astronaut clothes",
         image: "/store/Astronaut_Clothes.svg",
         cost: 100,
+        level: 0,
         description: "Explore the planets and galaxies with this spacesuit!",
       },
       {
@@ -80,6 +83,7 @@ export default function Store() {
         name: "business clothes",
         image: "/store/Business_Clothes.svg",
         cost: 100,
+        level: 0,
         description: "Create economic growth through innovation! ",
       },
       {
@@ -87,7 +91,24 @@ export default function Store() {
         name: "painter clothes",
         image: "/store/Painter_Clothes.svg",
         cost: 100,
+        level: 0,
         description: "Create beautiful art using your imagination!",
+      },
+      {
+        displayName: "Future Item",
+        name: "future item",
+        image: "",
+        cost: 100,
+        level: 2,
+        description: "",
+      },
+      {
+        displayName: "Locked",
+        name: "blah blah",
+        image: "",
+        cost: 100,
+        level: 2,
+        description: "",
       },
     ],
     accessories: [
@@ -132,6 +153,7 @@ export default function Store() {
             (item) =>
               !petBag?.some?.((bagItem) => bagItem.itemName == item.name),
           )}
+          petLevel={petData?.xpLevel as number}
           onSelectItem={setSelectedItem}
         />
       ),
@@ -229,15 +251,29 @@ export default function Store() {
                 ? selectedItem.description
                 : "Click item to learn more!"}
             </div>
-            <div className="flex-1 flex items-center justify-center max-w-[250px] mx-auto">
+            <div className="flex-1 flex items-center justify-center max-w-[250px] mx-auto relative">
+              {/* Pet image (bottom layer) */}
               <Image
                 src={`/characters/${petData.petType}.svg`}
                 alt={`${petData.petType}`}
                 width={characterImages[petData.petType].width}
                 height={characterImages[petData.petType].height}
                 draggable="false"
-                className="object-contain pointer-events-none select-none"
+                className="object-contain pointer-events-none select-none relative z-10"
               />
+
+              {/* Selected item image (top layer) */}
+              {selectedItem && (
+                <div className="absolute translate-x-[4%] translate-y-[78%] flex items-center justify-center z-20">
+                  <img
+                    src={selectedItem.image}
+                    alt={selectedItem.name || "Item"}
+                    width={150}
+                    draggable="false"
+                    className="object-contain pointer-events-none select-none"
+                  />
+                </div>
+              )}
             </div>
             <div className="mx-auto">
               <button
