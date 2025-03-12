@@ -74,7 +74,11 @@ export default function SectionSelector({
         action={nextAction}
         type="success"
       >
-        {currentSection == sectionSize - 1 ? "Confirm" : "Next"}
+        {currentSection == sectionSize - 1
+          ? modalType == "Edit"
+            ? "Save"
+            : "Confirm"
+          : "Next"}
       </ModalButton>
     </div>
   );
