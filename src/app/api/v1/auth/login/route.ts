@@ -9,9 +9,20 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = await req.json();
 
-    const response = await AuthService.login(email, password);
+    const authToken = await AuthService.login(email, password);
 
-    return NextResponse.json({ token: response }, { status: 201 });
+    const nextResponse = NextResponse.json({}, { status: 204 });
+
+    // set expiration date 3 hours after
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 3);
+
+    nextResponse.cookies.set("auth_token", authToken, {
+      httpOnly: true,
+      expires: expirationDate,
+    });
+
+    return nextResponse;
   } catch (error) {
     return handleError(error);
   }
