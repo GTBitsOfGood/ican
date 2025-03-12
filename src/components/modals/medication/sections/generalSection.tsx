@@ -1,19 +1,20 @@
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "../addMedicationInfo";
+import { MedicationModalInfo } from "../medicationModalInfo";
 import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
-import IDInput from "@/components/modals/addMedication/idInput";
+import IDInput from "@/components/ui/modals/idInput";
 import Label from "@/components/ui/form/label";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 import {
   InjectionIcon,
+  LiquidIcon,
   PillIcon,
-} from "@/components/ui/modals/addMedicationIcons";
+} from "@/components/ui/modals/medicationIcons";
 
 interface GeneralSectionProps {
-  info: AddMedicationInfo;
-  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
+  info: MedicationModalInfo;
+  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
 }
 
 export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
@@ -28,16 +29,23 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
             setInfo((prev) => {
               const temp = { ...prev };
               temp.general.form =
-                newValue as AddMedicationInfo["general"]["form"];
+                newValue as MedicationModalInfo["general"]["form"];
               return temp;
             })
           }
         >
-          <Option value="Pill" icon={<PillIcon className="w-10 h-10" />} />
+          <Option value="tablet" icon={<PillIcon className="w-10 h-10" />}>
+            Pill
+          </Option>
+          <Option value="liquid" icon={<LiquidIcon className="w-10 h-10" />}>
+            Syrup
+          </Option>
           <Option
-            value="Injection"
+            value="injection"
             icon={<InjectionIcon className="w-10 h-10" />}
-          />
+          >
+            Shot
+          </Option>
         </DropDown>
       </FormControl>
       <Label className="mt-8">Medication ID</Label>

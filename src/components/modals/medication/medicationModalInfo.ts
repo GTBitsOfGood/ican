@@ -1,7 +1,14 @@
-export interface AddMedicationInfo {
+import { DayOfWeek } from "@/lib/consts";
+
+export interface MedicationModalInfo {
+  /**
+   * If the Model ID is required, in Edit Modal
+   */
+  _id?: string;
+
   general: {
     /** Type of medication */
-    form: "Pill" | "Injection";
+    form: "tablet" | "liquid" | "injection";
     /** Custom medication ID (up to 5 characters) */
     medicationId: string;
   };
@@ -12,19 +19,19 @@ export interface AddMedicationInfo {
      */
     repeatEvery?: number;
     /** Type of repetition */
-    type: "Day(s)" | "Week(s)" | "Month(s)";
+    type: "day" | "week" | "month";
     /**
      * If repetition type is "Week", specifies which days of the week the medication is taken.
      * Uses 0-6 indexing (0 = Sunday, 6 = Saturday).
      * If repetition type is "Month" and `monthlyRepetition` is "Week", this is also used.
      */
-    weeklyRepetition: number[];
+    weeklyRepetition: DayOfWeek[];
     /**
      * If repetition type is "Month", specifies whether the medication repeats on a specific day or week.
      * - "Day": The medication repeats on a specific day of the month (e.g., 26th of each month).
      * - "Week": The medication repeats on a specific week of the month (e.g., 1st Week of the month).
      */
-    monthlyRepetition?: "Day" | "Week";
+    monthlyRepetition?: "day" | "week";
     /**
      * If `monthlyRepetition` is "Day", this specifies the exact day of the month (1-31).
      * Example: 26 means the medication is taken on the 26th of each month.
@@ -34,23 +41,16 @@ export interface AddMedicationInfo {
      * If `monthlyRepetition` is "Week", this specifies which week of the month (1-4).
      * Example: 1 means the medication is taken in the first week of the month.
      */
-    monthlyWeekOfRepetition: "First" | "Second" | "Third" | "Fourth";
-    monthlyWeekDayOfRepetition:
-      | "Sunday"
-      | "Monday"
-      | "Tuesday"
-      | "Wednesday"
-      | "Thursday"
-      | "Friday"
-      | "Saturday";
+    monthlyWeekOfRepetition: number;
+    monthlyWeekDayOfRepetition: DayOfWeek;
   };
   dosage: {
     /** How much each dosage is (e.g. 200ml, 2 pills) */
     amount: string;
     /** Specifies when notifications should be sent */
-    notificationFrequency: "Once / Day of Dosage" | "Every Dose";
+    notificationFrequency: "day of dose" | "every dose";
     /** Specifies whether dosage is scheduled by count (doses per day) or interval (hours) */
-    type: "Doses" | "Hours";
+    type: "doses" | "hours";
     /**
      * If `type` is "Hours", this specifies the interval between doses.
      * Example: 6 means a dose is taken every 6 hours.
@@ -83,24 +83,24 @@ export interface AddMedicationInfo {
   notes: string;
 }
 
-export const initialAddMedicationInfo: AddMedicationInfo = {
+export const initialAddMedicationInfo: MedicationModalInfo = {
   general: {
-    form: "Pill",
+    form: "tablet",
     medicationId: "",
   },
   repetition: {
     repeatEvery: 1,
-    type: "Day(s)",
+    type: "day",
     weeklyRepetition: [],
-    monthlyRepetition: "Week",
+    monthlyRepetition: "week",
     monthlyDayOfRepetition: undefined,
-    monthlyWeekOfRepetition: "First",
+    monthlyWeekOfRepetition: 1,
     monthlyWeekDayOfRepetition: "Sunday",
   },
   dosage: {
     amount: "",
-    notificationFrequency: "Once / Day of Dosage",
-    type: "Doses",
+    notificationFrequency: "day of dose",
+    type: "doses",
     hourlyInterval: undefined,
     dosesPerDay: undefined,
   },

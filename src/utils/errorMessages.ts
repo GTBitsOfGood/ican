@@ -45,17 +45,19 @@ const ERRORS = Object.freeze({
       MEDICATION_ID:
         "MedicationID is required and must be a non-empty string that has a length less than 6.",
       REPEAT_INTERVAL:
-        "Repeat Interval is required and must be a positive non-zero number.",
+        "RepeatInterval is required and must be a positive non-zero number.",
       REPEAT_UNIT: "RepeatUnit is required and must be a non-empty string.",
-      REPEAT_ON: "RepeatOn is required and must be a non-empty array.",
-      REPEAT_MONTHLY_ON_DAY:
-        "RepeatMonthlyOnDay is required and must be positive.",
+      REPEAT_WEEKLY_ON: "RepeatOn is required and must be a non-empty array.",
+      REPEAT_MONTHLY_ON_DAY: "RepeatMonthlyOnDay must be positive.",
+      REPEAT_MONTHLY_ON_WEEK:
+        "RepeatMonthlyOnWeek must be a number between 1-4.",
+      DOSES_UNIT: "DosesUnit must be either 'doses' or 'hours'.",
       NOTIFICATION_FREQUENCY:
-        "NotificationFrequency is required and must be a non-empty string.",
-      DOSES_PER_DAY: "DosesPerDay is required and must be a non-empty string.",
-      DOSE_INTERVAL_IN_HOURS:
-        "DoseIntervalInHours is required and must be a non-empty string.",
-      DOSE_TIMES: "DoseTimes is required and must be a non-empty string.",
+        "NotificationFrequency is required and must be either 'day of dose' or 'every dose'.",
+      DOSES_PER_DAY: "DosesPerDay must be a positive nonzero number.",
+      DOSE_INTERVAL_IN_HOURS: "DoseIntervalInHours must be a non-empty string.",
+      DOSAGE_AMOUNT: "DosageAmount is required and must be a non-empty string",
+      DOSE_TIMES: "DoseTimes is required and must be a non-empty array.",
       USER_ID: "UserID is requried and must be a valid ObjectID.",
     },
     NOT_FOUND: "Medication does not exist.",

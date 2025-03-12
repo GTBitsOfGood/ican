@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "../addMedicationInfo";
+import { MedicationModalInfo } from "../medicationModalInfo";
 import InputBox from "@/components/ui/form/inputBox";
 import Label from "@/components/ui/form/label";
 
 interface DosageAmountSectionProps {
-  info: AddMedicationInfo;
-  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
+  info: MedicationModalInfo;
+  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
 }
 
 export default function DosageAmountSection({

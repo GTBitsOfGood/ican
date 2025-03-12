@@ -2,22 +2,22 @@ export interface MedicationInfo {
   formOfMedication: string; // medicationInfo.general.form
   medicationId: string; // medicationInfo.general.medicationId
 
-  repeatInterval: number; // medicationInfo.repetition.repeatEvery
   repeatUnit: string; // medicationInfo.repetition.type
-  repeatOn: string[]; // medicationInfo.repetition.repeat
+  repeatInterval: number; // medicationInfo.repetition.repeatEvery
+  repeatWeeklyOn: string[]; // medicationInfo.repetition.repeat
+  repeatMonthlyType?: string;
+  repeatMonthlyOnDay?: number; // medicationInfo.repetition.monthlyDayOfRepitition
+  repeatMonthlyOnWeek: number; // medicationInfo.repetition.monthlyWeekOfRepetition
+  repeatMonthlyOnWeekDay: string; // medicationInfo.repetition.monthlyWeekDayOfRepetition
 
-  repeatMonthlyOnDay: number; // medicationInfo.repetition.monthlyDayOfRepitition
+  dosesUnit: string; // medicationInfo.dosage.type
+  dosesPerDay?: number; // medicationInfo.dosage.dosesPerDay
+  doseIntervalInHours?: number; // medicationInfo.dosage.hourlyInterval
+  dosageAmount: string; // medicationInfo.dosage.amount
+  doseTimes: string[]; // convertTo24Hour(medicationInfo.dosage.times)
 
   notificationFrequency: string; // medicationInfo.dosage.notificationFrequency
-  dosesPerDay: number; // medicationInfo.dosage.dosesPerDay
-  doseIntervalInHours: number; // medicationInfo.dosage.hourlyInterval
-
-  doseTimes: {
-    time: string;
-    period: "AM" | "PM";
-  }[];
-
-  notes: string;
+  notes: string; // medicationInfo.notes
 }
 
 export interface CreateMedicationRequestBody extends MedicationInfo {

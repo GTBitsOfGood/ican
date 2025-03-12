@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "../addMedicationInfo";
+import { MedicationModalInfo } from "../medicationModalInfo";
 import InputBox from "@/components/ui/form/inputBox";
-import { EditIcon } from "@/components/ui/modals/addMedicationIcons";
+import { EditIcon } from "@/components/ui/modals/medicationIcons";
 
 interface ReviewSectionProps {
-  info: AddMedicationInfo;
+  info: MedicationModalInfo;
   setCurrentSection: Dispatch<SetStateAction<number>>;
 }
 
@@ -12,16 +12,6 @@ export default function ReviewSection({
   info,
   setCurrentSection,
 }: ReviewSectionProps) {
-  const ordinalToWeekDay: Record<number, string> = {
-    0: "Sunday",
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
-  };
-
   return (
     <div className="h-full grid grid-cols-2 gap-3">
       <div className="flex flex-col gap-8 pr-6">
@@ -80,11 +70,11 @@ export default function ReviewSection({
           <InputBox
             readOnly={true}
             value={
-              info.repetition.type == "Day(s)"
+              info.repetition.type == "day"
                 ? `${info.repetition.repeatEvery} Day(s)`
-                : info.repetition.type == "Week(s)"
-                  ? `${info.repetition.repeatEvery} Week(s) On ${info.repetition.weeklyRepetition.map((dayOrdinal) => ordinalToWeekDay[dayOrdinal]).join(", ")}`
-                  : info.repetition.monthlyRepetition == "Day"
+                : info.repetition.type == "week"
+                  ? `${info.repetition.repeatEvery} Week(s) On ${info.repetition.weeklyRepetition.join(", ")}`
+                  : info.repetition.monthlyRepetition == "day"
                     ? `Day ${info.repetition.monthlyDayOfRepetition} Every ${info.repetition.repeatEvery} Month(s)`
                     : `${info.repetition.monthlyWeekOfRepetition} ${info.repetition.monthlyWeekDayOfRepetition} Every ${info.repetition.repeatEvery} Month(s)`
             }
@@ -133,7 +123,7 @@ export default function ReviewSection({
             <InputBox
               readOnly={true}
               value={
-                info.dosage.type == "Doses"
+                info.dosage.type == "doses"
                   ? `${info.dosage.dosesPerDay} Dose(s) Per Day`
                   : `A Dose Every ${info.dosage.hourlyInterval} Hour(s)`
               }

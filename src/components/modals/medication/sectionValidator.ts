@@ -1,13 +1,13 @@
-import { AddMedicationInfo } from "./addMedicationInfo";
+import { MedicationModalInfo } from "./medicationModalInfo";
 
 interface SectionValidatorType {
-  info: AddMedicationInfo;
+  info: MedicationModalInfo;
   currentSection: number;
 }
 
 interface SectionValidatorReturnType {
   error?: string;
-  newInfo?: AddMedicationInfo;
+  newInfo?: MedicationModalInfo;
 }
 
 export default function SectionValidator({
@@ -30,21 +30,21 @@ export default function SectionValidator({
         return { error: "Enter repeat interval." };
       }
       if (
-        info.repetition.type === "Week(s)" &&
+        info.repetition.type === "week" &&
         info.repetition.weeklyRepetition.length === 0
       ) {
         return { error: "Select repeat days for the week." };
       }
       if (
-        info.repetition.type === "Month(s)" &&
-        info.repetition.monthlyRepetition === "Day" &&
+        info.repetition.type === "month" &&
+        info.repetition.monthlyRepetition === "day" &&
         info.repetition.monthlyDayOfRepetition === undefined
       ) {
         return { error: "Enter day of the month to repeat." };
       }
       break;
     case 3: // dosage notification
-      if (info.dosage.type == "Doses") {
+      if (info.dosage.type == "doses") {
         if (info.dosage.dosesPerDay === undefined) {
           return { error: "Enter the amount of doses per day." };
         }
@@ -72,8 +72,11 @@ export default function SectionValidator({
         return { newInfo: temp };
       }
     case 4: // times section
-      if (info.dosage.type == "Hours" && info.dosage.hourlyInterval) {
+      if (info.dosage.type == "hours" && info.dosage.hourlyInterval) {
         const temp = { ...info };
+        if (temp.times.length === 0) {
+          return { error: "You have not entered a valid time." };
+        }
         const firstTime = temp.times[0];
         const interval = info.dosage.hourlyInterval;
 
@@ -96,7 +99,7 @@ export default function SectionValidator({
           currentHour += interval;
         }
 
-        temp.times = times as AddMedicationInfo["times"];
+        temp.times = times as MedicationModalInfo["times"];
         return { newInfo: temp };
       }
       break;

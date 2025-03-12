@@ -6,6 +6,7 @@ export interface OptionProps {
   showDropDown?: boolean;
   icon?: JSX.Element;
   onClick?: () => void;
+  children?: string;
 }
 
 export default function Option({
@@ -14,6 +15,7 @@ export default function Option({
   onClick,
   selected = false,
   showDropDown = false,
+  children,
 }: OptionProps) {
   if (selected) {
     return (
@@ -23,7 +25,7 @@ export default function Option({
       >
         <div className="flex justify-start items-center gap-2">
           {icon}
-          {value}
+          {children || value}
         </div>
         <svg
           className={`${showDropDown ? "rotate-180" : ""} w-7 h-7`}
@@ -49,7 +51,7 @@ export default function Option({
       onClick={onClick}
     >
       {icon}
-      {value}
+      {children || value}
     </div>
   );
 }

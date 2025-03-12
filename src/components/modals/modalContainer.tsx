@@ -1,17 +1,16 @@
-import { ReactNode, Dispatch, SetStateAction } from "react";
+import Link from "next/link";
+import { ReactNode } from "react";
 
 interface modalContainerProps {
   children: ReactNode;
   className?: string;
   title: string;
-  setVisibility: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ModalContainer({
   children,
   className,
   title,
-  setVisibility,
 }: modalContainerProps) {
   return (
     <div
@@ -19,12 +18,12 @@ export default function ModalContainer({
     >
       <div className="flex justify-between items-start">
         <div className="border-b-2 font-bold text-4xl">{title}</div>
-        <div
+        <Link
           className="font-pixelify text-icanGreen-100 -mt-6 text-7xl leading-none cursor-pointer"
-          onClick={() => setVisibility(false)}
+          href="/"
         >
           x
-        </div>
+        </Link>
       </div>
       {children}
     </div>

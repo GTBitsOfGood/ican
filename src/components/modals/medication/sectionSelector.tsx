@@ -1,19 +1,21 @@
 import ModalButton from "@/components/ui/modals/modalButton";
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "./addMedicationInfo";
+import { MedicationModalInfo } from "./medicationModalInfo";
 import SectionValidator from "./sectionValidator";
 
 interface SectionSelectorProps {
+  modalType: "Edit" | "Add";
   currentSection: number;
   sectionSize: number;
   setCurrentSection: Dispatch<SetStateAction<number>>;
-  info: AddMedicationInfo;
-  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
+  info: MedicationModalInfo;
+  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
   setError: Dispatch<SetStateAction<string>>;
-  onSubmit: (medicationInfo: AddMedicationInfo) => void;
+  onSubmit: (medicationInfo: MedicationModalInfo) => void;
 }
 
 export default function SectionSelector({
+  modalType,
   currentSection,
   setCurrentSection,
   sectionSize,
@@ -44,11 +46,18 @@ export default function SectionSelector({
   return (
     <div className="grid grid-cols-3">
       <ModalButton
-        className="max-w-max justify-self-start"
+        className={`max-w-max justify-self-start`}
         action={backAction}
         disabled={currentSection <= 0}
+        type={
+          modalType == "Edit" && currentSection == sectionSize - 1
+            ? "danger"
+            : "default"
+        }
       >
-        Back
+        {modalType == "Edit" && currentSection == sectionSize - 1
+          ? "Cancel"
+          : "Back"}
       </ModalButton>
       <div className="flex justify-center items-center gap-4">
         {Array.from({ length: sectionSize }).map((_, index) => (

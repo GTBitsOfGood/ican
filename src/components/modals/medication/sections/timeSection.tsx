@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "../addMedicationInfo";
+import { MedicationModalInfo } from "../medicationModalInfo";
 import FormControl from "@/components/ui/form/formControl";
 import Label from "@/components/ui/form/label";
 import InputBox from "@/components/ui/form/inputBox";
@@ -10,12 +10,12 @@ import FormText from "@/components/ui/form/formText";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 
 interface TimeSectionProps {
-  info: AddMedicationInfo;
-  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
+  info: MedicationModalInfo;
+  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
 }
 
 export default function TimeSection({ info, setInfo }: TimeSectionProps) {
-  if (info.dosage.type === "Doses") {
+  if (info.dosage.type === "doses") {
     return (
       <div>
         <div className="flex flex-col gap-6 max-h-[300px] ove pb-12 overflow-y-auto scrollbar-custom">
@@ -59,8 +59,16 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
                 setValue={(newValue: string) =>
                   setInfo((prev) => {
                     const temp = { ...prev };
-                    temp.times[i].period =
-                      newValue as AddMedicationInfo["times"][number]["period"];
+                    const newTimes = temp.times.map((t, index) =>
+                      index === i
+                        ? {
+                            ...t,
+                            period:
+                              newValue as MedicationModalInfo["times"][number]["period"],
+                          }
+                        : t,
+                    );
+                    temp.times = newTimes;
                     return temp;
                   })
                 }
@@ -93,7 +101,6 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
   } else {
     return (
       <div>
-        {/* Bug: Need to check whether time is empty, or else clicking next then back crashes the application */}
         <FormSubtitle>
           Tell us when you want to take your first dose, and we will calculate
           the times for your next doses!
@@ -120,7 +127,7 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
                 setInfo((prev) => {
                   const temp = { ...prev };
                   info.times[0].period =
-                    newValue as AddMedicationInfo["times"][number]["period"];
+                    newValue as MedicationModalInfo["times"][number]["period"];
                   return temp;
                 })
               }
