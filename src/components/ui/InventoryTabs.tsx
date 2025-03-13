@@ -30,12 +30,16 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
         {tabs.map((tab, index) => (
           <Tab
             key={index}
-            className={`flex-1 text-center py-4 border-x-2 bg-icanBlue-300 border-t-2 border-white h-[154px] ${
+            className={`flex-1 text-center py-4 border-x-2 border-t-2 border-white h-[154px] ${
               index === 0
                 ? "ml-0 mr-[3vw]"
                 : index === tabs.length - 1
                   ? "mr-0 ml-[3vw]"
                   : "mx-[3vw]"
+            } ${
+              selectedIndex == index
+                ? "bg-[#7D83B2] text-black underline"
+                : "bg-icanBlue-300"
             }`}
             selectedClassName={`flex-1 text-center py-4 bg-[#7D83B2] border-x-2 border-t-2 border-white h-[154px] text-black underline ${
               index === 0

@@ -22,7 +22,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
       <div className="text-4xl text-center text-icanBlue-300 font-quantico">
         {selectedItem ? selectedItem.description : "Click item to learn more!"}
       </div>
-      <div className="flex-1 flex max-w-[250px] mx-auto">
+      <div className={"flex-1 flex max-w-[250px] mx-auto"}>
         <PetAppearance
           petType={petData.petType}
           selectedItems={[selectedItem as StoreItem]}
