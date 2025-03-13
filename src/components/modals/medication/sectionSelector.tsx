@@ -38,6 +38,8 @@ export default function SectionSelector({
 
     if (currentSection == sectionSize - 1) {
       onSubmit(info);
+    } else if (modalType == "Edit" && currentSection != 3) {
+      setCurrentSection(6);
     } else {
       setCurrentSection((prev) => Math.min(sectionSize - 1, prev + 1));
     }
@@ -48,7 +50,9 @@ export default function SectionSelector({
       <ModalButton
         className={`max-w-max justify-self-start`}
         action={backAction}
-        disabled={currentSection <= 0}
+        disabled={
+          currentSection <= 0 || (modalType == "Edit" && currentSection != 4)
+        }
         type={
           modalType == "Edit" && currentSection == sectionSize - 1
             ? "danger"
@@ -77,8 +81,10 @@ export default function SectionSelector({
         {currentSection == sectionSize - 1
           ? modalType == "Edit"
             ? "Save"
-            : "Confirm"
-          : "Next"}
+            : "Create"
+          : modalType == "Edit" && currentSection == 3
+            ? "Next"
+            : "Confirm"}
       </ModalButton>
     </div>
   );

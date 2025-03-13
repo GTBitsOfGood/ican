@@ -91,7 +91,7 @@ export default function MedicationBaseModal({
     <ModalBackground>
       <ModalContainer
         className={`flex flex-col ${currentSection == sections.length - 1 ? "w-[1400px]" : "w-[790px]"} h-[700px] bg-icanBlue-200`}
-        title="Add New Medication"
+        title={modalType == "Add" ? "Add New Medication" : "Edit Medication"}
       >
         {error && (
           <div className="mt-4 h-12 w-full px-4 bg-iCAN-error/90 flex justify-start items-center text-xl">
