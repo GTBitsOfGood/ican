@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
     (await cookies()).delete("auth_token");
 
-    return NextResponse.json({}, { status: 204 });
+    return NextResponse.json({}, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

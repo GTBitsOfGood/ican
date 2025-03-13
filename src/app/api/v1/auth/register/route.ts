@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       confirmPassword,
     );
 
-    const nextResponse = NextResponse.json({}, { status: 204 });
+    const nextResponse = NextResponse.json({}, { status: 201 });
 
     // set expiration date 3 hours after
     const expirationDate = new Date();

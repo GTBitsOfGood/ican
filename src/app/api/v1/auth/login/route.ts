@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     const authToken = await AuthService.login(email, password);
 
-    const nextResponse = NextResponse.json({}, { status: 204 });
+    const nextResponse = NextResponse.json({}, { status: 201 });
 
     // set expiration date 3 hours after
     const expirationDate = new Date();

@@ -125,9 +125,5 @@ export default class PetDAO {
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
     }
-
-    if (result.modifiedCount == 0) {
-      throw new Error("Failed to update pet.");
-    }
   }
 }
