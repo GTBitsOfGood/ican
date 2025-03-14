@@ -5,9 +5,6 @@ import { UnauthorizedError } from "@/types/exceptions";
 import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
-// Checks if given method is in the routesMap, also checks if validation is needed
-// However, one thing is that the current implementation allows for any user with a JWT to perform any action
-// Including deleting a pet that isn't theirs (not same userId) etc.
 export const validateRoutes = async (
   req: NextRequest,
   method: string,

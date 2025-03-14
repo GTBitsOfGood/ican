@@ -121,4 +121,42 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/settings/[userId]": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/settings/pin/[userId]": {
+    allowedMethods: {
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "api/v1/pet/[petId]/equip-route": {
+    allowedMethods: {
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "api/v1/pet/[petId]/unequip-route": {
+    allowedMethods: {
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "api/v1/bag/[petId]": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+    },
+  },
 };
