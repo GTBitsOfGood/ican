@@ -1,16 +1,6 @@
 import { validateSendEmail } from "@/utils/serviceUtils/mailUtil";
 import ERRORS from "@/utils/errorMessages";
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+import juno from "juno-sdk";
 
 export default class EmailService {
   static async sendEmail(
@@ -20,14 +10,30 @@ export default class EmailService {
   ): Promise<boolean> {
     try {
       validateSendEmail({ to, subject, html });
-      const info = await transporter.sendMail({
-        from: process.env.MAIL_USER,
-        to,
-        subject,
-        html,
+
+      juno.init({
+        apiKey: process.env.JUNO_API_KEY as string,
       });
 
-      console.log("Email sent:", info.messageId);
+      const response = await juno.email.sendEmail({
+        subject,
+        recipients: [
+          {
+            email: to,
+          },
+        ],
+        contents: [
+          {
+            value: html,
+            type: "text/html",
+          },
+        ],
+        bcc: [],
+        cc: [],
+        sender: { email: process.env.MAIL_USER as string, name: "iCAN" },
+      });
+
+      console.log("Email Status:", response.success);
       return true;
     } catch {
       throw new Error(ERRORS.MAIL.FAILURE);
