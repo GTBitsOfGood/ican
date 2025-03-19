@@ -176,7 +176,7 @@ export default function Store() {
         type: AccessoryType.OCCUPATION,
         image: "/store/occupation/Doctor.svg",
         cost: 100,
-        level: 2,
+        level: 0,
         description: "Help save lives as a doctor or nurse!",
       },
       {
@@ -185,7 +185,7 @@ export default function Store() {
         type: AccessoryType.OCCUPATION,
         image: "/store/occupation/Business.svg",
         cost: 100,
-        level: 2,
+        level: 0,
         description: "Create economic growth through innovation!",
       },
     ],
@@ -410,7 +410,7 @@ export default function Store() {
                 <button
                   onClick={purchaseItem}
                   disabled={!selectedItem || petData.coins < selectedItem.cost}
-                  className={`font-quantico ${selectedItem && petData.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 text-4xl font-bold text-white bg-icanBlue-300`}
+                  className={`font-quantico ${selectedItem && petData.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
                   type="button"
                 >
                   Purchase
@@ -430,7 +430,7 @@ export default function Store() {
                   draggable={false}
                   className="select-none object-contain"
                 />
-                {petData.coins}
+                <div className="pl-1">{petData.coins}</div>
               </div>
               <div
                 className="font-pixelify mt-[30px] pr-[60px] text-icanGreen-100 text-7xl leading-none cursor-pointer"

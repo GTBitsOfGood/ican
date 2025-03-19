@@ -1,4 +1,5 @@
 import { AccessoryType, ItemType } from "@/types/store";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 export interface StoreItem {
@@ -41,7 +42,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
         petLevel >= item.level ? (
           <div
             key={index}
-            className={`p-4 cursor-pointer mx-auto flex flex-col items-center w-[200px] h-[300px] ${
+            className={`p-4 cursor-pointer mx-auto flex flex-col items-center desktop:w-[200px] desktop:h-[300px] tablet:w-[160px] tablet:h-[240px] ${
               selectedIndex === index
                 ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
                 : "border-[5px] border-transparent rounded-lg"
@@ -50,16 +51,28 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
               handleItemClick(index, item);
             }}
           >
-            <div className="bg-[#FFFFFF66] w-[130px] h-[48px] mx-auto mb-[30px] text-center text-black text-[36px] font-bold font-quantico">
-              {item.cost}
+            <div className="flex justify-center bg-[#FFFFFF66] px-2 mx-auto mb-[30px] text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold font-quantico">
+              <Image
+                src="/icons/Coin.svg"
+                alt="Coins"
+                width={38}
+                height={38}
+                draggable={false}
+                className="select-none object-contain"
+              />
+              <div className="pl-1">{item.cost}</div>
             </div>
-            <img
-              src={item.image}
-              alt={item.name}
-              draggable="false"
-              className="w-[150px]"
-            />
-            <div className="mt-[10px] font-quantico text-center text-black text-[36px] font-bold leading-none">
+            <div
+              className={`${item.type == ItemType.FOOD ? "desktop:w-[130px] tablet:w-[70px]" : "desktop:w-[154px] tablet:w-[100px]"}`}
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                draggable="false"
+                className="w-[150px]"
+              />
+            </div>
+            <div className="mt-[10px] font-quantico text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold leading-none">
               {item.displayName}
             </div>
           </div>
@@ -71,9 +84,9 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
             <img
               src={"store/Lock.svg"}
               alt={item.name}
-              className="w-[121px] h-[95.75px]"
+              className="desktop:w-[121px] tablet:w-[90px]"
             />
-            <div className="mt-[23px] font-quantico text-center text-black text-[36px] font-bold leading-none">
+            <div className="mt-[23px] font-quantico text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold leading-none">
               {`Level ${item.level}`}
             </div>
           </div>

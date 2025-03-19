@@ -30,7 +30,7 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
         {tabs.map((tab, index) => (
           <Tab
             key={index}
-            className={`flex-1 text-center py-4 border-x-2 border-t-2 border-white h-[154px] ${
+            className={`flex-1 text-center py-4 border-x-2 border-t-2 border-white desktop:h-[154px] tablet:h-[100px] ${
               index === 0
                 ? "ml-0 mr-[3vw]"
                 : index === tabs.length - 1
@@ -41,7 +41,7 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
                 ? "bg-[#7D83B2] text-black underline"
                 : "bg-icanBlue-300"
             }`}
-            selectedClassName={`flex-1 text-center py-4 bg-[#7D83B2] border-x-2 border-t-2 border-white h-[154px] text-black underline ${
+            selectedClassName={`flex-1 text-center py-4 bg-[#7D83B2] border-x-2 border-t-2 border-white desktop:h-[154px] tablet:h-[100px] text-black underline ${
               index === 0
                 ? "ml-0 mr-[3vw]"
                 : index === tabs.length - 1
@@ -53,9 +53,9 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
               src={tab.image}
               alt={tab.title}
               draggable="false"
-              className="mx-auto w-[67px] mb-2"
+              className="mx-auto desktop:w-[67px] tablet:w-[42px] mb-2"
             />
-            <span className="font-quantico text-[24px] font-bold">
+            <span className="font-quantico desktop:text-[24px] tablet:text-[16px] font-bold">
               {tab.title}
             </span>
           </Tab>
@@ -65,9 +65,11 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
       {tabs.map((tab, index) => (
         <TabPanel
           key={index}
-          className="border-x-2 border-white bg-[#7D83B2] h-auto max-h-[80vh] flex flex-col"
+          className="border-x-2 border-white bg-[#7D83B2] flex flex-col"
         >
-          <div className="overflow-y-auto flex-1">{tab.content}</div>
+          <div className="overflow-y-auto desktop:max-h-[calc(100vh-276px)] tablet:max-h-[calc(100vh-222px)] flex-1">
+            {tab.content}
+          </div>
         </TabPanel>
       ))}
     </Tabs>
