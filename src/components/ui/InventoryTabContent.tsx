@@ -42,7 +42,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
         petLevel >= item.level ? (
           <div
             key={index}
-            className={`p-4 cursor-pointer mx-auto flex flex-col items-center desktop:w-[200px] desktop:h-[300px] tablet:w-[160px] tablet:h-[240px] ${
+            className={`p-4 cursor-pointer mx-auto flex flex-col items-center largeDesktop:w-[200px] desktop:w-[180px] tablet:w-[160px] largeDesktop:h-[300px] desktop:h-[270px] tablet:h-[240px] ${
               selectedIndex === index
                 ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
                 : "border-[5px] border-transparent rounded-lg"
@@ -51,7 +51,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
               handleItemClick(index, item);
             }}
           >
-            <div className="flex justify-center bg-[#FFFFFF66] px-2 mx-auto mb-[30px] text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold font-quantico">
+            <div className="flex justify-center bg-[#FFFFFF66] px-2 mx-auto mb-[30px] text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold font-quantico">
               <Image
                 src="/icons/Coin.svg"
                 alt="Coins"
@@ -63,7 +63,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
               <div className="pl-1">{item.cost}</div>
             </div>
             <div
-              className={`${item.type == ItemType.FOOD ? "desktop:w-[130px] tablet:w-[70px]" : "desktop:w-[154px] tablet:w-[100px]"}`}
+              className={`${item.type == ItemType.FOOD ? "largeDesktop:w-[130px] desktop:w-[100px] tablet:w-[70px]" : "largeDesktop:w-[154px] desktop:w-[120px] tablet:w-[100px]"}`}
             >
               <img
                 src={item.image}
@@ -79,14 +79,14 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
         ) : (
           <div
             key={index}
-            className={`p-4 mx-auto flex flex-col items-center mt-[60px] w-[200px] h-[300px]`}
+            className={`p-4 mx-auto flex flex-col items-center mt-[60px]  largeDesktop:w-[200px] desktop:w-[180px] tablet:w-[160px] largeDesktop:h-[300px] desktop:h-[270px] tablet:h-[240px]`}
           >
             <img
               src={"store/Lock.svg"}
               alt={item.name}
-              className="desktop:w-[121px] tablet:w-[90px]"
+              className="largeDesktop:w-[121px] desktop:w-[105px] tablet:w-[90px]"
             />
-            <div className="mt-[23px] font-quantico text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold leading-none">
+            <div className="mt-[23px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
               {`Level ${item.level}`}
             </div>
           </div>
