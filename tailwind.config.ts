@@ -84,6 +84,7 @@ export default {
         loginGreen: "#ACCC6E",
         borderGrey: "#747474",
         errorRed: "#CE4E4E",
+        deleteRed: "#B01515",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

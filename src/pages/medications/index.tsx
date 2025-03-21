@@ -7,17 +7,21 @@ import {
   initialAddMedicationInfo,
 } from "@/components/modals/addMedication/addMedicationInfo";
 import MedicationCard from "@/components/ui/MedicationCard";
+import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 
 export default function MedicationsPage() {
   const [medications, setMedications] = useState<AddMedicationInfo[]>([]);
+  const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
+  const [clickedIndex, setClickedIndex] = useState<number>();
 
   useEffect(() => {
     // For now mock medication data, put fetch in here later
-    setMedications(Array(6).fill(initialAddMedicationInfo));
+    setMedications(Array(15).fill(initialAddMedicationInfo));
   }, []);
 
   const handleMedicationDelete = (index: number) => {
-    console.log("DELETE CALLED");
+    // Add delete in database
+    setDeleteModalVisible(true);
     setMedications((prev) => {
       const newMedications = [...prev];
       newMedications.splice(index, 1);
@@ -25,13 +29,19 @@ export default function MedicationsPage() {
     });
   };
 
-  useEffect(() => {
-    console.log("MEDICATIONS", medications);
-  }, [medications]);
-
   return (
     <AuthorizedRoute>
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
+        {deleteModalVisible &&
+          clickedIndex !== undefined &&
+          clickedIndex !== null && (
+            <DeleteMedicationModal
+              medication={medications[clickedIndex]}
+              medicationIndex={clickedIndex}
+              setDeleteModalVisible={setDeleteModalVisible}
+              handleDelete={() => handleMedicationDelete(clickedIndex)}
+            />
+          )}
         <div className="flex w-full justify-between items-center">
           <BackButton link="/settings" />
         </div>
@@ -42,13 +52,15 @@ export default function MedicationsPage() {
             </h1>
             <AddMedicationButton />
           </div>
-          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto gap-12 medications-scrollbar">
+          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 medications-scrollbar">
             {medications.map((medication, index) => {
               return (
                 <MedicationCard
                   key={index}
+                  index={index}
                   medication={medication}
-                  handleDelete={() => handleMedicationDelete(index)}
+                  setDeleteModalVisible={setDeleteModalVisible}
+                  setClickedIndex={setClickedIndex}
                 />
               );
             })}

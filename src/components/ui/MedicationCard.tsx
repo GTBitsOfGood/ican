@@ -3,15 +3,17 @@ import { AddMedicationInfo } from "../modals/addMedication/addMedicationInfo";
 import { Pill, Trash, PencilSimple } from "@phosphor-icons/react";
 
 interface MedicationCardProps {
-  key: number;
+  index: number;
   medication: AddMedicationInfo;
-  handleDelete: (index: number) => void;
+  setDeleteModalVisible: (visible: boolean) => void;
+  setClickedIndex: (index: number) => void;
 }
 
 export default function MedicationCard({
-  key,
+  index,
   medication,
-  handleDelete,
+  setDeleteModalVisible,
+  setClickedIndex,
 }: MedicationCardProps) {
   let day = "";
   const notificationFrequency =
@@ -66,6 +68,11 @@ export default function MedicationCard({
     }
   }
 
+  const handleDeleteClick = () => {
+    setDeleteModalVisible(true);
+    setClickedIndex(index);
+  };
+
   return (
     <div className="bg-white p-4 text-black flex flex-col justify-between gap-6 items-center shadow-medicationCardShadow">
       <a
@@ -103,7 +110,7 @@ export default function MedicationCard({
       <div className="flex justify-between items-center w-full">
         <Trash
           className="hover:cursor-pointer mobile:w-[34px] mobile:h-[34px] tablet:w-[38px] tablet:h-[38px] desktop:w-[42px] desktop:h-[42px] largeDesktop:w-[46px] largeDesktop:h-[46px]"
-          onClick={() => handleDelete(key)}
+          onClick={handleDeleteClick}
           color="#FF0000"
           weight="light"
         />
