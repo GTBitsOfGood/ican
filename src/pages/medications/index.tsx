@@ -1,11 +1,33 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
-// import { useState } from "react";
-// import { AddMedicationInfo } from "@/components/modals/addMedication/addMedicationInfo";
+import { useState, useEffect } from "react";
+import {
+  AddMedicationInfo,
+  initialAddMedicationInfo,
+} from "@/components/modals/addMedication/addMedicationInfo";
+import MedicationCard from "@/components/ui/MedicationCard";
 
 export default function MedicationsPage() {
-  // const [medications, setMedications] = useState<AddMedicationInfo[]>([]);
+  const [medications, setMedications] = useState<AddMedicationInfo[]>([]);
+
+  useEffect(() => {
+    // For now mock medication data, put fetch in here later
+    setMedications(Array(6).fill(initialAddMedicationInfo));
+  }, []);
+
+  const handleMedicationDelete = (index: number) => {
+    console.log("DELETE CALLED");
+    setMedications((prev) => {
+      const newMedications = [...prev];
+      newMedications.splice(index, 1);
+      return newMedications;
+    });
+  };
+
+  useEffect(() => {
+    console.log("MEDICATIONS", medications);
+  }, [medications]);
 
   return (
     <AuthorizedRoute>
@@ -15,45 +37,21 @@ export default function MedicationsPage() {
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <h1 className="font-quantico text-6xl font-bold text-white">
+            <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white">
               Medications
             </h1>
             <AddMedicationButton />
           </div>
-          <div className="flex flex-col overflow-y-auto gap-12 medications-scrollbar">
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
-            <h1 className="font-quantico text-6xl font-bold text-white">
-              Medications
-            </h1>
+          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto gap-12 medications-scrollbar">
+            {medications.map((medication, index) => {
+              return (
+                <MedicationCard
+                  key={index}
+                  medication={medication}
+                  handleDelete={() => handleMedicationDelete(index)}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
