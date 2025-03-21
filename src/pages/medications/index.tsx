@@ -37,7 +37,6 @@ export default function MedicationsPage() {
           clickedIndex !== null && (
             <DeleteMedicationModal
               medication={medications[clickedIndex]}
-              medicationIndex={clickedIndex}
               setDeleteModalVisible={setDeleteModalVisible}
               handleDelete={() => handleMedicationDelete(clickedIndex)}
             />
