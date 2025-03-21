@@ -89,6 +89,11 @@ export const storeItems = [
     cost: 100,
   },
   {
+    itemName: "pizza",
+    type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
     itemName: "avocado",
     type: ItemType.FOOD,
     cost: 100,
@@ -121,6 +126,11 @@ export const storeItems = [
   {
     itemName: "lemonade",
     type: ItemType.FOOD,
+    cost: 100,
+  },
+  {
+    itemName: "apple tree",
+    type: ItemType.BACKGROUND,
     cost: 100,
   },
 ];

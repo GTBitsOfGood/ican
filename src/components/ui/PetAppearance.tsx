@@ -86,6 +86,21 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
                   />
                 </div>
               );
+            } else if (item.type === ItemType.BACKGROUND) {
+              return (
+                <div
+                  key={`food-${index}`}
+                  className="absolute w-[26.2%] flex items-center justify-center z-0"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name || "Food Item"}
+                    width={413}
+                    draggable="false"
+                    className="object-contain pointer-events-none select-none"
+                  />
+                </div>
+              );
             }
             return null;
           })}

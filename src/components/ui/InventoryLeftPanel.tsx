@@ -2,7 +2,6 @@ import React from "react";
 import { StoreItem } from "./InventoryTabContent";
 import { Pet } from "@/types/pet";
 import PetAppearance from "./PetAppearance";
-import { ItemType } from "@/types/store";
 
 interface PanelProps {
   petData: Pet;
@@ -27,9 +26,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
             : "Click item to learn more!"}
         </div>
       </div>
-      <div
-        className={`flex-1 flex flex-col justify-center items-center ${selectedItem?.type == ItemType.BACKGROUND ? `bg-[url("/store/backgrounds/Apple_Tree.svg")]` : ""}`}
-      >
+      <div className={`flex-1 flex flex-col justify-center items-center`}>
         <div
           className={
             "largeDesktop:max-w-[250px] desktop:max-w-[200px] tablet:max-w-[150px]"
