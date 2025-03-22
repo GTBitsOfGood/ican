@@ -377,7 +377,7 @@ export default function Store() {
         >
           {showPurchasedScreen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-              <div className="relative">
+              <div className="relative largeDesktop:w-[1032px] desktop:w-[900px] tablet:w-[780px]">
                 <Image
                   src="/store/Buy_Message.svg"
                   alt="Purchase Successful"
@@ -386,7 +386,7 @@ export default function Store() {
                   className="object-contain"
                 />
                 {selectedItem && selectedItem.image && (
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[32%]">
+                  <div className="absolute largeDesktop:w-[150px] desktop:w-[130px] tablet:w-[110px] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[32%]">
                     <Image
                       src={selectedItem.image}
                       alt={selectedItem.displayName}
@@ -394,7 +394,7 @@ export default function Store() {
                       height={86}
                       className="object-contain mx-auto"
                     />
-                    <div className="mt-[10px] font-quantico text-center text-black text-[36px] font-bold leading-none">
+                    <div className="mt-[10px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
                       {selectedItem.displayName}
                     </div>
                   </div>

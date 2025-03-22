@@ -79,7 +79,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
         ) : (
           <div
             key={index}
-            className={`p-4 mx-auto flex flex-col items-center mt-[60px]  largeDesktop:w-[200px] desktop:w-[180px] tablet:w-[160px] largeDesktop:h-[300px] desktop:h-[270px] tablet:h-[240px]`}
+            className={`p-4 mx-auto flex flex-col items-center mt-[60px]`}
           >
             <img
               src={"store/Lock.svg"}

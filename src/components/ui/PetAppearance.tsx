@@ -72,15 +72,31 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
                   />
                 </div>
               );
+            } else if (item.type === AccessoryType.OCCUPATION) {
+              return (
+                <div
+                  key={`hat-${index}`}
+                  className="absolute translate-x-[80%] translate-y-[70%] largeDesktop:w-[110px] desktop:w-[85px] tablet:w-[65px] flex items-center justify-center z-30"
+                >
+                  <img
+                    src={item.image}
+                    alt={item.name || "Occupation Item"}
+                    width={110}
+                    draggable="false"
+                    className="object-contain pointer-events-none select-none"
+                  />
+                </div>
+              );
             } else if (item.type === ItemType.FOOD) {
               return (
                 <div
                   key={`food-${index}`}
-                  className="absolute translate-x-[150%] translate-y-[65%] w-[5%] flex items-center justify-center z-20"
+                  className="absolute translate-x-[140%] translate-y-[58%] largeDesktop:w-[90px] desktop:w-[70px] tablet:w-[50px] flex items-center justify-center z-20"
                 >
                   <img
                     src={item.image}
                     alt={item.name || "Food Item"}
+                    width={90}
                     draggable="false"
                     className="object-contain pointer-events-none select-none"
                   />

@@ -67,7 +67,7 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
           key={index}
           className="border-x-2 border-white bg-[#7D83B2] flex flex-col"
         >
-          <div className="overflow-y-auto largeDesktop:max-h-[calc(100vh-276px)] desktop:max-h-[calc(100vh-253px)] tablet:max-h-[calc(100vh-222px)] flex-1">
+          <div className="overflow-y-auto largeDesktop:h-[calc(100vh-276px)] desktop:h-[calc(100vh-253px)] tablet:h-[calc(100vh-222px)] flex-1">
             {tab.content}
           </div>
         </TabPanel>
