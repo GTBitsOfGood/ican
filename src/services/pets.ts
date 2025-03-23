@@ -4,7 +4,7 @@ import {
   validateItemName,
   validatePetId,
 } from "@/utils/store";
-import { getBagItemByPetIdAndName } from "@/db/actions/bag";
+import bagDAO from "@/db/actions/bag";
 import { AccessoryType, storeItems } from "@/types/store";
 import {
   validateCreatePet,
@@ -118,7 +118,10 @@ export async function validateEquipItem(petId: string, itemName: string) {
     throw new NotFoundError("This item does not exist.");
   }
 
-  const dbItem = await getBagItemByPetIdAndName(new ObjectId(petId), itemName);
+  const dbItem = await bagDAO.getBagItemByPetIdAndName(
+    new ObjectId(petId),
+    itemName,
+  );
   if (!dbItem) {
     throw new NotFoundError("This pet does not own this item.");
   }
