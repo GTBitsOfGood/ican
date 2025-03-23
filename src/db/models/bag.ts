@@ -1,12 +1,12 @@
-import { model, models, ObjectId, Schema } from "mongoose";
+import { model, models, Schema, Types } from "mongoose";
 
 export interface BagItem {
-  petId: ObjectId;
+  petId: Types.ObjectId;
   itemName: string;
 }
 
 export interface BagItemDocument extends BagItem, Document {
-  _id: ObjectId;
+  _id: Types.ObjectId;
 }
 
 const bagItemSchema = new Schema(
