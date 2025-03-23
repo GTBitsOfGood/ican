@@ -53,7 +53,7 @@ export default function Store() {
     clothes: [
       {
         displayName: "Cool Shirt",
-        name: "cool shirt",
+        name: "COOL_SHIRT",
         type: ItemType.CLOTHES,
         image: "/store/clothes/Cool_Shirt.svg",
         cost: 100,
@@ -62,7 +62,7 @@ export default function Store() {
       },
       {
         displayName: "Scrubs",
-        name: "doctor clothes",
+        name: "DOCTOR_CLOTHES",
         type: ItemType.CLOTHES,
         image: "/store/clothes/Doctor.svg",
         cost: 100,
@@ -71,7 +71,7 @@ export default function Store() {
       },
       {
         displayName: "Astronaut",
-        name: "astronaut clothes",
+        name: "ASTRONAUT_CLOTHES",
         type: ItemType.CLOTHES,
         image: "/store/clothes/Astronaut.svg",
         cost: 100,
@@ -80,7 +80,7 @@ export default function Store() {
       },
       {
         displayName: "Business",
-        name: "business clothes",
+        name: "BUSINESS_CLOTHES",
         type: ItemType.CLOTHES,
         image: "/store/clothes/Business.svg",
         cost: 100,
@@ -89,7 +89,7 @@ export default function Store() {
       },
       {
         displayName: "Painter",
-        name: "painter clothes",
+        name: "PAINTER_CLOTHES",
         type: ItemType.CLOTHES,
         image: "/store/clothes/Painter.svg",
         cost: 100,
@@ -98,7 +98,7 @@ export default function Store() {
       },
       {
         displayName: "Future Item",
-        name: "future item",
+        name: "FUTURE_ITEM",
         type: ItemType.CLOTHES,
         image: "",
         cost: 100,
@@ -107,7 +107,7 @@ export default function Store() {
       },
       {
         displayName: "Locked",
-        name: "blah blah",
+        name: "BLAH_BLAH",
         type: ItemType.CLOTHES,
         image: "",
         cost: 100,
@@ -118,7 +118,7 @@ export default function Store() {
     accessories: [
       {
         displayName: "Musician Shoes",
-        name: "musician shoes",
+        name: "MUSICIAN_SHOES",
         type: AccessoryType.SHOES,
         image: "/store/shoes/Musician.svg",
         cost: 100,
@@ -127,7 +127,7 @@ export default function Store() {
       },
       {
         displayName: "Astronaut Shoes",
-        name: "astronaut shoes",
+        name: "ASTRONAUT_SHOES",
         type: AccessoryType.SHOES,
         image: "/store/shoes/Astronaut.svg",
         cost: 100,
@@ -136,7 +136,7 @@ export default function Store() {
       },
       {
         displayName: "Business Shoes",
-        name: "business shoes",
+        name: "BUSINESS_SHOES",
         type: AccessoryType.SHOES,
         image: "/store/shoes/Business.svg",
         cost: 100,
@@ -145,7 +145,7 @@ export default function Store() {
       },
       {
         displayName: "Musician Hat",
-        name: "musician hat",
+        name: "MUSICIAN_HAT",
         type: AccessoryType.HAT,
         image: "/store/hats/Musician.svg",
         cost: 100,
@@ -154,7 +154,7 @@ export default function Store() {
       },
       {
         displayName: "Business Hat",
-        name: "business hat",
+        name: "BUSINESS_HAT",
         type: AccessoryType.HAT,
         image: "/store/hats/Business.svg",
         cost: 100,
@@ -163,7 +163,7 @@ export default function Store() {
       },
       {
         displayName: "Doctor Hat",
-        name: "doctor hat",
+        name: "DOCTOR_HAT",
         type: AccessoryType.HAT,
         image: "/store/hats/Doctor.svg",
         cost: 100,
@@ -172,7 +172,7 @@ export default function Store() {
       },
       {
         displayName: "First Aid",
-        name: "doctor accessory",
+        name: "DOCTOR_ACCESSORY",
         type: AccessoryType.OCCUPATION,
         image: "/store/occupation/Doctor.svg",
         cost: 100,
@@ -181,7 +181,7 @@ export default function Store() {
       },
       {
         displayName: "Briefcase",
-        name: "business accessory",
+        name: "BUSINESS_ACCESSORY",
         type: AccessoryType.OCCUPATION,
         image: "/store/occupation/Business.svg",
         cost: 100,
@@ -192,7 +192,7 @@ export default function Store() {
     backgrounds: [
       {
         displayName: "Apple Tree",
-        name: "apple tree",
+        name: "APPLE_TREE",
         type: ItemType.BACKGROUND,
         image: "/store/backgrounds/Apple_Tree.svg",
         cost: 100,
@@ -203,7 +203,7 @@ export default function Store() {
     foods: [
       {
         displayName: "Pizza",
-        name: "pizza",
+        name: "PIZZA",
         type: ItemType.FOOD,
         image: "/store/foods/Pizza.svg",
         cost: 100,
@@ -212,7 +212,7 @@ export default function Store() {
       },
       {
         displayName: "Avocado",
-        name: "avocado",
+        name: "AVOCADO",
         type: ItemType.FOOD,
         image: "/store/foods/Avocado.svg",
         cost: 100,
@@ -221,7 +221,7 @@ export default function Store() {
       },
       {
         displayName: "Bread",
-        name: "bread",
+        name: "BREAD",
         type: ItemType.FOOD,
         image: "/store/foods/Bread.svg",
         cost: 100,
@@ -230,7 +230,7 @@ export default function Store() {
       },
       {
         displayName: "Burger",
-        name: "burger",
+        name: "BURGER",
         type: ItemType.FOOD,
         image: "/store/foods/Burger.svg",
         cost: 100,
@@ -239,7 +239,7 @@ export default function Store() {
       },
       {
         displayName: "Cupcake",
-        name: "cupcake",
+        name: "CUPCAKE",
         type: ItemType.FOOD,
         image: "/store/foods/Cupcake.svg",
         cost: 100,
@@ -248,7 +248,7 @@ export default function Store() {
       },
       {
         displayName: "Egg",
-        name: "egg",
+        name: "EGG",
         type: ItemType.FOOD,
         image: "/store/foods/Egg.svg",
         cost: 100,
@@ -257,7 +257,7 @@ export default function Store() {
       },
       {
         displayName: "Fries",
-        name: "fries",
+        name: "FRIES",
         type: ItemType.FOOD,
         image: "/store/foods/Fries.svg",
         cost: 100,
@@ -266,7 +266,7 @@ export default function Store() {
       },
       {
         displayName: "Lemonade",
-        name: "lemonade",
+        name: "LEMONADE",
         type: ItemType.FOOD,
         image: "/store/foods/Lemonade.svg",
         cost: 100,
