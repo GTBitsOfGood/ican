@@ -13,7 +13,7 @@ export default function ReviewSection({
   setCurrentSection,
 }: ReviewSectionProps) {
   return (
-    <div className="h-full grid grid-cols-2 gap-3">
+    <div className="h-full grid grid-cols-1 extraLargeDesktop:grid-cols-2 gap-3">
       <div className="flex flex-col gap-8 pr-6">
         <div className="flex justify-start items-center gap-4">
           <div className="basis-[190px] text-3xl font-bold">Form</div>
@@ -102,7 +102,7 @@ export default function ReviewSection({
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-between">
+      <div className="mt-6 extraLargeDesktop:mt-0 flex flex-col justify-between">
         <div className="flex flex-col gap-8">
           <div className="flex justify-start items-center gap-4 pr-6">
             <div className="basis-[190px] text-3xl font-bold">Notes</div>
@@ -136,7 +136,7 @@ export default function ReviewSection({
               <EditIcon className="w-full h-full" />
             </div>
           </div>
-          <div className="flex flex-col gap-8 max-h-[220px] overflow-y-auto scrollbar-custom pr-4">
+          <div className="flex flex-col gap-8 extraLargeDesktop:max-h-[220px] overflow-y-auto scrollbar-custom pr-4">
             {info.times.map((time, i) => (
               <div className="flex justify-start items-center gap-4" key={i}>
                 <div className="basis-[190px] text-3xl font-bold">{`Time #${i + 1}`}</div>

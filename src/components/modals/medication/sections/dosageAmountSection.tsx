@@ -26,7 +26,7 @@ export default function DosageAmountSection({
           })
         }
         placeHolder="Ex. 200 mL, 2 pills, 300 mg, etc"
-        className="w-full mt-4 p-6 text-2xl !text-left !font-normal !normal-case"
+        className="w-full mt-4 p-3 tablet:p-6 text-lg tablet:text-2xl !text-left !font-normal !normal-case"
       />
     </div>
   );

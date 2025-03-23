@@ -22,7 +22,7 @@ export default function NotesSection({ info, setInfo }: NotesSectionProps) {
           })
         }
         placeHolder="Ex. Take medicine with food/water"
-        className="w-full mt-4 p-6 text-2xl"
+        className="w-full mt-4 p-3 tablet:p-6 text-lg tablet:text-2xl"
       />
     </div>
   );

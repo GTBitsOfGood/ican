@@ -11,7 +11,7 @@ export default function Label({
 }: LabelProps) {
   return (
     <div
-      className={`text-4xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
+      className={`text-2xl tablet:text-4xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
     >
       {children}
     </div>

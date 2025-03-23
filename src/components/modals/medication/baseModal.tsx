@@ -90,15 +90,19 @@ export default function MedicationBaseModal({
   return (
     <ModalBackground>
       <ModalContainer
-        className={`flex flex-col ${currentSection == sections.length - 1 ? "w-[1400px]" : "w-[790px]"} h-[700px] bg-icanBlue-200`}
+        className={`flex flex-col  w-full ${currentSection == sections.length - 1 ? "tablet:w-[790px] extraLargeDesktop:w-[1400px]" : "tablet:w-[790px]"} tablet:max-w-[90vw] max-h-[90vh] h-[700px] bg-icanBlue-200`}
         title={modalType == "Add" ? "Add New Medication" : "Edit Medication"}
       >
         {error && (
-          <div className="mt-4 h-12 w-full px-4 bg-iCAN-error/90 flex justify-start items-center text-xl">
+          <div className="mt-4 h-10 tablet:h-12 w-full px-3 tablet:px-4 bg-iCAN-error/90 flex justify-start items-center text-lg tablet:text-xl">
             {error}
           </div>
         )}
-        <div className="flex-grow mt-8 px-4">{sections[currentSection]}</div>
+        <div
+          className={`flex-grow mt-8 mb-8 px-4 ${currentSection === 4 ? "" : "scrollbar-custom overflow-y-auto"}`}
+        >
+          {sections[currentSection]}
+        </div>
         <SectionSelector
           modalType={modalType}
           currentSection={currentSection}

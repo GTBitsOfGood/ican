@@ -1,5 +1,7 @@
+import { ReactNode } from "react";
+
 interface FormTextProps {
-  children: string;
+  children: ReactNode;
   className?: string;
   disabled?: boolean;
 }
@@ -11,7 +13,7 @@ export default function FormText({
 }: FormTextProps) {
   return (
     <div
-      className={`text-3xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
+      className={`text-xl tablet:text-3xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
     >
       {children}
     </div>

@@ -19,7 +19,7 @@ export default function DosageNotificationSection({
   setInfo,
 }: DosageNotificationSectionProps) {
   return (
-    <div>
+    <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <div>
         <FormControl gap={16}>
           <CheckBox
@@ -54,7 +54,7 @@ export default function DosageNotificationSection({
                 return temp;
               })
             }
-            className="w-16 h-[52px] text-4xl"
+            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
           <FormText disabled={info.dosage.type != "doses"}>
             dose(s) per day
@@ -62,7 +62,7 @@ export default function DosageNotificationSection({
         </FormControl>
         <HorizontalRule
           ruleClassName="border-2 border-icanGreen-200"
-          textClassName="text-4xl font-bold text-icanGreen-200"
+          textClassName="text-2xl tablet:text-4xl font-bold text-icanGreen-200"
         >
           Or
         </HorizontalRule>
@@ -99,13 +99,13 @@ export default function DosageNotificationSection({
                 return temp;
               })
             }
-            className="w-16 h-[52px] text-4xl"
+            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
           <FormText disabled={info.dosage.type != "hours"}>hours</FormText>
         </FormControl>
       </div>
       <div className="mt-8">
-        <FormControl gap={16}>
+        <FormControl gap={16} mobileColumn={true}>
           <Label>Notify me</Label>
           <DropDown
             className="uppercase"
@@ -120,7 +120,7 @@ export default function DosageNotificationSection({
               })
             }
           >
-            <Option value="day of dose">Once / Day of Dosage</Option>
+            <Option value="day of dose">Day of Dosage</Option>
             <Option value="every dose">Every Dose</Option>
           </DropDown>
         </FormControl>

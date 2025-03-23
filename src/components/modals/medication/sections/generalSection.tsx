@@ -19,8 +19,8 @@ interface GeneralSectionProps {
 
 export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
-    <div>
-      <FormControl>
+    <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
+      <FormControl mobileColumn={true}>
         <Label>Form of Medication</Label>
         <DropDown
           width={220}
@@ -34,15 +34,21 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
             })
           }
         >
-          <Option value="tablet" icon={<PillIcon className="w-10 h-10" />}>
+          <Option
+            value="tablet"
+            icon={<PillIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
+          >
             Pill
           </Option>
-          <Option value="liquid" icon={<LiquidIcon className="w-10 h-10" />}>
+          <Option
+            value="liquid"
+            icon={<LiquidIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
+          >
             Syrup
           </Option>
           <Option
             value="injection"
-            icon={<InjectionIcon className="w-10 h-10" />}
+            icon={<InjectionIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
           >
             Shot
           </Option>

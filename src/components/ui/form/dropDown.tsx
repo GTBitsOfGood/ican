@@ -14,13 +14,27 @@ export default function DropDown({
   children,
   className,
   disabled = false,
-  width,
+  width = 130,
   value,
   setValue,
 }: DropDownProps) {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const [currentX, setCurrentX] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setCurrentX(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const initialIndex = children.findIndex(
@@ -60,9 +74,9 @@ export default function DropDown({
   return (
     <div
       ref={dropdownRef}
-      className={`relative border-2 border-black bg-white text-black font-belanosima text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
+      className={`relative border-2 border-black bg-white text-black font-belanosima text-lg tablet:text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
       style={{
-        width: width || 130,
+        width: currentX && currentX < 768 ? width / 1.5 : width,
       }}
     >
       {/* Dropdown Button */}

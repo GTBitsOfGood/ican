@@ -21,48 +21,50 @@ export default function RepetitionSection({
   setInfo,
 }: RepetitionSectionProps) {
   return (
-    <div>
-      <FormControl gap={16}>
+    <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
+      <FormControl gap={16} mobileColumn={true}>
         <Label>Repeat every</Label>
-        <InputBox
-          maxLength={2}
-          value={info.repetition.repeatEvery?.toString() || ""}
-          onChange={(newValue: string) =>
-            setInfo((prev) => {
-              const numericValue = Number(newValue);
-              if (isNaN(numericValue)) {
-                return prev;
-              }
-              const temp = { ...prev };
-              if (!newValue) {
-                temp.repetition.repeatEvery = undefined;
-              } else {
-                temp.repetition.repeatEvery = Number(
-                  newValue,
-                ) as MedicationModalInfo["repetition"]["repeatEvery"];
-              }
-              return temp;
-            })
-          }
-          className="w-16 h-[52px] text-4xl"
-        />
-        <DropDown
-          className="uppercase"
-          width={180}
-          value={info.repetition.type}
-          setValue={(newValue: string) =>
-            setInfo((prev) => {
-              const temp = { ...prev };
-              temp.repetition.type =
-                newValue as MedicationModalInfo["repetition"]["type"];
-              return temp;
-            })
-          }
-        >
-          <Option value="day">Day(s)</Option>
-          <Option value="week">Week(s)</Option>
-          <Option value="month">Month(s)</Option>
-        </DropDown>
+        <FormControl gap={16}>
+          <InputBox
+            maxLength={2}
+            value={info.repetition.repeatEvery?.toString() || ""}
+            onChange={(newValue: string) =>
+              setInfo((prev) => {
+                const numericValue = Number(newValue);
+                if (isNaN(numericValue)) {
+                  return prev;
+                }
+                const temp = { ...prev };
+                if (!newValue) {
+                  temp.repetition.repeatEvery = undefined;
+                } else {
+                  temp.repetition.repeatEvery = Number(
+                    newValue,
+                  ) as MedicationModalInfo["repetition"]["repeatEvery"];
+                }
+                return temp;
+              })
+            }
+            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
+          />
+          <DropDown
+            className="uppercase"
+            width={180}
+            value={info.repetition.type}
+            setValue={(newValue: string) =>
+              setInfo((prev) => {
+                const temp = { ...prev };
+                temp.repetition.type =
+                  newValue as MedicationModalInfo["repetition"]["type"];
+                return temp;
+              })
+            }
+          >
+            <Option value="day">Day(s)</Option>
+            <Option value="week">Week(s)</Option>
+            <Option value="month">Month(s)</Option>
+          </DropDown>
+        </FormControl>
       </FormControl>
       <div className="mt-8">
         {info.repetition.type == "week" && <Label>Repeat on</Label>}
@@ -136,7 +138,7 @@ export default function RepetitionSection({
             </FormControl>
             <HorizontalRule
               ruleClassName="border-2 border-icanGreen-200"
-              textClassName="text-4xl font-bold text-icanGreen-200"
+              textClassName="text-2xl tablet:text-4xl font-bold text-icanGreen-200"
             >
               Or
             </HorizontalRule>
@@ -180,7 +182,7 @@ export default function RepetitionSection({
                     return temp;
                   })
                 }
-                className="w-16 h-[52px] text-4xl"
+                className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
               />
             </FormControl>
           </div>

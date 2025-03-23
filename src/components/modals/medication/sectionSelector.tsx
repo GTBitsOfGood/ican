@@ -24,7 +24,11 @@ export default function SectionSelector({
   setError,
   onSubmit,
 }: SectionSelectorProps) {
-  const backAction = () => setCurrentSection((prev) => Math.max(0, prev - 1));
+  const backAction = () => {
+    setError("");
+    setCurrentSection((prev) => Math.max(0, prev - 1));
+  };
+
   const nextAction = () => {
     setError("");
     const { error, newInfo } = SectionValidator({ info, currentSection });
@@ -63,11 +67,11 @@ export default function SectionSelector({
           ? "Cancel"
           : "Back"}
       </ModalButton>
-      <div className="flex justify-center items-center gap-4">
+      <div className="flex justify-center items-center gap-2 smallTablet:gap-4">
         {Array.from({ length: sectionSize }).map((_, index) => (
           <div
             key={index}
-            className={`w-4 h-4 rounded-full transition ${
+            className={`w-2 h-2 smallTablet:w-3 tablet:w-4 smallTablet:h-3 flex-shrink-0 tablet:h-4 rounded-full transition ${
               index === currentSection ? "bg-white" : "bg-icanBlue-100"
             }`}
           />

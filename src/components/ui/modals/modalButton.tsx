@@ -27,7 +27,7 @@ export default function ModalButton({
     <button
       onClick={action}
       disabled={disabled}
-      className={`${className} ${disabled ? "opacity-0" : ""} font-belanosima px-5 py-2 text-3xl ${color}`}
+      className={`${className} ${disabled ? "opacity-0" : ""} font-belanosima px-3 tablet:px-5 py-2 text-xl tablet:text-3xl ${color}`}
       type="button"
     >
       {children}

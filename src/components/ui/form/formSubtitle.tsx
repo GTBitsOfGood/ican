@@ -11,7 +11,7 @@ export default function FormSubtitle({
 }: FormSubtitleProps) {
   return (
     <div
-      className={`text-2xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
+      className={`text-lg tablet:text-2xl font-bold ${disabled ? "opacity-40" : ""} ${className}`}
     >
       {children}
     </div>
