@@ -106,7 +106,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`food-${index}`}
-                  className="absolute w-[26.2%] flex items-center justify-center z-0"
+                  className="absolute largeDesktop:w-[390px] desktop:w-[300px] tablet:w-[250px] flex items-center justify-center z-0"
                 >
                   <img
                     src={item.image}
