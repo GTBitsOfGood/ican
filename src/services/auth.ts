@@ -17,6 +17,7 @@ import {
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
+import { objectIdSchema } from "@/utils/serviceUtils/commonSchemaUtil";
 
 export interface CreateUserBody {
   name: string;
@@ -159,5 +160,16 @@ export default class AuthService {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     return decodedToken;
+  }
+
+  static async deleteUser(userId: string) {
+    objectIdSchema(userId);
+
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    await UserDAO.deleteUserFromId(userId);
   }
 }

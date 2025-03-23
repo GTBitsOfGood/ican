@@ -11,15 +11,14 @@ export const medicationService = {
     return await fetchHTTPClient("/medication", {
       method: "POST",
       body: JSON.stringify(createMedicationBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   },
 
   medicationCheckIn: async (medicationId: string): Promise<void> => {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
+      credentials: "include",
     });
   },
 
@@ -31,6 +30,7 @@ export const medicationService = {
     return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
+      credentials: "include",
     });
   },
 };
