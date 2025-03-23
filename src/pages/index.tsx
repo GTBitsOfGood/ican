@@ -74,8 +74,8 @@ export default function Home({ activeModal = "" }: HomeProps) {
           {/* Navbar - VH Scaling */}
           <Navbar>
             <NavButton buttonType="store" />
-            <NavButton buttonType="log" />
             <NavButton buttonType="bag" />
+            <NavButton buttonType="log" />
             <FeedButton />
           </Navbar>
 

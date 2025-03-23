@@ -3,7 +3,7 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
 
-const route = "/api/settings/[userId]";
+const route = "/api/v1/settings/[userId]";
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
@@ -13,9 +13,9 @@ export async function GET(
     const userId = (await params).userId;
 
     const settings = await SettingsService.getSettings(userId);
-    return settings;
+    return NextResponse.json(settings, { status: 200 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }
 
@@ -38,6 +38,6 @@ export async function PATCH(
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }

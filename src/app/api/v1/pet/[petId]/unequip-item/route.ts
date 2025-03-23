@@ -15,6 +15,6 @@ export async function PATCH(
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }

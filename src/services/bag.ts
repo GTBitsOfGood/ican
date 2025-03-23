@@ -1,4 +1,4 @@
-import { getPetBag } from "@/db/actions/bag";
+import bagDAO from "@/db/actions/bag";
 import PetDAO from "@/db/actions/pets";
 import { BagItem, Pet } from "@/db/models";
 import { NotFoundError } from "@/types/exceptions";
@@ -13,7 +13,7 @@ export async function validateBagRequest(petId: string) {
     throw new NotFoundError("This pet does not exist.");
   }
 
-  const items = await getPetBag(new ObjectId(petId));
+  const items = await bagDAO.getPetBag(new ObjectId(petId));
 
   return items as [BagItem];
 }

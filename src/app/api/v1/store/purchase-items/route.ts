@@ -13,6 +13,6 @@ export async function POST(req: NextRequest) {
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }

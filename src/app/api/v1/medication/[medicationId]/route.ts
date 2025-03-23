@@ -17,7 +17,7 @@ export async function GET(
 
     return NextResponse.json(medication, { status: 201 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }
 
@@ -34,7 +34,7 @@ export async function PATCH(
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }
 
@@ -49,6 +49,6 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }

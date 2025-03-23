@@ -15,6 +15,6 @@ export async function GET(
 
     return NextResponse.json(medication, { status: 201 });
   } catch (err) {
-    handleError(err);
+    return handleError(err);
   }
 }
