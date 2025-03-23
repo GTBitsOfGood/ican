@@ -86,7 +86,7 @@ export interface AddMedicationInfo {
 export const initialAddMedicationInfo: AddMedicationInfo = {
   general: {
     form: "Pill",
-    medicationId: "DUPIX",
+    medicationId: "",
   },
   repetition: {
     repeatEvery: 1,
@@ -104,7 +104,7 @@ export const initialAddMedicationInfo: AddMedicationInfo = {
     hourlyInterval: undefined,
     dosesPerDay: undefined,
   },
-  times: [{ time: "9:00", period: "AM" }],
+  times: [],
   includeTimes: true,
   notes: "",
 };
