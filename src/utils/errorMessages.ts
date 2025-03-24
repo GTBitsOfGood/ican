@@ -69,6 +69,7 @@ const ERRORS = Object.freeze({
       DELETE: "Failed to delete medication.",
       UPDATE: "Failed to update medication.",
     },
+    UNAUTHORIZED: "User is not permitted to get another user's medication",
   },
   SETTINGS: {
     INVALID_ARGUMENTS: {
@@ -80,6 +81,8 @@ const ERRORS = Object.freeze({
       CREATE: "Failed to create user settings.",
       UPDATE: "Failed to update user settings.",
     },
+    UNAUTHORIZED:
+      "User is not permitted to get or modify another user's settings",
   },
   FORGOTPASSWORDCODE: {
     INVALID_ARGUMENTS: {

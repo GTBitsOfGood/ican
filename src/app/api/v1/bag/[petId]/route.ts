@@ -3,6 +3,7 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { validateBagRequest } from "@/services/bag";
 import { BagItem } from "@/db/models/bag";
+import { verifyPet } from "@/utils/auth";
 
 const route = "/api/v1/bag/[petId]";
 export async function GET(
@@ -10,8 +11,9 @@ export async function GET(
   { params }: { params: Promise<{ petId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(req, req.method, route);
     const petId = (await params).petId;
+    await verifyPet(tokenUser, petId);
 
     const items: BagItem[] = await validateBagRequest(petId);
 

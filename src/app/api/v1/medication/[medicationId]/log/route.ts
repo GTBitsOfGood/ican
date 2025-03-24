@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import MedicationService from "@/services/medication";
+import { verifyMedication } from "@/utils/auth";
 
 const route = "/api/v1/medication/[medicationId]/log";
 export async function POST(
@@ -9,10 +10,11 @@ export async function POST(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
-    const { pin } = await req.json();
-
+    const tokenUser = await validateRoutes(req, req.method, route);
     const medicationId = (await params).medicationId;
+    await verifyMedication(tokenUser, medicationId);
+
+    const { pin } = await req.json();
 
     await MedicationService.createMedicationLog(medicationId, pin);
 

@@ -1,4 +1,5 @@
 import { validateUnequip } from "@/services/pets";
+import { verifyPet } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,8 +11,10 @@ export async function PATCH(
   { params }: { params: Promise<{ petId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(req, req.method, route);
     const petId = (await params).petId;
+    await verifyPet(tokenUser, petId);
+
     const attribute = await req.json();
 
     await validateUnequip(petId, attribute);

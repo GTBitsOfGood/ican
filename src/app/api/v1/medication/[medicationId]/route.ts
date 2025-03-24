@@ -1,5 +1,6 @@
 import { Medication } from "@/db/models/medication";
 import MedicationService from "@/services/medication";
+import { verifyMedication } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,8 +11,10 @@ export async function GET(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(req, req.method, route);
     const medicationId = (await params).medicationId;
+    await verifyMedication(tokenUser, medicationId);
+
     const medication: Medication =
       await MedicationService.getMedication(medicationId);
 
@@ -26,8 +29,10 @@ export async function PATCH(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(req, req.method, route);
     const medicationId = (await params).medicationId;
+    await verifyMedication(tokenUser, medicationId);
+
     const body = await req.json();
     await MedicationService.updateMedication(medicationId, body);
     await validateRoutes(req, req.method, route);
@@ -43,8 +48,10 @@ export async function DELETE(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(req, req.method, route);
     const medicationId = (await params).medicationId;
+    await verifyMedication(tokenUser, medicationId);
+
     await MedicationService.deleteMedication(medicationId);
 
     return new NextResponse(null, { status: 204 });
