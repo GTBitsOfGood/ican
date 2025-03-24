@@ -10,7 +10,6 @@ export async function POST(
 ) {
   try {
     await validateRoutes(req, req.method, route);
-
     const { pin } = await req.json();
 
     const medicationId = (await params).medicationId;

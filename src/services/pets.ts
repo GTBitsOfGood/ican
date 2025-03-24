@@ -96,7 +96,7 @@ export default class PetService {
       updatedPet.xpGained += XP_GAIN;
     }
 
-    await PetDAO.updatePetByPetId(new Types.ObjectId(petId), {
+    await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
     });
@@ -129,7 +129,6 @@ export async function validateEquipItem(petId: string, itemName: string) {
   ) {
     throw new ConflictError("This item is already equipped.");
   }
-
   const prevAppearance = pet.appearance;
   let newAppearance = {};
 

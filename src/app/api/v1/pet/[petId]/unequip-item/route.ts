@@ -1,3 +1,4 @@
+import { validateUnequip } from "@/services/pets";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +12,9 @@ export async function PATCH(
   try {
     await validateRoutes(req, req.method, route);
     const petId = (await params).petId;
-    console.log(`Route: ${route} received: ${petId}. PATCH is unimplemented.`);
+    const attribute = await req.json();
+
+    await validateUnequip(petId, attribute);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

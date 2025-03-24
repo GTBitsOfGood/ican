@@ -109,7 +109,6 @@ export default class MedicationService {
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
-
     if (existingMedicationCheckIn) {
       const checkIn: MedicationCheckIn =
         existingMedicationCheckIn as MedicationCheckIn;

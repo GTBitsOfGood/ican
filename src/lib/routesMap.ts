@@ -128,7 +128,7 @@ export const routesMap: RoutesMap = {
       },
     },
   },
-  "/api/v1/store/purchase-items": {
+  "/api/v1/store/purchase-item": {
     allowedMethods: {
       POST: {
         isAuthorized: true,

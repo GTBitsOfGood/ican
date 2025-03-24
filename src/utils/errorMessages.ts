@@ -37,6 +37,11 @@ const ERRORS = Object.freeze({
       UPDATE: "Failed to update pet.",
     },
   },
+  BAG: {
+    FAILURE: {
+      CREATE: "Failed to purchase item",
+    },
+  },
   MEDICATION: {
     INVALID_ARGUMENTS: {
       ID: "ID is required and must be a valid ObjectID.",

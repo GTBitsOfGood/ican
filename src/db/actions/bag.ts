@@ -1,3 +1,4 @@
+import ERRORS from "@/utils/errorMessages";
 import dbConnect from "../dbConnect";
 import BagItemModel, { BagItem } from "../models/bag";
 import { Types } from "mongoose";
@@ -8,8 +9,8 @@ export default class BagDAO {
     try {
       const bagItem: BagItem = { petId: new Types.ObjectId(petId), itemName };
       await BagItemModel.insertOne(bagItem);
-    } catch (error) {
-      throw new Error("Failed to purchase item: " + (error as Error).message);
+    } catch {
+      throw new Error(ERRORS.BAG.FAILURE.CREATE);
     }
   }
 
