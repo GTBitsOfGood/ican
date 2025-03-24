@@ -1,4 +1,3 @@
-import { MedicationCheckIn, MedicationLog, Pet } from "@/db/models";
 import MedicationDAO from "@/db/actions/medication";
 import { removeUndefinedKeys } from "@/lib/utils";
 import {
@@ -8,7 +7,6 @@ import {
   UnauthorizedError,
 } from "@/types/exceptions";
 import { validateParams } from "@/utils/medication";
-import { ObjectId } from "mongodb";
 import { validatePins } from "@/utils/settings";
 import { FOOD_INC } from "@/utils/constants";
 import PetDAO from "@/db/actions/pets";
@@ -23,7 +21,13 @@ import {
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
-import { Medication } from "@/db/models/medication";
+import {
+  Medication,
+  MedicationCheckIn,
+  MedicationCheckInDocument,
+  MedicationLog,
+} from "@/db/models/medication";
+import { Pet } from "@/db/models/pet";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -95,7 +99,7 @@ export default class MedicationService {
 
     // Check if the medication exists
     const existingMedication = await MedicationDAO.getMedicationById(
-      new ObjectId(medicationId),
+      new Types.ObjectId(medicationId),
     );
 
     if (!existingMedication) {
@@ -103,15 +107,15 @@ export default class MedicationService {
     }
     // check if medication check in already exists and isn't expired
 
-    const existingMedicationCheckIn = await MedicationDAO.getMedicationCheckIn(
-      new ObjectId(medicationId),
-    );
+    const existingMedicationCheckIn: MedicationCheckInDocument | null =
+      await MedicationDAO.getMedicationCheckIn(medicationId);
 
     if (existingMedicationCheckIn) {
-      const checkIn = existingMedicationCheckIn as MedicationCheckIn;
+      const checkIn: MedicationCheckIn =
+        existingMedicationCheckIn as MedicationCheckIn;
       if (checkIn.expiration.getTime() <= Date.now()) {
         // delete medication
-        await MedicationDAO.deleteMedicationCheckIn(new ObjectId(medicationId));
+        await MedicationDAO.deleteMedicationCheckIn(medicationId);
       } else {
         // do nothing if valid
         return;
@@ -123,7 +127,7 @@ export default class MedicationService {
     expiration.setMinutes(expiration.getMinutes() + 15);
 
     const medicationCheckIn: MedicationCheckIn = {
-      medicationId: new ObjectId(medicationId),
+      medicationId: new Types.ObjectId(medicationId),
       expiration,
     };
 
@@ -136,7 +140,7 @@ export default class MedicationService {
 
     // Check if the pet exists
     const existingMedication = (await MedicationDAO.getMedicationById(
-      new ObjectId(medicationId),
+      new Types.ObjectId(medicationId),
     )) as Medication;
 
     if (!existingMedication || !existingMedication.userId) {
@@ -155,9 +159,8 @@ export default class MedicationService {
 
     // check if medication exists
 
-    const existingMedicationCheckIn = await MedicationDAO.getMedicationCheckIn(
-      new ObjectId(medicationId),
-    );
+    const existingMedicationCheckIn =
+      await MedicationDAO.getMedicationCheckIn(medicationId);
 
     if (!existingMedicationCheckIn) {
       throw new NotFoundError(
@@ -173,20 +176,22 @@ export default class MedicationService {
 
     // delete medication check in
 
-    await MedicationDAO.deleteMedicationCheckIn(new ObjectId(medicationId));
+    await MedicationDAO.deleteMedicationCheckIn(medicationId);
 
     // find pet
-    const existingPet = (await PetDAO.getPetByUserId(
-      new ObjectId(userId),
-    )) as Pet;
+    const existingPet: Pet | null = await PetDAO.getPetByUserId(userId);
+
+    if (!existingPet) {
+      throw new NotFoundError("No pet found for the user");
+    }
 
     // add food to pet
-    await PetDAO.updatePetByUserId(new ObjectId(userId), {
+    await PetDAO.updatePetByUserId(new Types.ObjectId(userId), {
       food: existingPet.food + FOOD_INC,
     });
 
     const medicationCheckIn: MedicationLog = {
-      medicationId: new ObjectId(medicationId),
+      medicationId: new Types.ObjectId(medicationId),
       dateTaken: new Date(),
     };
 

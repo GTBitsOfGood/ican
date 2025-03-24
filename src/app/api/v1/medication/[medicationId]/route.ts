@@ -15,7 +15,7 @@ export async function GET(
     const medication: Medication =
       await MedicationService.getMedication(medicationId);
 
-    return NextResponse.json(medication, { status: 201 });
+    return NextResponse.json(medication, { status: 200 });
   } catch (err) {
     return handleError(err);
   }

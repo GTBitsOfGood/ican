@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
-import { BagItem } from "@/db/models";
 import { validateBagRequest } from "@/services/bag";
-
-// Not implemented as of now
+import { BagItem } from "@/db/models/bag";
 
 const route = "/api/v1/bag/[petId]";
 export async function GET(
@@ -15,9 +13,9 @@ export async function GET(
     await validateRoutes(req, req.method, route);
     const petId = (await params).petId;
 
-    const items: [BagItem] = await validateBagRequest(petId);
+    const items: BagItem[] = await validateBagRequest(petId);
 
-    return NextResponse.json(items, { status: 204 });
+    return NextResponse.json(items, { status: 200 });
   } catch (error) {
     return handleError(error);
   }

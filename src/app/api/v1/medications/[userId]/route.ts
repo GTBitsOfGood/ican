@@ -13,7 +13,7 @@ export async function GET(
     const userId = (await params).userId;
     const medication = await MedicationService.getMedications(userId);
 
-    return NextResponse.json(medication, { status: 201 });
+    return NextResponse.json(medication, { status: 200 });
   } catch (err) {
     return handleError(err);
   }

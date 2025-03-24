@@ -7,9 +7,9 @@ export async function POST(req: NextRequest) {
   try {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
 
-    const { email, password } = await req.json();
+    const { name, email } = await req.json();
 
-    const response = await AuthService.loginWithGoogle(email, password);
+    const response = await AuthService.loginWithGoogle(name, email);
 
     return NextResponse.json({ token: response }, { status: 201 });
   } catch (error) {

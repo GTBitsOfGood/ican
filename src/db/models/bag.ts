@@ -9,7 +9,7 @@ export interface BagItemDocument extends BagItem, Document {
   _id: Types.ObjectId;
 }
 
-const bagItemSchema = new Schema(
+const bagItemSchema = new Schema<BagItemDocument>(
   {
     petId: {
       type: Schema.Types.ObjectId,
@@ -22,9 +22,7 @@ const bagItemSchema = new Schema(
       required: true,
     },
   },
-  {
-    timestamps: false,
-  },
+  { timestamps: true },
 );
 
 bagItemSchema.index({ petId: 1, itemName: 1 }, { unique: true });

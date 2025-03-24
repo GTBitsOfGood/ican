@@ -152,14 +152,14 @@ export const routesMap: RoutesMap = {
       },
     },
   },
-  "/api/v1/pet/[petId]/equip-route": {
+  "/api/v1/pet/[petId]/equip-item": {
     allowedMethods: {
       PATCH: {
         isAuthorized: true,
       },
     },
   },
-  "/api/v1/pet/[petId]/unequip-route": {
+  "/api/v1/pet/[petId]/unequip-item": {
     allowedMethods: {
       PATCH: {
         isAuthorized: true,

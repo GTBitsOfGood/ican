@@ -1,60 +1,34 @@
-import { ObjectId } from "mongodb";
 import dbConnect from "../dbConnect";
 import BagItemModel, { BagItem } from "../models/bag";
+import { Types } from "mongoose";
 
-export default class bagDAO {
-  static async createBagItem(newItem: BagItem) {
+export default class BagDAO {
+  static async createBagItem(petId: string, itemName: string) {
     await dbConnect();
     try {
-      await BagItemModel.insertOne(newItem);
+      const bagItem: BagItem = { petId: new Types.ObjectId(petId), itemName };
+      await BagItemModel.insertOne(bagItem);
     } catch (error) {
       throw new Error("Failed to purchase item: " + (error as Error).message);
     }
   }
 
-  static async getBagItemByPetIdAndName(petId: ObjectId, itemName: string) {
+  static async getBagItemByPetIdAndName(petIdString: string, itemName: string) {
     await dbConnect();
+    const petId = new Types.ObjectId(petIdString);
     const item = await BagItemModel.findOne({
-      petId: petId,
-      itemName: itemName,
+      petId,
+      itemName,
     });
 
     return item;
   }
 
-  static async getPetBag(petId: ObjectId) {
+  static async getPetBag(petIdString: string) {
     await dbConnect();
+    const petId = new Types.ObjectId(petIdString);
     const items = await BagItemModel.find({ petId });
 
     return items;
   }
 }
-
-// export async function createBagItem(newItem: BagItem) {
-//   const db = client.db();
-
-//   try {
-//     await db.collection("bagItems").insertOne(newItem);
-//   } catch (error) {
-//     throw new Error("Failed to purchase item: " + (error as Error).message);
-//   }
-// }
-
-// export async function getBagItemByPetIdAndName(
-//   petId: ObjectId,
-//   itemName: string,
-// ) {
-//   const db = client.db();
-//   const item = await db
-//     .collection("bagItems")
-//     .findOne({ petId: petId, itemName: itemName });
-
-//   return item;
-// }
-
-// export async function getPetBag(petId: ObjectId) {
-//   const db = client.db();
-//   const items = await db.collection("bagItems").find({ petId }).toArray();
-
-//   return items;
-// }

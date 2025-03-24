@@ -4,7 +4,7 @@ import {
   validateItemName,
   validatePetId,
 } from "@/utils/store";
-import bagDAO from "@/db/actions/bag";
+import BagDAO from "@/db/actions/bag";
 import { AccessoryType, storeItems } from "@/types/store";
 import {
   validateCreatePet,
@@ -19,7 +19,6 @@ import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
 import { WithId } from "@/types/models";
-import { ObjectId } from "mongodb";
 
 export default class PetService {
   static async createPet(
@@ -83,7 +82,7 @@ export default class PetService {
     await validateFeedPet({ petId });
 
     const existingPet = (await PetDAO.getPetByPetId(
-      new ObjectId(petId),
+      new Types.ObjectId(petId),
     )) as Pet;
     if (!existingPet) {
       throw new NotFoundError("This pet does not exist");
@@ -97,7 +96,7 @@ export default class PetService {
       updatedPet.xpGained += XP_GAIN;
     }
 
-    await PetDAO.updatePetByPetId(new ObjectId(petId), {
+    await PetDAO.updatePetByPetId(new Types.ObjectId(petId), {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
     });
@@ -118,10 +117,7 @@ export async function validateEquipItem(petId: string, itemName: string) {
     throw new NotFoundError("This item does not exist.");
   }
 
-  const dbItem = await bagDAO.getBagItemByPetIdAndName(
-    new ObjectId(petId),
-    itemName,
-  );
+  const dbItem = await BagDAO.getBagItemByPetIdAndName(petId, itemName);
   if (!dbItem) {
     throw new NotFoundError("This pet does not own this item.");
   }

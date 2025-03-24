@@ -1,10 +1,14 @@
-import client from "../dbClient";
-import { MedicationCheckIn, MedicationLog } from "../models";
-import { ObjectId } from "mongodb";
 import { HydratedDocument, Types } from "mongoose";
-import MedicationModel, {
+import {
+  MedicationModel,
   Medication,
   MedicationDocument,
+  MedicationCheckInModel,
+  MedicationCheckInDocument,
+  MedicationCheckIn,
+  MedicationLogModel,
+  MedicationLogDocument,
+  MedicationLog,
 } from "../models/medication";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
@@ -68,56 +72,34 @@ export default class MedicationDAO {
 
   static async createMedicationCheckIn(
     newMedicationCheckIn: MedicationCheckIn,
-  ) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationCheckIn")
-        .insertOne(newMedicationCheckIn);
-
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to create medication check in: " + (error as Error).message,
-      );
-    }
+  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+    await dbConnect();
+    return await MedicationCheckInModel.insertOne(newMedicationCheckIn);
   }
 
-  static async createMedicationLog(newMedicationLog: MedicationLog) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationLog")
-        .insertOne(newMedicationLog);
-
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to create medication log: " + (error as Error).message,
-      );
-    }
+  static async createMedicationLog(
+    newMedicationLog: MedicationLog,
+  ): Promise<HydratedDocument<MedicationLogDocument> | null> {
+    await dbConnect();
+    return await MedicationLogModel.insertOne(newMedicationLog);
   }
 
-  static async getMedicationCheckIn(medicationId: ObjectId) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationCheckIn")
-        .findOne({ medicationId });
-
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to get medication check in: " + (error as Error).message,
-      );
-    }
+  static async getMedicationCheckIn(
+    medicationId: string,
+  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+    const medicationIdObj = new Types.ObjectId(medicationId);
+    await dbConnect();
+    return await MedicationCheckInModel.findOne({
+      medicationId: medicationIdObj,
+    });
   }
 
-  static async deleteMedicationCheckIn(medicationId: ObjectId) {
-    const db = client.db();
-    const result = await db
-      .collection("MedicationCheckIn")
-      .deleteOne({ medicationId });
+  static async deleteMedicationCheckIn(medicationId: string) {
+    const medicationIdObj = new Types.ObjectId(medicationId);
+    await dbConnect();
+    const result = await MedicationCheckInModel.deleteOne({
+      medicationId: medicationIdObj,
+    });
 
     if (result.deletedCount == 0) {
       throw new Error("Failed to delete medication.");

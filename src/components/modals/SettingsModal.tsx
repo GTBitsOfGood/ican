@@ -47,7 +47,11 @@ export default function SettingsModal() {
     };
 
   const handleLogout = async () => {
-    console.log("Logout");
+    console.log("logout");
+  };
+
+  const handleDeleteAccount = async () => {
+    console.log("delete account");
   };
 
   useEffect(() => {
@@ -148,7 +152,10 @@ export default function SettingsModal() {
               </div>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Delete Account</h5>
-                <ModalNextButton link="settings" onClick={handleLogout} />
+                <ModalNextButton
+                  link="settings"
+                  onClick={handleDeleteAccount}
+                />
               </div>
             </div>
           </div>

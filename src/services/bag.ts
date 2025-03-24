@@ -1,19 +1,20 @@
-import bagDAO from "@/db/actions/bag";
+import BagDAO from "@/db/actions/bag";
 import PetDAO from "@/db/actions/pets";
-import { BagItem, Pet } from "@/db/models";
+import { BagItem } from "@/db/models/bag";
+import { Pet } from "@/db/models/pet";
 import { NotFoundError } from "@/types/exceptions";
 import { validatePetId } from "@/utils/store";
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export async function validateBagRequest(petId: string) {
   validatePetId(petId);
 
-  const pet = (await PetDAO.getPetByPetId(new ObjectId(petId))) as Pet;
+  const pet: Pet | null = await PetDAO.getPetByPetId(new Types.ObjectId(petId));
   if (!pet) {
     throw new NotFoundError("This pet does not exist.");
   }
 
-  const items = await bagDAO.getPetBag(new ObjectId(petId));
+  const items: BagItem[] = await BagDAO.getPetBag(petId);
 
-  return items as [BagItem];
+  return items;
 }
