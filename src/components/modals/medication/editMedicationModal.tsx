@@ -1,14 +1,11 @@
-import { MedicationModalInfo } from "./medicationModalInfo";
+import { MedicationInfo } from "@/types/medication";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useUser } from "@/components/UserContext";
-import { UnauthorizedError } from "@/types/exceptions";
+import { UnauthorizedError, ValidationError } from "@/types/exceptions";
 import MedicationBaseModal from "./baseModal";
 import { Medication } from "@/db/models/medication";
-import { WithId } from "@/types/models";
+import { WithId, WithOptionalId } from "@/types/models";
 import { useRouter } from "next/navigation";
-import parseModelMedication from "@/utils/parseModelMedication";
-import parseModalMedication from "@/utils/parseModalMedition";
-import { MedicationInfo } from "@/types/medication";
 
 interface EditMedicationModalProps {
   initialInfo?: WithId<Medication>;
@@ -25,24 +22,26 @@ export default function EditMedicationModal({
     return;
   }
 
-  const onSubmit = async (medicationInfo: MedicationModalInfo) => {
+  const onSubmit = async (medicationInfo: WithOptionalId<MedicationInfo>) => {
     if (!userId) {
       throw new UnauthorizedError(
         "User ID is missing. Please make sure you're logged in.",
       );
     }
-    const { _id, ...parsedMedicationInfo } = parseModalMedication(
-      medicationInfo,
-    ) as WithId<MedicationInfo>;
-    await MedicationHTTPClient.updateMedication(_id, parsedMedicationInfo);
-    router.push("/");
+    const { _id, ...info } = medicationInfo;
+    if (_id) {
+      await MedicationHTTPClient.updateMedication(_id, info);
+      router.push("/");
+    } else {
+      throw new ValidationError("The Medication ID is missing.");
+    }
   };
 
   return (
     <MedicationBaseModal
       modalType="Edit"
       onSubmit={onSubmit}
-      initialInfo={parseModelMedication(initialInfo)}
+      initialInfo={initialInfo}
     />
   );
 }

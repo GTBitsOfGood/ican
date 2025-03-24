@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { MedicationModalInfo } from "../medicationModalInfo";
+import { MedicationInfo } from "@/types/medication";
 import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
@@ -12,8 +12,8 @@ import FormText from "@/components/ui/form/formText";
 import { DAYS_OF_WEEK } from "@/lib/consts";
 
 interface RepetitionSectionProps {
-  info: MedicationModalInfo;
-  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
 }
 
 export default function RepetitionSection({
@@ -27,7 +27,7 @@ export default function RepetitionSection({
         <FormControl gap={16}>
           <InputBox
             maxLength={2}
-            value={info.repetition.repeatEvery?.toString() || ""}
+            value={info.repeatInterval?.toString() || ""}
             onChange={(newValue: string) =>
               setInfo((prev) => {
                 const numericValue = Number(newValue);
@@ -36,11 +36,11 @@ export default function RepetitionSection({
                 }
                 const temp = { ...prev };
                 if (!newValue) {
-                  temp.repetition.repeatEvery = undefined;
+                  temp.repeatInterval = undefined;
                 } else {
-                  temp.repetition.repeatEvery = Number(
+                  temp.repeatInterval = Number(
                     newValue,
-                  ) as MedicationModalInfo["repetition"]["repeatEvery"];
+                  ) as MedicationInfo["repeatInterval"];
                 }
                 return temp;
               })
@@ -48,60 +48,53 @@ export default function RepetitionSection({
             className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
           <DropDown
-            className="uppercase"
-            width={180}
-            value={info.repetition.type}
+            width={220}
+            value={info.repeatUnit || ""}
             setValue={(newValue: string) =>
               setInfo((prev) => {
                 const temp = { ...prev };
-                temp.repetition.type =
-                  newValue as MedicationModalInfo["repetition"]["type"];
+                temp.repeatUnit = newValue as MedicationInfo["repeatUnit"];
                 return temp;
               })
             }
           >
-            <Option value="day">Day(s)</Option>
-            <Option value="week">Week(s)</Option>
-            <Option value="month">Month(s)</Option>
+            <Option value="Day">Day(s)</Option>
+            <Option value="Week">Week(s)</Option>
+            <Option value="Month">Month(s)</Option>
           </DropDown>
         </FormControl>
       </FormControl>
       <div className="mt-8">
-        {info.repetition.type == "week" && <Label>Repeat on</Label>}
-        {info.repetition.type == "month" && (
+        {info.repeatUnit == "Week" && <Label>Repeat on</Label>}
+        {info.repeatUnit == "Month" && (
           <div>
             <FormControl gap={16}>
               <CheckBox
                 className="self-start"
-                checked={info.repetition.monthlyRepetition == "week"}
+                checked={info.repeatMonthlyType == "Week"}
                 onChange={() =>
                   setInfo((prev) => {
                     const temp = { ...prev };
-                    temp.repetition.monthlyRepetition = "week";
+                    temp.repeatMonthlyType = "Week";
                     return temp;
                   })
                 }
               />
               <div className="flex flex-col justify-start items-start gap-4">
-                <FormText
-                  disabled={info.repetition.monthlyRepetition != "week"}
-                >
+                <FormText disabled={info.repeatMonthlyType != "Week"}>
                   Repeat monthly on the
                 </FormText>
-                <FormControl gap={16}>
+                <FormControl gap={16} mobileColumn={true}>
                   <DropDown
-                    disabled={info.repetition.monthlyRepetition != "week"}
-                    className="uppercase"
-                    width={180}
-                    value={
-                      info.repetition.monthlyWeekOfRepetition.toString() || "1"
-                    }
+                    disabled={info.repeatMonthlyType != "Week"}
+                    width={220}
+                    value={info.repeatMonthlyOnWeek?.toString() || ""}
                     setValue={(newValue: string) =>
                       setInfo((prev) => {
                         const temp = { ...prev };
-                        temp.repetition.monthlyWeekOfRepetition = parseInt(
+                        temp.repeatMonthlyOnWeek = parseInt(
                           newValue,
-                        ) as MedicationModalInfo["repetition"]["monthlyWeekOfRepetition"];
+                        ) as MedicationInfo["repeatMonthlyOnWeek"];
                         return temp;
                       })
                     }
@@ -112,15 +105,14 @@ export default function RepetitionSection({
                     <Option value="4">Fourth</Option>
                   </DropDown>
                   <DropDown
-                    disabled={info.repetition.monthlyRepetition != "week"}
-                    className="uppercase"
-                    width={180}
-                    value={info.repetition.monthlyWeekDayOfRepetition}
+                    disabled={info.repeatMonthlyType != "Week"}
+                    width={220}
+                    value={info.repeatMonthlyOnWeekDay || ""}
                     setValue={(newValue: string) =>
                       setInfo((prev) => {
                         const temp = { ...prev };
-                        temp.repetition.monthlyWeekDayOfRepetition =
-                          newValue as MedicationModalInfo["repetition"]["monthlyWeekDayOfRepetition"];
+                        temp.repeatMonthlyOnWeekDay =
+                          newValue as MedicationInfo["repeatMonthlyOnWeekDay"];
                         return temp;
                       })
                     }
@@ -144,22 +136,22 @@ export default function RepetitionSection({
             </HorizontalRule>
             <FormControl gap={16}>
               <CheckBox
-                checked={info.repetition.monthlyRepetition == "day"}
+                checked={info.repeatMonthlyType == "Day"}
                 onChange={() =>
                   setInfo((prev) => {
                     const temp = { ...prev };
-                    temp.repetition.monthlyRepetition = "day";
+                    temp.repeatMonthlyType = "Day";
                     return temp;
                   })
                 }
               />
-              <FormText disabled={info.repetition.monthlyRepetition != "day"}>
+              <FormText disabled={info.repeatMonthlyType != "Day"}>
                 Repeat monthly on day
               </FormText>
               <InputBox
-                disabled={info.repetition.monthlyRepetition != "day"}
+                disabled={info.repeatMonthlyType != "Day"}
                 maxLength={2}
-                value={info.repetition.monthlyDayOfRepetition?.toString() || ""}
+                value={info.repeatMonthlyOnDay?.toString() || ""}
                 onChange={(newValue: string) =>
                   setInfo((prev) => {
                     const numericValue = Number(newValue);
@@ -168,7 +160,7 @@ export default function RepetitionSection({
                     }
                     const temp = { ...prev };
                     if (!newValue) {
-                      temp.repetition.monthlyDayOfRepetition = undefined;
+                      temp.repeatMonthlyOnDay = undefined;
                     } else {
                       let valueNum = Number(newValue);
                       if (valueNum > 31) {
@@ -176,8 +168,8 @@ export default function RepetitionSection({
                       } else if (valueNum < 1) {
                         valueNum = 1;
                       }
-                      temp.repetition.monthlyDayOfRepetition =
-                        valueNum as MedicationModalInfo["repetition"]["monthlyDayOfRepetition"];
+                      temp.repeatMonthlyOnDay =
+                        valueNum as MedicationInfo["repeatMonthlyOnDay"];
                     }
                     return temp;
                   })
@@ -188,20 +180,19 @@ export default function RepetitionSection({
           </div>
         )}
       </div>
-      {info.repetition.type == "week" && (
+      {info.repeatUnit == "Week" && (
         <WeekDaySelector
-          selectedDays={info.repetition.weeklyRepetition || []}
+          selectedDays={info.repeatWeeklyOn}
           onSelect={(newDayIndex: number) =>
             setInfo((prev) => {
               const temp = { ...prev };
               const newDay = DAYS_OF_WEEK[newDayIndex];
-              if (temp.repetition.weeklyRepetition?.includes(newDay)) {
-                temp.repetition.weeklyRepetition =
-                  temp.repetition.weeklyRepetition.filter(
-                    (day) => day !== newDay,
-                  );
+              if (temp.repeatWeeklyOn?.includes(newDay)) {
+                temp.repeatWeeklyOn = temp.repeatWeeklyOn.filter(
+                  (day) => day !== newDay,
+                );
               } else {
-                temp.repetition.weeklyRepetition?.push(newDay);
+                temp.repeatWeeklyOn?.push(newDay);
               }
               return temp;
             })

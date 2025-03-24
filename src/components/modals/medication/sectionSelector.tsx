@@ -1,6 +1,6 @@
 import ModalButton from "@/components/ui/modals/modalButton";
 import { Dispatch, SetStateAction } from "react";
-import { MedicationModalInfo } from "./medicationModalInfo";
+import { MedicationInfo, Time12Hour } from "@/types/medication";
 import SectionValidator from "./sectionValidator";
 
 interface SectionSelectorProps {
@@ -8,10 +8,12 @@ interface SectionSelectorProps {
   currentSection: number;
   sectionSize: number;
   setCurrentSection: Dispatch<SetStateAction<number>>;
-  info: MedicationModalInfo;
-  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
+  timesIn12Hour: Time12Hour[];
+  setTimesIn12Hour: Dispatch<SetStateAction<Time12Hour[]>>;
   setError: Dispatch<SetStateAction<string>>;
-  onSubmit: (medicationInfo: MedicationModalInfo) => void;
+  onSubmit: (medicationInfo: MedicationInfo) => void;
 }
 
 export default function SectionSelector({
@@ -21,6 +23,8 @@ export default function SectionSelector({
   sectionSize,
   info,
   setInfo,
+  timesIn12Hour,
+  setTimesIn12Hour,
   setError,
   onSubmit,
 }: SectionSelectorProps) {
@@ -31,13 +35,20 @@ export default function SectionSelector({
 
   const nextAction = () => {
     setError("");
-    const { error, newInfo } = SectionValidator({ info, currentSection });
+    const { error, newInfo, newTime } = SectionValidator({
+      info,
+      currentSection,
+      timesIn12Hour,
+    });
     if (error) {
       setError(error);
       return;
     }
     if (newInfo) {
       setInfo(newInfo);
+    }
+    if (newTime) {
+      setTimesIn12Hour(newTime);
     }
 
     if (currentSection == sectionSize - 1) {

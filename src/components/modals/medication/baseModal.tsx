@@ -1,4 +1,4 @@
-import { MedicationModalInfo } from "./medicationModalInfo";
+import { MedicationInfo, Time12Hour } from "@/types/medication";
 import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import SectionSelector from "@/components/modals/medication/sectionSelector";
@@ -11,11 +11,13 @@ import NotesSection from "./sections/notesSection";
 import ReviewSection from "./sections/reviewSection";
 import { UnauthorizedError } from "@/types/exceptions";
 import { useState } from "react";
+import { convertTo12Hour } from "@/utils/time";
+import { WithOptionalId } from "@/types/models";
 
 interface MedicationBaseModalProps {
   modalType: "Edit" | "Add";
-  onSubmit: (medicationInfo: MedicationModalInfo) => void;
-  initialInfo: MedicationModalInfo;
+  onSubmit: (medicationInfo: WithOptionalId<MedicationInfo>) => void;
+  initialInfo: WithOptionalId<MedicationInfo>;
 }
 
 const modalTypeToSection = {
@@ -28,52 +30,54 @@ export default function MedicationBaseModal({
   onSubmit,
   initialInfo,
 }: MedicationBaseModalProps) {
-  const [addMedicationInfo, setAddMedicationInfo] =
-    useState<MedicationModalInfo>(initialInfo);
+  const [medicationInfo, setMedicationInfo] =
+    useState<WithOptionalId<MedicationInfo>>(initialInfo);
   const [currentSection, setCurrentSection] = useState<number>(
     modalTypeToSection[modalType],
+  );
+  const [timesIn12Hour, setTimesIn12Hour] = useState<Time12Hour[]>(
+    convertTo12Hour(initialInfo.doseTimes),
   );
   const [error, setError] = useState<string>("");
 
   const sections = [
     <GeneralSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      info={medicationInfo}
+      setInfo={setMedicationInfo}
       key={0}
     />,
     <DosageAmountSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      info={medicationInfo}
+      setInfo={setMedicationInfo}
       key={1}
     />,
     <RepetitionSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      info={medicationInfo}
+      setInfo={setMedicationInfo}
       key={2}
     />,
     <DosageNotificationSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      info={medicationInfo}
+      setInfo={setMedicationInfo}
       key={3}
     />,
     <TimeSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
+      info={medicationInfo}
+      setInfo={setMedicationInfo}
+      timesIn12Hour={timesIn12Hour}
+      setTimesIn12Hour={setTimesIn12Hour}
       key={4}
     />,
-    <NotesSection
-      info={addMedicationInfo}
-      setInfo={setAddMedicationInfo}
-      key={5}
-    />,
+    <NotesSection info={medicationInfo} setInfo={setMedicationInfo} key={5} />,
     <ReviewSection
-      info={addMedicationInfo}
+      info={medicationInfo}
+      timesIn12Hour={timesIn12Hour}
       setCurrentSection={setCurrentSection}
       key={6}
     />,
   ];
 
-  const submitHandler = async (medicationInfo: MedicationModalInfo) => {
+  const submitHandler = async (medicationInfo: MedicationInfo) => {
     try {
       await onSubmit(medicationInfo);
     } catch (error) {
@@ -108,8 +112,10 @@ export default function MedicationBaseModal({
           currentSection={currentSection}
           setCurrentSection={setCurrentSection}
           sectionSize={sections.length}
-          info={addMedicationInfo}
-          setInfo={setAddMedicationInfo}
+          info={medicationInfo}
+          setInfo={setMedicationInfo}
+          timesIn12Hour={timesIn12Hour}
+          setTimesIn12Hour={setTimesIn12Hour}
           setError={setError}
           onSubmit={submitHandler}
         />

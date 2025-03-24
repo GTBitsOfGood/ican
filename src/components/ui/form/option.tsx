@@ -7,6 +7,7 @@ export interface OptionProps {
   icon?: JSX.Element;
   onClick?: () => void;
   children?: string;
+  className?: string;
 }
 
 export default function Option({
@@ -16,11 +17,12 @@ export default function Option({
   selected = false,
   showDropDown = false,
   children,
+  className,
 }: OptionProps) {
   if (selected) {
     return (
       <div
-        className="flex justify-between items-center gap-3 px-2 tablet:px-4 py-1 tablet:py-2 cursor-pointer noSelect"
+        className={`${className} flex justify-between items-center gap-3 px-2 tablet:px-4 h-[40px] tablet:h-[52px] cursor-pointer noSelect`}
         onClick={onClick}
       >
         <div className="flex justify-start items-center gap-2">

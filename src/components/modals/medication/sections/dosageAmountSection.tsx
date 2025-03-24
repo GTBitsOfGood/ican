@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from "react";
-import { MedicationModalInfo } from "../medicationModalInfo";
+import { MedicationInfo } from "@/types/medication";
 import InputBox from "@/components/ui/form/inputBox";
 import Label from "@/components/ui/form/label";
 
 interface DosageAmountSectionProps {
-  info: MedicationModalInfo;
-  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
 }
 
 export default function DosageAmountSection({
@@ -17,11 +17,11 @@ export default function DosageAmountSection({
       <Label>Dosage</Label>
       <InputBox
         maxLength={50}
-        value={info.dosage.amount || ""}
+        value={info.dosageAmount || ""}
         onChange={(newValue: string) =>
           setInfo((prev) => {
             const temp = { ...prev };
-            temp.dosage.amount = newValue;
+            temp.dosageAmount = newValue;
             return temp;
           })
         }

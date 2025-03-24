@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { MedicationModalInfo } from "../medicationModalInfo";
+import { MedicationInfo } from "@/types/medication";
 import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
@@ -10,8 +10,8 @@ import Label from "@/components/ui/form/label";
 import FormText from "@/components/ui/form/formText";
 
 interface DosageNotificationSectionProps {
-  info: MedicationModalInfo;
-  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
 }
 
 export default function DosageNotificationSection({
@@ -23,20 +23,20 @@ export default function DosageNotificationSection({
       <div>
         <FormControl gap={16}>
           <CheckBox
-            checked={info.dosage.type == "doses"}
+            checked={info.dosesUnit == "Doses"}
             onChange={() =>
               setInfo((prev) => {
                 const temp = { ...prev };
-                temp.dosage.type = "doses";
+                temp.dosesUnit = "Doses";
                 return temp;
               })
             }
           />
-          <FormText disabled={info.dosage.type != "doses"}>Take</FormText>
+          <FormText disabled={info.dosesUnit != "Doses"}>Take</FormText>
           <InputBox
-            disabled={info.dosage.type != "doses"}
+            disabled={info.dosesUnit != "Doses"}
             maxLength={2}
-            value={info.dosage.dosesPerDay?.toString() || ""}
+            value={info.dosesPerDay?.toString() || ""}
             onChange={(newValue: string) =>
               setInfo((prev) => {
                 const numericValue = Number(newValue);
@@ -45,18 +45,18 @@ export default function DosageNotificationSection({
                 }
                 const temp = { ...prev };
                 if (!newValue) {
-                  temp.dosage.dosesPerDay = undefined;
+                  temp.dosesPerDay = undefined;
                 } else {
-                  temp.dosage.dosesPerDay = Number(
+                  temp.dosesPerDay = Number(
                     newValue,
-                  ) as MedicationModalInfo["dosage"]["dosesPerDay"];
+                  ) as MedicationInfo["dosesPerDay"];
                 }
                 return temp;
               })
             }
             className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
-          <FormText disabled={info.dosage.type != "doses"}>
+          <FormText disabled={info.dosesUnit != "Doses"}>
             dose(s) per day
           </FormText>
         </FormControl>
@@ -68,20 +68,20 @@ export default function DosageNotificationSection({
         </HorizontalRule>
         <FormControl gap={16}>
           <CheckBox
-            checked={info.dosage.type == "hours"}
+            checked={info.dosesUnit == "Hours"}
             onChange={() =>
               setInfo((prev) => {
                 const temp = { ...prev };
-                temp.dosage.type = "hours";
+                temp.dosesUnit = "Hours";
                 return temp;
               })
             }
           />
-          <FormText disabled={info.dosage.type != "hours"}>Take every</FormText>
+          <FormText disabled={info.dosesUnit != "Hours"}>Take every</FormText>
           <InputBox
-            disabled={info.dosage.type != "hours"}
+            disabled={info.dosesUnit != "Hours"}
             maxLength={2}
-            value={info.dosage.hourlyInterval?.toString() || ""}
+            value={info.doseIntervalInHours?.toString() || ""}
             onChange={(newValue: string) =>
               setInfo((prev) => {
                 const numericValue = Number(newValue);
@@ -90,38 +90,37 @@ export default function DosageNotificationSection({
                 }
                 const temp = { ...prev };
                 if (!newValue) {
-                  temp.dosage.hourlyInterval = undefined;
+                  temp.doseIntervalInHours = undefined;
                 } else {
-                  temp.dosage.hourlyInterval = Number(
+                  temp.doseIntervalInHours = Number(
                     newValue,
-                  ) as MedicationModalInfo["dosage"]["hourlyInterval"];
+                  ) as MedicationInfo["doseIntervalInHours"];
                 }
                 return temp;
               })
             }
             className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
-          <FormText disabled={info.dosage.type != "hours"}>hours</FormText>
+          <FormText disabled={info.dosesUnit != "Hours"}>hours</FormText>
         </FormControl>
       </div>
       <div className="mt-8">
         <FormControl gap={16} mobileColumn={true}>
           <Label>Notify me</Label>
           <DropDown
-            className="uppercase"
-            width={340}
-            value={info.dosage.notificationFrequency}
+            width={220}
+            value={info.notificationFrequency || ""}
             setValue={(newValue: string) =>
               setInfo((prev) => {
                 const temp = { ...prev };
-                temp.dosage.notificationFrequency =
-                  newValue as MedicationModalInfo["dosage"]["notificationFrequency"];
+                temp.notificationFrequency =
+                  newValue as MedicationInfo["notificationFrequency"];
                 return temp;
               })
             }
           >
-            <Option value="day of dose">Day of Dosage</Option>
-            <Option value="every dose">Every Dose</Option>
+            <Option value="Day Of Dose" />
+            <Option value="Every Dose" />
           </DropDown>
         </FormControl>
       </div>

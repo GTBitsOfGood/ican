@@ -3,7 +3,7 @@ import { objectIdSchema } from "./commonSchemaUtil";
 import ERRORS from "../errorMessages";
 
 export const baseMedicationSchema = z.object({
-  formOfMedication: z.enum(["tablet", "liquid", "injection"], {
+  formOfMedication: z.enum(["Pill", "Syrup", "Shot"], {
     errorMap: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
     }),
@@ -14,7 +14,7 @@ export const baseMedicationSchema = z.object({
     .nonempty(ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID)
     .max(5, ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID),
 
-  repeatUnit: z.enum(["day", "week", "month"], {
+  repeatUnit: z.enum(["Day", "Week", "Month"], {
     errorMap: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
     }),
@@ -38,7 +38,7 @@ export const baseMedicationSchema = z.object({
     )
     .optional(),
 
-  repeatMonthlyType: z.enum(["day", "week"]).optional(),
+  repeatMonthlyType: z.enum(["Day", "Week"]).optional(),
 
   repeatMonthlyOnDay: z
     .number()
@@ -63,7 +63,7 @@ export const baseMedicationSchema = z.object({
     ])
     .optional(),
 
-  dosesUnit: z.enum(["doses", "hours"], {
+  dosesUnit: z.enum(["Doses", "Hours"], {
     errorMap: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_UNIT,
     }),
@@ -85,12 +85,13 @@ export const baseMedicationSchema = z.object({
 
   doseTimes: z.array(z.string()),
 
-  notificationFrequency: z.enum(["day of dose", "every dose"], {
+  notificationFrequency: z.enum(["Day Of Dose", "Every Dose"], {
     errorMap: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
     }),
   }),
 
+  includeTimes: z.boolean(),
   notes: z.string().optional(),
 });
 
@@ -98,7 +99,7 @@ const medicationRefine = (
   data: z.infer<typeof baseMedicationSchema>,
   ctx: z.RefinementCtx,
 ) => {
-  if (data.repeatUnit === "week" && !data.repeatWeeklyOn) {
+  if (data.repeatUnit === "Week" && !data.repeatWeeklyOn) {
     ctx.addIssue({
       path: ["repeatWeeklyOn"],
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_WEEKLY_ON,
@@ -107,25 +108,25 @@ const medicationRefine = (
   }
 
   if (
-    data.repeatUnit === "month" &&
+    data.repeatUnit === "Month" &&
     !data.repeatMonthlyOnDay &&
     (!data.repeatMonthlyOnWeekDay || !data.repeatMonthlyOnWeek)
   ) {
     ctx.addIssue({
       path: [
         "repeatMonthlyOnDay",
-        "repeatMonthlyOnDayOfWeek",
-        "repeatMonthlyOnWeekOfMonth",
+        "repeatMonthlyOnWeekDay",
+        "repeatMonthlyOnWeek",
       ],
       message:
-        "If the repeat unit is in months, at least either repeatMonthlyOnDay or repeatMonthlyOnDayOfWeek and repeatMonthlyOnWeekOfMonth must be provided.",
+        "If the repeat unit is 'Month', at least either repeatMonthlyOnDay or repeatMonthlyOnWeekDay and repeatMonthlyOnWeek must be provided.",
       code: z.ZodIssueCode.custom,
     });
   }
 
   if (
-    data.repeatUnit === "month" &&
-    data.repeatMonthlyType === "week" &&
+    data.repeatUnit === "Month" &&
+    data.repeatMonthlyType === "Week" &&
     (!data.repeatMonthlyOnWeekDay || !data.repeatMonthlyOnWeek)
   ) {
     ctx.addIssue({
@@ -136,20 +137,20 @@ const medicationRefine = (
         "repeatMonthlyOnWeekDay",
       ],
       message:
-        "RepeatMonthlyOnWeek and RepeatMonthlyOnWeekDay must be provided if RepeatUnit is 'month' and RepeatMonthlyType is 'week'.",
+        "repeatMonthlyOnWeek and repeatMonthlyOnWeekDay must be provided if repeatUnit is 'Month' and repeatMonthlyType is 'Week'.",
       code: z.ZodIssueCode.custom,
     });
   }
 
   if (
-    data.repeatUnit === "month" &&
-    data.repeatMonthlyType === "day" &&
+    data.repeatUnit === "Month" &&
+    data.repeatMonthlyType === "Day" &&
     !data.repeatMonthlyOnDay
   ) {
     ctx.addIssue({
       path: ["repeatUnit", "repeatMonthlyType", "repeatMonthlyOnDay"],
       message:
-        "RepeatMonthlyOnDay must be provided if RepeatUnit is 'month' and RepeatMonthlyType is 'day'.",
+        "repeatMonthlyOnDay must be provided if repeatUnit is 'Month' and repeatMonthlyType is 'Day'.",
       code: z.ZodIssueCode.custom,
     });
   }
@@ -157,16 +158,16 @@ const medicationRefine = (
   if (!data.dosesPerDay && !data.doseIntervalInHours) {
     ctx.addIssue({
       path: ["dosesPerDay", "doseIntervalInHours"],
-      message: "Either DosesPerDay or DoseIntervalInHours must be provided.",
+      message: "Either dosesPerDay or doseIntervalInHours must be provided.",
       code: z.ZodIssueCode.custom,
     });
   }
 
-  if (data.dosesUnit === "hours" && data.doseTimes.length === 0) {
+  if (data.includeTimes && data.doseTimes.length === 0) {
     ctx.addIssue({
-      path: ["dosesUnit", "doseTimes"],
+      path: ["includeTimes", "doseTimes"],
       message:
-        "DoseTimes needs to be a non-empty array if DosesUnit is 'hours'.",
+        "doseTimes needs to be a non-empty array if includeTimes is true.",
       code: z.ZodIssueCode.custom,
     });
   }

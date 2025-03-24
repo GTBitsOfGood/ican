@@ -1,11 +1,11 @@
-import { MedicationModalInfo } from "@/components/modals/medication/medicationModalInfo";
+import { MedicationInfo } from "@/types/medication";
 import Label from "@/components/ui/form/label";
 import TextBox from "@/components/ui/form/textBox";
 import { Dispatch, SetStateAction } from "react";
 
 interface NotesSectionProps {
-  info: MedicationModalInfo;
-  setInfo: Dispatch<SetStateAction<MedicationModalInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
 }
 
 export default function NotesSection({ info, setInfo }: NotesSectionProps) {

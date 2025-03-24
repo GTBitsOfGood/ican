@@ -1,5 +1,5 @@
 import { cloneElement, ReactElement, useState, useEffect, useRef } from "react";
-import { OptionProps } from "./option";
+import Option, { OptionProps } from "./option";
 
 interface DropDownProps {
   children: ReactElement<OptionProps>[];
@@ -40,9 +40,7 @@ export default function DropDown({
     const initialIndex = children.findIndex(
       (child) => child.props.value === value,
     );
-    if (initialIndex !== -1) {
-      setSelectedIndex(initialIndex);
-    }
+    setSelectedIndex(initialIndex);
   }, [value, children]);
 
   useEffect(() => {
@@ -80,15 +78,24 @@ export default function DropDown({
       }}
     >
       {/* Dropdown Button */}
-      {cloneElement(children[selectedIndex], {
-        showDropDown,
-        selected: true,
-        onClick: () => {
-          if (!disabled) {
-            setShowDropDown((prev) => !prev);
-          }
-        },
-      })}
+      {selectedIndex === -1 ? (
+        <Option
+          value="Select"
+          selected={true}
+          onClick={() => setShowDropDown((prev) => !prev)}
+          className="!text-slate-900/75"
+        />
+      ) : (
+        cloneElement(children[selectedIndex], {
+          showDropDown,
+          selected: true,
+          onClick: () => {
+            if (!disabled) {
+              setShowDropDown((prev) => !prev);
+            }
+          },
+        })
+      )}
 
       {/* Dropdown Menu */}
       {!disabled && showDropDown && (

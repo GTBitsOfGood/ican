@@ -1,25 +1,7 @@
 import { Document, model, models, Schema, Types } from "mongoose";
+import { MedicationInfo } from "@/types/medication";
 
-export interface Medication {
-  formOfMedication: string;
-  medicationId: string;
-
-  repeatUnit: string;
-  repeatInterval: number;
-  repeatWeeklyOn: string[];
-  repeatMonthlyType?: string;
-  repeatMonthlyOnDay?: number;
-  repeatMonthlyOnWeek: number;
-  repeatMonthlyOnWeekDay: string;
-
-  dosesUnit: string;
-  dosesPerDay?: number;
-  doseIntervalInHours?: number;
-  dosageAmount: string;
-  doseTimes: string[];
-
-  notificationFrequency: string;
-  notes?: string;
+export interface Medication extends MedicationInfo {
   userId: Types.ObjectId;
 }
 
@@ -35,15 +17,16 @@ const medicationSchema = new Schema<MedicationDocument>({
   repeatWeeklyOn: { type: [String], required: true },
   repeatMonthlyType: { type: String, required: false },
   repeatMonthlyOnDay: { type: Number, required: false },
-  repeatMonthlyOnWeek: { type: Number, required: true },
-  repeatMonthlyOnWeekDay: { type: String, required: true },
+  repeatMonthlyOnWeek: { type: Number, required: false },
+  repeatMonthlyOnWeekDay: { type: String, required: false },
   dosesUnit: { type: String, required: true },
-  dosesPerDay: { type: Number, required: true },
+  dosesPerDay: { type: Number, required: false },
   doseIntervalInHours: { type: Number, required: false },
   dosageAmount: { type: String, required: true },
   doseTimes: { type: [String], required: true },
   notificationFrequency: { type: String, required: true },
   notes: { type: String, required: false },
+  includeTimes: { type: Boolean, required: true },
   userId: { type: Schema.ObjectId, ref: "User", required: true, index: true },
 });
 

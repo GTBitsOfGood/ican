@@ -1,23 +1,29 @@
+import { DayOfWeek } from "@/lib/consts";
+
+export type Time12Hour = { time: string; period: "AM" | "PM" };
+
 export interface MedicationInfo {
-  formOfMedication: string; // medicationInfo.general.form
-  medicationId: string; // medicationInfo.general.medicationId
+  formOfMedication?: "Pill" | "Syrup" | "Shot";
+  medicationId: string;
 
-  repeatUnit: string; // medicationInfo.repetition.type
-  repeatInterval: number; // medicationInfo.repetition.repeatEvery
-  repeatWeeklyOn: string[]; // medicationInfo.repetition.repeat
-  repeatMonthlyType?: string;
-  repeatMonthlyOnDay?: number; // medicationInfo.repetition.monthlyDayOfRepitition
-  repeatMonthlyOnWeek: number; // medicationInfo.repetition.monthlyWeekOfRepetition
-  repeatMonthlyOnWeekDay: string; // medicationInfo.repetition.monthlyWeekDayOfRepetition
+  repeatUnit?: "Day" | "Week" | "Month";
+  repeatInterval?: number;
+  repeatWeeklyOn: DayOfWeek[];
+  repeatMonthlyType?: "Day" | "Week";
+  repeatMonthlyOnDay?: number;
+  repeatMonthlyOnWeek?: number;
+  repeatMonthlyOnWeekDay?: DayOfWeek;
 
-  dosesUnit: string; // medicationInfo.dosage.type
-  dosesPerDay?: number; // medicationInfo.dosage.dosesPerDay
-  doseIntervalInHours?: number; // medicationInfo.dosage.hourlyInterval
-  dosageAmount: string; // medicationInfo.dosage.amount
-  doseTimes: string[]; // convertTo24Hour(medicationInfo.dosage.times)
+  dosesUnit?: "Doses" | "Hours";
+  dosesPerDay?: number;
+  doseIntervalInHours?: number;
+  dosageAmount: string;
 
-  notificationFrequency: string; // medicationInfo.dosage.notificationFrequency
-  notes: string; // medicationInfo.notes
+  doseTimes: string[];
+  includeTimes: boolean;
+
+  notificationFrequency?: "Day Of Dose" | "Every Dose";
+  notes: string;
 }
 
 export interface CreateMedicationRequestBody extends MedicationInfo {

@@ -1,8 +1,6 @@
-import { MedicationModalInfo } from "@/components/modals/medication/medicationModalInfo";
-
 export function convertTo12Hour(
   doseTimes: string[],
-): MedicationModalInfo["times"] {
+): { time: string; period: "AM" | "PM" }[] {
   return doseTimes.map((time) => {
     const parts = time.split(":");
     let hours = parseInt(parts[0]);
@@ -17,7 +15,7 @@ export function convertTo12Hour(
 }
 
 export function convertTo24Hour(
-  doseTimes: MedicationModalInfo["times"],
+  doseTimes: { time: string; period: "AM" | "PM" }[],
 ): string[] {
   return doseTimes.map(({ time, period }) => {
     const parts = time.split(":");
