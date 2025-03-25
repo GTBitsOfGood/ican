@@ -20,14 +20,12 @@ import {
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
-import { Types } from "mongoose";
 import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
 import {
   MedicationCheckInDocument,
   MedicationCheckIn,
 } from "@/db/models/medicationCheckIn";
-import { MedicationLog } from "@/db/models/medicationLog";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -123,12 +121,7 @@ export default class MedicationService {
     const expiration = new Date();
     expiration.setMinutes(expiration.getMinutes() + 15);
 
-    const medicationCheckIn: MedicationCheckIn = {
-      medicationId: new Types.ObjectId(medicationId),
-      expiration,
-    };
-
-    MedicationDAO.createMedicationCheckIn(medicationCheckIn);
+    MedicationDAO.createMedicationCheckIn(medicationId, expiration);
   }
 
   static async createMedicationLog(medicationId: string, pin: string) {
@@ -186,12 +179,7 @@ export default class MedicationService {
       food: existingPet.food + FOOD_INC,
     });
 
-    const medicationCheckIn: MedicationLog = {
-      medicationId: new Types.ObjectId(medicationId),
-      dateTaken: new Date(),
-    };
-
     // create medication log in
-    await MedicationDAO.createMedicationLog(medicationCheckIn);
+    await MedicationDAO.createMedicationLog(medicationId, new Date());
   }
 }

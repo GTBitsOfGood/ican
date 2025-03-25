@@ -75,17 +75,31 @@ export default class MedicationDAO {
   }
 
   static async createMedicationCheckIn(
-    newMedicationCheckIn: MedicationCheckIn,
+    medicationId: string,
+    expiration: Date,
   ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
     await dbConnect();
-    return await MedicationCheckInModel.insertOne(newMedicationCheckIn);
+
+    const medicationCheckIn: MedicationCheckIn = {
+      medicationId: new Types.ObjectId(medicationId),
+      expiration,
+    };
+
+    return await MedicationCheckInModel.insertOne(medicationCheckIn);
   }
 
   static async createMedicationLog(
-    newMedicationLog: MedicationLog,
+    medicationId: string,
+    dateTaken: Date,
   ): Promise<HydratedDocument<MedicationLogDocument> | null> {
     await dbConnect();
-    return await MedicationLogModel.insertOne(newMedicationLog);
+
+    const medicationCheckIn: MedicationLog = {
+      medicationId: new Types.ObjectId(medicationId),
+      dateTaken: dateTaken,
+    };
+
+    return await MedicationLogModel.insertOne(medicationCheckIn);
   }
 
   static async getMedicationCheckIn(
