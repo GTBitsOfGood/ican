@@ -94,8 +94,14 @@ export default function MedicationCard({
             Next Scheduled Dose:
           </p>
           <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2">
-            {day},{" "}
-            {medication.times[0].time.concat(" ", medication.times[0].period)}
+            {day}
+            {medication.times && medication.times.length
+              ? ", ".concat(
+                  medication.times[0].time,
+                  " ",
+                  medication.times[0].period,
+                )
+              : ""}
           </p>
         </div>
         <div className="flex flex-col w-full">
