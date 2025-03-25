@@ -12,16 +12,15 @@ export default class PetDAO {
   }
 
   static async getPetByUserId(
-    _userId: string | Types.ObjectId,
+    _userId: string,
   ): Promise<HydratedDocument<PetDocument> | null> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    const userId = new Types.ObjectId(_userId);
     await dbConnect();
     return await PetModel.findOne({ userId });
   }
 
   static async updatePetByUserId(
-    _userId: string | Types.ObjectId,
+    _userId: string,
     updateObj: {
       name?: string;
       xpGained?: number;
@@ -30,8 +29,7 @@ export default class PetDAO {
       food?: number;
     },
   ): Promise<void> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    const userId = new Types.ObjectId(_userId);
     await dbConnect();
     const result = await PetModel.updateOne({ userId }, updateObj);
     if (result.modifiedCount == 0) {
@@ -39,11 +37,8 @@ export default class PetDAO {
     }
   }
 
-  static async deletePetByUserId(
-    _userId: string | Types.ObjectId,
-  ): Promise<void> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+  static async deletePetByUserId(_userId: string): Promise<void> {
+    const userId = new Types.ObjectId(_userId);
     await dbConnect();
     const result = await PetModel.deleteOne({ userId });
     if (result.deletedCount == 0) {
@@ -51,11 +46,8 @@ export default class PetDAO {
     }
   }
 
-  static async getPetByPetId(
-    _petId: string | Types.ObjectId,
-  ): Promise<Pet | null> {
-    const petId =
-      _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
+  static async getPetByPetId(_petId: string): Promise<Pet | null> {
+    const petId = new Types.ObjectId(_petId);
 
     await dbConnect();
 
@@ -63,11 +55,10 @@ export default class PetDAO {
   }
 
   static async updatePetNameByUserId(
-    _userId: string | Types.ObjectId,
+    _userId: string,
     name: string,
   ): Promise<void> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    const userId = new Types.ObjectId(_userId);
 
     await dbConnect();
 
@@ -77,11 +68,10 @@ export default class PetDAO {
     }
   }
   static async updatePetCoinsByPetId(
-    _petId: string | Types.ObjectId,
+    _petId: string,
     newBalance: number,
   ): Promise<void> {
-    const petId =
-      _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
+    const petId = new Types.ObjectId(_petId);
     await dbConnect();
 
     const result = await PetModel.updateOne(
@@ -94,11 +84,10 @@ export default class PetDAO {
   }
 
   static async updatePetAppearanceByPetId(
-    _petId: string | Types.ObjectId,
+    _petId: string,
     newAppearance: Pet["appearance"],
   ): Promise<void> {
-    const petId =
-      _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
+    const petId = new Types.ObjectId(_petId);
     await dbConnect();
 
     const result = await PetModel.updateOne(
@@ -111,7 +100,7 @@ export default class PetDAO {
   }
 
   static async updatePetByPetId(
-    _petId: string | Types.ObjectId,
+    _petId: string,
     updateObj: {
       name?: string;
       xpGained?: number;
@@ -120,8 +109,7 @@ export default class PetDAO {
       food?: number;
     },
   ): Promise<void> {
-    const petId =
-      _petId instanceof Types.ObjectId ? _petId : new Types.ObjectId(_petId);
+    const petId = new Types.ObjectId(_petId);
     await dbConnect();
     const result = await PetModel.updateOne({ _id: petId }, updateObj);
     if (result.modifiedCount == 0) {

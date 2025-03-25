@@ -26,9 +26,9 @@ export default class MedicationDAO {
   }
 
   static async getMedicationById(
-    id: string | Types.ObjectId,
+    id: string,
   ): Promise<HydratedDocument<MedicationDocument> | null> {
-    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     await dbConnect();
     return await MedicationModel.findById(_id);
   }
@@ -44,10 +44,10 @@ export default class MedicationDAO {
   }
 
   static async updateMedicationById(
-    id: string | Types.ObjectId,
+    id: string,
     updateObj: Medication,
   ): Promise<void> {
-    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     await dbConnect();
     const result = await MedicationModel.updateOne({ _id }, updateObj);
     if (result.modifiedCount == 0) {
@@ -67,10 +67,9 @@ export default class MedicationDAO {
   }
 
   static async getMedicationsByUserId(
-    _userId: string | Types.ObjectId,
+    _userId: string,
   ): Promise<HydratedDocument<MedicationDocument>[]> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    const userId = new Types.ObjectId(_userId);
     return await MedicationModel.find({ userId });
   }
 
