@@ -31,7 +31,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`clothes-${index}`}
-                  className="absolute largeDesktop:w-[145px] desktop:w-[120px] tablet:w-[90px] translate-x-[4%] translate-y-[82%] flex items-center justify-center z-20"
+                  className="absolute w-[60%] translate-x-[4%] translate-y-[78%] flex items-center justify-center z-20"
                 >
                   <img
                     src={item.image}
@@ -46,7 +46,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`shoes-${index}`}
-                  className="absolute largeDesktop:w-[140px] desktop:w-[110px] tablet:w-[85px] desktop:translate-x-[4%] tablet:translate-x-[2%] translate-y-[440%] flex items-center justify-center z-20"
+                  className="absolute w-[57%] desktop:translate-x-[4%] tablet:translate-x-[2%] translate-y-[450%] flex items-center justify-center z-20"
                 >
                   <img
                     src={item.image}
@@ -61,7 +61,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`hat-${index}`}
-                  className="absolute largeDesktop:w-[190px] desktop:w-[160px] tablet:w-[120px] translate-x-[4%] -translate-y-[85%] flex items-center justify-center z-20"
+                  className="absolute w-[75%] translate-x-[4%] -translate-y-[87%] flex items-center justify-center z-20"
                 >
                   <img
                     src={item.image}
@@ -76,7 +76,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`hat-${index}`}
-                  className="absolute translate-x-[80%] translate-y-[70%] largeDesktop:w-[110px] desktop:w-[85px] tablet:w-[65px] flex items-center justify-center z-30"
+                  className="absolute w-[43%] translate-x-[80%] translate-y-[70%] flex items-center justify-center z-30"
                 >
                   <img
                     src={item.image}
@@ -91,7 +91,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
               return (
                 <div
                   key={`food-${index}`}
-                  className="absolute translate-x-[140%] translate-y-[58%] largeDesktop:w-[90px] desktop:w-[70px] tablet:w-[50px] flex items-center justify-center z-20"
+                  className="absolute w-[30%] translate-x-[160%] translate-y-[58%] flex items-center justify-center z-20"
                 >
                   <img
                     src={item.image}

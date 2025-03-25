@@ -29,7 +29,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
       </div>
 
       {/* Pet Appearance (Centered) */}
-      <div className="largeDesktop:w-[250px] desktop:w-[200px] tablet:w-[150px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="largeDesktop:w-[212px] desktop:w-[180px] tablet:w-[150px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <PetAppearance
           petType={petData.petType}
           selectedItems={[selectedItem as StoreItem]}

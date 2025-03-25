@@ -38,16 +38,10 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
                   : "mx-[3vw]"
             } ${
               selectedIndex == index
-                ? "bg-[#7D83B2] text-black underline"
-                : "bg-icanBlue-300"
+                ? "text-black underline"
+                : "bg-icanBlue-300 text-white"
             }`}
-            selectedClassName={`flex-1 text-center py-4 bg-[#7D83B2] border-x-2 border-t-2 border-white largeDesktop:h-[154px] desktop:h-[130px] tablet:h-[100px] text-black underline ${
-              index === 0
-                ? "ml-0 mr-[3vw]"
-                : index === tabs.length - 1
-                  ? "mr-0"
-                  : "mx-[3vw]"
-            }`}
+            selectedClassName={`bg-[#7D83B2]`}
           >
             <img
               src={tab.image}
