@@ -1,32 +1,35 @@
-import { ObjectId } from "mongodb";
-import client from "../dbClient";
-import { BagItem } from "../models";
+import ERRORS from "@/utils/errorMessages";
+import dbConnect from "../dbConnect";
+import BagItemModel, { BagItem } from "../models/bag";
+import { Types } from "mongoose";
 
-export async function createBagItem(newItem: BagItem) {
-  const db = client.db();
-
-  try {
-    await db.collection("bagItems").insertOne(newItem);
-  } catch (error) {
-    throw new Error("Failed to purchase item: " + (error as Error).message);
+export default class BagDAO {
+  static async createBagItem(petId: string, itemName: string) {
+    await dbConnect();
+    try {
+      const bagItem: BagItem = { petId: new Types.ObjectId(petId), itemName };
+      await BagItemModel.insertOne(bagItem);
+    } catch {
+      throw new Error(ERRORS.BAG.FAILURE.CREATE);
+    }
   }
-}
 
-export async function getBagItemByPetIdAndName(
-  petId: ObjectId,
-  itemName: string,
-) {
-  const db = client.db();
-  const item = await db
-    .collection("bagItems")
-    .findOne({ petId: petId, itemName: itemName });
+  static async getBagItemByPetIdAndName(petId: string, itemName: string) {
+    await dbConnect();
+    const petIdObj = new Types.ObjectId(petId);
+    const item = await BagItemModel.findOne({
+      petId: petIdObj,
+      itemName,
+    });
 
-  return item;
-}
+    return item;
+  }
 
-export async function getPetBag(petId: ObjectId) {
-  const db = client.db();
-  const items = await db.collection("bagItems").find({ petId }).toArray();
+  static async getPetBag(petIdString: string) {
+    await dbConnect();
+    const petId = new Types.ObjectId(petIdString);
+    const items = await BagItemModel.find({ petId });
 
-  return items;
+    return items;
+  }
 }

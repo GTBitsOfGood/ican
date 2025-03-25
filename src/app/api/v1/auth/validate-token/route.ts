@@ -3,23 +3,17 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
 
-// All of these can technically be condensed down to on
-
 export async function POST(req: NextRequest) {
   try {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
-    const { name, email, password, confirmPassword } = await req.json();
 
-    console.log(email);
-
-    const response = await AuthService.register(
-      name,
-      email,
-      password,
-      confirmPassword,
+    const authorization = req.headers.get("authorization");
+    const token = authorization!.split(" ")[1];
+    const decodedToken = await AuthService.validateToken(token);
+    return NextResponse.json(
+      { isValid: true, decodedToken: decodedToken },
+      { status: 201 },
     );
-
-    return NextResponse.json({ token: response }, { status: 201 });
   } catch (error) {
     return handleError(error);
   }

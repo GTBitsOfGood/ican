@@ -96,18 +96,17 @@ export default class ForgotPasswordService {
   }
 
   static async changePassword(
-    userIdString: string, // This was actually parsed in the Controller's validate path
+    userId: string, // This was actually parsed in the Controller's validate path
     newPassword: string,
     confirmPassword: string,
   ) {
     validateChangePassword({
-      userId: userIdString,
+      userId: userId,
       newPassword,
       confirmPassword,
     });
 
     // const decoded = JWTService.verifyToken(token);
-    const userId = new Types.ObjectId(userIdString);
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);

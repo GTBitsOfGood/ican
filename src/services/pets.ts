@@ -1,10 +1,14 @@
-import { ConflictError, NotFoundError } from "@/types/exceptions";
+import {
+  ConflictError,
+  InvalidArgumentsError,
+  NotFoundError,
+} from "@/types/exceptions";
 import {
   validateItemAttribute,
   validateItemName,
   validatePetId,
 } from "@/utils/store";
-import { getBagItemByPetIdAndName } from "@/db/actions/bag";
+import BagDAO from "@/db/actions/bag";
 import { AccessoryType, storeItems } from "@/types/store";
 import {
   validateCreatePet,
@@ -19,7 +23,6 @@ import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
 import { WithId } from "@/types/models";
-import { ObjectId } from "mongodb";
 
 export default class PetService {
   static async createPet(
@@ -82,11 +85,13 @@ export default class PetService {
   static async feedPet(petId: string) {
     await validateFeedPet({ petId });
 
-    const existingPet = (await PetDAO.getPetByPetId(
-      new ObjectId(petId),
-    )) as Pet;
+    const existingPet: Pet | null = await PetDAO.getPetByPetId(petId);
     if (!existingPet) {
       throw new NotFoundError("This pet does not exist");
+    }
+
+    if (existingPet.food <= 0) {
+      throw new InvalidArgumentsError("This pet does not have enough food.");
     }
 
     const updatedPet: Pet = existingPet;
@@ -97,9 +102,10 @@ export default class PetService {
       updatedPet.xpGained += XP_GAIN;
     }
 
-    await PetDAO.updatePetByPetId(new ObjectId(petId), {
+    await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
+      food: --updatedPet.food,
     });
   }
 }
@@ -118,7 +124,7 @@ export async function validateEquipItem(petId: string, itemName: string) {
     throw new NotFoundError("This item does not exist.");
   }
 
-  const dbItem = await getBagItemByPetIdAndName(new ObjectId(petId), itemName);
+  const dbItem = await BagDAO.getBagItemByPetIdAndName(petId, itemName);
   if (!dbItem) {
     throw new NotFoundError("This pet does not own this item.");
   }
@@ -130,7 +136,6 @@ export async function validateEquipItem(petId: string, itemName: string) {
   ) {
     throw new ConflictError("This item is already equipped.");
   }
-
   const prevAppearance = pet.appearance;
   let newAppearance = {};
 

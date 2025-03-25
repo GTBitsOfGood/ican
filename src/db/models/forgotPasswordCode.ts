@@ -12,11 +12,16 @@ export interface ForgotPasswordCodeDocument
   _id: Types.ObjectId;
 }
 
-const forgotPasswordCodeSchema = new Schema<ForgotPasswordCodeDocument>({
-  code: { type: String, required: true },
-  expirationDate: { type: Date, required: true },
-  userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
-});
+const forgotPasswordCodeSchema = new Schema<ForgotPasswordCodeDocument>(
+  {
+    code: { type: String, required: true },
+    expirationDate: { type: Date, required: true },
+    userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 const ForgotPasswordCodeModel =
   models.ForgotPasswordCode ||

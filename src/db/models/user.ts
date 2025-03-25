@@ -11,12 +11,15 @@ export interface UserDocument extends User, Document {
   _id: Types.ObjectId;
 }
 
-const userSchema = new Schema<UserDocument>({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: false },
-  provider: { type: String, required: true },
-});
+const userSchema = new Schema<UserDocument>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: false },
+    provider: { type: String, required: true },
+  },
+  { timestamps: true },
+);
 
 const UserModel = models.User || model<UserDocument>("User", userSchema);
 
