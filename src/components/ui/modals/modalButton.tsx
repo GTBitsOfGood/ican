@@ -10,7 +10,7 @@ interface ButtonProps {
 
 const typeBackgroundColors = {
   default: "bg-white text-black",
-  danger: "bg-red text-white",
+  danger: "bg-errorRed text-white",
   success: "bg-icanGreen-100 text-black",
 };
 
