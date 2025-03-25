@@ -4,12 +4,11 @@ import { BagItem } from "@/db/models/bag";
 import { Pet } from "@/db/models/pet";
 import { NotFoundError } from "@/types/exceptions";
 import { validatePetId } from "@/utils/store";
-import { Types } from "mongoose";
 
 export async function validateBagRequest(petId: string) {
   validatePetId(petId);
 
-  const pet: Pet | null = await PetDAO.getPetByPetId(new Types.ObjectId(petId));
+  const pet: Pet | null = await PetDAO.getPetByPetId(petId);
   if (!pet) {
     throw new NotFoundError("This pet does not exist.");
   }

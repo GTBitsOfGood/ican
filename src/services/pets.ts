@@ -1,4 +1,8 @@
-import { ConflictError, NotFoundError } from "@/types/exceptions";
+import {
+  ConflictError,
+  InvalidArgumentsError,
+  NotFoundError,
+} from "@/types/exceptions";
 import {
   validateItemAttribute,
   validateItemName,
@@ -88,6 +92,10 @@ export default class PetService {
       throw new NotFoundError("This pet does not exist");
     }
 
+    if (existingPet.food <= 0) {
+      throw new InvalidArgumentsError("This pet does not have enough food.");
+    }
+
     const updatedPet: Pet = existingPet;
     if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
       updatedPet.xpLevel += 1;
@@ -99,6 +107,7 @@ export default class PetService {
     await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
+      food: --updatedPet.food,
     });
   }
 }

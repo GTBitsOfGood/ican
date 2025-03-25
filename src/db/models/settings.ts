@@ -26,6 +26,6 @@ const settingsSchema = new Schema<SettingsDocument>(
 );
 
 const SettingsModel =
-  models.Setting || model<SettingsDocument>("Setting", settingsSchema);
+  models.Settings || model<SettingsDocument>("Settings", settingsSchema);
 
 export default SettingsModel;

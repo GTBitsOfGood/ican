@@ -14,11 +14,11 @@ export default class BagDAO {
     }
   }
 
-  static async getBagItemByPetIdAndName(petIdString: string, itemName: string) {
+  static async getBagItemByPetIdAndName(petId: string, itemName: string) {
     await dbConnect();
-    const petId = new Types.ObjectId(petIdString);
+    const petIdObj = new Types.ObjectId(petId);
     const item = await BagItemModel.findOne({
-      petId,
+      petId: petIdObj,
       itemName,
     });
 

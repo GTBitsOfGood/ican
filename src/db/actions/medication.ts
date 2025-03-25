@@ -3,15 +3,19 @@ import {
   MedicationModel,
   Medication,
   MedicationDocument,
-  MedicationCheckInModel,
-  MedicationCheckInDocument,
-  MedicationCheckIn,
-  MedicationLogModel,
-  MedicationLogDocument,
-  MedicationLog,
 } from "../models/medication";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
+import {
+  MedicationCheckIn,
+  MedicationCheckInDocument,
+  MedicationCheckInModel,
+} from "../models/medicationCheckIn";
+import {
+  MedicationLog,
+  MedicationLogDocument,
+  MedicationLogModel,
+} from "../models/medicationLog";
 
 export default class MedicationDAO {
   static async createNewMedication(

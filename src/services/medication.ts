@@ -21,18 +21,17 @@ import {
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
-import {
-  Medication,
-  MedicationCheckIn,
-  MedicationCheckInDocument,
-  MedicationLog,
-} from "@/db/models/medication";
+import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
+import {
+  MedicationCheckInDocument,
+  MedicationCheckIn,
+} from "@/db/models/medicationCheckIn";
+import { MedicationLog } from "@/db/models/medicationLog";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
     await validateCreateMedication(medication);
-    medication.userId = new Types.ObjectId(medication.userId);
 
     const existingMedication =
       await MedicationDAO.getUserMedicationByMedicationId(
@@ -98,9 +97,8 @@ export default class MedicationService {
     validateParams({ id: medicationId });
 
     // Check if the medication exists
-    const existingMedication = await MedicationDAO.getMedicationById(
-      new Types.ObjectId(medicationId),
-    );
+    const existingMedication =
+      await MedicationDAO.getMedicationById(medicationId);
 
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
@@ -138,9 +136,8 @@ export default class MedicationService {
     validateParams({ id: medicationId });
 
     // Check if the pet exists
-    const existingMedication = (await MedicationDAO.getMedicationById(
-      new Types.ObjectId(medicationId),
-    )) as Medication;
+    const existingMedication: Medication | null =
+      await MedicationDAO.getMedicationById(medicationId);
 
     if (!existingMedication || !existingMedication.userId) {
       throw new NotFoundError("This medication does not exist");
@@ -185,7 +182,7 @@ export default class MedicationService {
     }
 
     // add food to pet
-    await PetDAO.updatePetByUserId(new Types.ObjectId(userId), {
+    await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
     });
 

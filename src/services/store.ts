@@ -3,7 +3,6 @@ import { validateItemName, validatePetId } from "@/utils/store";
 import BagDAO from "@/db/actions/bag";
 import PetDAO from "@/db/actions/pets";
 import { InvalidArgumentsError, NotFoundError } from "@/types/exceptions";
-import { Types } from "mongoose";
 import { Pet } from "@/db/models/pet";
 
 export async function validatePurchase(petId: string, itemName: string) {
@@ -11,7 +10,7 @@ export async function validatePurchase(petId: string, itemName: string) {
   validateItemName(itemName);
 
   const item = storeItems.find((item) => item.itemName === itemName);
-  const pet: Pet | null = await PetDAO.getPetByPetId(new Types.ObjectId(petId));
+  const pet: Pet | null = await PetDAO.getPetByPetId(petId);
 
   if (!item) {
     throw new NotFoundError("This item does not exist.");
