@@ -85,9 +85,7 @@ export default class PetService {
   static async feedPet(petId: string) {
     await validateFeedPet({ petId });
 
-    const existingPet = (await PetDAO.getPetByPetId(
-      new Types.ObjectId(petId),
-    )) as Pet;
+    const existingPet: Pet | null = await PetDAO.getPetByPetId(petId);
     if (!existingPet) {
       throw new NotFoundError("This pet does not exist");
     }
