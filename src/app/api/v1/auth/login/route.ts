@@ -1,5 +1,5 @@
 import AuthService from "@/services/auth";
-import { generateAuthCookie } from "@/utils/cookie";
+import { generateAPIAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
-    const response = generateAuthCookie(nextResponse, token);
+    const response = generateAPIAuthCookie(nextResponse, token);
 
     return response;
   } catch (error) {

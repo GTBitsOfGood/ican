@@ -1,7 +1,9 @@
+import { UnauthorizedError } from "@/types/exceptions";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import ERRORS from "./errorMessages";
 
-export const generateAuthCookie = (
+export const generateAPIAuthCookie = (
   nextResponse: NextResponse,
   token: string,
 ): NextResponse => {
@@ -16,6 +18,20 @@ export const generateAuthCookie = (
   return nextResponse;
 };
 
-export const deleteAuthCookie = async () => {
+export const setCookie = async (token: string): Promise<void> => {
+  (await cookies()).set("auth_token", token);
+};
+
+export const deleteAuthCookie = async (): Promise<void> => {
   (await cookies()).delete("auth_token");
+};
+
+export const getAuthCookie = async (): Promise<string> => {
+  const authToken = (await cookies()).get("auth_token")?.value;
+
+  if (!authToken) {
+    throw new UnauthorizedError(ERRORS.TOKEN.UNAUTHORIZED);
+  }
+
+  return authToken;
 };

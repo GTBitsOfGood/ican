@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
+import { setCookie } from "@/utils/cookie";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -74,7 +75,7 @@ export default function Home() {
         password.trim(),
         confirmPassword.trim(),
       );
-      localStorage.setItem("token", response.token);
+      setCookie(response.token);
       router.push("/");
     } catch (error) {
       if (error instanceof Error && getStatusCode(error) == 400) {
