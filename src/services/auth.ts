@@ -17,7 +17,6 @@ import {
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
-import { objectIdSchema } from "@/utils/serviceUtils/commonSchemaUtil";
 
 export interface CreateUserBody {
   name: string;
@@ -81,7 +80,10 @@ export default class AuthService {
     return token;
   }
 
-  static async login(email: string, password: string): Promise<string> {
+  static async login(
+    email: string,
+    password: string,
+  ): Promise<{ token: string; userId: string }> {
     // Validate parameters
     validateLogin({
       email,
@@ -115,7 +117,7 @@ export default class AuthService {
       604800,
     );
 
-    return token;
+    return { token, userId: existingUser._id.toString() };
   }
 
   // Validate login with Google
@@ -160,16 +162,5 @@ export default class AuthService {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     return decodedToken;
-  }
-
-  static async deleteUser(userId: string) {
-    objectIdSchema(userId);
-
-    const user = await UserDAO.getUserFromId(userId);
-    if (!user) {
-      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
-    }
-
-    await UserDAO.deleteUserFromId(userId);
   }
 }

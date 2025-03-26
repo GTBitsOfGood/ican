@@ -1,4 +1,5 @@
 import AuthService from "@/services/auth";
+import { generateAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -19,16 +20,9 @@ export async function POST(req: NextRequest) {
 
     const nextResponse = NextResponse.json({}, { status: 201 });
 
-    // set expiration date 3 hours after
-    const expirationDate = new Date();
-    expirationDate.setHours(expirationDate.getHours() + 3);
+    const response = generateAuthCookie(nextResponse, authToken);
 
-    nextResponse.cookies.set("auth_token", authToken, {
-      httpOnly: true,
-      expires: expirationDate,
-    });
-
-    return nextResponse;
+    return response;
   } catch (error) {
     return handleError(error);
   }

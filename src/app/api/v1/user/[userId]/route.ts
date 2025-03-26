@@ -1,4 +1,5 @@
-import AuthService from "@/services/auth";
+import UserService from "@/services/user";
+import { deleteAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -12,9 +13,10 @@ export async function DELETE(
     await validateRoutes(req, req.method, route);
     const userId: string = (await params).userId;
 
-    await AuthService.deleteUser(userId);
+    await UserService.deleteUser(userId);
+    deleteAuthCookie();
 
-    return NextResponse.json({}, { status: 201 });
+    return NextResponse.json({}, { status: 204 });
   } catch (error) {
     return handleError(error);
   }

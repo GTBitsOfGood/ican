@@ -101,6 +101,9 @@ const ERRORS = Object.freeze({
   JWT: {
     UNAUTHORIZED: "Invalid or expired token.",
   },
+  TOKEN: {
+    UNAUTHORIZED: "Authentication token is missing or malformed",
+  },
 });
 
 export default ERRORS;

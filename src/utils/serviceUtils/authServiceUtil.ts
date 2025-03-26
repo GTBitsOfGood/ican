@@ -4,6 +4,7 @@ import {
   emailSchema,
   tokenSchema,
   createValidateFunction,
+  stringSchema,
 } from "./commonSchemaUtil";
 
 export const registerSchema = z
@@ -48,6 +49,10 @@ export const validateTokenSchema = z.object({
   token: tokenSchema,
 });
 
+export const validateDeleteSchema = z.object({
+  userId: stringSchema,
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type LoginWithGoogleInput = z.infer<typeof loginWithGoogleSchema>;
@@ -78,3 +83,4 @@ export const validateLoginWithGoogle = createValidateFunction(
   loginWithGoogleSchema,
 );
 export const validateTokenInput = createValidateFunction(validateTokenSchema);
+export const validateDeleteUser = createValidateFunction(validateDeleteSchema);
