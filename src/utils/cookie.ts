@@ -18,10 +18,6 @@ export const generateAPIAuthCookie = (
   return nextResponse;
 };
 
-export const setCookie = async (token: string): Promise<void> => {
-  (await cookies()).set("auth_token", token);
-};
-
 export const deleteAuthCookie = async (): Promise<void> => {
   (await cookies()).delete("auth_token");
 };

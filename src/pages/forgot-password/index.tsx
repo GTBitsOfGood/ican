@@ -16,7 +16,6 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/router";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import Link from "next/link";
-import { setCookie } from "@/utils/cookie";
 
 const Sections = [
   {
@@ -92,8 +91,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 1) {
       try {
-        const response = await AuthHTTPClient.verifyForgotPassword(userId, otp);
-        setCookie(response.token);
+        await AuthHTTPClient.verifyForgotPassword(userId, otp);
       } catch (error) {
         setError({ otp: (error as Error).message });
         return;

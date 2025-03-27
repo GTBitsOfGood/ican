@@ -2,7 +2,6 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import AuthHTTPClient from "@/http/authHTTPClient";
-import { setCookie } from "@/utils/cookie";
 
 interface GoogleLoginButtonProps {
   forgotPassword?: boolean;
@@ -22,8 +21,7 @@ const GoogleLoginButton = ({
           tokenResponse.access_token,
         );
 
-        const response = await AuthHTTPClient.loginWithGoogle(userInfo);
-        setCookie(response.token);
+        await AuthHTTPClient.loginWithGoogle(userInfo);
         router.push("/");
       } catch (error) {
         if (setError) {
