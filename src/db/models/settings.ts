@@ -13,14 +13,17 @@ export interface SettingsDocument extends Settings, Document {
   _id: Types.ObjectId;
 }
 
-const settingsSchema = new Schema<SettingsDocument>({
-  userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
-  parentalControl: { type: Boolean, required: true },
-  notifications: { type: Boolean, required: true },
-  helpfulTips: { type: Boolean, required: true },
-  largeFontSize: { type: Boolean, required: true },
-  pin: { type: String, required: true },
-});
+const settingsSchema = new Schema<SettingsDocument>(
+  {
+    userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
+    parentalControl: { type: Boolean, required: true },
+    notifications: { type: Boolean, required: true },
+    helpfulTips: { type: Boolean, required: true },
+    largeFontSize: { type: Boolean, required: true },
+    pin: { type: String, required: true },
+  },
+  { timestamps: true },
+);
 
 const SettingsModel =
   models.Settings || model<SettingsDocument>("Settings", settingsSchema);

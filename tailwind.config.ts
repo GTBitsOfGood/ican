@@ -84,6 +84,7 @@ export default {
         loginGreen: "#ACCC6E",
         borderGrey: "#747474",
         errorRed: "#CE4E4E",
+        deleteRed: "#B01515",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -108,6 +109,7 @@ export default {
         "button-outer":
           "0px 0px 0px 2px rgba(61,112,201,0.40), inset 0px 2px 1px 0px rgba(0,0,0,0.25)",
         "button-inner": "inset 0px 4px 0px 0px rgba(183,189,239,1.00)",
+        medicationCardShadow: "4px 4px 0px 0px #7D83B2",
       },
       borderRadius: {
         lg: "var(--radius)",

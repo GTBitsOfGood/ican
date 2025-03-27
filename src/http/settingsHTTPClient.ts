@@ -10,6 +10,9 @@ export default class SettingsHTTPClient {
   static async getSettings(userId: string): Promise<WithId<Settings>> {
     return fetchHTTPClient<WithId<Settings>>(`/settings/${userId}`, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
   }
 
@@ -29,6 +32,9 @@ export default class SettingsHTTPClient {
     return fetchHTTPClient<void>(`/settings/${userId}`, {
       method: "PATCH",
       body: JSON.stringify(updateSettingsRequestBody),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
   }
 
@@ -39,6 +45,9 @@ export default class SettingsHTTPClient {
     return fetchHTTPClient<void>(`/settings/pin/${userId}`, {
       method: "PATCH",
       body: JSON.stringify(updatePinRequestBody),
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
   }
 }

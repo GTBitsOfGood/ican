@@ -51,6 +51,20 @@ body {
   .scrollbar-custom::-webkit-scrollbar-thumb:hover {
     background: #98d03b;
   }
+
+  .medications-scrollbar::-webkit-scrollbar {
+    width: 1.5rem;
+  }
+
+  .medications-scrollbar::-webkit-scrollbar-track {
+    background: #a1a1a1;
+    border-radius: 0px;
+  }
+
+  .medications-scrollbar::-webkit-scrollbar-thumb {
+    background: #f4f4f4;
+    border-radius: 0px;
+  }
 }
 
 @layer base {

@@ -5,8 +5,6 @@ import Label from "@/components/ui/form/label";
 import InputBox from "@/components/ui/form/inputBox";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
-import CheckBox from "@/components/ui/form/checkBox";
-import FormText from "@/components/ui/form/formText";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 
 interface TimeSectionProps {
@@ -70,23 +68,6 @@ export default function TimeSection({ info, setInfo }: TimeSectionProps) {
               </DropDown>
             </FormControl>
           ))}
-        </div>
-        <div className="mt-10">
-          <FormControl gap={16}>
-            <CheckBox
-              checked={!info.includeTimes}
-              onChange={() =>
-                setInfo((prev) => {
-                  const temp = { ...prev };
-                  temp.includeTimes = !temp.includeTimes;
-                  return temp;
-                })
-              }
-            />
-            <FormText disabled={info.includeTimes}>
-              No Exact Dose Time Needed
-            </FormText>
-          </FormControl>
         </div>
       </div>
     );

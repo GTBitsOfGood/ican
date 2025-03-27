@@ -2,13 +2,18 @@ import React from "react";
 
 interface ModalNextButtonProps {
   link: string;
+  onClick?: () => void;
 }
 
-export default function ModalNextButton({ link }: ModalNextButtonProps) {
+export default function ModalNextButton({
+  link,
+  onClick,
+}: ModalNextButtonProps) {
   return (
     <a
       className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
       href={link}
+      onClick={onClick}
     >
       <button className="w-full h-full flex justify-center items-center">
         <svg
