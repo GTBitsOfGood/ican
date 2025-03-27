@@ -13,9 +13,15 @@ interface SectionValidatorReturnType {
   newTime?: Time12Hour[];
 }
 
-export function isValidTimeString(value: string): boolean {
+function isValidTimeString(value: string): boolean {
   const timeRegex = /^(0[0-9]|1[0-2]):([0-5][0-9])$/;
   return timeRegex.test(value);
+}
+
+function convertTimeToMinutes(timeStr: string, period: string): number {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  const hour24 = (hours % 12) + (period === "PM" ? 12 : 0);
+  return hour24 * 60 + minutes;
 }
 
 export default function SectionValidator({
@@ -145,21 +151,14 @@ export default function SectionValidator({
         uniqueTimes.add(timeKey);
 
         if (i > 0) {
-          const [prevHour, prevMinute] = timesIn12Hour[i - 1].time
-            .split(":")
-            .map(Number);
-          const [currHour, currMinute] = timesIn12Hour[i].time
-            .split(":")
-            .map(Number);
-          const prevPeriod = timesIn12Hour[i - 1].period;
-          const currPeriod = timesIn12Hour[i].period;
-
-          const prevTimeInMinutes =
-            ((prevHour % 12) + (prevPeriod === "PM" ? 12 : 0)) * 60 +
-            prevMinute;
-          const currTimeInMinutes =
-            ((currHour % 12) + (currPeriod === "PM" ? 12 : 0)) * 60 +
-            currMinute;
+          const prevTimeInMinutes = convertTimeToMinutes(
+            timesIn12Hour[i - 1].time,
+            timesIn12Hour[i - 1].period,
+          );
+          const currTimeInMinutes = convertTimeToMinutes(
+            timesIn12Hour[i].time,
+            timesIn12Hour[i].period,
+          );
 
           if (currTimeInMinutes <= prevTimeInMinutes) {
             return { error: "The times are not in chronological order." };

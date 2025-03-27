@@ -2,6 +2,16 @@ import { z } from "zod";
 import { objectIdSchema } from "./commonSchemaUtil";
 import ERRORS from "../errorMessages";
 
+function isValidTimeString(value: string): boolean {
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return timeRegex.test(value);
+}
+
+function convertTimeToMinutes(timeStr: string): number {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
 export const baseMedicationSchema = z.object({
   formOfMedication: z.enum(["Pill", "Syrup", "Shot"], {
     errorMap: () => ({
@@ -170,6 +180,59 @@ const medicationRefine = (
         "doseTimes needs to be a non-empty array if includeTimes is true.",
       code: z.ZodIssueCode.custom,
     });
+  }
+
+  if (!data.includeTimes && data.doseTimes.length > 0) {
+    ctx.addIssue({
+      path: ["includeTimes", "doseTimes"],
+      message: "doseTimes must be empty if includeTimes is false.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (data.includeTimes && data.doseTimes.length > 0) {
+    const invalidTimeFormat = data.doseTimes.some(
+      (time) => !isValidTimeString(time),
+    );
+    if (invalidTimeFormat) {
+      ctx.addIssue({
+        path: ["doseTimes"],
+        message: "All times must be in HH:MM 24-hour format (e.g., 13:30)",
+        code: z.ZodIssueCode.custom,
+      });
+    }
+
+    const uniqueTimes = new Set();
+    for (let i = 0; i < data.doseTimes.length; i++) {
+      if (!isValidTimeString(data.doseTimes[i])) {
+        ctx.addIssue({
+          path: ["doseTimes", i],
+          message: "At least one of your times is not in the HH:MM format.",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+      if (uniqueTimes.has(data.doseTimes[i])) {
+        ctx.addIssue({
+          path: ["doseTimes", i],
+          message: "Duplicate times are not allowed.",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+      uniqueTimes.add(data.doseTimes[i]);
+
+      if (i > 0) {
+        const prevTimeInMinutes = convertTimeToMinutes(data.doseTimes[i - 1]);
+        const currTimeInMinutes = convertTimeToMinutes(data.doseTimes[i]);
+
+        if (currTimeInMinutes <= prevTimeInMinutes) {
+          ctx.addIssue({
+            path: ["doseTimes", i],
+            message: "The times are not in chronological order.",
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+    }
   }
 };
 
