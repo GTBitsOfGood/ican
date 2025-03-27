@@ -191,17 +191,6 @@ const medicationRefine = (
   }
 
   if (data.includeTimes && data.doseTimes.length > 0) {
-    const invalidTimeFormat = data.doseTimes.some(
-      (time) => !isValidTimeString(time),
-    );
-    if (invalidTimeFormat) {
-      ctx.addIssue({
-        path: ["doseTimes"],
-        message: "All times must be in HH:MM 24-hour format (e.g., 13:30)",
-        code: z.ZodIssueCode.custom,
-      });
-    }
-
     const uniqueTimes = new Set();
     for (let i = 0; i < data.doseTimes.length; i++) {
       if (!isValidTimeString(data.doseTimes[i])) {
