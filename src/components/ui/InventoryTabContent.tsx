@@ -72,7 +72,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
                 className="w-[150px]"
               />
             </div>
-            <div className="mt-[10px] font-quantico text-center text-black desktop:text-[36px] tablet:text-[24px] font-bold leading-none">
+            <div className="mt-[10px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
               {item.displayName}
             </div>
           </div>
