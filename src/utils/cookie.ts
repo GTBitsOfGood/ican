@@ -1,3 +1,4 @@
+"use client";
 import { UnauthorizedError } from "@/types/exceptions";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
