@@ -41,7 +41,7 @@ export default class MedicationDAO {
   ): Promise<void> {
     const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
-    await MedicationModel.updateOne({ _id }, updateObj);
+    await MedicationModel.replaceOne({ _id }, updateObj);
   }
 
   static async deleteMedicationById(

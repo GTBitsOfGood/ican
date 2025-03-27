@@ -23,6 +23,8 @@ export default function SectionValidator({
   currentSection,
   timesIn12Hour,
 }: SectionValidatorType): SectionValidatorReturnType {
+  const updatedInfo = { ...info };
+  let updatedTimes = [...timesIn12Hour];
   switch (currentSection) {
     case 0: // general
       if (info.formOfMedication === undefined) {
@@ -45,10 +47,24 @@ export default function SectionValidator({
         return { error: "Select repeat unit." };
       }
 
-      if (info.repeatUnit === "Week" && info.repeatWeeklyOn.length === 0) {
-        return { error: "Select repeat days for the week." };
-      }
-      if (info.repeatUnit === "Month") {
+      if (info.repeatUnit === "Day") {
+        updatedInfo.repeatWeeklyOn = [];
+        updatedInfo.repeatMonthlyType = undefined;
+        updatedInfo.repeatMonthlyOnDay = undefined;
+        updatedInfo.repeatMonthlyOnWeek = undefined;
+        updatedInfo.repeatMonthlyOnWeekDay = undefined;
+      } else if (info.repeatUnit === "Week") {
+        if (info.repeatWeeklyOn.length === 0) {
+          return { error: "Select repeat days for the week." };
+        }
+
+        updatedInfo.repeatMonthlyType = undefined;
+        updatedInfo.repeatMonthlyOnDay = undefined;
+        updatedInfo.repeatMonthlyOnWeek = undefined;
+        updatedInfo.repeatMonthlyOnWeekDay = undefined;
+      } else if (info.repeatUnit === "Month") {
+        updatedInfo.repeatWeeklyOn = [];
+
         if (info.repeatMonthlyType === undefined) {
           return { error: "Choose one of the monthly options." };
         }
@@ -59,13 +75,19 @@ export default function SectionValidator({
           if (info.repeatMonthlyOnWeekDay === undefined) {
             return { error: "Select which week day to monthly repeat." };
           }
+
+          updatedInfo.repeatMonthlyOnDay = undefined;
         } else {
           if (info.repeatMonthlyOnDay === undefined) {
             return { error: "Enter day of the month to repeat." };
           }
+
+          updatedInfo.repeatMonthlyOnWeek = undefined;
+          updatedInfo.repeatMonthlyOnWeekDay = undefined;
         }
       }
-      break;
+
+      return { newInfo: updatedInfo };
     case 3: // dosage notification
       if (info.dosesUnit === undefined) {
         return { error: "Select one of the dosage options." };
@@ -77,31 +99,36 @@ export default function SectionValidator({
         if (info.dosesPerDay === undefined) {
           return { error: "Enter the amount of doses per day." };
         }
-        const temp = [...timesIn12Hour];
         const amountToCreate = info.dosesPerDay - timesIn12Hour.length;
         if (amountToCreate > 0) {
-          temp.push(
+          updatedTimes.push(
             ...new Array(amountToCreate).fill({ time: "09:00", period: "AM" }),
           );
         } else if (amountToCreate < 0) {
-          temp.slice(0, info.dosesPerDay);
+          updatedTimes = updatedTimes.slice(0, info.dosesPerDay);
         }
-        return { newTime: temp };
+        updatedInfo.doseIntervalInHours = undefined;
+        return { newTime: updatedTimes };
       } else {
         if (info.doseIntervalInHours === undefined) {
           return { error: "Enter the number of hours between each dose." };
         }
-        const temp = [...timesIn12Hour];
-        if (temp.length > 0) {
-          temp.slice(0, 1);
+        if (updatedTimes.length > 0) {
+          updatedTimes = updatedTimes.slice(0, 1);
         } else {
-          temp.push({ time: "09:00", period: "AM" });
+          updatedTimes.push({ time: "09:00", period: "AM" });
         }
-        return { newTime: temp };
+        updatedInfo.dosesPerDay = undefined;
+        return { newTime: updatedTimes };
       }
     case 4: // times section
       if (timesIn12Hour.length === 0) {
         return { error: "You have not entered a valid time." };
+      }
+
+      if (!info.includeTimes) {
+        updatedInfo.doseTimes = [];
+        return { newInfo: updatedInfo, newTime: [] };
       }
 
       const uniqueTimes = new Set();
@@ -141,11 +168,10 @@ export default function SectionValidator({
       }
 
       if (info.dosesUnit == "Hours" && info.doseIntervalInHours) {
-        const temp = [...timesIn12Hour];
-        const firstTime = temp[0];
+        const firstTime = timesIn12Hour[0];
         const interval = info.doseIntervalInHours;
 
-        const times = [];
+        updatedTimes = [];
         const currentTime = firstTime.time.split(":").map(Number);
         let currentHour = currentTime[0];
         const currentMinute = currentTime[1];
@@ -153,7 +179,7 @@ export default function SectionValidator({
 
         while (currentHour < 24) {
           const formattedHour = currentHour % 12 === 0 ? 12 : currentHour % 12;
-          times.push({
+          updatedTimes.push({
             time: `${String(formattedHour).padStart(2, "0")}:${String(currentMinute).padStart(2, "0")}`,
             period: currentPeriod,
           });
@@ -164,15 +190,10 @@ export default function SectionValidator({
             currentPeriod = currentPeriod === "AM" ? "PM" : "AM";
           }
         }
-
-        return { newTime: times };
       }
 
-      break;
-    case 6:
-      const temp = { ...info };
-      temp.doseTimes = convertTo24Hour(timesIn12Hour);
-      return { newInfo: temp };
+      updatedInfo.doseTimes = convertTo24Hour(updatedTimes);
+      return { newTime: updatedTimes, newInfo: updatedInfo };
   }
   return {};
 }

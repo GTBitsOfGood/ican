@@ -11,8 +11,12 @@ interface SectionSelectorProps {
   setCurrentSection: Dispatch<SetStateAction<number>>;
   info: MedicationInfo;
   setInfo: Dispatch<SetStateAction<MedicationInfo>>;
+  spareInfo: MedicationInfo;
+  setSpareInfo: Dispatch<SetStateAction<MedicationInfo>>;
   timesIn12Hour: Time12Hour[];
   setTimesIn12Hour: Dispatch<SetStateAction<Time12Hour[]>>;
+  spareTimesIn12Hour: Time12Hour[];
+  setSpareTimesIn12Hour: Dispatch<SetStateAction<Time12Hour[]>>;
   setError: Dispatch<SetStateAction<string>>;
   onSubmit: (medicationInfo: MedicationInfo) => void;
 }
@@ -24,8 +28,12 @@ export default function SectionSelector({
   sectionSize,
   info,
   setInfo,
+  spareInfo,
+  setSpareInfo,
   timesIn12Hour,
   setTimesIn12Hour,
+  spareTimesIn12Hour,
+  setSpareTimesIn12Hour,
   setError,
   onSubmit,
 }: SectionSelectorProps) {
@@ -33,11 +41,15 @@ export default function SectionSelector({
 
   const backAction = () => {
     setError("");
-    if (modalType == "Add") {
+    if (modalType == "Add" || (modalType == "Edit" && currentSection == 4)) {
       setCurrentSection((prev) => Math.max(0, prev - 1));
     } else {
       if (currentSection == sectionSize - 1) {
         router.push("/");
+      }
+      setInfo(spareInfo);
+      if (currentSection == 3) {
+        setTimesIn12Hour(spareTimesIn12Hour);
       }
       setCurrentSection(6);
     }
@@ -64,6 +76,10 @@ export default function SectionSelector({
     if (currentSection == sectionSize - 1) {
       onSubmit(info);
     } else if (modalType == "Edit" && currentSection != 3) {
+      setSpareInfo({ ...newInfo, ...info });
+      if (newTime) {
+        setSpareTimesIn12Hour(newTime);
+      }
       setCurrentSection(6);
     } else {
       setCurrentSection((prev) => Math.min(sectionSize - 1, prev + 1));
@@ -72,21 +88,25 @@ export default function SectionSelector({
 
   return (
     <div
-      className={`w-full grid ${modalType == "Add" ? "grid-cols-3" : "grid-cols-2"}`}
+      className={`w-full grid ${modalType === "Add" ? "grid-cols-3" : "grid-cols-2"}`}
     >
       <ModalButton
         className={`max-w-max justify-self-start`}
         action={backAction}
         disabled={currentSection <= 0 && modalType == "Add"}
         type={
-          modalType == "Edit" && currentSection == sectionSize - 1
+          modalType === "Edit" && currentSection === sectionSize - 1
             ? "danger"
             : "default"
         }
       >
-        {modalType == "Edit" && currentSection == sectionSize - 1
+        {modalType === "Edit" && currentSection === sectionSize - 1
           ? "Cancel"
-          : "Back"}
+          : modalType === "Edit" && currentSection === 4
+            ? "Back to Dosage"
+            : modalType === "Edit"
+              ? "Back to Review"
+              : "Back"}
       </ModalButton>
       {modalType == "Add" && (
         <div className="flex justify-center items-center gap-2 smallTablet:gap-4">
@@ -105,13 +125,15 @@ export default function SectionSelector({
         action={nextAction}
         type="success"
       >
-        {currentSection == sectionSize - 1
-          ? modalType == "Edit"
-            ? "Save"
+        {currentSection === sectionSize - 1
+          ? modalType === "Edit"
+            ? "Update"
             : "Create"
-          : (modalType == "Edit" && currentSection == 3) || modalType == "Add"
+          : modalType === "Add"
             ? "Next"
-            : "Confirm"}
+            : currentSection === 3
+              ? "Proceed"
+              : "Save Changes"}
       </ModalButton>
     </div>
   );

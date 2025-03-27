@@ -32,12 +32,18 @@ export default function MedicationBaseModal({
 }: MedicationBaseModalProps) {
   const [medicationInfo, setMedicationInfo] =
     useState<WithOptionalId<MedicationInfo>>(initialInfo);
+  const [spareInfo, setSpareInfo] =
+    useState<WithOptionalId<MedicationInfo>>(initialInfo);
   const [currentSection, setCurrentSection] = useState<number>(
     modalTypeToSection[modalType],
   );
   const [timesIn12Hour, setTimesIn12Hour] = useState<Time12Hour[]>(
     convertTo12Hour(initialInfo.doseTimes),
   );
+  const [spareTimesIn12Hour, setSpareTimesIn12Hour] = useState<Time12Hour[]>(
+    convertTo12Hour(initialInfo.doseTimes),
+  );
+
   const [error, setError] = useState<string>("");
 
   const sections = [
@@ -84,7 +90,7 @@ export default function MedicationBaseModal({
       if (error instanceof UnauthorizedError) {
         setError(error.message);
       } else if (error instanceof Error) {
-        setError(`Failed to add medication: ${error.message}`);
+        setError(`Failed ${modalType}: ${error.message}`);
       } else {
         setError("An unexpected error occurred while adding the medication");
       }
@@ -114,8 +120,12 @@ export default function MedicationBaseModal({
           sectionSize={sections.length}
           info={medicationInfo}
           setInfo={setMedicationInfo}
+          spareInfo={spareInfo}
+          setSpareInfo={setSpareInfo}
           timesIn12Hour={timesIn12Hour}
           setTimesIn12Hour={setTimesIn12Hour}
+          spareTimesIn12Hour={spareTimesIn12Hour}
+          setSpareTimesIn12Hour={setSpareTimesIn12Hour}
           setError={setError}
           onSubmit={submitHandler}
         />
