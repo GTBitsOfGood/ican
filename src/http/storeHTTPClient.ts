@@ -1,6 +1,6 @@
 import { WithId } from "mongodb";
 import fetchHTTPClient from "./fetchHTTPClient";
-import { BagItem } from "@/db/models";
+import { BagItem } from "@/db/models/bag";
 
 export interface PurchaseItemBody {
   petId: string;

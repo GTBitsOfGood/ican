@@ -10,10 +10,10 @@ import InventoryTabContent, {
   StoreItem,
 } from "@/components/ui/InventoryTabContent";
 import StoreHTTPClient from "@/http/storeHTTPClient";
-import { BagItem } from "@/db/models";
 import { Types } from "mongoose";
 import { AccessoryType, ItemType } from "@/types/store";
 import InventoryLeftPanel from "@/components/ui/InventoryLeftPanel";
+import { BagItem } from "@/db/models/bag";
 
 export default function Store() {
   const router = useRouter();
