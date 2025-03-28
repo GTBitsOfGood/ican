@@ -171,23 +171,21 @@ export default function SectionValidator({
         const interval = info.doseIntervalInHours;
 
         updatedTimes = [];
-        const currentTime = firstTime.time.split(":").map(Number);
-        let currentHour = currentTime[0];
-        const currentMinute = currentTime[1];
-        let currentPeriod = firstTime.period;
+        let currentHour = parseInt(firstTime.time.split(":")[0]);
+        const currentMinute = parseInt(firstTime.time.split(":")[1]);
+        const isPM = firstTime.period === "PM";
+
+        if (isPM && currentHour !== 12) currentHour += 12;
+        if (!isPM && currentHour === 12) currentHour = 0;
 
         while (currentHour < 24) {
-          const formattedHour = currentHour % 12 === 0 ? 12 : currentHour % 12;
+          const displayHour = currentHour % 12 || 12;
+          const displayPeriod = currentHour < 12 ? "AM" : "PM";
           updatedTimes.push({
-            time: `${String(formattedHour).padStart(2, "0")}:${String(currentMinute).padStart(2, "0")}`,
-            period: currentPeriod,
+            time: `${String(displayHour).padStart(2, "0")}:${String(currentMinute).padStart(2, "0")}`,
+            period: displayPeriod,
           });
-
           currentHour += interval;
-
-          if (currentHour >= 12 && currentHour % 12 === 0) {
-            currentPeriod = currentPeriod === "AM" ? "PM" : "AM";
-          }
         }
       }
 

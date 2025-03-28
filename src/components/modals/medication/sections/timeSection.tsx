@@ -109,7 +109,7 @@ export default function TimeSection({
                 value={timesIn12Hour[0]?.time || ""}
                 onChange={(newValue: string) =>
                   setTimesIn12Hour((prev) => {
-                    newValue = newValue.replace(/\D/g, "").padStart(4, "0");
+                    newValue = newValue.replace(/\D/g, "");
                     if (newValue.length > 4) newValue = newValue.slice(0, 4);
 
                     let hours: string = newValue.slice(0, 2);
@@ -118,7 +118,7 @@ export default function TimeSection({
                     if (parseInt(hours) > 12) hours = "12";
                     if (parseInt(minutes) > 59) minutes = "59";
 
-                    const newTimes = [...prev];
+                    const newTimes = prev.map((item) => ({ ...item }));
                     newTimes[0].time = `${hours}${newValue.length >= 3 ? ":" : ""}${minutes}`;
                     return newTimes;
                   })
@@ -130,7 +130,7 @@ export default function TimeSection({
                 value={timesIn12Hour[0]?.period || "AM"}
                 setValue={(newValue: string) =>
                   setTimesIn12Hour((prev) => {
-                    const newTimes = [...prev];
+                    const newTimes = prev.map((item) => ({ ...item }));
                     newTimes[0].period = newValue as Time12Hour["period"];
                     return newTimes;
                   })
