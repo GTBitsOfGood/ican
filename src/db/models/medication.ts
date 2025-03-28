@@ -1,19 +1,7 @@
 import { Document, model, models, Schema, Types } from "mongoose";
+import { MedicationInfo } from "@/types/medication";
 
-// Interfaces
-
-export interface Medication {
-  formOfMedication: string;
-  medicationId: string;
-  repeatInterval: number;
-  repeatUnit: string;
-  repeatOn: string[];
-  repeatMonthlyOnDay: number;
-  notificationFrequency: string;
-  dosesPerDay: number;
-  doseIntervalInHours: number;
-  // string of times
-  doseTimes: string[];
+export interface Medication extends MedicationInfo {
   userId: Types.ObjectId;
 }
 
@@ -21,24 +9,26 @@ export interface MedicationDocument extends Medication, Document {
   _id: Types.ObjectId;
 }
 
-// Schemas
-
-const medicationSchema = new Schema<MedicationDocument>(
-  {
-    formOfMedication: { type: String, required: true },
-    medicationId: { type: String, required: true },
-    repeatInterval: { type: Number, required: true },
-    repeatUnit: { type: String, required: true },
-    repeatOn: { type: [String], required: true },
-    repeatMonthlyOnDay: { type: Number, required: true },
-    notificationFrequency: { type: String, required: true },
-    dosesPerDay: { type: Number, required: true },
-    doseIntervalInHours: { type: Number, required: true },
-    doseTimes: { type: [String], required: true },
-    userId: { type: Schema.ObjectId, ref: "User", required: true, index: true },
-  },
-  { timestamps: true },
-);
+const medicationSchema = new Schema<MedicationDocument>({
+  formOfMedication: { type: String, required: true },
+  medicationId: { type: String, required: true },
+  repeatInterval: { type: Number, required: true },
+  repeatUnit: { type: String, required: true },
+  repeatWeeklyOn: { type: [String], required: true },
+  repeatMonthlyType: { type: String, required: false },
+  repeatMonthlyOnDay: { type: Number, required: false },
+  repeatMonthlyOnWeek: { type: Number, required: false },
+  repeatMonthlyOnWeekDay: { type: String, required: false },
+  dosesUnit: { type: String, required: true },
+  dosesPerDay: { type: Number, required: false },
+  doseIntervalInHours: { type: Number, required: false },
+  dosageAmount: { type: String, required: true },
+  doseTimes: { type: [String], required: true },
+  notificationFrequency: { type: String, required: true },
+  notes: { type: String, required: false },
+  includeTimes: { type: Boolean, required: true },
+  userId: { type: Schema.ObjectId, ref: "User", required: true, index: true },
+});
 
 medicationSchema.index({ userId: 1, medicationId: 1 }, { unique: true });
 

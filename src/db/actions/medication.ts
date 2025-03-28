@@ -49,10 +49,7 @@ export default class MedicationDAO {
   ): Promise<void> {
     const _id = new Types.ObjectId(id);
     await dbConnect();
-    const result = await MedicationModel.updateOne({ _id }, updateObj);
-    if (result.modifiedCount == 0) {
-      throw new Error(ERRORS.MEDICATION.FAILURE.UPDATE);
-    }
+    await MedicationModel.replaceOne({ _id }, updateObj);
   }
 
   static async deleteMedicationById(

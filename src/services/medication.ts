@@ -1,5 +1,4 @@
 import MedicationDAO from "@/db/actions/medication";
-import { removeUndefinedKeys } from "@/lib/utils";
 import {
   ConflictError,
   IllegalOperationError,
@@ -57,7 +56,6 @@ export default class MedicationService {
   }
 
   static async updateMedication(id: string, updatedMedication: Medication) {
-    updatedMedication = removeUndefinedKeys(updatedMedication); // Need to test this with zod
     validateUpdateMedication({ id, ...updatedMedication });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {

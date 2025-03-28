@@ -1,42 +1,50 @@
 import { Dispatch, SetStateAction } from "react";
-import { AddMedicationInfo } from "../addMedicationInfo";
+import { MedicationInfo } from "@/types/medication";
 import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
-import IDInput from "@/components/modals/addMedication/idInput";
+import IDInput from "@/components/ui/modals/idInput";
 import Label from "@/components/ui/form/label";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 import {
   InjectionIcon,
+  LiquidIcon,
   PillIcon,
-} from "@/components/ui/modals/addMedicationIcons";
+} from "@/components/ui/modals/medicationIcons";
 
 interface GeneralSectionProps {
-  info: AddMedicationInfo;
-  setInfo: Dispatch<SetStateAction<AddMedicationInfo>>;
+  info: MedicationInfo;
+  setInfo: Dispatch<SetStateAction<MedicationInfo>>;
 }
 
 export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
-    <div>
-      <FormControl>
+    <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
+      <FormControl mobileColumn={true}>
         <Label>Form of Medication</Label>
         <DropDown
           width={220}
-          value={info.general.form}
+          value={info.formOfMedication || ""}
           setValue={(newValue: string) =>
             setInfo((prev) => {
               const temp = { ...prev };
-              temp.general.form =
-                newValue as AddMedicationInfo["general"]["form"];
+              temp.formOfMedication =
+                newValue as MedicationInfo["formOfMedication"];
               return temp;
             })
           }
         >
-          <Option value="Pill" icon={<PillIcon className="w-10 h-10" />} />
           <Option
-            value="Injection"
-            icon={<InjectionIcon className="w-10 h-10" />}
+            value="Pill"
+            icon={<PillIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
+          />
+          <Option
+            value="Syrup"
+            icon={<LiquidIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
+          />
+          <Option
+            value="Shot"
+            icon={<InjectionIcon className="w-6 h-6 tablet:w-10 tablet:h-10" />}
           />
         </DropDown>
       </FormControl>
@@ -44,17 +52,14 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
       <FormSubtitle>Create a medication ID of up to 5 characters</FormSubtitle>
       <IDInput
         values={
-          info.general.medicationId
-            ? [...info.general.medicationId.split(""), "", "", "", ""].slice(
-                0,
-                5,
-              )
+          info.medicationId
+            ? [...info.medicationId.split(""), "", "", "", ""].slice(0, 5)
             : ["", "", "", "", ""]
         }
         setValues={(newValues: string[]) =>
           setInfo((prev) => {
             const temp = { ...prev };
-            temp.general.medicationId = newValues.join("") as string;
+            temp.medicationId = newValues.join("") as string;
             return temp;
           })
         }

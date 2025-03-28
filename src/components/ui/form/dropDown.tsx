@@ -1,5 +1,5 @@
 import { cloneElement, ReactElement, useState, useEffect, useRef } from "react";
-import { OptionProps } from "./option";
+import Option, { OptionProps } from "./option";
 
 interface DropDownProps {
   children: ReactElement<OptionProps>[];
@@ -14,21 +14,33 @@ export default function DropDown({
   children,
   className,
   disabled = false,
-  width,
+  width = 130,
   value,
   setValue,
 }: DropDownProps) {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
+  const [currentX, setCurrentX] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setCurrentX(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const initialIndex = children.findIndex(
       (child) => child.props.value === value,
     );
-    if (initialIndex !== -1) {
-      setSelectedIndex(initialIndex);
-    }
+    setSelectedIndex(initialIndex);
   }, [value, children]);
 
   useEffect(() => {
@@ -60,21 +72,30 @@ export default function DropDown({
   return (
     <div
       ref={dropdownRef}
-      className={`relative border-2 border-black bg-white text-black font-belanosima text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
+      className={`relative border-2 border-black bg-white text-black font-belanosima text-lg tablet:text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
       style={{
-        width: width || 130,
+        width: currentX && currentX < 768 ? width / 1.5 : width,
       }}
     >
       {/* Dropdown Button */}
-      {cloneElement(children[selectedIndex], {
-        showDropDown,
-        selected: true,
-        onClick: () => {
-          if (!disabled) {
-            setShowDropDown((prev) => !prev);
-          }
-        },
-      })}
+      {selectedIndex === -1 ? (
+        <Option
+          value="Select"
+          selected={true}
+          onClick={() => setShowDropDown((prev) => !prev)}
+          className="!text-slate-900/75"
+        />
+      ) : (
+        cloneElement(children[selectedIndex], {
+          showDropDown,
+          selected: true,
+          onClick: () => {
+            if (!disabled) {
+              setShowDropDown((prev) => !prev);
+            }
+          },
+        })
+      )}
 
       {/* Dropdown Menu */}
       {!disabled && showDropDown && (

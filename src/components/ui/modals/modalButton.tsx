@@ -1,7 +1,7 @@
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, ReactNode } from "react";
 
 interface ButtonProps {
-  children: string;
+  children: ReactNode;
   type?: "default" | "danger" | "success";
   disabled?: boolean;
   action: MouseEventHandler<HTMLButtonElement>;
@@ -10,7 +10,7 @@ interface ButtonProps {
 
 const typeBackgroundColors = {
   default: "bg-white text-black",
-  danger: "bg-iCAN-error text-white",
+  danger: "bg-errorRed text-white",
   success: "bg-icanGreen-100 text-black",
 };
 
@@ -27,7 +27,7 @@ export default function ModalButton({
     <button
       onClick={action}
       disabled={disabled}
-      className={`${disabled ? "opacity-0" : ""} font-belanosima px-5 py-2 text-3xl ${color} ${className}`}
+      className={`${className} ${disabled ? "opacity-0" : ""} font-belanosima px-3 tablet:px-5 py-2 text-xl tablet:text-3xl ${color}`}
       type="button"
     >
       {children}

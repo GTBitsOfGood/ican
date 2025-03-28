@@ -34,7 +34,7 @@ const IDInput = ({ values, setValues }: IdInputProps) => {
   };
 
   return (
-    <div className="mt-8 grid grid-cols-5">
+    <div className="mt-8 flex gap-4 smallTablet:gap-6 tablet:grid tablet:grid-cols-5">
       {values.map((value, index) => (
         <InputBox
           key={index}
@@ -44,7 +44,7 @@ const IDInput = ({ values, setValues }: IdInputProps) => {
           onFocusPrev={() => handleFocusPrev(index)}
           ref={inputRefs[index]}
           className={`
-            w-20 h-20 text-6xl
+             w-12 h-12 smallTablet:w-14 smallTablet:h-14 text-4xl tablet:w-20 tablet:h-20 tablet:text-6xl
             ${value.length == 0 ? "bg-icanBlue-100" : ""}
           `}
         />
