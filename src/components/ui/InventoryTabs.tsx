@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
@@ -43,7 +44,7 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
             }`}
             selectedClassName={`bg-[#7D83B2]`}
           >
-            <img
+            <Image
               src={tab.image}
               alt={tab.title}
               draggable="false"

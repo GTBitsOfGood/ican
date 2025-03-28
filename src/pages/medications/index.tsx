@@ -2,15 +2,13 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
-import {
-  AddMedicationInfo,
-  initialAddMedicationInfo,
-} from "@/components/modals/addMedication/addMedicationInfo";
+import { initialAddMedicationInfo } from "@/components/modals/medication/addMedicationModal";
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
+import { Medication } from "@/db/models/medication";
 
 export default function MedicationsPage() {
-  const [medications, setMedications] = useState<AddMedicationInfo[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
 

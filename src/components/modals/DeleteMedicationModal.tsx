@@ -1,3 +1,4 @@
+import { Medication } from "@/db/models/medication";
 import {
   Modal,
   ModalBody,
@@ -6,10 +7,9 @@ import {
   useDisclosure,
 } from "@heroui/react";
 import { useEffect } from "react";
-import { AddMedicationInfo } from "./addMedication/addMedicationInfo";
 
 interface ChangePinModalProps {
-  medication: AddMedicationInfo;
+  medication: Medication;
   setDeleteModalVisible: (visible: boolean) => void;
   handleDelete: () => void;
 }
@@ -54,7 +54,7 @@ export default function ChangePinModal({
       isDismissable={false}
     >
       <ModalContent>
-        <ModalHeader>{`Are you sure you want to delete ${medication.general.medicationId}?`}</ModalHeader>
+        <ModalHeader>{`Are you sure you want to delete ${medication.medicationId}?`}</ModalHeader>
         <ModalBody>
           <p className="font-normal mobile:text-lg tablet:text-xl largeDesktop:text-2xl tiny:text-md minimized:text-lg small:text-xl">
             Once a medication has been deleted, the data cannot be restored.

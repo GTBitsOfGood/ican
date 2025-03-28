@@ -22,16 +22,12 @@ export default function EditMedication() {
         setMedicationInfo(info);
       } catch (error) {
         console.error("Failed to fetch medication:", error);
-        pushToHome();
+        router.push("/");
       }
     };
 
     fetchMedication();
-  }, [router.isReady, medicationId]);
-
-  const pushToHome = () => {
-    router.push("/");
-  };
+  }, [router, medicationId]);
 
   if (medicationInfo) {
     return (

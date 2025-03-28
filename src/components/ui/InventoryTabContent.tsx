@@ -65,7 +65,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
             <div
               className={`${item.type == ItemType.FOOD ? "largeDesktop:w-[130px] desktop:w-[100px] tablet:w-[70px]" : "largeDesktop:w-[154px] desktop:w-[120px] tablet:w-[100px]"}`}
             >
-              <img
+              <Image
                 src={item.image}
                 alt={item.name}
                 draggable="false"
@@ -81,7 +81,7 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
             key={index}
             className={`p-4 mx-auto flex flex-col items-center mt-[60px]`}
           >
-            <img
+            <Image
               src={"store/Lock.svg"}
               alt={item.name}
               className="largeDesktop:w-[121px] desktop:w-[105px] tablet:w-[90px]"

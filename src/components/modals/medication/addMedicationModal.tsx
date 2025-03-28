@@ -5,7 +5,7 @@ import MedicationBaseModal from "./baseModal";
 import { useRouter } from "next/navigation";
 import { MedicationInfo } from "@/types/medication";
 
-const initialAddMedicationInfo: MedicationInfo = {
+export const initialAddMedicationInfo: MedicationInfo = {
   formOfMedication: undefined,
   medicationId: "",
   repeatUnit: undefined,
