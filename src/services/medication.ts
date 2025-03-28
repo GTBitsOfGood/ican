@@ -1,4 +1,3 @@
-import { MedicationCheckIn, MedicationLog, Pet } from "@/db/models";
 import MedicationDAO from "@/db/actions/medication";
 import {
   ConflictError,
@@ -7,7 +6,6 @@ import {
   UnauthorizedError,
 } from "@/types/exceptions";
 import { validateParams } from "@/utils/medication";
-import { ObjectId } from "mongodb";
 import { validatePins } from "@/utils/settings";
 import { FOOD_INC } from "@/utils/constants";
 import PetDAO from "@/db/actions/pets";
@@ -21,13 +19,16 @@ import {
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
-import { Types } from "mongoose";
 import { Medication } from "@/db/models/medication";
+import { Pet } from "@/db/models/pet";
+import {
+  MedicationCheckInDocument,
+  MedicationCheckIn,
+} from "@/db/models/medicationCheckIn";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
     await validateCreateMedication(medication);
-    medication.userId = new Types.ObjectId(medication.userId);
 
     const existingMedication =
       await MedicationDAO.getUserMedicationByMedicationId(
@@ -92,24 +93,22 @@ export default class MedicationService {
     validateParams({ id: medicationId });
 
     // Check if the medication exists
-    const existingMedication = await MedicationDAO.getMedicationById(
-      new ObjectId(medicationId),
-    );
+    const existingMedication =
+      await MedicationDAO.getMedicationById(medicationId);
 
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
     // check if medication check in already exists and isn't expired
 
-    const existingMedicationCheckIn = await MedicationDAO.getMedicationCheckIn(
-      new ObjectId(medicationId),
-    );
-
+    const existingMedicationCheckIn: MedicationCheckInDocument | null =
+      await MedicationDAO.getMedicationCheckIn(medicationId);
     if (existingMedicationCheckIn) {
-      const checkIn = existingMedicationCheckIn as MedicationCheckIn;
+      const checkIn: MedicationCheckIn =
+        existingMedicationCheckIn as MedicationCheckIn;
       if (checkIn.expiration.getTime() <= Date.now()) {
         // delete medication
-        await MedicationDAO.deleteMedicationCheckIn(new ObjectId(medicationId));
+        await MedicationDAO.deleteMedicationCheckIn(medicationId);
       } else {
         // do nothing if valid
         return;
@@ -120,12 +119,7 @@ export default class MedicationService {
     const expiration = new Date();
     expiration.setMinutes(expiration.getMinutes() + 15);
 
-    const medicationCheckIn: MedicationCheckIn = {
-      medicationId: new ObjectId(medicationId),
-      expiration,
-    };
-
-    MedicationDAO.createMedicationCheckIn(medicationCheckIn);
+    MedicationDAO.createMedicationCheckIn(medicationId, expiration);
   }
 
   static async createMedicationLog(medicationId: string, pin: string) {
@@ -133,9 +127,8 @@ export default class MedicationService {
     validateParams({ id: medicationId });
 
     // Check if the pet exists
-    const existingMedication = (await MedicationDAO.getMedicationById(
-      new ObjectId(medicationId),
-    )) as Medication;
+    const existingMedication: Medication | null =
+      await MedicationDAO.getMedicationById(medicationId);
 
     if (!existingMedication || !existingMedication.userId) {
       throw new NotFoundError("This medication does not exist");
@@ -153,9 +146,8 @@ export default class MedicationService {
 
     // check if medication exists
 
-    const existingMedicationCheckIn = await MedicationDAO.getMedicationCheckIn(
-      new ObjectId(medicationId),
-    );
+    const existingMedicationCheckIn =
+      await MedicationDAO.getMedicationCheckIn(medicationId);
 
     if (!existingMedicationCheckIn) {
       throw new NotFoundError(
@@ -171,24 +163,21 @@ export default class MedicationService {
 
     // delete medication check in
 
-    await MedicationDAO.deleteMedicationCheckIn(new ObjectId(medicationId));
+    await MedicationDAO.deleteMedicationCheckIn(medicationId);
 
     // find pet
-    const existingPet = (await PetDAO.getPetByUserId(
-      new ObjectId(userId),
-    )) as Pet;
+    const existingPet: Pet | null = await PetDAO.getPetByUserId(userId);
+
+    if (!existingPet) {
+      throw new NotFoundError("No pet found for the user");
+    }
 
     // add food to pet
-    await PetDAO.updatePetByUserId(new ObjectId(userId), {
+    await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
     });
 
-    const medicationCheckIn: MedicationLog = {
-      medicationId: new ObjectId(medicationId),
-      dateTaken: new Date(),
-    };
-
     // create medication log in
-    await MedicationDAO.createMedicationLog(medicationCheckIn);
+    await MedicationDAO.createMedicationLog(medicationId, new Date());
   }
 }

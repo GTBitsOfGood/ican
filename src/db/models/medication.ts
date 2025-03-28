@@ -32,8 +32,8 @@ const medicationSchema = new Schema<MedicationDocument>({
 
 medicationSchema.index({ userId: 1, medicationId: 1 }, { unique: true });
 
-const MedicationModel =
+// Models
+
+export const MedicationModel =
   models.Medication ||
   model<MedicationDocument>("Medication", medicationSchema);
-
-export default MedicationModel;

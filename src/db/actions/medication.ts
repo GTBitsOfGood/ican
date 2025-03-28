@@ -1,13 +1,21 @@
-import client from "../dbClient";
-import { MedicationCheckIn, MedicationLog } from "../models";
-import { ObjectId } from "mongodb";
 import { HydratedDocument, Types } from "mongoose";
-import MedicationModel, {
+import {
+  MedicationModel,
   Medication,
   MedicationDocument,
 } from "../models/medication";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
+import {
+  MedicationCheckIn,
+  MedicationCheckInDocument,
+  MedicationCheckInModel,
+} from "../models/medicationCheckIn";
+import {
+  MedicationLog,
+  MedicationLogDocument,
+  MedicationLogModel,
+} from "../models/medicationLog";
 
 export default class MedicationDAO {
   static async createNewMedication(
@@ -18,9 +26,9 @@ export default class MedicationDAO {
   }
 
   static async getMedicationById(
-    id: string | Types.ObjectId,
+    id: string,
   ): Promise<HydratedDocument<MedicationDocument> | null> {
-    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     await dbConnect();
     return await MedicationModel.findById(_id);
   }
@@ -36,10 +44,10 @@ export default class MedicationDAO {
   }
 
   static async updateMedicationById(
-    id: string | Types.ObjectId,
+    id: string,
     updateObj: Medication,
   ): Promise<void> {
-    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    const _id = new Types.ObjectId(id);
     await dbConnect();
     await MedicationModel.replaceOne({ _id }, updateObj);
   }
@@ -56,65 +64,56 @@ export default class MedicationDAO {
   }
 
   static async getMedicationsByUserId(
-    _userId: string | Types.ObjectId,
+    _userId: string,
   ): Promise<HydratedDocument<MedicationDocument>[]> {
-    const userId =
-      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    const userId = new Types.ObjectId(_userId);
     return await MedicationModel.find({ userId });
   }
 
   static async createMedicationCheckIn(
-    newMedicationCheckIn: MedicationCheckIn,
-  ) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationCheckIn")
-        .insertOne(newMedicationCheckIn);
+    medicationId: string,
+    expiration: Date,
+  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+    await dbConnect();
 
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to create medication check in: " + (error as Error).message,
-      );
-    }
+    const medicationCheckIn: MedicationCheckIn = {
+      medicationId: new Types.ObjectId(medicationId),
+      expiration,
+    };
+
+    return await MedicationCheckInModel.insertOne(medicationCheckIn);
   }
 
-  static async createMedicationLog(newMedicationLog: MedicationLog) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationLog")
-        .insertOne(newMedicationLog);
+  static async createMedicationLog(
+    medicationId: string,
+    dateTaken: Date,
+  ): Promise<HydratedDocument<MedicationLogDocument> | null> {
+    await dbConnect();
 
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to create medication log: " + (error as Error).message,
-      );
-    }
+    const medicationCheckIn: MedicationLog = {
+      medicationId: new Types.ObjectId(medicationId),
+      dateTaken: dateTaken,
+    };
+
+    return await MedicationLogModel.insertOne(medicationCheckIn);
   }
 
-  static async getMedicationCheckIn(medicationId: ObjectId) {
-    const db = client.db();
-    try {
-      const result = await db
-        .collection("MedicationCheckIn")
-        .findOne({ medicationId });
-
-      return result;
-    } catch (error) {
-      throw new Error(
-        "Failed to get medication check in: " + (error as Error).message,
-      );
-    }
+  static async getMedicationCheckIn(
+    medicationId: string,
+  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+    const medicationIdObj = new Types.ObjectId(medicationId);
+    await dbConnect();
+    return await MedicationCheckInModel.findOne({
+      medicationId: medicationIdObj,
+    });
   }
 
-  static async deleteMedicationCheckIn(medicationId: ObjectId) {
-    const db = client.db();
-    const result = await db
-      .collection("MedicationCheckIn")
-      .deleteOne({ medicationId });
+  static async deleteMedicationCheckIn(medicationId: string) {
+    const medicationIdObj = new Types.ObjectId(medicationId);
+    await dbConnect();
+    const result = await MedicationCheckInModel.deleteOne({
+      medicationId: medicationIdObj,
+    });
 
     if (result.deletedCount == 0) {
       throw new Error("Failed to delete medication.");

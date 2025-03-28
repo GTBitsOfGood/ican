@@ -82,8 +82,8 @@ export default function Home({
           {/* Navbar - VH Scaling */}
           <Navbar>
             <NavButton buttonType="store" />
-            <NavButton buttonType="log" />
             <NavButton buttonType="bag" />
+            <NavButton buttonType="log" />
             <FeedButton />
           </Navbar>
 

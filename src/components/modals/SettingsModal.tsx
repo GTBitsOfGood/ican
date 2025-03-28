@@ -46,6 +46,14 @@ export default function SettingsModal() {
       setSettingsChanged(true);
     };
 
+  const handleLogout = async () => {
+    console.log("logout");
+  };
+
+  const handleDeleteAccount = async () => {
+    console.log("delete account");
+  };
+
   useEffect(() => {
     if (!settingsChanged) {
       return;
@@ -85,7 +93,7 @@ export default function SettingsModal() {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        header: "text-5xl underline mb-8",
+        header: "text-5xl underline mb-4",
         closeButton: "right-[3rem] top-[3rem]",
       }}
       className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
@@ -98,8 +106,8 @@ export default function SettingsModal() {
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col items-center w-[95%] gap-16">
-            <div className="flex flex-col w-full gap-8">
+          <div className="flex flex-col items-center w-[95%] gap-10">
+            <div className="flex flex-col w-full gap-7">
               <h3 className="font-bold text-5xl">General</h3>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Notifications</h5>
@@ -120,8 +128,12 @@ export default function SettingsModal() {
                   setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Logout</h5>
+                <ModalNextButton link="settings" onClick={handleLogout} />
+              </div>
             </div>
-            <div className="flex flex-col w-full gap-8">
+            <div className="flex flex-col w-full gap-7">
               <h3 className="font-bold text-5xl">Parental</h3>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Parental Controls</h5>
@@ -138,6 +150,13 @@ export default function SettingsModal() {
                 <h5 className="text-3xl">Change Pin</h5>
                 <ModalNextButton link="change-pin" />
               </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Delete Account</h5>
+                <ModalNextButton
+                  link="settings"
+                  onClick={handleDeleteAccount}
+                />
+              </div>
             </div>
           </div>
         </ModalBody>
@@ -149,10 +168,10 @@ export default function SettingsModal() {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3]",
-        header: "text-5xl underline mb-8",
+        header: "text-5xl underline mb-4",
         closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white pt-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -162,8 +181,8 @@ export default function SettingsModal() {
       <ModalContent>
         <ModalHeader>Settings</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col items-center w-[95%] gap-16">
-            <div className="flex flex-col w-full gap-8">
+          <div className="flex flex-col items-center w-[95%] gap-10">
+            <div className="flex flex-col w-full gap-7">
               <h3 className="font-bold text-5xl">General</h3>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Notifications</h5>
@@ -184,8 +203,12 @@ export default function SettingsModal() {
                   setState={handleSettingChange(setHelpfulTipsEnabled)}
                 />
               </div>
+              <div className="flex justify-between items-center pl-4">
+                <h5 className="text-3xl">Logout</h5>
+                <ModalNextButton link="settings" onClick={handleLogout} />
+              </div>
             </div>
-            <div className="flex flex-col w-full gap-8">
+            <div className="flex flex-col w-full gap-7">
               <h3 className="font-bold text-5xl">Parental</h3>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-3xl">Parental Controls</h5>
