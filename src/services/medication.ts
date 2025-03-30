@@ -15,6 +15,7 @@ import {
   validateDeleteMedication,
   validateGetMedication,
   validateGetMedications,
+  validateGetMedicationsSchedule,
   validateUpdateMedication,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
@@ -179,5 +180,9 @@ export default class MedicationService {
 
     // create medication log in
     await MedicationDAO.createMedicationLog(medicationId, new Date());
+  }
+
+  static async getMedicationsSchedule(userId: string, date: string) {
+    validateGetMedicationsSchedule({ userId, date });
   }
 }

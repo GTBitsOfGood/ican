@@ -246,10 +246,17 @@ export const deleteMedicationSchema = z.object({
 export const getMedicationsSchema = z.object({
   userId: objectIdSchema("userId"),
 });
+export const getMedicationsScheduleSchema = z.object({
+  id: objectIdSchema("userId"),
+  date: z.string().refine(isValidTimeString),
+});
 
 export type CreateMedication = z.infer<typeof createMedicationSchema>;
 export type GetMedication = z.infer<typeof getMedicationSchema>;
 export type GetMedications = z.infer<typeof getMedicationsSchema>;
+export type GetMedicationsSchedule = z.infer<
+  typeof getMedicationsScheduleSchema
+>;
 export type DeleteMedication = z.infer<typeof deleteMedicationSchema>;
 export type UpdateMedication = z.infer<typeof updateMedicationSchema>;
 
@@ -271,4 +278,10 @@ export const validateUpdateMedication = (data: unknown): UpdateMedication => {
 
 export const validateGetMedications = (data: unknown): GetMedications => {
   return getMedicationsSchema.parse(data);
+};
+
+export const validateGetMedicationsSchedule = (
+  data: unknown,
+): GetMedicationsSchedule => {
+  return getMedicationsScheduleSchema.parse(data);
 };
