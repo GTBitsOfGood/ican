@@ -1,7 +1,7 @@
-"use client";
+"use server";
 import { NextResponse } from "next/server";
 
-export const generateAPIAuthCookie = (
+export const generateAPIAuthCookie = async (
   nextResponse: NextResponse,
   token: string,
 ): NextResponse => {
