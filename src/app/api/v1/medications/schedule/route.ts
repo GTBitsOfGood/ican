@@ -1,4 +1,5 @@
 import MedicationService from "@/services/medication";
+import { MedicationSchedule } from "@/types/medication";
 import { verifyUser } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import ERRORS from "@/utils/errorMessages";
@@ -16,10 +17,8 @@ export async function GET(req: NextRequest) {
     const tokenUser = await validateRoutes(req, req.method, route);
     verifyUser(tokenUser, userId, ERRORS.MEDICATION.UNAUTHORIZED);
 
-    const schedule = await MedicationService.getMedicationsSchedule(
-      userId,
-      date,
-    );
+    const schedule: MedicationSchedule =
+      await MedicationService.getMedicationsSchedule(userId, date);
 
     return NextResponse.json(schedule, { status: 200 });
   } catch (err) {

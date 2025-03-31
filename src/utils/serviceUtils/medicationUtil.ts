@@ -247,8 +247,10 @@ export const getMedicationsSchema = z.object({
   userId: objectIdSchema("userId"),
 });
 export const getMedicationsScheduleSchema = z.object({
-  id: objectIdSchema("userId"),
-  date: z.string().refine(isValidTimeString),
+  userId: objectIdSchema("userId"),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD expected)"),
 });
 
 export type CreateMedication = z.infer<typeof createMedicationSchema>;

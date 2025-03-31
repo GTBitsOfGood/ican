@@ -84,17 +84,14 @@ export default class MedicationDAO {
     return await MedicationLogModel.insertOne(medicationCheckIn);
   }
 
-  static async getMedicationLog(
+  static async getMedicationLogs(
     medicationId: string,
-  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+  ): Promise<HydratedDocument<MedicationLogDocument>[]> {
     const medicationIdObj = new Types.ObjectId(medicationId);
     await dbConnect();
-    return await MedicationLogModel.findOne(
-      {
-        medicationId: medicationIdObj,
-      },
-      { sort: { dateTaken: -1 } },
-    );
+    return await MedicationLogModel.find({
+      medicationId: medicationIdObj,
+    }).sort({ dateTaken: -1 });
   }
 
   static async createMedicationCheckIn(
