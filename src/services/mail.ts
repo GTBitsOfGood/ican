@@ -13,13 +13,15 @@ export default class EmailService {
 
       juno.init({
         apiKey: process.env.JUNO_API_KEY as string,
+        baseURL:
+          "***REMOVED***",
       });
-
       const response = await juno.email.sendEmail({
         subject,
         recipients: [
           {
             email: to,
+            name: "Email",
           },
         ],
         contents: [
@@ -30,12 +32,17 @@ export default class EmailService {
         ],
         bcc: [],
         cc: [],
-        sender: { email: process.env.MAIL_USER as string, name: "iCAN" },
+
+        sender: {
+          email: "hello@bitsofgood.org",
+          name: "Bits of Good",
+        },
       });
 
       console.log("Email Status:", response.success);
       return true;
-    } catch {
+    } catch (error) {
+      console.log(error);
       throw new Error(ERRORS.MAIL.FAILURE);
     }
   }
