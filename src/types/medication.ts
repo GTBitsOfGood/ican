@@ -1,22 +1,28 @@
+import { DayOfWeek } from "@/lib/consts";
+
+export type Time12Hour = { time: string; period: "AM" | "PM" };
+
 export interface MedicationInfo {
-  formOfMedication: string; // medicationInfo.general.form
-  medicationId: string; // medicationInfo.general.medicationId
+  formOfMedication?: "Pill" | "Syrup" | "Shot";
+  medicationId: string;
 
-  repeatInterval: number; // medicationInfo.repetition.repeatEvery
-  repeatUnit: string; // medicationInfo.repetition.type
-  repeatOn: string[]; // medicationInfo.repetition.repeat
+  repeatUnit?: "Day" | "Week" | "Month";
+  repeatInterval?: number;
+  repeatWeeklyOn: DayOfWeek[];
+  repeatMonthlyType?: "Day" | "Week";
+  repeatMonthlyOnDay?: number;
+  repeatMonthlyOnWeek?: number;
+  repeatMonthlyOnWeekDay?: DayOfWeek;
 
-  repeatMonthlyOnDay: number; // medicationInfo.repetition.monthlyDayOfRepitition
+  dosesUnit?: "Doses" | "Hours";
+  dosesPerDay?: number;
+  doseIntervalInHours?: number;
+  dosageAmount: string;
 
-  notificationFrequency: string; // medicationInfo.dosage.notificationFrequency
-  dosesPerDay: number; // medicationInfo.dosage.dosesPerDay
-  doseIntervalInHours: number; // medicationInfo.dosage.hourlyInterval
+  doseTimes: string[];
+  includeTimes: boolean;
 
-  doseTimes: {
-    time: string;
-    period: "AM" | "PM";
-  }[];
-
+  notificationFrequency?: "Day Of Dose" | "Every Dose";
   notes: string;
 }
 

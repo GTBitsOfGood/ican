@@ -14,17 +14,21 @@ import { useUser } from "@/components/UserContext";
 import { useEffect, useState } from "react";
 import PetHTTPClient from "@/http/petHTTPClient";
 import { Pet } from "@/types/pet";
-
-import AddMedicationModal from "@/components/modals/addMedication/modal";
+import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
+import EditMedicationModal from "@/components/modals/medication/editMedicationModal";
+import { WithId } from "@/types/models";
+import { Medication } from "@/db/models/medication";
+import LoadingScreen from "@/components/loadingScreen";
 
 interface HomeProps {
   activeModal: string;
+  editMedicationInfo?: WithId<Medication>;
 }
 
-export default function Home({ activeModal = "" }: HomeProps) {
-  const [addMedicationVisible, setAddMedicationVisibility] =
-    useState<boolean>(false);
-
+export default function Home({
+  activeModal = "",
+  editMedicationInfo = undefined,
+}: HomeProps) {
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
 
@@ -52,6 +56,10 @@ export default function Home({ activeModal = "" }: HomeProps) {
     <AuthorizedRoute>
       {activeModal === "settings" && <SettingsModal />}
       {activeModal === "change-pin" && <ChangePinModal />}
+      {activeModal === "add-new-medication" && <AddMedicationModal />}
+      {activeModal === "edit-medication" && (
+        <EditMedicationModal initialInfo={editMedicationInfo} />
+      )}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
@@ -74,8 +82,8 @@ export default function Home({ activeModal = "" }: HomeProps) {
           {/* Navbar - VH Scaling */}
           <Navbar>
             <NavButton buttonType="store" />
-            <NavButton buttonType="log" />
             <NavButton buttonType="bag" />
+            <NavButton buttonType="log" />
             <FeedButton />
           </Navbar>
 
@@ -96,27 +104,9 @@ export default function Home({ activeModal = "" }: HomeProps) {
               </div>
             </div>
           </div>
-          {(activeModal === "add-new-medication" || addMedicationVisible) && (
-            <AddMedicationModal
-              setAddMedicationVisibility={setAddMedicationVisibility}
-            />
-          )}
         </div>
       ) : (
-        <div className="min-h-screen flex flex-col relative">
-          <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
-            <div className="flex justify-center items-center h-screen">
-              <Image
-                className="spin"
-                src="/loading.svg"
-                alt="loading"
-                width={100}
-                height={100}
-                style={{ filter: "brightness(0) invert(1)" }}
-              />
-            </div>
-          </div>
-        </div>
+        <LoadingScreen />
       )}
     </AuthorizedRoute>
   );

@@ -1,103 +1,241 @@
 import { z } from "zod";
 import { objectIdSchema } from "./commonSchemaUtil";
+import ERRORS from "../errorMessages";
 
-export const createMedicationSchema = z.object({
-  formOfMedication: z.string().nonempty("Form of medication is required"),
+function isValidTimeString(value: string): boolean {
+  const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  return timeRegex.test(value);
+}
 
-  medicationId: z
-    .string()
-    .nonempty("Medication ID is required")
-    .max(5, "Medication ID must be less than 6 characters"),
+function convertTimeToMinutes(timeStr: string): number {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+}
 
-  repeatInterval: z
-    .number()
-    .positive("Repeat interval must be a positive nonzero number"),
-
-  repeatUnit: z.string().nonempty("Repeat unit is required"),
-
-  repeatOn: z.array(z.string()).nonempty("Repeat on must be a non-empty array"),
-
-  repeatMonthlyOnDay: z
-    .number()
-    .positive("Repeat monthly on day must be positive"),
-
-  notificationFrequency: z
-    .string()
-    .nonempty("Notification frequency is required"),
-
-  dosesPerDay: z
-    .number()
-    .positive("Doses per day must be a positive nonzero number"),
-
-  doseIntervalInHours: z
-    .number()
-    .positive("Dose interval in hours must be a positive nonzero number"),
-
-  doseTimes: z
-    .array(z.string())
-    .nonempty("Dose times must be a non-empty array"),
-
-  userId: objectIdSchema("UserId"),
-});
-
-const updateMedicationSchema = z.object({
-  id: objectIdSchema("medicationId").optional(),
-
-  formOfMedication: z
-    .string()
-    .min(1, "Form of medication must be a non-empty string")
-    .optional(),
+export const baseMedicationSchema = z.object({
+  formOfMedication: z.enum(["Pill", "Syrup", "Shot"], {
+    errorMap: () => ({
+      message: ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
+    }),
+  }),
 
   medicationId: z
     .string()
-    .min(1, "Medication ID must be a non-empty string")
-    .max(5, "Medication ID must be less than 6 characters")
-    .optional(),
+    .nonempty(ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID)
+    .max(5, ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID),
+
+  repeatUnit: z.enum(["Day", "Week", "Month"], {
+    errorMap: () => ({
+      message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
+    }),
+  }),
 
   repeatInterval: z
     .number()
-    .positive("Repeat interval must be a positive nonzero number")
+    .positive(ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_INTERVAL),
+
+  repeatWeeklyOn: z
+    .array(
+      z.enum([
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ]),
+    )
     .optional(),
 
-  repeatUnit: z
-    .string()
-    .min(1, "Repeat unit must be a non-empty string")
-    .optional(),
-
-  repeatOn: z
-    .array(z.string())
-    .min(1, "Repeat on must be a non-empty array")
-    .optional(),
+  repeatMonthlyType: z.enum(["Day", "Week"]).optional(),
 
   repeatMonthlyOnDay: z
     .number()
-    .positive("Repeat monthly on day must be positive")
+    .positive(ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_MONTHLY_ON_DAY)
     .optional(),
 
-  notificationFrequency: z
-    .string()
-    .min(1, "Notification frequency must be a non-empty string")
+  repeatMonthlyOnWeek: z
+    .number()
+    .min(1, ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_MONTHLY_ON_WEEK)
+    .max(4, ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_MONTHLY_ON_WEEK)
     .optional(),
+
+  repeatMonthlyOnWeekDay: z
+    .enum([
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ])
+    .optional(),
+
+  dosesUnit: z.enum(["Doses", "Hours"], {
+    errorMap: () => ({
+      message: ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_UNIT,
+    }),
+  }),
 
   dosesPerDay: z
     .number()
-    .positive("Doses per day must be a positive nonzero number")
+    .positive(ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_PER_DAY)
     .optional(),
 
   doseIntervalInHours: z
     .number()
-    .positive("Dose interval in hours must be a positive nonzero number")
+    .positive(ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSE_INTERVAL_IN_HOURS)
     .optional(),
 
-  doseTimes: z
-    .array(z.string())
-    .min(1, "Dose times must be a non-empty array")
-    .optional(),
+  dosageAmount: z
+    .string()
+    .nonempty(ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSAGE_AMOUNT),
 
+  doseTimes: z.array(z.string()),
+
+  notificationFrequency: z.enum(["Day Of Dose", "Every Dose"], {
+    errorMap: () => ({
+      message: ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
+    }),
+  }),
+
+  includeTimes: z.boolean(),
   notes: z.string().optional(),
-
-  userId: objectIdSchema("userId").optional(),
 });
+
+const medicationRefine = (
+  data: z.infer<typeof baseMedicationSchema>,
+  ctx: z.RefinementCtx,
+) => {
+  if (data.repeatUnit === "Week" && !data.repeatWeeklyOn) {
+    ctx.addIssue({
+      path: ["repeatWeeklyOn"],
+      message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_WEEKLY_ON,
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (
+    data.repeatUnit === "Month" &&
+    !data.repeatMonthlyOnDay &&
+    (!data.repeatMonthlyOnWeekDay || !data.repeatMonthlyOnWeek)
+  ) {
+    ctx.addIssue({
+      path: [
+        "repeatMonthlyOnDay",
+        "repeatMonthlyOnWeekDay",
+        "repeatMonthlyOnWeek",
+      ],
+      message:
+        "If the repeat unit is 'Month', at least either repeatMonthlyOnDay or repeatMonthlyOnWeekDay and repeatMonthlyOnWeek must be provided.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (
+    data.repeatUnit === "Month" &&
+    data.repeatMonthlyType === "Week" &&
+    (!data.repeatMonthlyOnWeekDay || !data.repeatMonthlyOnWeek)
+  ) {
+    ctx.addIssue({
+      path: [
+        "repeatUnit",
+        "repeatMonthlyType",
+        "repeatMonthlyOnWeek",
+        "repeatMonthlyOnWeekDay",
+      ],
+      message:
+        "repeatMonthlyOnWeek and repeatMonthlyOnWeekDay must be provided if repeatUnit is 'Month' and repeatMonthlyType is 'Week'.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (
+    data.repeatUnit === "Month" &&
+    data.repeatMonthlyType === "Day" &&
+    !data.repeatMonthlyOnDay
+  ) {
+    ctx.addIssue({
+      path: ["repeatUnit", "repeatMonthlyType", "repeatMonthlyOnDay"],
+      message:
+        "repeatMonthlyOnDay must be provided if repeatUnit is 'Month' and repeatMonthlyType is 'Day'.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (!data.dosesPerDay && !data.doseIntervalInHours) {
+    ctx.addIssue({
+      path: ["dosesPerDay", "doseIntervalInHours"],
+      message: "Either dosesPerDay or doseIntervalInHours must be provided.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (data.includeTimes && data.doseTimes.length === 0) {
+    ctx.addIssue({
+      path: ["includeTimes", "doseTimes"],
+      message:
+        "doseTimes needs to be a non-empty array if includeTimes is true.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (!data.includeTimes && data.doseTimes.length > 0) {
+    ctx.addIssue({
+      path: ["includeTimes", "doseTimes"],
+      message: "doseTimes must be empty if includeTimes is false.",
+      code: z.ZodIssueCode.custom,
+    });
+  }
+
+  if (data.includeTimes && data.doseTimes.length > 0) {
+    const uniqueTimes = new Set();
+    for (let i = 0; i < data.doseTimes.length; i++) {
+      if (!isValidTimeString(data.doseTimes[i])) {
+        ctx.addIssue({
+          path: ["doseTimes", i],
+          message: "At least one of your times is not in the HH:MM format.",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+      if (uniqueTimes.has(data.doseTimes[i])) {
+        ctx.addIssue({
+          path: ["doseTimes", i],
+          message: "Duplicate times are not allowed.",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+      uniqueTimes.add(data.doseTimes[i]);
+
+      if (i > 0) {
+        const prevTimeInMinutes = convertTimeToMinutes(data.doseTimes[i - 1]);
+        const currTimeInMinutes = convertTimeToMinutes(data.doseTimes[i]);
+
+        if (currTimeInMinutes <= prevTimeInMinutes) {
+          ctx.addIssue({
+            path: ["doseTimes", i],
+            message: "The times are not in chronological order.",
+            code: z.ZodIssueCode.custom,
+          });
+        }
+      }
+    }
+  }
+};
+
+const createMedicationSchema = baseMedicationSchema
+  .extend({
+    userId: objectIdSchema("UserId"),
+  })
+  .superRefine(medicationRefine);
+
+export const updateMedicationSchema = baseMedicationSchema
+  .extend({
+    userId: objectIdSchema("UserId").optional(),
+  })
+  .superRefine(medicationRefine);
 
 export const getMedicationSchema = z.object({
   id: objectIdSchema("medicationId"),
