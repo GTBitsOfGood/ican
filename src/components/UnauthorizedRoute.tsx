@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import AuthHTTPClient from "@/http/authHTTPClient";
 import { useUser } from "./UserContext";
 import Image from "next/image";
-import { getAuthCookie } from "@/utils/cookie";
 
 export default function UnauthorizedRoute({
   children,
@@ -16,9 +15,9 @@ export default function UnauthorizedRoute({
 
   useEffect(() => {
     const validateToken = async () => {
-      const token = await getAuthCookie();
+      const isToken = document.cookie.includes("auth_token");
 
-      if (!token) {
+      if (!isToken) {
         setLoading(false);
         return;
       }

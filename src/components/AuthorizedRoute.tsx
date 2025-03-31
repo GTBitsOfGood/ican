@@ -4,7 +4,6 @@ import React from "react";
 import AuthHTTPClient from "@/http/authHTTPClient";
 import { useUser } from "./UserContext";
 import Image from "next/image";
-import { getAuthCookie } from "@/utils/cookie";
 
 export default function AuthorizedRoute({
   children,
@@ -17,10 +16,11 @@ export default function AuthorizedRoute({
 
   useEffect(() => {
     const validateToken = async () => {
-      const token = await getAuthCookie();
+      const isToken = document.cookie.includes("auth_token");
+
       setLoading(true);
 
-      if (!token) {
+      if (!isToken) {
         setLoading(false);
         router.push("/login");
         return;

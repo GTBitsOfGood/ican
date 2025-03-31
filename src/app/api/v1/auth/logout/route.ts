@@ -1,13 +1,13 @@
-import { deleteAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
 
-    deleteAuthCookie();
+    (await cookies()).delete("auth_token");
 
     return NextResponse.json({}, { status: 204 });
   } catch (error) {
