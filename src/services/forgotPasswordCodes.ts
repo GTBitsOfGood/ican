@@ -92,7 +92,9 @@ export default class ForgotPasswordService {
     await ForgotPasswordCodeDAO.deleteForgotPasswordCodeById(
       forgotPasswordCode._id,
     );
-    return JWTService.generateToken({ userId }, 900);
+
+    // generate auth_token after verifying identity
+    return JWTService.generateToken({ userId }, 604800);
   }
 
   static async changePassword(

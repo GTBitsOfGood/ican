@@ -124,7 +124,6 @@ export default function ForgotPasswordPage() {
         errorObj["email"] = ErrorStates.email;
       }
     } else if (page === 1) {
-      console.log(otp);
       if (otp.length !== 4) {
         isValid = false;
         errorObj["otp"] = ErrorStates.otp;

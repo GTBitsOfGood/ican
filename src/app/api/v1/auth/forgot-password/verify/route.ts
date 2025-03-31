@@ -1,4 +1,5 @@
 import ForgotPasswordService from "@/services/forgotPasswordCodes";
+import { generateAPIAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
@@ -21,8 +22,14 @@ export async function POST(req: NextRequest) {
       code,
     );
 
-    return NextResponse.json({ token }, { status: 200 });
+    const nextResponse = NextResponse.json({ userId }, { status: 200 });
+
+    const response = generateAPIAuthCookie(nextResponse, token);
+
+    return response;
   } catch (error) {
+    console.log(error);
+
     return handleError(error);
   }
 }

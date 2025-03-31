@@ -56,7 +56,7 @@ export const routesMap: RoutesMap = {
   "/api/v1/auth/forgot-password/verify": {
     allowedMethods: {
       POST: {
-        isAuthorized: true,
+        isAuthorized: false,
       },
     },
   },
