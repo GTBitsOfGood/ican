@@ -2,9 +2,9 @@
 import { NextResponse } from "next/server";
 
 export const generateAPIAuthCookie = async (
-  nextResponse: NextResponse,
+  nextResponse: NextResponse<unknown>,
   token: string,
-): NextResponse => {
+): Promise<NextResponse<unknown>> => {
   const expirationDate = generateCookieExpirationTime();
 
   nextResponse.cookies.set("auth_token", token, {
