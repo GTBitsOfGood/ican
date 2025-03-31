@@ -10,7 +10,13 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
+
     const userId: string = (await params).userId;
 
     await UserService.deleteUser(userId);

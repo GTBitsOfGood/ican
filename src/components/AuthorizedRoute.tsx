@@ -16,19 +16,17 @@ export default function AuthorizedRoute({
 
   useEffect(() => {
     const validateToken = async () => {
-      const isToken = document.cookie.includes("auth_token");
-
+      const token = await AuthHTTPClient.validateToken();
       setLoading(true);
 
-      if (!isToken) {
+      if (!token.isValid) {
         setLoading(false);
         router.push("/login");
         return;
       }
 
       try {
-        const response = await AuthHTTPClient.validateToken();
-        setUserId(response.decodedToken?.userId);
+        setUserId(token.decodedToken?.userId);
       } catch (error) {
         console.log("error with validation: ", error);
         setUserId(null);

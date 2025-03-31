@@ -5,8 +5,7 @@ export const generateAPIAuthCookie = (
   nextResponse: NextResponse,
   token: string,
 ): NextResponse => {
-  const expirationDate = new Date();
-  expirationDate.setHours(expirationDate.getHours() + 3);
+  const expirationDate = generateCookieExpirationTime();
 
   nextResponse.cookies.set("auth_token", token, {
     httpOnly: true,
@@ -14,4 +13,11 @@ export const generateAPIAuthCookie = (
   });
 
   return nextResponse;
+};
+
+const generateCookieExpirationTime = () => {
+  const expirationDate = new Date();
+  expirationDate.setHours(expirationDate.getHours() + 3);
+
+  return expirationDate;
 };

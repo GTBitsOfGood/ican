@@ -15,7 +15,14 @@ export default async function handler(
 
   try {
     const token = await AuthService.loginWithGoogle(name, email);
-    res.status(201).json({ token });
+
+    // set cookie
+    res.setHeader(
+      "Set-Cookie",
+      `auth_token=${token}; Path=/; HttpOnly; Max-Age=10800; SameSite=Strict`,
+    );
+
+    res.status(201).json({});
   } catch (error) {
     if (error instanceof Error) {
       return res.status(getStatusCode(error)).json({ error: error.message });

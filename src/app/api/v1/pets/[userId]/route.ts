@@ -3,6 +3,7 @@ import { UnauthorizedError } from "@/types/exceptions";
 import { handleError } from "@/utils/errorHandler";
 import ERRORS from "@/utils/errorMessages";
 import { validateRoutes } from "@/utils/validateRoute";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // Can't use req.nextUrl.pathname to get URL so it has to be hardcoded in each dynamic route if we want to use routeMap
@@ -13,7 +14,13 @@ export async function GET(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    await validateRoutes(req, req.method, route);
+    await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
+
     const userId: string = (await params).userId;
 
     // The service seems to already throw an error in case of a null pet, will check this later
@@ -30,7 +37,12 @@ export async function PATCH(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    const tokenUserId = await validateRoutes(req, req.method, route);
+    const tokenUserId = await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
     const userId: string = (await params).userId;
     if (tokenUserId != userId) {
       throw new UnauthorizedError(ERRORS.PET.UNAUTHORIZED);
@@ -51,7 +63,12 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
-    const tokenUserId = await validateRoutes(req, req.method, route);
+    const tokenUserId = await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
     const userId: string = (await params).userId;
     if (tokenUserId !== userId) {
       throw new UnauthorizedError(ERRORS.PET.UNAUTHORIZED);
