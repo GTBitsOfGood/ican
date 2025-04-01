@@ -14,7 +14,7 @@ import { InventoryItem, ItemType } from "@/types/inventory";
 import storeItems from "@/lib/storeItems";
 import { ensureValuesArray } from "@/lib/utils";
 
-export default function Store() {
+export default function Bag() {
   const router = useRouter();
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
