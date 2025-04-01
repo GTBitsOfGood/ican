@@ -3,7 +3,8 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "../../../../../utils/auth";
+import ERRORS from "@/utils/errorMessages";
+import { verifyUser } from "@/utils/auth";
 
 const route = "/api/v1/user/[userId]";
 export async function DELETE(
@@ -12,11 +13,10 @@ export async function DELETE(
 ) {
   try {
     const authToken = (await cookies()).get("auth_token")?.value;
-    await validateRoutes(req, req.method, route, authToken);
+    const tokenUser = await validateRoutes(req, req.method, route, authToken);
 
     const userId: string = (await params).userId;
-
-    verifyToken(authToken, userId);
+    verifyUser(tokenUser, userId, ERRORS.USER.NOT_FOUND);
 
     await UserService.deleteUser(userId);
     (await cookies()).delete("auth_token");
