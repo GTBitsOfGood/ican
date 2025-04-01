@@ -2,6 +2,7 @@ import PetDAO from "@/db/actions/pets";
 import { UserDocument } from "@/db/models/user";
 import { UnauthorizedError } from "@/types/exceptions";
 import MedicationDAO from "@/db/actions/medication";
+import ERRORS from "./errorMessages";
 
 export const verifyUser = (
   tokenUser: UserDocument | null,
@@ -61,5 +62,12 @@ const verifyEntityByUserId = async <
 
   if (!entity || entity.userId.toString() != userIdString) {
     throw new UnauthorizedError(errorMessage);
+  }
+};
+
+// helper method to compare cookie auth_token and userId
+export const verifyToken = (authToken: string | undefined, userId: string) => {
+  if (userId !== authToken) {
+    throw new UnauthorizedError(ERRORS.TOKEN.UNAUTHORIZED);
   }
 };

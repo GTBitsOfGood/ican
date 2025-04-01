@@ -5,7 +5,7 @@ import { validateDeleteUser } from "@/utils/serviceUtils/authServiceUtil";
 
 export default class UserService {
   static async deleteUser(userId: string) {
-    validateDeleteUser(userId);
+    validateDeleteUser({ userId });
 
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {

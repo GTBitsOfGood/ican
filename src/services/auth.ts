@@ -75,7 +75,10 @@ export default class AuthService {
     await settingsService.createSettings(_id.toString());
 
     // Create jwt once user is successfully created
-    const token = JWTService.generateToken({ userId: _id.toString() }, 604800);
+    const token = JWTService.generateToken(
+      { userId: _id.toString() },
+      10800000,
+    );
 
     return token;
   }
@@ -103,8 +106,8 @@ export default class AuthService {
 
     // Check if password is correct
     const passwordMatch = await HashingService.compare(
-      existingUser.password as string,
       password,
+      existingUser.password as string,
     );
 
     if (!passwordMatch) {
@@ -114,7 +117,7 @@ export default class AuthService {
     // Create and return jwt
     const token = JWTService.generateToken(
       { userId: existingUser._id.toString() },
-      604800,
+      10800000,
     );
 
     return { token, userId: existingUser._id.toString() };
@@ -148,7 +151,7 @@ export default class AuthService {
       throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.PASSWORD);
     }
 
-    const token = JWTService.generateToken({ userId }, 604800);
+    const token = JWTService.generateToken({ userId }, 10800000);
 
     return token;
   }

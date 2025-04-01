@@ -16,9 +16,7 @@ export default class MedicationHTTPClient {
     return await fetchHTTPClient("/medication", {
       method: "POST",
       body: JSON.stringify(createMedicationBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -27,9 +25,7 @@ export default class MedicationHTTPClient {
   ): Promise<WithId<Medication>> {
     return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -40,9 +36,7 @@ export default class MedicationHTTPClient {
     return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "PATCH",
       body: JSON.stringify(medicationInfo),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       confirmPassword,
     );
 
-    const nextResponse = NextResponse.json({}, { status: 201 });
+    const nextResponse = NextResponse.json(null, { status: 204 });
 
     const response = generateAPIAuthCookie(nextResponse, authToken);
 
