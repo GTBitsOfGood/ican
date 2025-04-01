@@ -225,16 +225,33 @@ export default class MedicationService {
             shouldSchedule = daysApart % (medication.repeatInterval ?? 1) === 0;
           }
         } else if (medication.repeatUnit === "Week") {
-          const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getDay()];
+          const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
           const isDayScheduled =
             medication.repeatWeeklyOn &&
             medication.repeatWeeklyOn.includes(givenDayOfWeek);
 
+          if (!isDayScheduled) {
+            return null;
+          }
+
           if (isNewMedication) {
             shouldSchedule = isDayScheduled;
-          } else if (isDayScheduled) {
-            const weeksApart = Math.ceil(
-              (givenDateTime - lastTakenDate) / (86400000 * 7),
+          } else {
+            const normalizeToStartOfWeek = (date: Date): Date => {
+              const result = new Date(date);
+              const day = result.getUTCDay();
+              result.setUTCDate(result.getUTCDate() - day);
+              result.setUTCHours(0, 0, 0, 0);
+              return result;
+            };
+
+            const lastTakenWeekStart = normalizeToStartOfWeek(
+              lastTaken as Date,
+            );
+            const givenDateWeekStart = normalizeToStartOfWeek(givenDate);
+            const weeksApart = Math.floor(
+              (givenDateWeekStart.getTime() - lastTakenWeekStart.getTime()) /
+                (86400000 * 7),
             );
             shouldSchedule =
               weeksApart % (medication.repeatInterval ?? 1) === 0;
@@ -242,20 +259,26 @@ export default class MedicationService {
         } else if (medication.repeatUnit === "Month") {
           if (medication.repeatMonthlyType === "Day") {
             const scheduledDayOfMonth = medication.repeatMonthlyOnDay;
-            const givenDayOfMonth = givenDate.getDate();
+            const givenDayOfMonth = givenDate.getUTCDate();
+
+            console.log("given", givenDayOfMonth);
+            console.log("scheduled", scheduledDayOfMonth);
 
             if (givenDayOfMonth === scheduledDayOfMonth) {
               if (isNewMedication) {
                 shouldSchedule = true;
               } else {
-                const lastTakenMonth = lastTaken ? lastTaken.getMonth() : 0;
-                const lastTakenYear = lastTaken ? lastTaken.getFullYear() : 0;
-                const givenMonth = givenDate.getMonth();
-                const givenYear = givenDate.getFullYear();
+                const lastTakenMonth = lastTaken ? lastTaken.getUTCMonth() : 0;
+                const lastTakenYear = lastTaken
+                  ? lastTaken.getUTCFullYear()
+                  : 0;
+                const givenMonth = givenDate.getUTCMonth();
+                const givenYear = givenDate.getUTCFullYear();
 
                 const monthsApart =
                   (givenYear - lastTakenYear) * 12 +
                   (givenMonth - lastTakenMonth);
+
                 shouldSchedule =
                   monthsApart % (medication.repeatInterval ?? 1) === 0;
               }
@@ -265,21 +288,21 @@ export default class MedicationService {
             const scheduledDayOfWeek = medication.repeatMonthlyOnWeekDay;
 
             const firstDayOfMonth = new Date(givenDate);
-            firstDayOfMonth.setDate(1);
+            firstDayOfMonth.setUTCDate(1);
 
-            const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getDay()];
-            const givenDayOfMonth = givenDate.getDate();
+            const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
+            const givenDayOfMonth = givenDate.getUTCDate();
 
             let weekOfMonth = Math.ceil(givenDayOfMonth / 7);
 
             if (scheduledWeekOfMonth === 5) {
               const lastDayOfMonth = new Date(
-                givenDate.getFullYear(),
-                givenDate.getMonth() + 1,
+                givenDate.getUTCFullYear(),
+                givenDate.getUTCMonth() + 1,
                 0,
               );
               const daysUntilEndOfMonth =
-                lastDayOfMonth.getDate() - givenDayOfMonth;
+                lastDayOfMonth.getUTCDate() - givenDayOfMonth;
 
               if (daysUntilEndOfMonth < 7) {
                 weekOfMonth = 5;
@@ -293,10 +316,12 @@ export default class MedicationService {
               if (isNewMedication) {
                 shouldSchedule = true;
               } else {
-                const lastTakenMonth = lastTaken ? lastTaken.getMonth() : 0;
-                const lastTakenYear = lastTaken ? lastTaken.getFullYear() : 0;
-                const givenMonth = givenDate.getMonth();
-                const givenYear = givenDate.getFullYear();
+                const lastTakenMonth = lastTaken ? lastTaken.getUTCMonth() : 0;
+                const lastTakenYear = lastTaken
+                  ? lastTaken.getUTCFullYear()
+                  : 0;
+                const givenMonth = givenDate.getUTCMonth();
+                const givenYear = givenDate.getUTCFullYear();
 
                 const monthsApart =
                   (givenYear - lastTakenYear) * 12 +
@@ -318,20 +343,20 @@ export default class MedicationService {
             const endHour = 21;
 
             let currentHour = startHour;
-            let currentMinute = startMinute;
+            const currentMinute = startMinute;
 
             while (currentHour < endHour) {
               const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
 
               let status: "pending" | "taken" | "missed" = "pending";
 
-              const doseTime = new Date(date + "T00:00:00");
+              const doseTime = new Date(date);
               doseTime.setHours(currentHour, currentMinute, 0, 0);
 
               const matchingLog = medicationLogs.find((log) => {
                 const logDate = new Date(log.dateTaken);
                 return (
-                  Math.abs(logDate.getTime() - doseTime.getTime()) <= 600000 // Within 10 minutes
+                  Math.abs(logDate.getTime() - doseTime.getTime()) <= 600000 // Within 10 minutes for now
                 );
               });
 
@@ -352,14 +377,7 @@ export default class MedicationService {
                 status,
               });
 
-              // Move to next interval
               currentHour += medication.doseIntervalInHours;
-
-              // Handle if adding hours pushes minutes past 60
-              if (currentMinute >= 60) {
-                currentHour += Math.floor(currentMinute / 60);
-                currentMinute = currentMinute % 60;
-              }
             }
           } else {
             scheduledTimes = medication.doseTimes.map((time) => {
@@ -370,9 +388,9 @@ export default class MedicationService {
               doseTime.setHours(hours, minutes, 0, 0);
 
               const matchingLog = medicationLogs.find((log) => {
-                const logDate = new Date(log.dateTaken);
+                const logTime = new Date(log.dateTaken);
                 return (
-                  Math.abs(logDate.getTime() - doseTime.getTime()) <= 600000
+                  Math.abs(logTime.getTime() - doseTime.getTime()) <= 600000
                 );
               });
 
@@ -380,10 +398,7 @@ export default class MedicationService {
                 status = "taken";
               } else {
                 const now = new Date();
-                if (
-                  doseTime < now &&
-                  doseTime.toDateString() === now.toDateString()
-                ) {
+                if (doseTime < now) {
                   status = "missed";
                 }
               }
