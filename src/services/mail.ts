@@ -13,8 +13,7 @@ export default class EmailService {
 
       juno.init({
         apiKey: process.env.JUNO_API_KEY as string,
-        baseURL:
-          "***REMOVED***",
+        baseURL: process.env.JUNO_BASE_URL as string,
       });
       const response = await juno.email.sendEmail({
         subject,

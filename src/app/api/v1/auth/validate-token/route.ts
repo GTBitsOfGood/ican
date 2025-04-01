@@ -1,6 +1,7 @@
 import AuthService from "@/services/auth";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { handleError } from "@/utils/errorHandler";
 
 export async function POST() {
   try {
@@ -13,12 +14,6 @@ export async function POST() {
       { status: 200 },
     );
   } catch (error) {
-    // need to return 200 to ensure error messages aren't thrown on frontend
-    // in case doesn't exist, want to redirect to /login page
-    console.log(error);
-    return NextResponse.json(
-      { isValid: false, decodedToken: undefined },
-      { status: 200 },
-    );
+    handleError(error);
   }
 }

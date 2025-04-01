@@ -17,6 +17,7 @@ import {
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
+import { Types } from "mongoose";
 
 export interface CreateUserBody {
   name: string;
@@ -37,7 +38,7 @@ export default class AuthService {
     email: string,
     password: string,
     confirmPassword: string,
-  ): Promise<string> {
+  ): Promise<{ token: string; userId: Types.ObjectId }> {
     // Validate parameters
     validateRegister({
       name,
@@ -74,13 +75,13 @@ export default class AuthService {
     // create settings
     await settingsService.createSettings(_id.toString());
 
-    // Create jwt once user is successfully created
+    // Create j:wt once user is successfully created
     const token = JWTService.generateToken(
       { userId: _id.toString() },
       10800000,
     );
 
-    return token;
+    return { token, userId: _id };
   }
 
   static async login(
@@ -153,7 +154,7 @@ export default class AuthService {
 
     const token = JWTService.generateToken({ userId }, 10800000);
 
-    return token;
+    return { token, userId };
   }
 
   // Validate JWT token and ensure user exists

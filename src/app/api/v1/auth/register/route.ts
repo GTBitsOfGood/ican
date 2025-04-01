@@ -17,16 +17,16 @@ export async function POST(req: NextRequest) {
     );
     const { name, email, password, confirmPassword } = await req.json();
 
-    const authToken = await AuthService.register(
+    const { token, userId } = await AuthService.register(
       name,
       email,
       password,
       confirmPassword,
     );
 
-    const nextResponse = NextResponse.json(null, { status: 204 });
+    const nextResponse = NextResponse.json({ userId }, { status: 204 });
 
-    const response = generateAPIAuthCookie(nextResponse, authToken);
+    const response = generateAPIAuthCookie(nextResponse, token);
 
     return response;
   } catch (error) {

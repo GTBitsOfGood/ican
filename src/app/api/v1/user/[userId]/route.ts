@@ -20,7 +20,7 @@ export async function DELETE(
 
     await UserService.deleteUser(userId);
     (await cookies()).delete("auth_token");
-    return NextResponse.json({}, { status: 204 });
+    return NextResponse.json(null, { status: 204 });
   } catch (error) {
     return handleError(error);
   }

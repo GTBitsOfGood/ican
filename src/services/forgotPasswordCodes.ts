@@ -94,7 +94,7 @@ export default class ForgotPasswordService {
     );
 
     // generate auth_token after verifying identity
-    return JWTService.generateToken({ userId }, 10800000);
+    return JWTService.generateToken({ userId }, 900000);
   }
 
   static async changePassword(
