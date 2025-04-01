@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
     const { token, userId } = await AuthService.loginWithGoogle(name, email);
 
-    const nextResponse = NextResponse.json({ userId }, { status: 201 });
+    const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
     const response = generateAPIAuthCookie(nextResponse, token);
 
