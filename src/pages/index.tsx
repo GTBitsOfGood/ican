@@ -19,6 +19,8 @@ import EditMedicationModal from "@/components/modals/medication/editMedicationMo
 import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
 import LoadingScreen from "@/components/loadingScreen";
+import FoodModal from "@/components/modals/FoodModal";
+import { useFood } from "@/components/FoodContext";
 
 interface HomeProps {
   activeModal: string;
@@ -31,6 +33,7 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
+  const { selectedFood } = useFood();
 
   useEffect(() => {
     const getPetData = async () => {
@@ -60,6 +63,7 @@ export default function Home({
       {activeModal === "edit-medication" && (
         <EditMedicationModal initialInfo={editMedicationInfo} />
       )}
+      {activeModal === "food" && <FoodModal />}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
@@ -87,7 +91,7 @@ export default function Home({
             <FeedButton />
           </Navbar>
 
-          {/* Character, speech bubble is made relative to the image */}
+          {/* Character, speech bubble and food image is made relative to the image */}
           <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
             <div className="relative w-full h-full">
               <Image
@@ -99,9 +103,18 @@ export default function Home({
                 unoptimized={true}
                 className="select-none mobile:h-[30%] tablet:h-[55%] desktop:h-[75%] largeDesktop:h-full w-auto object-contain"
               />
-              <div className="absolute mobile:bottom-[90%] left-[90%] tablet:bottom-[75%]">
+              <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
                 <Bubble />
               </div>
+              {selectedFood && (
+                <Image
+                  src={`/foods/${selectedFood}.svg`}
+                  alt={selectedFood}
+                  width={150}
+                  height={150}
+                  className="absolute bottom-[25%] right-[-50%]"
+                />
+              )}
             </div>
           </div>
         </div>

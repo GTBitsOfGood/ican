@@ -49,7 +49,7 @@ export default function MedicationsPage() {
             </h1>
             <AddMedicationButton />
           </div>
-          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 medications-scrollbar">
+          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
             {medications.map((medication, index) => {
               return (
                 <MedicationCard
