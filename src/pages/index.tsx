@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Bubble from "@/components/ui/Bubble";
 import FeedButton from "@/components/ui/FeedButton";
 import Navbar from "@/components/ui/Navbar";
@@ -6,7 +5,6 @@ import NavButton from "@/components/ui/NavButton";
 import ProfileInfo from "@/components/ui/ProfileInfo";
 import ProfilePicture from "@/components/ui/ProfilePicture";
 
-import { characterImages } from "@/types/characters";
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
@@ -16,6 +14,8 @@ import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
 import LoadingScreen from "@/components/loadingScreen";
 import { usePet } from "@/components/petContext";
+import PetAppearance from "@/components/inventory/PetAppearance";
+import { PetType } from "@/types/pet";
 
 interface HomeProps {
   activeModal: string;
@@ -65,15 +65,12 @@ export default function Home({
 
           {/* Character, speech bubble is made relative to the image */}
           <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
-            <div className="relative w-full h-full">
-              <Image
-                src={characterImages[pet.petType]}
-                alt="pet"
-                width={characterImages[pet.petType].width}
-                height={characterImages[pet.petType].height}
-                draggable={false}
-                unoptimized={true}
-                className="select-none mobile:h-[30%] tablet:h-[55%] desktop:h-[75%] largeDesktop:h-full w-auto object-contain"
+            <div className="relative w-full">
+              <PetAppearance
+                petData={pet}
+                petType={pet.petType as PetType}
+                selectedItem={null}
+                className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[424px] desktop:w-[360px] tablet:w-[300px]"
               />
               <div className="absolute mobile:bottom-[90%] left-[90%] tablet:bottom-[75%]">
                 <Bubble />

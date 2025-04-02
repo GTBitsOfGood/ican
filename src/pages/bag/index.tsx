@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useEffect, useState } from "react";
 import InventoryHTTPClient from "@/http/inventoryHTTPClient";
@@ -7,11 +6,13 @@ import InventoryTabContainer from "@/components/inventory/InventoryTabContainer"
 import LoadingScreen from "@/components/loadingScreen";
 import { InventoryItem, ItemType } from "@/types/inventory";
 import { usePet } from "@/components/petContext";
+import Inventory from "@/components/inventory/Inventory";
 
 export default function Bag() {
-  const router = useRouter();
   const { pet, setPet } = usePet();
-  const [petBag, setPetBag] = useState<Record<string, InventoryItem[]>>({});
+  const [petBag, setPetBag] = useState<Record<string, InventoryItem[]> | null>(
+    null,
+  );
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Bag() {
     };
 
     getPetBag();
-  }, [pet?._id]);
+  }, [pet]);
 
   const equipItem = async () => {
     if (!pet) return;
@@ -47,13 +48,26 @@ export default function Bag() {
 
       setPet((prev) => {
         if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [selectedItem.type]: selectedItem.name,
-          },
-        };
+        if (Object.values(ItemType).includes(selectedItem.type)) {
+          return {
+            ...prev,
+            appearance: {
+              ...prev.appearance,
+              [selectedItem.type]: selectedItem.name,
+            },
+          };
+        } else {
+          return {
+            ...prev,
+            appearance: {
+              ...prev.appearance,
+              accessory: {
+                ...prev.appearance.accessory,
+                [selectedItem.category as string]: selectedItem.name,
+              },
+            },
+          };
+        }
       });
 
       console.log("Item successfully equiped");
@@ -76,13 +90,26 @@ export default function Bag() {
 
       setPet((prev) => {
         if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [selectedItem.type]: undefined,
-          },
-        };
+        if (Object.values(ItemType).includes(selectedItem.type)) {
+          return {
+            ...prev,
+            appearance: {
+              ...prev.appearance,
+              [selectedItem.type]: undefined,
+            },
+          };
+        } else {
+          return {
+            ...prev,
+            appearance: {
+              ...prev.appearance,
+              accessory: {
+                ...prev.appearance.accessory,
+                [selectedItem.category as string]: undefined,
+              },
+            },
+          };
+        }
       });
     } catch (error) {
       console.error("Error unequiping item", error);
@@ -101,16 +128,14 @@ export default function Bag() {
 
   return (
     <AuthorizedRoute>
-      {pet ? (
-        <div
-          className="flex justify-end relative"
-          onClick={(e) => {
+      {pet && petBag ? (
+        <Inventory
+          outsideClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedItem(null);
             }
           }}
-        >
-          <div className="fixed top-0 left-0 w-[26%]">
+          leftPanel={
             <InventoryLeftPanel
               petData={pet}
               selectedItem={selectedItem}
@@ -126,34 +151,24 @@ export default function Bag() {
                 )
               }
             />
-          </div>
-          <div className="flex flex-col w-[74%] min-h-screen bg-[#4C539B] pb-7">
-            <div className="flex justify-end items-center">
-              <div
-                className="font-pixelify mt-[30px] pr-[60px] text-icanGreen-100 text-7xl leading-none cursor-pointer"
-                onClick={() => router.push("/")}
-              >
-                x
-              </div>
-            </div>
-            <div className="mt-5 mx-[31px] flex-grow">
-              <InventoryTabContainer
-                type="Bag"
-                petData={pet}
-                data={[
-                  petBag?.clothing || [],
-                  petBag?.accessory || [],
-                  petBag?.background || [],
-                  petBag?.food || [],
-                ]}
-                exclude={[[], [], [], []]}
-                onSelectTab={() => setSelectedItem(null)}
-                selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem}
-              />
-            </div>
-          </div>
-        </div>
+          }
+          tabContainer={
+            <InventoryTabContainer
+              type="Bag"
+              petData={pet}
+              data={[
+                petBag?.clothing || [],
+                petBag?.accessory || [],
+                petBag?.background || [],
+                petBag?.food || [],
+              ]}
+              exclude={[[], [], [], []]}
+              onSelectTab={() => setSelectedItem(null)}
+              selectedItem={selectedItem}
+              setSelectedItem={setSelectedItem}
+            />
+          }
+        />
       ) : (
         <LoadingScreen />
       )}

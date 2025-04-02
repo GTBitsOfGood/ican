@@ -15,7 +15,7 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    const attribute = await req.json();
+    const { attribute } = await req.json();
 
     await validateUnequip(petId, attribute);
 

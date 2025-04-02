@@ -7,13 +7,13 @@ export default function ShoeItem({
   selectedItem: InventoryItem;
 }) {
   return (
-    <div className="absolute w-[57%] desktop:translate-x-[4%] tablet:translate-x-[2%] translate-y-[450%] flex items-center justify-center z-20">
+    <div className="absolute w-[60%] left-1/2 -translate-x-1/2 bottom-0 flex items-center justify-center z-10">
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Shoes Item"}
-        width={140}
         draggable="false"
-        className="object-contain pointer-events-none select-none"
+        className="h-full w-full object-contain pointer-events-none select-none"
+        width={0}
         height={0}
         sizes="100vw"
       />

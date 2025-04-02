@@ -3,10 +3,17 @@ import { InventoryItem } from "@/types/inventory";
 
 interface PurchaseScreenProps {
   item: InventoryItem;
+  setDismiss: () => void;
 }
 
-const PurchaseScreen: React.FC<PurchaseScreenProps> = ({ item }) => (
-  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+const PurchaseScreen: React.FC<PurchaseScreenProps> = ({
+  item,
+  setDismiss,
+}) => (
+  <div
+    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center"
+    onClick={setDismiss}
+  >
     <div className="relative largeDesktop:w-[1032px] desktop:w-[900px] tablet:w-[780px]">
       <Image
         src="/store/Buy_Message.svg"

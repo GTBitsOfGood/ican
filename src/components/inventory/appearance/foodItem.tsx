@@ -7,13 +7,13 @@ export default function FoodItem({
   selectedItem: InventoryItem;
 }) {
   return (
-    <div className="absolute w-[30%] translate-x-[160%] translate-y-[58%] flex items-center justify-center z-20">
+    <div className="absolute w-[40%] -right-[30%] top-1/2 flex items-center justify-center z-20">
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Food Item"}
-        width={90}
         draggable="false"
-        className="object-contain pointer-events-none select-none"
+        className="h-full w-full object-contain pointer-events-none select-none"
+        width={0}
         height={0}
         sizes="100vw"
       />

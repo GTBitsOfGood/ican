@@ -32,6 +32,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
           petData={petData}
           petType={petData.petType as PetType}
           selectedItem={selectedItem}
+          className=""
         />
       </div>
 

@@ -7,13 +7,13 @@ export default function HatItem({
   selectedItem: InventoryItem;
 }) {
   return (
-    <div className="absolute w-[75%] translate-x-[4%] -translate-y-[87%] flex items-center justify-center z-20">
+    <div className="absolute w-[80%] left-[8%] top-[-10%] flex items-center justify-center z-20">
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Hat Item"}
-        width={190}
         draggable="false"
-        className="object-contain pointer-events-none select-none"
+        className="h-full w-full object-contain pointer-events-none select-none"
+        width={0}
         height={0}
         sizes="100vw"
       />

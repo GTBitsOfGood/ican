@@ -2,14 +2,14 @@ import { ItemType, AccessoryCategory, InventoryItem } from "@/types/inventory";
 
 const storeItems: Record<string, Record<string, InventoryItem>> = {
   clothing: {
-    COOL_SHIRT: {
-      name: "COOL_SHIRT",
-      displayName: "Cool Shirt",
+    MUSICIAN_CLOTHES: {
+      name: "MUSICIAN_CLOTHES",
+      displayName: "Fancy Shirt",
       type: ItemType.CLOTHING,
-      image: "/store/clothes/Cool_Shirt.svg",
+      image: "/store/clothes/Musician.svg",
       cost: 100,
       level: 0,
-      description: "Cool shirt",
+      description: "Fancy shirt",
     },
     DOCTOR_CLOTHES: {
       name: "DOCTOR_CLOTHES",
@@ -127,6 +127,16 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
       level: 0,
       description: "Help save lives as a doctor or nurse!",
     },
+    ASTRONAUT_HAT: {
+      name: "ASTRONAUT_HAT",
+      displayName: "Astronaut Hat",
+      type: ItemType.ACCESSORY,
+      category: AccessoryCategory.HAT,
+      image: "/store/hats/Astronaut.svg",
+      cost: 100,
+      level: 0,
+      description: "Something about astronauts!",
+    },
     DOCTOR_ACCESSORY: {
       name: "DOCTOR_ACCESSORY",
       displayName: "First Aid",
@@ -146,6 +156,36 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
       cost: 100,
       level: 0,
       description: "Create economic growth through innovation!",
+    },
+    MUSICIAN_ACCESSORY: {
+      name: "MUSICIAN_ACCESSORY",
+      displayName: "Saxophone",
+      type: ItemType.ACCESSORY,
+      category: AccessoryCategory.OCCUPATION,
+      image: "/store/occupation/Musician.svg",
+      cost: 100,
+      level: 0,
+      description: "Something about music!",
+    },
+    PALETTE_ACCESSORY: {
+      name: "PALETTE_ACCESSORY",
+      displayName: "Paint Palette",
+      type: ItemType.ACCESSORY,
+      category: AccessoryCategory.OCCUPATION,
+      image: "/store/occupation/Palette.svg",
+      cost: 100,
+      level: 0,
+      description: "Something about art!",
+    },
+    BRUSH_ACCESSORY: {
+      name: "BRUSH_ACCESSORY",
+      displayName: "Paint Brush",
+      type: ItemType.ACCESSORY,
+      category: AccessoryCategory.OCCUPATION,
+      image: "/store/occupation/Brush.svg",
+      cost: 100,
+      level: 0,
+      description: "Something about art!",
     },
   },
   background: {

@@ -46,11 +46,11 @@ export default class PetDAO {
     }
   }
 
-  static async getPetByPetId(_petId: string): Promise<Pet | null> {
+  static async getPetByPetId(
+    _petId: string,
+  ): Promise<HydratedDocument<Pet> | null> {
     const petId = new Types.ObjectId(_petId);
-
     await dbConnect();
-
     return await PetModel.findOne({ _id: petId });
   }
 

@@ -60,7 +60,7 @@ export default class InventoryHTTPClient {
     const UnequipRequestBody: UnequipBody = {
       attribute,
     };
-    return fetchHTTPClient<void>(`/pet/${petId}/unequip`, {
+    return fetchHTTPClient<void>(`/pet/${petId}/unequip-item`, {
       method: "PATCH",
       body: JSON.stringify(UnequipRequestBody),
       headers: {

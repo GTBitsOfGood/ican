@@ -120,13 +120,12 @@ export async function validateEquipItem(
   validateItemName(name);
   validateItemAttribute(type);
 
-  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
+  const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
   if (!pet) {
     throw new NotFoundError("This pet does not exist.");
   }
 
-  console.log(type, name);
-  const item = storeItems?.[type]?.[name];
+  const item = storeItems?.[type]?.[name] || storeItems.accessory?.[name];
   if (!item) {
     throw new NotFoundError("This item does not exist.");
   }
@@ -150,6 +149,8 @@ export async function validateEquipItem(
   };
   if (item?.category) {
     newAppearance.accessory[item.category] = name;
+  } else {
+    newAppearance[item.type] = name;
   }
 
   await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
@@ -159,7 +160,7 @@ export async function validateUnequip(petId: string, attribute: string) {
   validatePetId(petId);
   validateItemAttribute(attribute);
 
-  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
+  const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
   if (!pet) {
     throw new NotFoundError("This pet does not exist.");
   }

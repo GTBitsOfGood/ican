@@ -14,17 +14,21 @@ interface PetAppearanceProps {
   petType: PetType;
   selectedItem: InventoryItem | null;
   petData: Pet;
+  className: string;
 }
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
   petType,
   selectedItem,
   petData,
+  className,
 }) => {
   return (
-    <div className="flex items-center justify-center w-full">
+    <div
+      className={`${className} relative flex items-center justify-center w-full`}
+    >
       <Image
-        src={`/characters/${petType}.svg`}
+        src={characterImages[petType]}
         alt={`${petType}`}
         width={characterImages[petType].width}
         height={characterImages[petType].height}
@@ -47,6 +51,28 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
           <FoodItem selectedItem={storeItems.food[petData.appearance.food]} />
         )
       )}
+      {selectedItem?.category === AccessoryCategory.HAT ? (
+        <HatItem selectedItem={selectedItem} />
+      ) : (
+        petData?.appearance?.accessory?.hat && (
+          <HatItem
+            selectedItem={
+              storeItems.accessory[petData.appearance.accessory.hat]
+            }
+          />
+        )
+      )}
+      {selectedItem?.category === AccessoryCategory.OCCUPATION ? (
+        <OccupationalItem selectedItem={selectedItem} />
+      ) : (
+        petData?.appearance?.accessory?.occupation && (
+          <OccupationalItem
+            selectedItem={
+              storeItems.accessory[petData.appearance.accessory.occupation]
+            }
+          />
+        )
+      )}
       {selectedItem?.type === ItemType.BACKGROUND ? (
         <BackgroundItem selectedItem={selectedItem} />
       ) : (
@@ -56,42 +82,16 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
           />
         )
       )}
-      {selectedItem?.type === ItemType.ACCESSORY && (
-        <>
-          {selectedItem?.category === AccessoryCategory.SHOES ? (
-            <ShoeItem selectedItem={selectedItem} />
-          ) : (
-            petData?.appearance?.accessory?.shoes && (
-              <ShoeItem
-                selectedItem={
-                  storeItems.accessory[petData.appearance.accessory.shoes]
-                }
-              />
-            )
-          )}
-          {selectedItem?.category === AccessoryCategory.HAT ? (
-            <HatItem selectedItem={selectedItem} />
-          ) : (
-            petData?.appearance?.accessory?.hat && (
-              <HatItem
-                selectedItem={
-                  storeItems.accessory[petData.appearance.accessory.hat]
-                }
-              />
-            )
-          )}
-          {selectedItem?.category === AccessoryCategory.OCCUPATION ? (
-            <OccupationalItem selectedItem={selectedItem} />
-          ) : (
-            petData?.appearance?.accessory?.occupation && (
-              <OccupationalItem
-                selectedItem={
-                  storeItems.accessory[petData.appearance.accessory.occupation]
-                }
-              />
-            )
-          )}
-        </>
+      {selectedItem?.category === AccessoryCategory.SHOES ? (
+        <ShoeItem selectedItem={selectedItem} />
+      ) : (
+        petData?.appearance?.accessory?.shoes && (
+          <ShoeItem
+            selectedItem={
+              storeItems.accessory[petData.appearance.accessory.shoes]
+            }
+          />
+        )
       )}
     </div>
   );
