@@ -84,6 +84,7 @@ export default function Store() {
     <AuthorizedRoute>
       {pet && petBag ? (
         <Inventory
+          balance={pet.coins}
           outsideClick={(e) => {
             if (e.target === e.currentTarget) {
               setSelectedItem(null);
