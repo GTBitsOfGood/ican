@@ -125,6 +125,7 @@ export async function validateEquipItem(
     throw new NotFoundError("This pet does not exist.");
   }
 
+  console.log(type, name);
   const item = storeItems?.[type]?.[name];
   if (!item) {
     throw new NotFoundError("This item does not exist.");

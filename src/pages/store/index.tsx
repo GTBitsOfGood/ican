@@ -89,9 +89,11 @@ export default function Store() {
       {pet ? (
         <div
           className="flex justify-end relative"
-          onClick={() => {
-            setShowPurchasedScreen(false);
-            setSelectedItem(null);
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowPurchasedScreen(false);
+              setSelectedItem(null);
+            }
           }}
         >
           {showPurchasedScreen && selectedItem && (
@@ -106,10 +108,12 @@ export default function Store() {
                   <button
                     onClick={purchaseItem}
                     disabled={!selectedItem || pet.coins < selectedItem.cost}
-                    className={`font-quantico ${selectedItem && pet.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : ""} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
+                    className={`font-quantico ${selectedItem && pet.coins >= selectedItem.cost ? "hover:bg-icanGreen-200" : "!bg-iCAN-error"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
                     type="button"
                   >
-                    Purchase
+                    {selectedItem && pet.coins >= selectedItem.cost
+                      ? "Purchase"
+                      : "Insufficient Funds"}
                   </button>
                 )
               }

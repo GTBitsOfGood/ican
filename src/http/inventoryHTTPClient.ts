@@ -47,8 +47,8 @@ export default class InventoryHTTPClient {
       name,
       type,
     };
-    return fetchHTTPClient<void>(`/pet/equip-item/${petId}`, {
-      method: "GET",
+    return fetchHTTPClient<void>(`/pet/${petId}/equip-item`, {
+      method: "PATCH",
       body: JSON.stringify(EquipItemRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -60,8 +60,8 @@ export default class InventoryHTTPClient {
     const UnequipRequestBody: UnequipBody = {
       attribute,
     };
-    return fetchHTTPClient<void>(`/pet/unequip/${petId}`, {
-      method: "GET",
+    return fetchHTTPClient<void>(`/pet/${petId}/unequip`, {
+      method: "PATCH",
       body: JSON.stringify(UnequipRequestBody),
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,

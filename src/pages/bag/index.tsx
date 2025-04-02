@@ -32,18 +32,14 @@ export default function Bag() {
     getPetBag();
   }, [pet?._id]);
 
-  useEffect(() => {
-    console.log("Bag selectedItem updated:", selectedItem); // Debug log
-  }, [selectedItem]);
-
   const equipItem = async () => {
     if (!pet) return;
     if (!selectedItem) return;
 
     try {
       await InventoryHTTPClient.equipItem(
-        pet._id as string,
-        pet.name as string,
+        pet._id,
+        selectedItem.name,
         selectedItem.type === ItemType.ACCESSORY
           ? (selectedItem.category as string)
           : (selectedItem.type as string),
@@ -72,7 +68,7 @@ export default function Bag() {
 
     try {
       await InventoryHTTPClient.unequipItem(
-        pet._id as string,
+        pet._id,
         selectedItem.type === ItemType.ACCESSORY
           ? (selectedItem.category as string)
           : (selectedItem.type as string),
@@ -108,8 +104,10 @@ export default function Bag() {
       {pet ? (
         <div
           className="flex justify-end relative"
-          onClick={() => {
-            setSelectedItem(null);
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setSelectedItem(null);
+            }
           }}
         >
           <div className="fixed top-0 left-0 w-[26%]">
