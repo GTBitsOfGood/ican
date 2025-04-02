@@ -15,9 +15,9 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    const { itemName } = await req.json();
+    const { name, type } = await req.json();
 
-    await validateEquipItem(petId, itemName);
+    await validateEquipItem(petId, name, type);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

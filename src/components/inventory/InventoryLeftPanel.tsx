@@ -1,11 +1,11 @@
 import React from "react";
-import { StoreItem } from "./InventoryTabContent";
-import { Pet } from "@/types/pet";
 import PetAppearance from "./PetAppearance";
+import { InventoryItem } from "@/types/inventory";
+import { Pet, PetType } from "@/types/pet";
 
 interface PanelProps {
   petData: Pet;
-  selectedItem: StoreItem | null;
+  selectedItem: InventoryItem | null;
   button: React.ReactNode;
 }
 
@@ -29,8 +29,10 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
 
       <div className="short:w-[150px] minimized:w-[135px] tiny:w-[120px] largeDesktop:w-[212px] desktop:w-[180px] tablet:w-[150px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <PetAppearance
-          petType={petData.petType}
-          selectedItems={[selectedItem as StoreItem]}
+          petData={petData}
+          petType={petData.petType as PetType}
+          selectedItem={selectedItem}
+          className=""
         />
       </div>
 

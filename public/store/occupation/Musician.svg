@@ -1,9 +1,81 @@
-<svg width="74" height="104" viewBox="0 0 74 104" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect width="74" height="103.6" fill="url(#pattern0_15181_3344)"/>
-<defs>
-<pattern id="pattern0_15181_3344" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use xlink:href="#image0_15181_3344" transform="scale(0.1 0.0714286)"/>
-</pattern>
-<image id="image0_15181_3344" width="10" height="14" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAOCAYAAAAWo42rAAAAAXNSR0IArs4c6QAAAI9JREFUKJG9kbENg0AMRZ8jKKHIDMzADUFHg5gwSpMuQ4QZMgMFV3KSKQJB3BkpVX5p/f++LQsfKbsEQwJo21TfweP5PjVvRG2bSuep1qghqdF5qgHIyyGhXuJk149m5X+JB192RtxCa1BNIkBWvAAI3pGXw+87Jsb77UrXjwTvCN6ZxyT1634AYv00fp8ALJKMNrafTvcbAAAAAElFTkSuQmCC"/>
-</defs>
+<?xml version="1.0" encoding="UTF-8" ?>
+<svg version="1.1" width="10" height="14" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+<rect x="1" y="0" width="1" height="1" fill="#000000" />
+<rect x="2" y="0" width="1" height="1" fill="#000000" />
+<rect x="3" y="0" width="1" height="1" fill="#000000" />
+<rect x="0" y="1" width="1" height="1" fill="#000000" />
+<rect x="1" y="1" width="1" height="1" fill="#524B24" />
+<rect x="2" y="1" width="1" height="1" fill="#524B24" />
+<rect x="3" y="1" width="1" height="1" fill="#524B24" />
+<rect x="4" y="1" width="1" height="1" fill="#000000" />
+<rect x="1" y="2" width="1" height="1" fill="#000000" />
+<rect x="2" y="2" width="1" height="1" fill="#000000" />
+<rect x="3" y="2" width="1" height="1" fill="#524B24" />
+<rect x="4" y="2" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="2" width="1" height="1" fill="#000000" />
+<rect x="2" y="3" width="1" height="1" fill="#000000" />
+<rect x="3" y="3" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="3" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="3" width="1" height="1" fill="#000000" />
+<rect x="2" y="4" width="1" height="1" fill="#000000" />
+<rect x="3" y="4" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="4" width="1" height="1" fill="#524B24" />
+<rect x="5" y="4" width="1" height="1" fill="#000000" />
+<rect x="2" y="5" width="1" height="1" fill="#000000" />
+<rect x="3" y="5" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="5" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="5" width="1" height="1" fill="#000000" />
+<rect x="2" y="6" width="1" height="1" fill="#000000" />
+<rect x="3" y="6" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="6" width="1" height="1" fill="#524B24" />
+<rect x="5" y="6" width="1" height="1" fill="#000000" />
+<rect x="2" y="7" width="1" height="1" fill="#000000" />
+<rect x="3" y="7" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="7" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="7" width="1" height="1" fill="#000000" />
+<rect x="6" y="7" width="1" height="1" fill="#000000" />
+<rect x="7" y="7" width="1" height="1" fill="#000000" />
+<rect x="8" y="7" width="1" height="1" fill="#000000" />
+<rect x="2" y="8" width="1" height="1" fill="#000000" />
+<rect x="3" y="8" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="8" width="1" height="1" fill="#524B24" />
+<rect x="5" y="8" width="1" height="1" fill="#000000" />
+<rect x="6" y="8" width="1" height="1" fill="#FBF236" />
+<rect x="7" y="8" width="1" height="1" fill="#FBF236" />
+<rect x="8" y="8" width="1" height="1" fill="#FBF236" />
+<rect x="9" y="8" width="1" height="1" fill="#000000" />
+<rect x="2" y="9" width="1" height="1" fill="#000000" />
+<rect x="3" y="9" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="9" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="9" width="1" height="1" fill="#FBF236" />
+<rect x="6" y="9" width="1" height="1" fill="#FFFFFF" />
+<rect x="7" y="9" width="1" height="1" fill="#FFFFFF" />
+<rect x="8" y="9" width="1" height="1" fill="#FBF236" />
+<rect x="9" y="9" width="1" height="1" fill="#000000" />
+<rect x="2" y="10" width="1" height="1" fill="#000000" />
+<rect x="3" y="10" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="10" width="1" height="1" fill="#524B24" />
+<rect x="5" y="10" width="1" height="1" fill="#FBF236" />
+<rect x="6" y="10" width="1" height="1" fill="#FFFFFF" />
+<rect x="7" y="10" width="1" height="1" fill="#FFFFFF" />
+<rect x="8" y="10" width="1" height="1" fill="#FBF236" />
+<rect x="9" y="10" width="1" height="1" fill="#000000" />
+<rect x="2" y="11" width="1" height="1" fill="#000000" />
+<rect x="3" y="11" width="1" height="1" fill="#FBF236" />
+<rect x="4" y="11" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="11" width="1" height="1" fill="#524B24" />
+<rect x="6" y="11" width="1" height="1" fill="#FBF236" />
+<rect x="7" y="11" width="1" height="1" fill="#FBF236" />
+<rect x="8" y="11" width="1" height="1" fill="#FBF236" />
+<rect x="9" y="11" width="1" height="1" fill="#000000" />
+<rect x="3" y="12" width="1" height="1" fill="#000000" />
+<rect x="4" y="12" width="1" height="1" fill="#FBF236" />
+<rect x="5" y="12" width="1" height="1" fill="#FBF236" />
+<rect x="6" y="12" width="1" height="1" fill="#FBF236" />
+<rect x="7" y="12" width="1" height="1" fill="#FBF236" />
+<rect x="8" y="12" width="1" height="1" fill="#000000" />
+<rect x="4" y="13" width="1" height="1" fill="#000000" />
+<rect x="5" y="13" width="1" height="1" fill="#000000" />
+<rect x="6" y="13" width="1" height="1" fill="#000000" />
+<rect x="7" y="13" width="1" height="1" fill="#000000" />
 </svg>

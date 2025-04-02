@@ -9,8 +9,8 @@ export interface Pet {
   userId: Types.ObjectId;
   food: number;
   appearance: {
-    clothes?: string;
-    accessories?: {
+    clothing?: string;
+    accessory?: {
       shoes?: string;
       eyewear?: string;
       hat?: string;
@@ -45,8 +45,8 @@ const petSchema = new Schema<PetDocument>(
     },
     appearance: {
       type: new Schema({
-        clothes: { type: String },
-        accessories: {
+        clothing: { type: String },
+        accessory: {
           type: new Schema({
             shoes: { type: String },
             eyewear: { type: String },
