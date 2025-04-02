@@ -12,7 +12,7 @@ const LockedItem: React.FC<LockedItemProps> = ({ item }) => {
       <Image
         src={"store/Lock.svg"}
         alt={item.name}
-        className="largeDesktop:w-[121px] desktop:w-[105px] tablet:w-[90px]"
+        className="largeDesktop:w-[121px] largeDesktop:h-[121px] desktop:w-[105px] desktop:h-[105px] tablet:w-[90px] tablet:h-[90px] object-contain"
         height={0}
         width={0}
         sizes="100vw"

@@ -9,14 +9,12 @@ interface InventoryTabProps extends TabProps {
 const InventoryTab: ReactTabsFunctionComponent<InventoryTabProps> = ({
   title,
   image,
-  ...rest
+  ...props
 }) => (
   <Tab
-    {...rest}
-    className={
-      "flex-1 text-center py-4 border-x-2 border-t-2 border-white largeDesktop:h-[154px] desktop:h-[130px] tablet:h-[100px] bg-icanBlue-300 text-white outline-none cursor-pointer"
-    }
-    selectedClassName="!text-black !underline"
+    {...props}
+    className="flex-1 text-center py-4 border-x-2 border-t-2 border-white largeDesktop:h-[154px] desktop:h-[130px] tablet:h-[100px] bg-icanBlue-300 text-white outline-none cursor-pointer"
+    selectedClassName="translate-y-[.075px] !text-black !underline !bg-icanBlue-100 !border-b-icanBlue-100"
   >
     <Image
       src={image}

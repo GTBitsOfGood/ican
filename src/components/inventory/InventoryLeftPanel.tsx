@@ -1,7 +1,7 @@
 import React from "react";
-import { Pet } from "@/types/pet";
 import PetAppearance from "./PetAppearance";
 import { InventoryItem } from "@/types/inventory";
+import { Pet, PetType } from "@/types/pet";
 
 interface PanelProps {
   petData: Pet;
@@ -28,7 +28,11 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
       </div>
 
       <div className="short:w-[150px] minimized:w-[135px] tiny:w-[120px] largeDesktop:w-[212px] desktop:w-[180px] tablet:w-[150px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <PetAppearance petType={petData.petType} selectedItem={selectedItem} />
+        <PetAppearance
+          petData={petData}
+          petType={petData.petType as PetType}
+          selectedItem={selectedItem}
+        />
       </div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

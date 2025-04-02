@@ -14,4 +14,15 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: string;
+  appearance: {
+    clothing?: string;
+    accessory?: {
+      shoes?: string;
+      eyewear?: string;
+      hat?: string;
+      occupation?: string;
+    };
+    background?: string;
+    food?: string;
+  };
 }

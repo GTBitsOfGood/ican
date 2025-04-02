@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import { Tabs, TabList } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
 import InventoryTab from "./InventoryTab";
 import InventoryTabPanel from "./InventoryTabPanel";
 import { Pet } from "@/types/pet";
@@ -34,8 +33,9 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
         setSelectedIndex(index);
         onSelectTab();
       }}
+      className="flex flex-col h-full"
     >
-      <TabList className="flex justify-between border-bottom-0">
+      <TabList className="flex gap-16 justify-between border-bottom-0">
         {["Clothes", "Accessories", "Backgrounds", "Food"].map(
           (title, index) => (
             <InventoryTab
@@ -54,7 +54,7 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
           type={type}
           inventoryData={inventoryData}
           exclude={exclude[index]}
-          petLevel={petData?.xpLevel as number}
+          petData={petData}
           selectedItem={selectedItem}
           setSelectedItem={setSelectedItem}
         />
