@@ -18,9 +18,9 @@ export default function Log() {
   };
 
   return (
-    <div className="bg-icanBlue-200 w-screen h-screen flex ">
-      <div className="flex flex-col gap-y-[72px]">
-        <div className="flex justify-center items-center w-[85vw]">
+    <div className="bg-icanBlue-200 w-screen h-screen flex justify-between">
+      <div className="flex flex-col gap-y-[72px] w-full">
+        <div className="flex justify-center items-center">
           <button onClick={handlePrev}>
             <Image
               src={"/assets/LeftArrowIcon.svg"}
