@@ -35,7 +35,11 @@ export interface DoseObject {
   name: string;
   dosage: string;
   notes: string;
-  scheduledTimes: { time: string; status: "pending" | "taken" | "missed" }[];
+  scheduledTimes: {
+    time: string;
+    status: "pending" | "taken" | "missed";
+    canCheckIn: boolean;
+  }[];
   lastTaken: Date | null;
   repeatUnit: string;
   repeatInterval: number;

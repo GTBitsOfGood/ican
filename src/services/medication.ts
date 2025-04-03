@@ -28,6 +28,7 @@ import {
 } from "@/db/models/medicationCheckIn";
 import { DoseObject, MedicationSchedule } from "@/types/medication";
 import { DAYS_OF_WEEK } from "@/lib/consts";
+import { MedicationLogDocument } from "@/db/models/medicationLog";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -193,6 +194,15 @@ export default class MedicationService {
       throw new NotFoundError("User does not have any medications");
     }
 
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+
+    currentDate.setUTCHours(0, 0, 0, 0);
+
     const givenDate = new Date(date);
     const givenDateTime = givenDate.getTime();
 
@@ -202,12 +212,8 @@ export default class MedicationService {
           medication._id,
         );
 
-        let scheduledTimes: {
-          time: string;
-          status: "pending" | "taken" | "missed";
-        }[] = [];
-
-        const isNewMedication = medicationLogs.length === 0;
+        const isNewMedication =
+          medicationLogs.length === 0 && givenDateTime >= currentDate.getTime();
 
         const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
         const lastTaken = lastLog ? lastLog.dateTaken : null;
@@ -260,9 +266,6 @@ export default class MedicationService {
           if (medication.repeatMonthlyType === "Day") {
             const scheduledDayOfMonth = medication.repeatMonthlyOnDay;
             const givenDayOfMonth = givenDate.getUTCDate();
-
-            console.log("given", givenDayOfMonth);
-            console.log("scheduled", scheduledDayOfMonth);
 
             if (givenDayOfMonth === scheduledDayOfMonth) {
               if (isNewMedication) {
@@ -334,78 +337,59 @@ export default class MedicationService {
         }
 
         if (shouldSchedule) {
+          console.log("medication:", medication.medicationId);
+
+          // Initialize scheduledTimes
+          let scheduledTimes = [];
+
+          // Process dose times based on interval or explicit times
           if (medication.doseIntervalInHours) {
             const startDoseTime = medication.doseTimes[0];
             const [startHour, startMinute] = startDoseTime
               .split(":")
               .map(Number);
-
             const endHour = 21;
 
             let currentHour = startHour;
             const currentMinute = startMinute;
 
+            // Calculate doses at intervals
             while (currentHour < endHour) {
               const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
 
-              let status: "pending" | "taken" | "missed" = "pending";
-
-              const doseTime = new Date(date);
-              doseTime.setHours(currentHour, currentMinute, 0, 0);
-
-              const matchingLog = medicationLogs.find((log) => {
-                const logDate = new Date(log.dateTaken);
-                return (
-                  Math.abs(logDate.getTime() - doseTime.getTime()) <= 600000 // Within 10 minutes for now
-                );
-              });
-
-              if (matchingLog) {
-                status = "taken";
-              } else {
-                const now = new Date();
-                if (
-                  doseTime < now &&
-                  doseTime.toDateString() === now.toDateString()
-                ) {
-                  status = "missed";
-                }
-              }
-
+              // Process this dose time
+              const doseResult = processDoseTime(
+                date,
+                currentHour,
+                currentMinute,
+                medicationLogs,
+                currentDate,
+                givenDate,
+              );
               scheduledTimes.push({
                 time: timeStr,
-                status,
+                ...doseResult,
               });
 
               currentHour += medication.doseIntervalInHours;
             }
           } else {
+            // Process explicit dose times
             scheduledTimes = medication.doseTimes.map((time) => {
-              let status: "pending" | "taken" | "missed" = "pending";
               const [hours, minutes] = time.split(":").map(Number);
 
-              const doseTime = new Date(date + "T00:00:00");
-              doseTime.setHours(hours, minutes, 0, 0);
-
-              const matchingLog = medicationLogs.find((log) => {
-                const logTime = new Date(log.dateTaken);
-                return (
-                  Math.abs(logTime.getTime() - doseTime.getTime()) <= 600000
-                );
-              });
-
-              if (matchingLog) {
-                status = "taken";
-              } else {
-                const now = new Date();
-                if (doseTime < now) {
-                  status = "missed";
-                }
-              }
-
+              // Process this dose time
+              const doseResult = processDoseTime(
+                date,
+                hours,
+                minutes,
+                medicationLogs,
+                currentDate,
+                givenDate,
+              );
               return {
                 time,
-                status,
+                ...doseResult,
               };
             });
           }
@@ -422,6 +406,53 @@ export default class MedicationService {
           };
 
           return dose;
+        }
+
+        // Helper function to process a single dose time
+        function processDoseTime(
+          date: string,
+          hours: number,
+          minutes: number,
+          medicationLogs: MedicationLogDocument[],
+          currentDate: Date,
+          givenDate: Date,
+        ) {
+          let status: "pending" | "taken" | "missed" = "pending";
+          let canCheckIn = false;
+
+          const doseTime = new Date(date);
+
+          // Convert local times to UTC
+          const offsetMinutes = doseTime.getTimezoneOffset();
+          const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
+          const utcMinute = (minutes + offsetMinutes) % 60;
+
+          doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+          console.log("dose time", doseTime);
+
+          const matchingLog = medicationLogs.find((log) => {
+            const logDate = new Date(log.dateTaken);
+            return Math.abs(logDate.getTime() - doseTime.getTime()) <= 900000; // Within 15 minutes
+          });
+
+          if (matchingLog) {
+            status = "taken";
+          } else {
+            const now = new Date();
+            if (currentDate.getTime() == givenDate.getTime()) {
+              canCheckIn =
+                Math.abs(now.getTime() - doseTime.getTime()) <= 900000;
+            }
+
+            if (now.getTime() - doseTime.getTime() >= 900000) {
+              status = "missed";
+            }
+          }
+
+          return {
+            status,
+            canCheckIn,
+          };
         }
 
         return null;
