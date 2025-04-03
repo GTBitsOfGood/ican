@@ -191,7 +191,7 @@ export default class MedicationService {
     const medications = await this.getMedications(userId);
 
     if (!medications) {
-      throw new NotFoundError("User does not have any medications");
+      throw new NotFoundError("User does not have any medications.");
     }
 
     const now = new Date();
@@ -226,7 +226,7 @@ export default class MedicationService {
             shouldSchedule = true;
           } else {
             const daysApart = Math.ceil(
-              (givenDateTime - lastTakenDate) / 86400000,
+              (givenDateTime - lastTakenDate) / (1000 * 60 * 60 * 24),
             );
             shouldSchedule = daysApart % (medication.repeatInterval ?? 1) === 0;
           }
@@ -257,7 +257,7 @@ export default class MedicationService {
             const givenDateWeekStart = normalizeToStartOfWeek(givenDate);
             const weeksApart = Math.floor(
               (givenDateWeekStart.getTime() - lastTakenWeekStart.getTime()) /
-                (86400000 * 7),
+                (1000 * 60 * 60 * 24 * 7),
             );
             shouldSchedule =
               weeksApart % (medication.repeatInterval ?? 1) === 0;
@@ -339,10 +339,8 @@ export default class MedicationService {
         if (shouldSchedule) {
           console.log("medication:", medication.medicationId);
 
-          // Initialize scheduledTimes
           let scheduledTimes = [];
 
-          // Process dose times based on interval or explicit times
           if (medication.doseIntervalInHours) {
             const startDoseTime = medication.doseTimes[0];
             const [startHour, startMinute] = startDoseTime
@@ -353,18 +351,13 @@ export default class MedicationService {
             let currentHour = startHour;
             const currentMinute = startMinute;
 
-            // Calculate doses at intervals
             while (currentHour < endHour) {
               const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
 
-              // Process this dose time
               const doseResult = processDoseTime(
-                date,
                 currentHour,
                 currentMinute,
                 medicationLogs,
-                currentDate,
-                givenDate,
               );
               scheduledTimes.push({
                 time: timeStr,
@@ -374,18 +367,13 @@ export default class MedicationService {
               currentHour += medication.doseIntervalInHours;
             }
           } else {
-            // Process explicit dose times
             scheduledTimes = medication.doseTimes.map((time) => {
               const [hours, minutes] = time.split(":").map(Number);
 
-              // Process this dose time
               const doseResult = processDoseTime(
-                date,
                 hours,
                 minutes,
                 medicationLogs,
-                currentDate,
-                givenDate,
               );
               return {
                 time,
@@ -408,14 +396,10 @@ export default class MedicationService {
           return dose;
         }
 
-        // Helper function to process a single dose time
         function processDoseTime(
-          date: string,
           hours: number,
           minutes: number,
           medicationLogs: MedicationLogDocument[],
-          currentDate: Date,
-          givenDate: Date,
         ) {
           let status: "pending" | "taken" | "missed" = "pending";
           let canCheckIn = false;
@@ -432,7 +416,9 @@ export default class MedicationService {
 
           const matchingLog = medicationLogs.find((log) => {
             const logDate = new Date(log.dateTaken);
-            return Math.abs(logDate.getTime() - doseTime.getTime()) <= 900000; // Within 15 minutes
+            return (
+              Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000
+            );
           });
 
           if (matchingLog) {
@@ -441,10 +427,10 @@ export default class MedicationService {
             const now = new Date();
             if (currentDate.getTime() == givenDate.getTime()) {
               canCheckIn =
-                Math.abs(now.getTime() - doseTime.getTime()) <= 900000;
+                Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
             }
 
-            if (now.getTime() - doseTime.getTime() >= 900000) {
+            if (now.getTime() - doseTime.getTime() >= 15 * 60 * 1000) {
               status = "missed";
             }
           }
