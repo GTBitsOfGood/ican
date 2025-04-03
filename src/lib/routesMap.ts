@@ -56,6 +56,20 @@ export const routesMap: RoutesMap = {
   "/api/v1/auth/forgot-password/verify": {
     allowedMethods: {
       POST: {
+        isAuthorized: false,
+      },
+    },
+  },
+  "/api/v1/auth/logout": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/user/[userId]": {
+    allowedMethods: {
+      DELETE: {
         isAuthorized: true,
       },
     },

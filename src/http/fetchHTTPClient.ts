@@ -54,7 +54,7 @@ export default async function fetchHTTPClient<T>(
 ): Promise<T> {
   const httpMethod = (request.method as HttpMethod) || "NO METHOD PROVIDED";
   verifyFetchRequest(httpMethod, request);
-
+  console.log(`${BASE_URL}${endpoint}`);
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...request,
     headers: {

@@ -24,18 +24,14 @@ export default class StoreHTTPClient {
     return fetchHTTPClient<void>("/store/purchase-item", {
       method: "POST",
       body: JSON.stringify(PurchaseItemRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
   static async getPetBag(petId: string): Promise<{ items: WithId<BagItem>[] }> {
     return fetchHTTPClient<{ items: WithId<BagItem>[] }>(`/bag/${petId}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -46,9 +42,7 @@ export default class StoreHTTPClient {
     return fetchHTTPClient<void>(`/pet/equip-item/${petId}`, {
       method: "GET",
       body: JSON.stringify(EquipItemRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -59,9 +53,7 @@ export default class StoreHTTPClient {
     return fetchHTTPClient<void>(`/pet/unequip/${petId}`, {
       method: "GET",
       body: JSON.stringify(UnequipRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 }

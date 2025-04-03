@@ -16,18 +16,16 @@ export default function AuthorizedRoute({
 
   useEffect(() => {
     const validateToken = async () => {
-      const token = localStorage.getItem("token");
-      setLoading(true);
-
-      if (!token) {
-        setLoading(false);
-        router.push("/login");
-        return;
-      }
-
       try {
-        const response = await AuthHTTPClient.validateToken();
-        setUserId(response.decodedToken?.userId);
+        const token = await AuthHTTPClient.validateToken();
+        setLoading(true);
+
+        if (!token.isValid) {
+          setLoading(false);
+          router.push("/login");
+          return;
+        }
+        setUserId(token.decodedToken?.userId);
       } catch (error) {
         console.log("error with validation: ", error);
         setUserId(null);

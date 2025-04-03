@@ -21,8 +21,7 @@ const GoogleLoginButton = ({
           tokenResponse.access_token,
         );
 
-        const response = await AuthHTTPClient.loginWithGoogle(userInfo);
-        localStorage.setItem("token", response.token);
+        await AuthHTTPClient.loginWithGoogle(userInfo);
         router.push("/");
       } catch (error) {
         if (setError) {
