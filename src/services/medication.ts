@@ -214,6 +214,7 @@ export default class MedicationService {
       const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
       const lastTaken = lastLog ? lastLog.dateTaken : null;
       const medicationCreated = medication.createdAt;
+      medicationCreated.setUTCHours(0, 0, 0, 0);
 
       const shouldSchedule = shouldScheduleMedication(
         medication,
