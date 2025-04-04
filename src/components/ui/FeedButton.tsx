@@ -1,8 +1,17 @@
+import { useRouter } from "next/router";
+
 const FeedButton = ({}) => {
+  const router = useRouter();
+
+  const redirect = () => {
+    router.push(`/food`);
+  };
+
   return (
     <button
       className="relative aspect-feed-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer"
       type="button"
+      onClick={redirect}
     >
       <div
         className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
