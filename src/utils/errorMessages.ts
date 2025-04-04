@@ -66,6 +66,7 @@ const ERRORS = Object.freeze({
       USER_ID: "UserID is requried and must be a valid ObjectID.",
     },
     NOT_FOUND: "Medication does not exist.",
+    NOT_FOUND_USER: "User does not have any medications.",
     CONFLICT: "Medication already exists",
     FAILURE: {
       DELETE: "Failed to delete medication.",

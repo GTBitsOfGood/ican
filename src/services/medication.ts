@@ -17,6 +17,8 @@ import {
   validateGetMedications,
   validateGetMedicationsSchedule,
   validateUpdateMedication,
+  shouldScheduleMedication,
+  processDoseTime,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
@@ -26,9 +28,6 @@ import {
   MedicationCheckInDocument,
   MedicationCheckIn,
 } from "@/db/models/medicationCheckIn";
-import { DoseObject, MedicationSchedule } from "@/types/medication";
-import { DAYS_OF_WEEK } from "@/lib/consts";
-import { MedicationLogDocument } from "@/db/models/medicationLog";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -191,7 +190,7 @@ export default class MedicationService {
     const medications = await this.getMedications(userId);
 
     if (!medications) {
-      throw new NotFoundError("User does not have any medications.");
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
     }
 
     const now = new Date();
@@ -206,254 +205,96 @@ export default class MedicationService {
     const givenDate = new Date(date);
     const givenDateTime = givenDate.getTime();
 
-    const doses = await Promise.all(
-      medications.map(async (medication): Promise<DoseObject | null> => {
-        const medicationLogs = await MedicationDAO.getMedicationLogs(
-          medication._id,
-        );
+    const allDoses = [];
 
-        const isNewMedication =
-          medicationLogs.length === 0 && givenDateTime >= currentDate.getTime();
+    for (const medication of medications) {
+      const medicationLogs = await MedicationDAO.getMedicationLogs(
+        medication._id,
+      );
 
-        const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
-        const lastTaken = lastLog ? lastLog.dateTaken : null;
-        const lastTakenDate = lastTaken ? lastTaken.getTime() : 0;
+      const isNewMedication =
+        medicationLogs.length === 0 && givenDateTime >= currentDate.getTime();
 
-        let shouldSchedule = false;
+      const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
+      const lastTaken = lastLog ? lastLog.dateTaken : null;
+      const medicationCreated = medication.createdAt;
 
-        if (medication.repeatUnit === "Day") {
-          if (isNewMedication) {
-            shouldSchedule = true;
-          } else {
-            const daysApart = Math.ceil(
-              (givenDateTime - lastTakenDate) / (1000 * 60 * 60 * 24),
+      const shouldSchedule = shouldScheduleMedication(
+        medication,
+        givenDate,
+        medicationCreated,
+        isNewMedication,
+      );
+
+      if (shouldSchedule) {
+        if (medication.doseIntervalInHours) {
+          const startDoseTime = medication.doseTimes[0];
+          const [startHour, startMinute] = startDoseTime.split(":").map(Number);
+          const endHour = 21;
+
+          let currentHour = startHour;
+          const currentMinute = startMinute;
+
+          while (currentHour < endHour) {
+            const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
+
+            const doseResult = processDoseTime(
+              currentHour,
+              currentMinute,
+              date,
+              medicationLogs,
             );
-            shouldSchedule = daysApart % (medication.repeatInterval ?? 1) === 0;
+
+            allDoses.push({
+              id: medication._id,
+              name: medication.medicationId,
+              dosage: medication.dosageAmount,
+              notes: medication.notes,
+              canCheckIn: doseResult.canCheckIn,
+              scheduledDoseTime: timeStr,
+              status: doseResult.status,
+              lastTaken: lastTaken,
+              repeatUnit: medication.repeatUnit as string,
+              repeatInterval: medication.repeatInterval as number,
+            });
+
+            currentHour += medication.doseIntervalInHours;
           }
-        } else if (medication.repeatUnit === "Week") {
-          const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
-          const isDayScheduled =
-            medication.repeatWeeklyOn &&
-            medication.repeatWeeklyOn.includes(givenDayOfWeek);
+        } else {
+          for (const time of medication.doseTimes) {
+            const [hours, minutes] = time.split(":").map(Number);
 
-          if (!isDayScheduled) {
-            return null;
-          }
-
-          if (isNewMedication) {
-            shouldSchedule = isDayScheduled;
-          } else {
-            const normalizeToStartOfWeek = (date: Date): Date => {
-              const result = new Date(date);
-              const day = result.getUTCDay();
-              result.setUTCDate(result.getUTCDate() - day);
-              result.setUTCHours(0, 0, 0, 0);
-              return result;
-            };
-
-            const lastTakenWeekStart = normalizeToStartOfWeek(
-              lastTaken as Date,
+            const doseResult = processDoseTime(
+              hours,
+              minutes,
+              date,
+              medicationLogs,
             );
-            const givenDateWeekStart = normalizeToStartOfWeek(givenDate);
-            const weeksApart = Math.floor(
-              (givenDateWeekStart.getTime() - lastTakenWeekStart.getTime()) /
-                (1000 * 60 * 60 * 24 * 7),
-            );
-            shouldSchedule =
-              weeksApart % (medication.repeatInterval ?? 1) === 0;
-          }
-        } else if (medication.repeatUnit === "Month") {
-          if (medication.repeatMonthlyType === "Day") {
-            const scheduledDayOfMonth = medication.repeatMonthlyOnDay;
-            const givenDayOfMonth = givenDate.getUTCDate();
 
-            if (givenDayOfMonth === scheduledDayOfMonth) {
-              if (isNewMedication) {
-                shouldSchedule = true;
-              } else {
-                const lastTakenMonth = lastTaken ? lastTaken.getUTCMonth() : 0;
-                const lastTakenYear = lastTaken
-                  ? lastTaken.getUTCFullYear()
-                  : 0;
-                const givenMonth = givenDate.getUTCMonth();
-                const givenYear = givenDate.getUTCFullYear();
-
-                const monthsApart =
-                  (givenYear - lastTakenYear) * 12 +
-                  (givenMonth - lastTakenMonth);
-
-                shouldSchedule =
-                  monthsApart % (medication.repeatInterval ?? 1) === 0;
-              }
-            }
-          } else if (medication.repeatMonthlyType === "Week") {
-            const scheduledWeekOfMonth = medication.repeatMonthlyOnWeek;
-            const scheduledDayOfWeek = medication.repeatMonthlyOnWeekDay;
-
-            const firstDayOfMonth = new Date(givenDate);
-            firstDayOfMonth.setUTCDate(1);
-
-            const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
-            const givenDayOfMonth = givenDate.getUTCDate();
-
-            let weekOfMonth = Math.ceil(givenDayOfMonth / 7);
-
-            if (scheduledWeekOfMonth === 5) {
-              const lastDayOfMonth = new Date(
-                givenDate.getUTCFullYear(),
-                givenDate.getUTCMonth() + 1,
-                0,
-              );
-              const daysUntilEndOfMonth =
-                lastDayOfMonth.getUTCDate() - givenDayOfMonth;
-
-              if (daysUntilEndOfMonth < 7) {
-                weekOfMonth = 5;
-              }
-            }
-
-            if (
-              givenDayOfWeek === scheduledDayOfWeek &&
-              weekOfMonth === scheduledWeekOfMonth
-            ) {
-              if (isNewMedication) {
-                shouldSchedule = true;
-              } else {
-                const lastTakenMonth = lastTaken ? lastTaken.getUTCMonth() : 0;
-                const lastTakenYear = lastTaken
-                  ? lastTaken.getUTCFullYear()
-                  : 0;
-                const givenMonth = givenDate.getUTCMonth();
-                const givenYear = givenDate.getUTCFullYear();
-
-                const monthsApart =
-                  (givenYear - lastTakenYear) * 12 +
-                  (givenMonth - lastTakenMonth);
-                shouldSchedule =
-                  monthsApart % (medication.repeatInterval ?? 1) === 0;
-              }
-            }
-          }
-        }
-
-        if (shouldSchedule) {
-          console.log("medication:", medication.medicationId);
-
-          let scheduledTimes = [];
-
-          if (medication.doseIntervalInHours) {
-            const startDoseTime = medication.doseTimes[0];
-            const [startHour, startMinute] = startDoseTime
-              .split(":")
-              .map(Number);
-            const endHour = 21;
-
-            let currentHour = startHour;
-            const currentMinute = startMinute;
-
-            while (currentHour < endHour) {
-              const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-
-              const doseResult = processDoseTime(
-                currentHour,
-                currentMinute,
-                medicationLogs,
-              );
-              scheduledTimes.push({
-                time: timeStr,
-                ...doseResult,
-              });
-
-              currentHour += medication.doseIntervalInHours;
-            }
-          } else {
-            scheduledTimes = medication.doseTimes.map((time) => {
-              const [hours, minutes] = time.split(":").map(Number);
-
-              const doseResult = processDoseTime(
-                hours,
-                minutes,
-                medicationLogs,
-              );
-              return {
-                time,
-                ...doseResult,
-              };
+            allDoses.push({
+              id: medication._id,
+              name: medication.medicationId,
+              dosage: medication.dosageAmount,
+              notes: medication.notes,
+              canCheckIn: doseResult.canCheckIn,
+              scheduledDoseTime: time,
+              status: doseResult.status,
+              lastTaken: lastTaken,
+              repeatUnit: medication.repeatUnit as string,
+              repeatInterval: medication.repeatInterval as number,
             });
           }
-
-          const dose = {
-            id: medication._id,
-            name: medication.medicationId,
-            dosage: medication.dosageAmount,
-            notes: medication.notes,
-            scheduledTimes: scheduledTimes,
-            lastTaken: lastTaken,
-            repeatUnit: medication.repeatUnit as string,
-            repeatInterval: medication.repeatInterval as number,
-          };
-
-          return dose;
         }
+      }
+    }
 
-        function processDoseTime(
-          hours: number,
-          minutes: number,
-          medicationLogs: MedicationLogDocument[],
-        ) {
-          let status: "pending" | "taken" | "missed" = "pending";
-          let canCheckIn = false;
-
-          const doseTime = new Date(date);
-
-          // Convert local times to UTC
-          const offsetMinutes = doseTime.getTimezoneOffset();
-          const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
-          const utcMinute = (minutes + offsetMinutes) % 60;
-
-          doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
-          console.log("dose time", doseTime);
-
-          const matchingLog = medicationLogs.find((log) => {
-            const logDate = new Date(log.dateTaken);
-            return (
-              Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000
-            );
-          });
-
-          if (matchingLog) {
-            status = "taken";
-          } else {
-            const now = new Date();
-            if (currentDate.getTime() == givenDate.getTime()) {
-              canCheckIn =
-                Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
-            }
-
-            if (now.getTime() - doseTime.getTime() >= 15 * 60 * 1000) {
-              status = "missed";
-            }
-          }
-
-          return {
-            status,
-            canCheckIn,
-          };
-        }
-
-        return null;
-      }),
-    );
-
-    const validDoses = doses.filter(Boolean) as DoseObject[];
-
-    if (validDoses.length === 0) {
+    if (allDoses.length === 0) {
       throw new NotFoundError("No medications scheduled for this date");
     }
 
-    const medicationSchedule: MedicationSchedule = {
+    const medicationSchedule = {
       date: givenDate,
-      medications: validDoses as DoseObject[],
+      medications: allDoses,
     };
 
     return medicationSchedule;
