@@ -296,12 +296,11 @@ export function shouldScheduleMedication(
   medication: WithId<Medication>,
   givenDate: Date,
   medicationCreated: Date,
-  isNewMedication: boolean,
 ): boolean {
   const givenDateTime = givenDate.getTime();
   const medicationCreatedDateTime = medicationCreated.getTime();
 
-  if (isNewMedication && givenDateTime < medicationCreatedDateTime) {
+  if (givenDateTime < medicationCreatedDateTime) {
     return false;
   }
 

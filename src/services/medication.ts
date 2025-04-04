@@ -203,7 +203,6 @@ export default class MedicationService {
     currentDate.setUTCHours(0, 0, 0, 0);
 
     const givenDate = new Date(date);
-    const givenDateTime = givenDate.getTime();
 
     const allDoses = [];
 
@@ -211,9 +210,6 @@ export default class MedicationService {
       const medicationLogs = await MedicationDAO.getMedicationLogs(
         medication._id,
       );
-
-      const isNewMedication =
-        medicationLogs.length === 0 && givenDateTime >= currentDate.getTime();
 
       const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
       const lastTaken = lastLog ? lastLog.dateTaken : null;
@@ -223,7 +219,6 @@ export default class MedicationService {
         medication,
         givenDate,
         medicationCreated,
-        isNewMedication,
       );
 
       if (shouldSchedule) {
