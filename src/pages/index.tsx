@@ -21,6 +21,7 @@ import { Medication } from "@/db/models/medication";
 import LoadingScreen from "@/components/loadingScreen";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
+import LevelUpModal from "@/components/modals/LevelUpModal";
 
 interface HomeProps {
   activeModal: string;
@@ -33,7 +34,9 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
-  const { selectedFood } = useFood();
+  const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
+    useState<boolean>(false);
+  const { selectedFood, setSelectedFood } = useFood();
 
   useEffect(() => {
     const getPetData = async () => {
@@ -55,6 +58,34 @@ export default function Home({
     getPetData();
   }, [userId]);
 
+  const handleFoodDragOver = (e: React.DragEvent<HTMLImageElement>) => {
+    e.preventDefault();
+  };
+
+  const handleFoodDrop = async (e: React.DragEvent<HTMLImageElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/v1/pet/${petData?._id}/feed`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok && response.status !== 200) {
+        throw new Error("Failed to update pet data");
+      }
+      const updatedPetData = await response.json();
+      if (petData && updatedPetData.xpLevel > petData.xpLevel) {
+        setShowLevelUpModalVisible(true);
+      }
+      setPetData(updatedPetData);
+      setSelectedFood("");
+    } catch (e) {
+      console.error("Error handling food drop:", e);
+    }
+  };
+
   return (
     <AuthorizedRoute>
       {activeModal === "settings" && <SettingsModal />}
@@ -64,6 +95,9 @@ export default function Home({
         <EditMedicationModal initialInfo={editMedicationInfo} />
       )}
       {activeModal === "food" && <FoodModal />}
+      {showLevelUpModalVisible && (
+        <LevelUpModal setVisible={setShowLevelUpModalVisible} />
+      )}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
           <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
@@ -101,6 +135,8 @@ export default function Home({
                 height={characterImages[petData.petType].height}
                 draggable={false}
                 unoptimized={true}
+                onDragOver={handleFoodDragOver}
+                onDrop={handleFoodDrop}
                 className="select-none mobile:h-[30%] tablet:h-[55%] desktop:h-[75%] largeDesktop:h-full w-auto object-contain"
               />
               <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
@@ -112,7 +148,7 @@ export default function Home({
                   alt={selectedFood}
                   width={150}
                   height={150}
-                  className="absolute bottom-[25%] right-[-50%]"
+                  className="absolute bottom-[25%] right-[-50%] hover:cursor-pointer"
                 />
               )}
             </div>

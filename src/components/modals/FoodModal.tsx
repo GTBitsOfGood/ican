@@ -8,7 +8,7 @@ import {
 } from "@heroui/react";
 import Image from "next/image";
 import ModalCloseButton from "./ModalCloseButton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
 
@@ -28,7 +28,9 @@ export default function FoodModal() {
     router.push("/");
   };
 
-  onOpen();
+  useEffect(() => {
+    onOpen();
+  }, [onOpen]);
 
   return (
     <Modal
