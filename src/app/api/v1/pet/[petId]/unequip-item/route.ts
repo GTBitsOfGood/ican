@@ -2,6 +2,7 @@ import { validateUnequip } from "@/services/pets";
 import { verifyPet } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // Not implemented as of now
@@ -11,7 +12,12 @@ export async function PATCH(
   { params }: { params: Promise<{ petId: string }> },
 ) {
   try {
-    const tokenUser = await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
