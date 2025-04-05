@@ -91,8 +91,7 @@ export default function ForgotPasswordPage() {
 
     if (page == 1) {
       try {
-        const response = await AuthHTTPClient.verifyForgotPassword(userId, otp);
-        localStorage.setItem("token", response.token);
+        await AuthHTTPClient.verifyForgotPassword(userId, otp);
       } catch (error) {
         setError({ otp: (error as Error).message });
         return;
@@ -125,7 +124,6 @@ export default function ForgotPasswordPage() {
         errorObj["email"] = ErrorStates.email;
       }
     } else if (page === 1) {
-      console.log(otp);
       if (otp.length !== 4) {
         isValid = false;
         errorObj["otp"] = ErrorStates.otp;

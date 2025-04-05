@@ -44,4 +44,16 @@ export default class UserDAO {
       throw new Error(ERRORS.USER.FAILURE.PASSWORD_UPDATE);
     }
   }
+
+  static async deleteUserFromId(id: string | Types.ObjectId) {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+
+    await dbConnect();
+
+    const result = await UserModel.findByIdAndDelete(_id);
+
+    if (result.modifiedCount === 0) {
+      throw new Error(ERRORS.USER.FAILURE.DELETE_USER);
+    }
+  }
 }
