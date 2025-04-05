@@ -24,10 +24,7 @@ import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
-import {
-  MedicationCheckInDocument,
-  MedicationCheckIn,
-} from "@/db/models/medicationCheckIn";
+import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -102,27 +99,41 @@ export default class MedicationService {
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    // check if medication check in already exists and isn't expired
+
+    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+
+    const canCheckIn = existingMedication.doseTimes.some((time) => {
+      const { canCheckIn } = processDoseTime(
+        time,
+        currentDate.toISOString(),
+        medicationLogs,
+      );
+
+      return canCheckIn;
+    });
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
-    if (existingMedicationCheckIn) {
-      const checkIn: MedicationCheckIn =
-        existingMedicationCheckIn as MedicationCheckIn;
-      if (checkIn.expiration.getTime() <= Date.now()) {
-        // delete medication
+
+    if (!canCheckIn) {
+      if (existingMedicationCheckIn) {
         await MedicationDAO.deleteMedicationCheckIn(medicationId);
-      } else {
-        // do nothing if valid
-        return;
       }
+
+      throw new IllegalOperationError("Cannot check in right now.");
     }
-    // if medication check in doesn't exist or is expired, then create one
 
-    const expiration = new Date();
-    expiration.setMinutes(expiration.getMinutes() + 15);
+    if (existingMedicationCheckIn) {
+      return;
+    }
 
-    MedicationDAO.createMedicationCheckIn(medicationId, expiration);
+    MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
   static async createMedicationLog(medicationId: string, pin: string) {
@@ -158,15 +169,29 @@ export default class MedicationService {
       );
     }
 
-    const checkIn = existingMedicationCheckIn as MedicationCheckIn;
-    if (checkIn.expiration.getTime() <= Date.now()) {
-      // throw timeout error
-      throw new IllegalOperationError("The provided check in has expired.");
-    }
+    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
 
-    // delete medication check in
+    const canCheckIn = existingMedication.doseTimes.some((time) => {
+      const { canCheckIn } = processDoseTime(
+        time,
+        currentDate.toISOString(),
+        medicationLogs,
+      );
+
+      return canCheckIn;
+    });
 
     await MedicationDAO.deleteMedicationCheckIn(medicationId);
+
+    if (!canCheckIn) {
+      throw new IllegalOperationError("Cannot log medication right now.");
+    }
 
     // find pet
     const existingPet: Pet | null = await PetDAO.getPetByUserId(userId);
@@ -189,7 +214,7 @@ export default class MedicationService {
 
     const medications = await this.getMedications(userId);
 
-    if (!medications) {
+    if (medications.length == 0) {
       throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
     }
 
@@ -223,69 +248,23 @@ export default class MedicationService {
       );
 
       if (shouldSchedule) {
-        if (medication.doseIntervalInHours) {
-          const startDoseTime = medication.doseTimes[0];
-          const [startHour, startMinute] = startDoseTime.split(":").map(Number);
-          const endHour = 21;
+        for (const time of medication.doseTimes) {
+          const doseResult = processDoseTime(time, date, medicationLogs);
 
-          let currentHour = startHour;
-          const currentMinute = startMinute;
-
-          while (currentHour < endHour) {
-            const timeStr = `${currentHour.toString().padStart(2, "0")}:${currentMinute.toString().padStart(2, "0")}`;
-
-            const doseResult = processDoseTime(
-              currentHour,
-              currentMinute,
-              date,
-              medicationLogs,
-            );
-
-            allDoses.push({
-              id: medication._id,
-              name: medication.medicationId,
-              dosage: medication.dosageAmount,
-              notes: medication.notes,
-              canCheckIn: doseResult.canCheckIn,
-              scheduledDoseTime: timeStr,
-              status: doseResult.status,
-              lastTaken: lastTaken,
-              repeatUnit: medication.repeatUnit as string,
-              repeatInterval: medication.repeatInterval as number,
-            });
-
-            currentHour += medication.doseIntervalInHours;
-          }
-        } else {
-          for (const time of medication.doseTimes) {
-            const [hours, minutes] = time.split(":").map(Number);
-
-            const doseResult = processDoseTime(
-              hours,
-              minutes,
-              date,
-              medicationLogs,
-            );
-
-            allDoses.push({
-              id: medication._id,
-              name: medication.medicationId,
-              dosage: medication.dosageAmount,
-              notes: medication.notes,
-              canCheckIn: doseResult.canCheckIn,
-              scheduledDoseTime: time,
-              status: doseResult.status,
-              lastTaken: lastTaken,
-              repeatUnit: medication.repeatUnit as string,
-              repeatInterval: medication.repeatInterval as number,
-            });
-          }
+          allDoses.push({
+            id: medication._id,
+            name: medication.medicationId,
+            dosage: medication.dosageAmount,
+            notes: medication.notes,
+            canCheckIn: doseResult.canCheckIn,
+            scheduledDoseTime: time,
+            status: doseResult.status,
+            lastTaken: lastTaken,
+            repeatUnit: medication.repeatUnit as string,
+            repeatInterval: medication.repeatInterval as number,
+          });
         }
       }
-    }
-
-    if (allDoses.length === 0) {
-      throw new NotFoundError("No medications scheduled for this date");
     }
 
     const medicationSchedule = {

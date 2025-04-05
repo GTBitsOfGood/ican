@@ -403,11 +403,11 @@ export function shouldScheduleMedication(
 }
 
 export function processDoseTime(
-  hours: number,
-  minutes: number,
+  time: string,
   date: string,
   medicationLogs: MedicationLogDocument[],
 ) {
+  const [hours, minutes] = time.split(":").map(Number);
   let status: "pending" | "taken" | "missed" = "pending";
   let canCheckIn = false;
 

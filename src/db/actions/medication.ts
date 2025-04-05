@@ -96,13 +96,11 @@ export default class MedicationDAO {
 
   static async createMedicationCheckIn(
     medicationId: string,
-    expiration: Date,
   ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
     await dbConnect();
 
     const medicationCheckIn: MedicationCheckIn = {
       medicationId: new Types.ObjectId(medicationId),
-      expiration,
     };
 
     return await MedicationCheckInModel.insertOne(medicationCheckIn);
