@@ -135,7 +135,7 @@ export const routesMap: RoutesMap = {
       },
     },
   },
-  "/api/v1/medications/schedule": {
+  "/api/v1/medications/[userId]/schedule": {
     allowedMethods: {
       GET: {
         isAuthorized: true,
