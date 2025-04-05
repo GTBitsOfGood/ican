@@ -41,6 +41,7 @@ export default function Log() {
             />
           </button>
         </div>
+        <div className="flex flex-wrap justify-between"></div>
       </div>
       <div className="p-9">
         <button>

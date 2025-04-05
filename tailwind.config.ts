@@ -138,6 +138,12 @@ export default {
       textShadow: {
         default: "0 4px 0 #7D83B2",
       },
+      backgroundImage: {
+        "error-gradient":
+          "linear-gradient(0deg, rgba(248, 171, 171, 0.20) 0%, rgba(248, 171, 171, 0.20) 100%), #FFF;",
+        "completed-gradient":
+          "linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%), #FFF",
+      },
     },
   },
   plugins: [
