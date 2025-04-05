@@ -29,3 +29,21 @@ export interface MedicationInfo {
 export interface CreateMedicationRequestBody extends MedicationInfo {
   userId: string;
 }
+
+export interface DoseObject {
+  id: string;
+  name: string;
+  dosage: string;
+  notes: string;
+  canCheckIn: boolean;
+  scheduledDoseTime: string;
+  status: "pending" | "taken" | "missed";
+  lastTaken: Date | null;
+  repeatUnit: string;
+  repeatInterval: number;
+}
+
+export interface MedicationSchedule {
+  date: Date;
+  medications: DoseObject[];
+}

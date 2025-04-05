@@ -1,13 +1,23 @@
 import PetDAO from "@/db/actions/pets";
 import { UserDocument } from "@/db/models/user";
-import { UnauthorizedError } from "@/types/exceptions";
+import { InvalidArgumentsError, UnauthorizedError } from "@/types/exceptions";
 import MedicationDAO from "@/db/actions/medication";
+import { objectIdSchema } from "./serviceUtils/commonSchemaUtil";
+import ERRORS from "./errorMessages";
 
 export const verifyUser = (
   tokenUser: UserDocument | null,
   userId: string,
   errorMessage?: string,
 ): void => {
+  try {
+    objectIdSchema("UserId").parse(userId);
+  } catch {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.USER_ID,
+    );
+  }
+
   errorMessage = errorMessage || "Unauthorized Request";
   if (!tokenUser || tokenUser._id.toString() != userId) {
     throw new UnauthorizedError(errorMessage);

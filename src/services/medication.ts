@@ -15,16 +15,16 @@ import {
   validateDeleteMedication,
   validateGetMedication,
   validateGetMedications,
+  validateGetMedicationsSchedule,
   validateUpdateMedication,
+  shouldScheduleMedication,
+  processDoseTime,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
-import {
-  MedicationCheckInDocument,
-  MedicationCheckIn,
-} from "@/db/models/medicationCheckIn";
+import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -99,27 +99,41 @@ export default class MedicationService {
     if (!existingMedication) {
       throw new NotFoundError("This medication does not exist");
     }
-    // check if medication check in already exists and isn't expired
+
+    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+
+    const canCheckIn = existingMedication.doseTimes.some((time) => {
+      const { canCheckIn } = processDoseTime(
+        time,
+        currentDate.toISOString(),
+        medicationLogs,
+      );
+
+      return canCheckIn;
+    });
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
-    if (existingMedicationCheckIn) {
-      const checkIn: MedicationCheckIn =
-        existingMedicationCheckIn as MedicationCheckIn;
-      if (checkIn.expiration.getTime() <= Date.now()) {
-        // delete medication
+
+    if (!canCheckIn) {
+      if (existingMedicationCheckIn) {
         await MedicationDAO.deleteMedicationCheckIn(medicationId);
-      } else {
-        // do nothing if valid
-        return;
       }
+
+      throw new IllegalOperationError("Cannot check in right now.");
     }
-    // if medication check in doesn't exist or is expired, then create one
 
-    const expiration = new Date();
-    expiration.setMinutes(expiration.getMinutes() + 15);
+    if (existingMedicationCheckIn) {
+      return;
+    }
 
-    MedicationDAO.createMedicationCheckIn(medicationId, expiration);
+    MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
   static async createMedicationLog(medicationId: string, pin: string) {
@@ -155,15 +169,29 @@ export default class MedicationService {
       );
     }
 
-    const checkIn = existingMedicationCheckIn as MedicationCheckIn;
-    if (checkIn.expiration.getTime() <= Date.now()) {
-      // throw timeout error
-      throw new IllegalOperationError("The provided check in has expired.");
-    }
+    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
 
-    // delete medication check in
+    const canCheckIn = existingMedication.doseTimes.some((time) => {
+      const { canCheckIn } = processDoseTime(
+        time,
+        currentDate.toISOString(),
+        medicationLogs,
+      );
+
+      return canCheckIn;
+    });
 
     await MedicationDAO.deleteMedicationCheckIn(medicationId);
+
+    if (!canCheckIn) {
+      throw new IllegalOperationError("Cannot log medication right now.");
+    }
 
     // find pet
     const existingPet: Pet | null = await PetDAO.getPetByUserId(userId);
@@ -179,5 +207,71 @@ export default class MedicationService {
 
     // create medication log in
     await MedicationDAO.createMedicationLog(medicationId, new Date());
+  }
+
+  static async getMedicationsSchedule(userId: string, date: string) {
+    validateGetMedicationsSchedule({ userId, date });
+
+    const medications = await this.getMedications(userId);
+
+    if (medications.length == 0) {
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
+    }
+
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+
+    currentDate.setUTCHours(0, 0, 0, 0);
+
+    const givenDate = new Date(date);
+
+    const allDoses = [];
+
+    for (const medication of medications) {
+      const medicationLogs = await MedicationDAO.getMedicationLogs(
+        medication._id,
+      );
+
+      const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
+      const lastTaken = lastLog ? lastLog.dateTaken : null;
+      const medicationCreated = medication.createdAt;
+      medicationCreated.setUTCHours(0, 0, 0, 0);
+
+      const shouldSchedule = shouldScheduleMedication(
+        medication,
+        givenDate,
+        medicationCreated,
+      );
+
+      if (shouldSchedule) {
+        for (const time of medication.doseTimes) {
+          const doseResult = processDoseTime(time, date, medicationLogs);
+
+          allDoses.push({
+            id: medication._id,
+            name: medication.medicationId,
+            dosage: medication.dosageAmount,
+            notes: medication.notes,
+            canCheckIn: doseResult.canCheckIn,
+            scheduledDoseTime: time,
+            status: doseResult.status,
+            lastTaken: lastTaken,
+            repeatUnit: medication.repeatUnit as string,
+            repeatInterval: medication.repeatInterval as number,
+          });
+        }
+      }
+    }
+
+    const medicationSchedule = {
+      date: givenDate,
+      medications: allDoses,
+    };
+
+    return medicationSchedule;
   }
 }
