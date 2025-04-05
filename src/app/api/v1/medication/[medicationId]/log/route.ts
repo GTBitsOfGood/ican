@@ -8,7 +8,7 @@ import { verifyMedication } from "@/utils/auth";
 const route = "/api/v1/medication/[medicationId]/log";
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ customMedicationId: string }> },
+  { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
     const tokenUser = await validateRoutes(
@@ -17,12 +17,12 @@ export async function POST(
       route,
       (await cookies()).get("auth_token")?.value,
     );
-    const customMedicationId = (await params).customMedicationId;
-    await verifyMedication(tokenUser, customMedicationId);
+    const medicationId = (await params).medicationId;
+    await verifyMedication(tokenUser, medicationId);
 
     const { pin } = await req.json();
 
-    await MedicationService.createMedicationLog(customMedicationId, pin);
+    await MedicationService.createMedicationLog(medicationId, pin);
 
     return NextResponse.json({}, { status: 201 });
   } catch (error) {

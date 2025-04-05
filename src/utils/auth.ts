@@ -40,29 +40,6 @@ export const verifyMedication = async (
   );
 };
 
-export const verifyMedicationByCustomMedicationId = async (
-  userId: UserDocument | string | null,
-  customMedicationId: string | null,
-  errorMessage?: string,
-): Promise<void> => {
-  errorMessage = errorMessage || "Unauthorized Request";
-  if (!userId || !customMedicationId) {
-    throw new UnauthorizedError(errorMessage);
-  }
-
-  const userIdString =
-    typeof userId === "string" ? userId : userId._id.toString();
-
-  const entity = await MedicationDAO.getUserMedicationByCustomMedicationId(
-    customMedicationId,
-    userIdString,
-  );
-
-  if (!entity || entity.userId.toString() != userIdString) {
-    throw new UnauthorizedError(errorMessage);
-  }
-};
-
 // Helper function to make creation of functions easier
 const verifyEntityByUserId = async <
   T extends { userId: string | { toString(): string } },
