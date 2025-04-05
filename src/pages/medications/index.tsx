@@ -2,12 +2,24 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
-import { initialAddMedicationInfo } from "@/components/modals/medication/addMedicationModal";
+import AddMedicationModal, {
+  initialAddMedicationInfo,
+} from "@/components/modals/medication/addMedicationModal";
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { Medication } from "@/db/models/medication";
+import { WithId } from "@/types/models";
+import EditMedicationModal from "@/components/modals/medication/editMedicationModal";
 
-export default function MedicationsPage() {
+interface MedicationPageProps {
+  activeModal: string;
+  editMedicationInfo?: WithId<Medication>;
+}
+
+export default function MedicationsPage({
+  activeModal = "",
+  editMedicationInfo = undefined,
+}: MedicationPageProps) {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
@@ -30,6 +42,10 @@ export default function MedicationsPage() {
   return (
     <AuthorizedRoute>
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
+        {activeModal === "add-new-medication" && <AddMedicationModal />}
+        {activeModal === "edit-medication" && (
+          <EditMedicationModal initialInfo={editMedicationInfo} />
+        )}
         {deleteModalVisible &&
           clickedIndex !== undefined &&
           clickedIndex !== null && (

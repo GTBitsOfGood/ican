@@ -1,4 +1,4 @@
-import { ItemType, AccessoryCategory, InventoryItem } from "@/types/inventory";
+import { ItemType, InventoryItem } from "@/types/inventory";
 
 const storeItems: Record<string, Record<string, InventoryItem>> = {
   clothing: {
@@ -66,12 +66,11 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
       description: "",
     },
   },
-  accessory: {
+  shoes: {
     MUSICIAN_SHOES: {
       name: "MUSICIAN_SHOES",
       displayName: "Musician Shoes",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.SHOES,
+      type: ItemType.SHOES,
       image: "/store/shoes/Musician.svg",
       cost: 100,
       level: 0,
@@ -80,8 +79,7 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
     ASTRONAUT_SHOES: {
       name: "ASTRONAUT_SHOES",
       displayName: "Astronaut Shoes",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.SHOES,
+      type: ItemType.SHOES,
       image: "/store/shoes/Astronaut.svg",
       cost: 100,
       level: 0,
@@ -90,18 +88,18 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
     BUSINESS_SHOES: {
       name: "BUSINESS_SHOES",
       displayName: "Business Shoes",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.SHOES,
+      type: ItemType.SHOES,
       image: "/store/shoes/Business.svg",
       cost: 100,
       level: 0,
       description: "Create economic growth through innovation!",
     },
+  },
+  hat: {
     MUSICIAN_HAT: {
       name: "MUSICIAN_HAT",
       displayName: "Musician Hat",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.HAT,
+      type: ItemType.HAT,
       image: "/store/hats/Musician.svg",
       cost: 100,
       level: 0,
@@ -110,8 +108,7 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
     BUSINESS_HAT: {
       name: "BUSINESS_HAT",
       displayName: "Business Hat",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.HAT,
+      type: ItemType.HAT,
       image: "/store/hats/Business.svg",
       cost: 100,
       level: 0,
@@ -120,8 +117,7 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
     DOCTOR_HAT: {
       name: "DOCTOR_HAT",
       displayName: "Doctor Hat",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.HAT,
+      type: ItemType.HAT,
       image: "/store/hats/Doctor.svg",
       cost: 100,
       level: 0,
@@ -130,58 +126,54 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
     ASTRONAUT_HAT: {
       name: "ASTRONAUT_HAT",
       displayName: "Astronaut Hat",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.HAT,
+      type: ItemType.HAT,
       image: "/store/hats/Astronaut.svg",
       cost: 100,
       level: 0,
       description: "Something about astronauts!",
     },
-    DOCTOR_ACCESSORY: {
-      name: "DOCTOR_ACCESSORY",
+  },
+  occupation: {
+    DOCTOR_OCCUPATION: {
+      name: "DOCTOR_OCCUPATION",
       displayName: "First Aid",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.OCCUPATION,
+      type: ItemType.OCCUPATION,
       image: "/store/occupation/Doctor.svg",
       cost: 100,
       level: 0,
       description: "Help save lives as a doctor or nurse!",
     },
-    BUSINESS_ACCESSORY: {
-      name: "BUSINESS_ACCESSORY",
+    BUSINESS_OCCUPATION: {
+      name: "BUSINESS_OCCUPATION",
       displayName: "Briefcase",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.OCCUPATION,
+      type: ItemType.OCCUPATION,
       image: "/store/occupation/Business.svg",
       cost: 100,
       level: 0,
       description: "Create economic growth through innovation!",
     },
-    MUSICIAN_ACCESSORY: {
-      name: "MUSICIAN_ACCESSORY",
+    MUSICIAN_OCCUPATION: {
+      name: "MUSICIAN_OCCUPATION",
       displayName: "Saxophone",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.OCCUPATION,
+      type: ItemType.OCCUPATION,
       image: "/store/occupation/Musician.svg",
       cost: 100,
       level: 0,
       description: "Something about music!",
     },
-    PALETTE_ACCESSORY: {
-      name: "PALETTE_ACCESSORY",
+    PALETTE_OCCUPATION: {
+      name: "PALETTE_OCCUPATION",
       displayName: "Paint Palette",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.OCCUPATION,
+      type: ItemType.OCCUPATION,
       image: "/store/occupation/Palette.svg",
       cost: 100,
       level: 0,
       description: "Something about art!",
     },
-    BRUSH_ACCESSORY: {
-      name: "BRUSH_ACCESSORY",
+    BRUSH_OCCUPATION: {
+      name: "BRUSH_OCCUPATION",
       displayName: "Paint Brush",
-      type: ItemType.ACCESSORY,
-      category: AccessoryCategory.OCCUPATION,
+      type: ItemType.OCCUPATION,
       image: "/store/occupation/Brush.svg",
       cost: 100,
       level: 0,

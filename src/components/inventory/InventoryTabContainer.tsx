@@ -4,15 +4,16 @@ import InventoryTab from "./InventoryTab";
 import InventoryTabPanel from "./InventoryTabPanel";
 import { Pet } from "@/types/pet";
 import { InventoryItem } from "@/types/inventory";
+import { SavedOutfit } from "@/db/models/pet";
 
-interface TabsProps {
+export interface TabsProps {
   type: "Store" | "Bag";
   onSelectTab: () => void;
   petData: Pet;
-  data: InventoryItem[][];
+  data: (InventoryItem[] | SavedOutfit[])[];
   exclude: InventoryItem[][];
-  selectedItem: InventoryItem | null;
-  setSelectedItem: Dispatch<SetStateAction<InventoryItem | null>>;
+  selectedItem: InventoryItem | SavedOutfit | null;
+  setSelectedItem: Dispatch<SetStateAction<InventoryItem | SavedOutfit | null>>;
 }
 
 const InventoryTabContainer: React.FC<TabsProps> = ({
@@ -36,15 +37,26 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
       className="flex flex-col h-full"
     >
       <TabList className="flex gap-16 justify-between border-bottom-0">
-        {["Clothes", "Accessories", "Backgrounds", "Food"].map(
-          (title, index) => (
-            <InventoryTab
-              key={title}
-              title={title}
-              image={`/store/categories/${title}.svg`}
-              selected={selectedIndex === index}
-            />
-          ),
+        {["Clothes", "Accessories", "Backgrounds"].map((title, index) => (
+          <InventoryTab
+            key={title}
+            title={title}
+            image={`/store/categories/${title}.svg`}
+            selected={selectedIndex === index}
+          />
+        ))}
+        {type == "Store" ? (
+          <InventoryTab
+            title="Food"
+            image={"/store/categories/Food.svg"}
+            selected={selectedIndex === 3}
+          />
+        ) : (
+          <InventoryTab
+            title="Outfits"
+            image={"/store/categories/Outfits.svg"}
+            selected={selectedIndex === 3}
+          />
         )}
       </TabList>
 

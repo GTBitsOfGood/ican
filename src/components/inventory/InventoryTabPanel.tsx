@@ -8,14 +8,16 @@ import {
 } from "react-tabs";
 import { Dispatch, SetStateAction } from "react";
 import { Pet } from "@/types/pet";
+import { SavedOutfit } from "@/db/models/pet";
+import Outfit from "./outfit";
 
 interface StoreTabContentProps extends TabPanelProps {
   type: "Store" | "Bag";
-  inventoryData: InventoryItem[];
+  inventoryData: InventoryItem[] | SavedOutfit[];
   exclude: InventoryItem[];
   petData: Pet;
-  selectedItem: InventoryItem | null;
-  setSelectedItem: Dispatch<SetStateAction<InventoryItem | null>>;
+  selectedItem: InventoryItem | SavedOutfit | null;
+  setSelectedItem: Dispatch<SetStateAction<InventoryItem | SavedOutfit | null>>;
 }
 
 const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
@@ -39,35 +41,42 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
     >
       <div className="p-4 grid grid-cols-4 gap-4">
         {items.map((item, index) =>
-          type === "Store" ? (
-            petData.xpLevel >= item.level ? (
+          "level" in item ? (
+            type === "Store" ? (
+              petData.xpLevel >= item.level ? (
+                <Item
+                  key={index}
+                  type={type}
+                  item={item}
+                  isSelected={item.name === selectedItem?.name}
+                  isWearing={Object.values(petData.appearance).includes(
+                    item.name,
+                  )}
+                  setSelectedItem={setSelectedItem}
+                />
+              ) : (
+                <LockedItem key={index} item={item} />
+              )
+            ) : (
               <Item
                 key={index}
                 type={type}
                 item={item}
                 isSelected={item.name === selectedItem?.name}
-                isWearing={
-                  Object.values(petData.appearance).includes(item.name) ||
-                  Object.values(petData.appearance.accessory ?? {}).includes(
-                    item.name,
-                  )
-                }
+                isWearing={Object.values(petData.appearance).includes(
+                  item.name,
+                )}
                 setSelectedItem={setSelectedItem}
               />
-            ) : (
-              <LockedItem key={index} item={item} />
             )
           ) : (
-            <Item
+            <Outfit
               key={index}
-              type={type}
-              item={item}
+              item={item as SavedOutfit}
               isSelected={item.name === selectedItem?.name}
               isWearing={
-                Object.values(petData.appearance).includes(item.name) ||
-                Object.values(petData.appearance.accessory ?? {}).includes(
-                  item.name,
-                )
+                JSON.stringify({ ...item, name: undefined, _id: undefined }) ==
+                JSON.stringify({ ...petData.appearance, _id: undefined })
               }
               setSelectedItem={setSelectedItem}
             />

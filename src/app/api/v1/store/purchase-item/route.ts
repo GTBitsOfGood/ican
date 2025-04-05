@@ -1,4 +1,4 @@
-import { validatePurchase } from "@/services/store";
+import StoreService from "@/services/store";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,8 +8,7 @@ export async function POST(req: NextRequest) {
     await validateRoutes(req, req.method, req.nextUrl.pathname.toString());
     const { petId, name, type } = await req.json();
 
-    // Make into class, change function name
-    await validatePurchase(petId, name, type);
+    await StoreService.validatePurchase(petId, name, type);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

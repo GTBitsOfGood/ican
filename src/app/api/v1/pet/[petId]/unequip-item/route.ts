@@ -1,4 +1,4 @@
-import { validateUnequip } from "@/services/pets";
+import PetService from "@/services/pets";
 import { verifyPet } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
@@ -17,7 +17,7 @@ export async function PATCH(
 
     const { attribute } = await req.json();
 
-    await validateUnequip(petId, attribute);
+    await PetService.validateUnequip(petId, attribute);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

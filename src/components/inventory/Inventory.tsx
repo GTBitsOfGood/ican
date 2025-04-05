@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -7,7 +6,7 @@ interface InventoryProps {
   leftPanel: React.ReactNode;
   tabContainer: React.ReactNode;
   overlayScreen?: React.ReactNode;
-  balance?: number;
+  topView?: React.ReactNode;
 }
 
 export default function Inventory({
@@ -15,7 +14,7 @@ export default function Inventory({
   leftPanel,
   tabContainer,
   overlayScreen,
-  balance,
+  topView,
 }: InventoryProps) {
   const router = useRouter();
   return (
@@ -23,21 +22,10 @@ export default function Inventory({
       {overlayScreen}
       <div className="fixed top-0 left-0 w-[26%]">{leftPanel}</div>
       <div className="flex flex-col w-[74%] min-h-screen bg-[#4C539B] pb-7">
-        <div className="flex justify-between items-center">
-          {balance != undefined && (
-            <div className="flex justify-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-4xl bg-[#E6E8F9] border-[3px] border-black">
-              Balance:
-              <Image
-                src="/icons/Coin.svg"
-                alt="Coins"
-                width={38}
-                height={38}
-                draggable={false}
-                className="select-none object-contain"
-              />
-              <div className="pl-1">{balance}</div>
-            </div>
-          )}
+        <div
+          className={`flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
+        >
+          {topView}
           <div
             className="font-pixelify mt-[30px] pr-[60px] text-icanGreen-100 text-7xl leading-none cursor-pointer"
             onClick={() => router.push("/")}

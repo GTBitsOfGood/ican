@@ -4,7 +4,7 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { NextRequest, NextResponse } from "next/server";
 
-const route = "/api/v1/pet/[petId]/equip-item";
+const route = "/api/v1/pet/[petId]/equip-outfit";
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ petId: string }> },
@@ -14,9 +14,9 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    const { name, type } = await req.json();
+    const appearance = await req.json();
 
-    await PetService.validateEquipItem(petId, name, type);
+    await PetService.validateEquipOutfit(petId, appearance);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

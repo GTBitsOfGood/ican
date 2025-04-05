@@ -36,6 +36,12 @@ const ERRORS = Object.freeze({
       DELETE: "Failed to delete pet.",
       UPDATE: "Failed to update pet.",
     },
+    OUTFIT: {
+      FAILURE: {
+        CREATE: "Failed to create outfit",
+        DELETE: "Failed to delete outfit",
+      },
+    },
   },
   BAG: {
     FAILURE: {

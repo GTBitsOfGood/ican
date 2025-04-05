@@ -166,6 +166,23 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/pet/[petId]/equip-outfit": {
+    allowedMethods: {
+      PATCH: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/pet/[petId]/outfit/[name]": {
+    allowedMethods: {
+      DELETE: {
+        isAuthorized: true,
+      },
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/bag/[petId]": {
     allowedMethods: {
       GET: {
