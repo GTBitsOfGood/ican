@@ -2,18 +2,26 @@ import React from "react";
 
 interface ModalNextButtonProps {
   link: string;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
 }
 
 export default function ModalNextButton({
   link,
   onClick,
 }: ModalNextButtonProps) {
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) {
+      e.preventDefault();
+      await onClick(e);
+      window.location.href = link;
+    }
+  };
+
   return (
     <a
       className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
       href={link}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <button className="w-full h-full flex justify-center items-center">
         <svg

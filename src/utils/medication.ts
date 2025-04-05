@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 type ValidateParamsType = {
   id?: string;
   formOfMedication?: string;
-  medicationId?: string;
+  customMedicationId?: string;
   repeatInterval?: number;
   repeatUnit?: string;
   repeatOn?: string[];
@@ -19,7 +19,7 @@ type ValidateParamsType = {
 
 export async function validateCreateParams({
   formOfMedication,
-  medicationId,
+  customMedicationId,
   repeatInterval,
   repeatUnit,
   repeatOn,
@@ -36,9 +36,9 @@ export async function validateCreateParams({
       "Invalid parameters: 'formOfMedication' is required.",
     );
   }
-  if (!medicationId) {
+  if (!customMedicationId) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'medicationId' is required.",
+      "Invalid parameters: 'customMedicationId' is required.",
     );
   }
   if (repeatInterval == null) {
@@ -89,7 +89,7 @@ export async function validateCreateParams({
 
   validateParams({
     formOfMedication,
-    medicationId,
+    customMedicationId,
     repeatInterval,
     repeatUnit,
     repeatOn,
@@ -105,7 +105,7 @@ export async function validateCreateParams({
 export async function validateParams({
   id,
   formOfMedication,
-  medicationId,
+  customMedicationId,
   repeatInterval,
   repeatUnit,
   repeatOn,
@@ -131,13 +131,13 @@ export async function validateParams({
     );
   }
   if (
-    medicationId &&
-    (typeof medicationId !== "string" ||
-      medicationId.trim() === "" ||
-      medicationId.length > 5)
+    customMedicationId &&
+    (typeof customMedicationId !== "string" ||
+      customMedicationId.trim() === "" ||
+      customMedicationId.length > 5)
   ) {
     throw new InvalidArgumentsError(
-      "Invalid parameters: 'medicationId' is required and must be a non-empty string that has a length less than 6.",
+      "Invalid parameters: 'customMedicationId' is required and must be a non-empty string that has a length less than 6.",
     );
   }
 

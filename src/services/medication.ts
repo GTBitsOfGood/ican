@@ -31,14 +31,13 @@ export default class MedicationService {
     await validateCreateMedication(medication);
 
     const existingMedication =
-      await MedicationDAO.getUserMedicationByMedicationId(
-        medication.medicationId,
+      await MedicationDAO.getUserMedicationByCustomMedicationId(
+        medication.customMedicationId,
         medication.userId,
       );
     if (existingMedication) {
       throw new ConflictError(ERRORS.MEDICATION.CONFLICT);
     }
-
     const newMedication = await MedicationDAO.createNewMedication(medication);
     return newMedication._id.toString();
   }
@@ -55,12 +54,16 @@ export default class MedicationService {
     };
   }
 
-  static async updateMedication(id: string, updatedMedication: Medication) {
+  static async updateMedication(
+    id: string,
+    updatedMedication: Partial<Omit<Medication, "userId">>,
+  ) {
     validateUpdateMedication({ id, ...updatedMedication });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
       throw new ConflictError(ERRORS.MEDICATION.NOT_FOUND);
     }
+
     if (updatedMedication.formOfMedication) {
       await MedicationDAO.updateMedicationById(id, updatedMedication);
     }
@@ -139,7 +142,9 @@ export default class MedicationService {
     const settings = await SettingsService.getSettings(userId);
 
     // check if pin related to userid is the same as the pin sent through the request body
-
+    if (!settings.pin) {
+      throw new NotFoundError("Pin is not set");
+    }
     if (!(await validatePins(settings.pin, pin))) {
       throw new UnauthorizedError("Pin is invalid");
     }

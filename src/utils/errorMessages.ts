@@ -77,6 +77,7 @@ const ERRORS = Object.freeze({
   SETTINGS: {
     INVALID_ARGUMENTS: {
       UserID: "UserID is required and must be a valid ObjectID.",
+      PIN: "New pin must be different from current pin.",
     },
     NOT_FOUND: "Settings do not exist for this user",
     CONFLICT: "Settings already exists for this user.",
@@ -93,6 +94,10 @@ const ERRORS = Object.freeze({
       CODE: "Code is required.",
       NEW_PASSWORD: "New password is required.",
       CONFIRM_PASSWORD: "Confirm password is required.",
+    },
+    ILLEGAL_ARGUMENTS: {
+      PROVIDER:
+        "Password cannot be changed for accounts using OAuth authentication.",
     },
     NOT_FOUND: "A forgot password code not found for this user.",
     CONFLICT: "Forgot password code has expired.",

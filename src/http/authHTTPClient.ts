@@ -68,6 +68,14 @@ export default class AuthHTTPClient {
     });
   }
 
+  static async logout(): Promise<void> {
+    return await fetchHTTPClient(`/auth/logout`, {
+      method: "POST",
+      body: JSON.stringify({}),
+      credentials: "include",
+    });
+  }
+
   static async loginWithGoogle(userInfo: UserInfo): Promise<AuthResponseBody> {
     const loginRequestBody: LoginWithGoogleRequestBody = {
       name: userInfo.name,

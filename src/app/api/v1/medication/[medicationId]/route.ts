@@ -66,7 +66,6 @@ export async function DELETE(
     );
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
-
     await MedicationService.deleteMedication(medicationId);
 
     return new NextResponse(null, { status: 204 });

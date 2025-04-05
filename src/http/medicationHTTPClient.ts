@@ -8,6 +8,15 @@ export interface MedicationLogBody {
 }
 
 export default class MedicationHTTPClient {
+  static async getAllUserMedications(
+    userId: string,
+  ): Promise<WithId<Medication>[]> {
+    return await fetchHTTPClient(`/medications/${userId}`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
+
   static async createMedication(
     userId: string,
     medicationInfo: MedicationInfo,
@@ -21,37 +30,47 @@ export default class MedicationHTTPClient {
   }
 
   static async getMedication(
-    medicationId: string,
+    customMedicationId: string,
   ): Promise<WithId<Medication>> {
-    return await fetchHTTPClient(`/medication/${medicationId}`, {
+    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
       method: "GET",
       credentials: "include",
     });
   }
 
   static async updateMedication(
-    medicationId: string,
+    customMedicationId: string,
     medicationInfo: MedicationInfo,
   ) {
-    return await fetchHTTPClient(`/medication/${medicationId}`, {
+    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
       method: "PATCH",
       body: JSON.stringify(medicationInfo),
       credentials: "include",
     });
   }
 
-  static async medicationCheckIn(medicationId: string): Promise<void> {
-    return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
+  static async deleteMedication(customMedicationId: string) {
+    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+  }
+
+  static async medicationCheckIn(customMedicationId: string): Promise<void> {
+    return fetchHTTPClient<void>(`/medication/${customMedicationId}/check-in`, {
       method: "POST",
     });
   }
 
-  static async medicationLog(medicationId: string, pin: string): Promise<void> {
+  static async medicationLog(
+    customMedicationId: string,
+    pin: string,
+  ): Promise<void> {
     const medicationLogBody: MedicationLogBody = {
       pin,
     };
 
-    return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
+    return fetchHTTPClient<void>(`/medication/${customMedicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
     });

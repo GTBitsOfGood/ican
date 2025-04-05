@@ -16,7 +16,13 @@ const forgotPasswordCodeSchema = new Schema<ForgotPasswordCodeDocument>(
   {
     code: { type: String, required: true },
     expirationDate: { type: Date, required: true },
-    userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
+    userId: {
+      type: Schema.ObjectId,
+      required: true,
+      index: true,
+      ref: "User",
+      immutable: true,
+    },
   },
   {
     timestamps: true,

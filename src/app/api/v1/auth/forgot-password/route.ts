@@ -4,8 +4,6 @@ import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-// All of these can technically be condensed down to on
-
 export async function POST(req: NextRequest) {
   try {
     await validateRoutes(

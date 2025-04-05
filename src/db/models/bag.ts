@@ -16,6 +16,7 @@ const bagItemSchema = new Schema<BagItemDocument>(
       ref: "Pet",
       required: true,
       index: true,
+      immutable: true,
     },
     itemName: {
       type: String,

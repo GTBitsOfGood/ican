@@ -11,7 +11,7 @@ export interface MedicationDocument extends Medication, Document {
 
 const medicationSchema = new Schema<MedicationDocument>({
   formOfMedication: { type: String, required: true },
-  medicationId: { type: String, required: true },
+  customMedicationId: { type: String, required: true },
   repeatInterval: { type: Number, required: true },
   repeatUnit: { type: String, required: true },
   repeatWeeklyOn: { type: [String], required: true },
@@ -27,10 +27,16 @@ const medicationSchema = new Schema<MedicationDocument>({
   notificationFrequency: { type: String, required: true },
   notes: { type: String, required: false },
   includeTimes: { type: Boolean, required: true },
-  userId: { type: Schema.ObjectId, ref: "User", required: true, index: true },
+  userId: {
+    type: Schema.ObjectId,
+    ref: "User",
+    required: true,
+    index: true,
+    immutable: true,
+  },
 });
 
-medicationSchema.index({ userId: 1, medicationId: 1 }, { unique: true });
+medicationSchema.index({ userId: 1, customMedicationId: 1 }, { unique: true });
 
 // Models
 

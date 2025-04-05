@@ -83,7 +83,11 @@ export default function MedicationBaseModal({
     />,
   ];
 
-  const submitHandler = async (medicationInfo: MedicationInfo) => {
+  const submitHandler = async (
+    medicationInfo: MedicationInfo,
+    e?: React.FormEvent,
+  ) => {
+    if (e) e.preventDefault();
     try {
       await onSubmit(medicationInfo);
     } catch (error) {

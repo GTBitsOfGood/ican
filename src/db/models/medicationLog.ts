@@ -11,7 +11,12 @@ export interface MedicationLogDocument extends MedicationLog, Document {
 
 const medicationLogSchema = new Schema<MedicationLogDocument>(
   {
-    medicationId: { type: Schema.ObjectId, ref: "Medication", required: true },
+    medicationId: {
+      type: Schema.ObjectId,
+      ref: "Medication",
+      required: true,
+      immutable: true,
+    },
     dateTaken: { type: Date, required: true },
   },
   { timestamps: true },

@@ -171,7 +171,7 @@ export default function ForgotPasswordPage() {
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
         <div
-          className={`bg-white tiny:h-[95%] short:h-[85%] ${page === 0 ? "short:w-auto tall:h-[75%]" : ""} tall:h-[90%] my-2 tablet:px-4 desktop:px-8 short:px-2 overflow-y-auto rounded-[64px] flex flex-col justify-center items-center 2 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 mobile:w-11/12 tablet:w-5/6 desktop:w-2/3 largeDesktop:w-1/2`}
+          className={`bg-white ${page === 0 ? "short:w-auto" : ""} tablet:py-4 desktop:py-8 my-2 mx-2 tablet:px-4 desktop:px-8 short:px-2 overflow-y-auto rounded-[32px] tablet:rounded-[64px] flex flex-col justify-center items-center 2 desktop:gap-y-6 tiny:gap-y-0 tall:gap-y-6 w-auto`}
         >
           <div className="flex flex-col desktop:gap-y-12 w-[90%] mobile:gap-y-4 tiny:gap-y-3 short:gap-y-3 mx-2 tall:gap-y-4 items-center font-quantico">
             <div

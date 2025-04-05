@@ -18,7 +18,7 @@ interface SectionSelectorProps {
   spareTimesIn12Hour: Time12Hour[];
   setSpareTimesIn12Hour: Dispatch<SetStateAction<Time12Hour[]>>;
   setError: Dispatch<SetStateAction<string>>;
-  onSubmit: (medicationInfo: MedicationInfo) => void;
+  onSubmit: (medicationInfo: MedicationInfo, e?: React.FormEvent) => void;
 }
 
 export default function SectionSelector({
@@ -55,7 +55,8 @@ export default function SectionSelector({
     }
   };
 
-  const nextAction = () => {
+  const nextAction = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setError("");
     const { error, newInfo, newTime } = SectionValidator({
       info,
@@ -74,7 +75,7 @@ export default function SectionSelector({
     }
 
     if (currentSection == sectionSize - 1) {
-      onSubmit(info);
+      onSubmit(info, e);
     } else if (modalType == "Edit" && currentSection != 3) {
       setSpareInfo({ ...newInfo, ...info });
       if (newTime) {
@@ -122,7 +123,7 @@ export default function SectionSelector({
       )}
       <ModalButton
         className="max-w-max justify-self-end"
-        action={nextAction}
+        action={(e) => nextAction(e)}
         type="success"
       >
         {currentSection === sectionSize - 1

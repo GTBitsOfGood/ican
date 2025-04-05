@@ -11,6 +11,8 @@ import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
+import AuthHTTPClient from "@/http/authHTTPClient";
+import UserHTTPClient from "@/http/userHTTPClient";
 
 export default function SettingsModal() {
   const { userId } = useUser();
@@ -46,12 +48,30 @@ export default function SettingsModal() {
       setSettingsChanged(true);
     };
 
-  const handleLogout = async () => {
-    console.log("logout");
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    try {
+      await AuthHTTPClient.logout();
+      window.location.href = "/login";
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDeleteAccount = async () => {
-    console.log("delete account");
+  const handleDeleteAccount = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    e.preventDefault();
+    try {
+      if (userId === null) {
+        console.error("UserId is null");
+        return;
+      }
+      await UserHTTPClient.deleteAccount(userId);
+      window.location.href = "/login";
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {

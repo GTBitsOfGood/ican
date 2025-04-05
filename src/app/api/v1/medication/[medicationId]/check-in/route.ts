@@ -5,11 +5,11 @@ import MedicationService from "@/services/medication";
 import { cookies } from "next/headers";
 import { verifyMedication } from "@/utils/auth";
 
-const route = "/api/v1/medication/[medicationId]/check-in";
+const route = "/api/v1/medication/[customMedicationId]/check-in";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ medicationId: string }> },
+  { params }: { params: Promise<{ customMedicationId: string }> },
 ) {
   try {
     const tokenUser = await validateRoutes(
@@ -18,10 +18,10 @@ export async function POST(
       route,
       (await cookies()).get("auth_token")?.value,
     );
-    const medicationId = (await params).medicationId;
-    await verifyMedication(tokenUser, medicationId);
+    const customMedicationId = (await params).customMedicationId;
+    await verifyMedication(tokenUser, customMedicationId);
 
-    await MedicationService.createMedicationCheckIn(medicationId);
+    await MedicationService.createMedicationCheckIn(customMedicationId);
 
     return NextResponse.json({}, { status: 201 });
   } catch (error) {

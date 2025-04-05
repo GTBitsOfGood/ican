@@ -11,7 +11,12 @@ export interface MedicationCheckInDocument extends MedicationCheckIn, Document {
 
 const medicationCheckInSchema = new Schema<MedicationCheckInDocument>(
   {
-    medicationId: { type: Schema.ObjectId, ref: "Medication", required: true },
+    medicationId: {
+      type: Schema.ObjectId,
+      ref: "Medication",
+      required: true,
+      immutable: true,
+    },
     expiration: { type: Date, required: true },
   },
   { timestamps: true },

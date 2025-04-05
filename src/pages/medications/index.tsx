@@ -2,29 +2,52 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
-import { initialAddMedicationInfo } from "@/components/modals/medication/addMedicationModal";
+
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { Medication } from "@/db/models/medication";
+import { useUser } from "@/components/UserContext";
+import MedicationHTTPClient from "@/http/medicationHTTPClient";
+import { WithId } from "@/types/models";
 
 export default function MedicationsPage() {
-  const [medications, setMedications] = useState<Medication[]>([]);
+  const { userId } = useUser();
+
+  const [medications, setMedications] = useState<WithId<Medication>[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
 
   useEffect(() => {
-    // For now mock medication data, put fetch in here later
-    setMedications(Array(15).fill(initialAddMedicationInfo));
-  }, []);
+    const fetchMedications = async () => {
+      if (!userId) {
+        return;
+      }
 
-  const handleMedicationDelete = (index: number) => {
-    // Add delete in database
-    setDeleteModalVisible(true);
-    setMedications((prev) => {
-      const newMedications = [...prev];
-      newMedications.splice(index, 1);
-      return newMedications;
-    });
+      try {
+        const medicationsData =
+          await MedicationHTTPClient.getAllUserMedications(userId);
+        setMedications(medicationsData);
+      } catch (error) {
+        console.error("Error fetching medications:", error);
+      }
+    };
+
+    fetchMedications();
+  }, [userId]);
+
+  const handleMedicationDelete = async (index: number) => {
+    try {
+      await MedicationHTTPClient.deleteMedication(medications[index]._id);
+      setMedications((prev) => {
+        const newMedications = [...prev];
+        newMedications.splice(index, 1);
+        return newMedications;
+      });
+      setDeleteModalVisible(false);
+      setClickedIndex(undefined);
+    } catch (error) {
+      console.error("Error deleting medications:", error);
+    }
   };
 
   return (
