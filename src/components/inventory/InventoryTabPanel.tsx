@@ -49,7 +49,7 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
                   type={type}
                   item={item}
                   isSelected={item.name === selectedItem?.name}
-                  isWearing={Object.values(petData.appearance).includes(
+                  isWearing={Object.values(petData.appearance || {}).includes(
                     item.name,
                   )}
                   setSelectedItem={setSelectedItem}
@@ -63,7 +63,7 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
                 type={type}
                 item={item}
                 isSelected={item.name === selectedItem?.name}
-                isWearing={Object.values(petData.appearance).includes(
+                isWearing={Object.values(petData.appearance || {}).includes(
                   item.name,
                 )}
                 setSelectedItem={setSelectedItem}

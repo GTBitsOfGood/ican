@@ -25,19 +25,27 @@ export interface Pet {
   outfits: SavedOutfit[];
 }
 
-const appearanceSchema = {
-  clothing: { type: String },
-  shoes: { type: String },
-  eyewear: { type: String },
-  hat: { type: String },
-  occupation: { type: String },
-  background: { type: String },
-};
+const appearanceSchema = new Schema<Appearance>(
+  {
+    clothing: { type: String },
+    shoes: { type: String },
+    eyewear: { type: String },
+    hat: { type: String },
+    occupation: { type: String },
+    background: { type: String },
+  },
+  { _id: false },
+);
 
 const savedOutfitSchema = new Schema<SavedOutfit>(
   {
     name: { type: String, required: true },
-    ...appearanceSchema,
+    clothing: { type: String },
+    shoes: { type: String },
+    eyewear: { type: String },
+    hat: { type: String },
+    occupation: { type: String },
+    background: { type: String },
   },
   { _id: false },
 );
@@ -66,7 +74,6 @@ const petSchema = new Schema<PetDocument>(
     appearance: {
       type: appearanceSchema,
       default: {},
-      _id: false,
     },
     outfits: {
       type: [savedOutfitSchema],

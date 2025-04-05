@@ -96,7 +96,8 @@ export default function Bag() {
 
   const isitemEquipped = () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return false;
-    if (Object.values(pet.appearance).includes(selectedItem.name)) return true;
+    if (Object.values(pet.appearance || {}).includes(selectedItem.name))
+      return true;
     return false;
   };
 
@@ -151,9 +152,9 @@ export default function Bag() {
           }}
           topView={
             <div className="ml-[31px] mt-[40px] flex justify-center items-center gap-6">
-              {Object.values({ ...pet.appearance, _id: undefined }).some(
-                (value) => value !== undefined,
-              ) && (
+              {Object.values(
+                pet.appearance ? { ...pet.appearance, _id: undefined } : {},
+              ).some((value) => value !== undefined) && (
                 <div
                   className="bg-icanBlue-300 p-3 px-6 font-quantico text-2xl font-bold cursor-pointer"
                   onClick={() => setSaveCurrentOutfit(true)}

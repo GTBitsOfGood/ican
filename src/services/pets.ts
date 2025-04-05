@@ -133,11 +133,11 @@ export default class PetService {
       throw new NotFoundError("This pet does not own this item.");
     }
 
-    if (Object.values(pet.appearance).includes(name)) {
+    if (Object.values(pet.appearance || {}).includes(name)) {
       throw new ConflictError("This item is already equipped.");
     }
 
-    const newAppearance = pet.appearance;
+    const newAppearance = pet.appearance || {};
     newAppearance[item.type as Exclude<ItemType, ItemType.FOOD>] = name;
     await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
   }
