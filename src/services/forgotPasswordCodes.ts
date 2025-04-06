@@ -32,6 +32,13 @@ export default class ForgotPasswordService {
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
+
+    if (user.provider !== Provider.PASSWORD) {
+      throw new IllegalOperationError(
+        ERRORS.FORGOTPASSWORDCODE.ILLEGAL_ARGUMENTS.PROVIDER,
+      );
+    }
+
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
     const encryptedCode = await HashingService.hash(code);
@@ -77,6 +84,12 @@ export default class ForgotPasswordService {
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    if (user.provider !== Provider.PASSWORD) {
+      throw new IllegalOperationError(
+        ERRORS.FORGOTPASSWORDCODE.ILLEGAL_ARGUMENTS.PROVIDER,
+      );
     }
 
     const forgotPasswordCode =

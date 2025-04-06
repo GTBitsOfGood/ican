@@ -67,7 +67,7 @@ export default function MedicationsPage() {
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white">
+            <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white underline">
               Medications
             </h1>
             <AddMedicationButton />

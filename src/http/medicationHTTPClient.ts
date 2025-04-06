@@ -30,47 +30,44 @@ export default class MedicationHTTPClient {
   }
 
   static async getMedication(
-    customMedicationId: string,
+    medicationId: string,
   ): Promise<WithId<Medication>> {
-    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
+    return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "GET",
       credentials: "include",
     });
   }
 
   static async updateMedication(
-    customMedicationId: string,
+    medicationId: string,
     medicationInfo: MedicationInfo,
   ) {
-    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
+    return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "PATCH",
       body: JSON.stringify(medicationInfo),
       credentials: "include",
     });
   }
 
-  static async deleteMedication(customMedicationId: string) {
-    return await fetchHTTPClient(`/medication/${customMedicationId}`, {
+  static async deleteMedication(medicationId: string) {
+    return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "DELETE",
       credentials: "include",
     });
   }
 
-  static async medicationCheckIn(customMedicationId: string): Promise<void> {
-    return fetchHTTPClient<void>(`/medication/${customMedicationId}/check-in`, {
+  static async medicationCheckIn(medicationId: string): Promise<void> {
+    return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
     });
   }
 
-  static async medicationLog(
-    customMedicationId: string,
-    pin: string,
-  ): Promise<void> {
+  static async medicationLog(medicationId: string, pin: string): Promise<void> {
     const medicationLogBody: MedicationLogBody = {
       pin,
     };
 
-    return fetchHTTPClient<void>(`/medication/${customMedicationId}/log`, {
+    return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
     });

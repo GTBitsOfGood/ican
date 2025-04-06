@@ -235,10 +235,10 @@ export const updateMedicationSchema =
   baseMedicationSchema.superRefine(medicationRefine);
 
 export const getMedicationSchema = z.object({
-  id: objectIdSchema("customMedicationId"),
+  id: objectIdSchema("medicationId"),
 });
 export const deleteMedicationSchema = z.object({
-  id: objectIdSchema("customMedicationId"),
+  id: objectIdSchema("medicationId"),
 });
 export const getMedicationsSchema = z.object({
   userId: objectIdSchema("userId"),

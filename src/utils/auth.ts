@@ -29,12 +29,12 @@ export const verifyPet = async (
 
 export const verifyMedication = async (
   userId: UserDocument | string | null,
-  customMedicationId: string | null,
+  medicationId: string | null,
   errorMessage?: string,
 ): Promise<void> => {
   return await verifyEntityByUserId(
     userId,
-    customMedicationId,
+    medicationId,
     MedicationDAO.getMedicationById,
     errorMessage,
   );
