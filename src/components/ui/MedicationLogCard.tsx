@@ -93,7 +93,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col justify-between ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
+      className={`p-5 flex flex-col justify-between gap-y-4 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -116,9 +116,7 @@ export default function MedicationLogCard({
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">
           <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
-          <h1 className="text-3xl text-black font-quantico underline">
-            {name}
-          </h1>
+          <h1 className="text-3xl text-black font-quantico">{name}</h1>
         </div>
         <div className="flex flex-col gap-y-[16px] font-quantico">
           <h2 className="font-semibold text-black text-3xl">
