@@ -42,11 +42,7 @@ export default function Home() {
 
     setLoggingIn(true);
     try {
-      const response = await AuthHTTPClient.login(
-        email.trim(),
-        password.trim(),
-      );
-      localStorage.setItem("token", response.token);
+      await AuthHTTPClient.login(email.trim(), password.trim());
       router.push("/");
     } catch (error) {
       if (error instanceof Error && getStatusCode(error) == 400) {

@@ -21,6 +21,7 @@ const ERRORS = Object.freeze({
     },
     FAILURE: {
       PASSWORD_UPDATE: "User password update failed.",
+      DELETE_USER: "User deletion failed.",
     },
   },
   PET: {
@@ -72,6 +73,7 @@ const ERRORS = Object.freeze({
       USER_ID: "UserID is requried and must be a valid ObjectID.",
     },
     NOT_FOUND: "Medication does not exist.",
+    NOT_FOUND_USER: "User does not have any medications.",
     CONFLICT: "Medication already exists",
     FAILURE: {
       DELETE: "Failed to delete medication.",
@@ -115,6 +117,9 @@ const ERRORS = Object.freeze({
   },
   JWT: {
     UNAUTHORIZED: "Invalid or expired token.",
+  },
+  TOKEN: {
+    UNAUTHORIZED: "Authentication token is missing or malformed",
   },
 });
 

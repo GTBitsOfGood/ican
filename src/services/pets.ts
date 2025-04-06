@@ -86,7 +86,7 @@ export default class PetService {
     await PetDAO.deletePetByUserId(userId);
   }
 
-  static async feedPet(petId: string) {
+  static async feedPet(petId: string): Promise<Pet> {
     await validateFeedPet({ petId });
 
     const existingPet: Pet | null = await PetDAO.getPetByPetId(petId);
@@ -111,6 +111,7 @@ export default class PetService {
       xpLevel: updatedPet.xpLevel,
       food: --updatedPet.food,
     });
+    return updatedPet;
   }
 
   static async validateEquipItem(petId: string, name: string, type: string) {

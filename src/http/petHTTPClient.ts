@@ -36,18 +36,14 @@ export default class PetHTTPClient {
     return fetchHTTPClient<WithId<Pet>>("/pets", {
       method: "POST",
       body: JSON.stringify(CreatePetBodyRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
   static async getPet(userId: string): Promise<WithId<Pet>> {
     return fetchHTTPClient<WithId<Pet>>(`/pets/${userId}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -56,27 +52,21 @@ export default class PetHTTPClient {
     return fetchHTTPClient<void>(`/pets/${userId}`, {
       method: "PATCH",
       body: JSON.stringify(updatePetRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
   static async deletePet(userId: string): Promise<void> {
     return fetchHTTPClient<void>(`/pets/${userId}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
   static async feedPet(petId: string): Promise<void> {
     return fetchHTTPClient<void>(`/pet/${petId}/feed`, {
       method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 

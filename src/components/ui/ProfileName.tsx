@@ -47,13 +47,13 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
       {/* Reference span to correctly calculate width of input */}
       <span
         ref={spanRef}
-        className="absolute invisible whitespace-pre text-2xl 4xl:text-4xl font-bold"
+        className="absolute invisible whitespace-pre text-[2rem] font-bold"
       >
         {"_" + name}
       </span>
       <input
         className={`
-          text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          text-[2rem] text-shadow-[#603A0C] paint-stroke text-stroke-4 text-stroke-[#482D0D] font-quantico font-bold bg-transparent text-white
           ${!isEditing ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none" : "animate-pulse outline-dashed outline-white outline-2"}
         `}
         type="text"
