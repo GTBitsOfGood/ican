@@ -19,7 +19,7 @@ const Item: React.FC<ItemProps> = ({
 }) => {
   return (
     <div
-      className={`p-4 cursor-pointer mx-auto flex flex-col items-center w-full ${
+      className={`relative p-4 cursor-pointer mx-auto flex flex-col items-center w-full overflow-hidden ${
         isSelected
           ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
           : "border-[5px] border-transparent hover:bg-icanGreen-200/25 hover:border-black/25"
@@ -29,7 +29,7 @@ const Item: React.FC<ItemProps> = ({
       }}
     >
       {type === "Bag" && isWearing ? (
-        <div className="flex justify-center bg-icanGreen-100 px-2 mx-auto mb-[30px] text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold font-quantico">
+        <div className="absolute -right-[65px] top-8 rotate-45 flex justify-center bg-icanGreen-100 px-14 mx-auto mb-[30px] text-center text-black largeDesktop:text-3xl desktop:text-[30px] tablet:text-[24px] font-bold font-quantico">
           Wearing
         </div>
       ) : (

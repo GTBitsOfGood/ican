@@ -11,6 +11,7 @@ import { SavedOutfit } from "@/db/models/pet";
 import PetHTTPClient from "@/http/petHTTPClient";
 import OutfitSaveModal from "@/components/modals/outfit/saveModal";
 import OutfitDeleteModal from "@/components/modals/outfit/deleteModal";
+import { compareAppearance } from "@/utils/pets";
 
 export default function Bag() {
   const { pet, setPet } = usePet();
@@ -103,10 +104,7 @@ export default function Bag() {
 
   const isOutfitEquipped = () => {
     if (!pet || !selectedItem || "level" in selectedItem) return false;
-    if (
-      JSON.stringify({ ...pet.appearance, _id: undefined }) ==
-      JSON.stringify({ ...(selectedItem as SavedOutfit), name: undefined })
-    )
+    if (compareAppearance(pet.appearance, selectedItem as SavedOutfit))
       return true;
     return false;
   };
@@ -199,13 +197,15 @@ export default function Bag() {
                     {isitemEquipped() ? "Remove" : "Put On"}
                   </button>
                 ) : (
-                  <button
-                    onClick={isOutfitEquipped() ? undefined : equipOutfit}
-                    className={`font-quantico ${isOutfitEquipped() ? "bg-icanGreen-200" : "bg-iCAN-Blue-300"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white`}
-                    type="button"
-                  >
-                    {isOutfitEquipped() ? "Equipped" : "Put On"}
-                  </button>
+                  selectedItem && (
+                    <button
+                      onClick={isOutfitEquipped() ? undefined : equipOutfit}
+                      className={`font-quantico ${isOutfitEquipped() ? "bg-icanGreen-200" : "bg-iCAN-Blue-300"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white`}
+                      type="button"
+                    >
+                      {isOutfitEquipped() ? "Equipped" : "Put On"}
+                    </button>
+                  )
                 )
               }
             />

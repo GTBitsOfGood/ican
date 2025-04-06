@@ -6,10 +6,11 @@ import {
   TabPanel,
   TabPanelProps,
 } from "react-tabs";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Pet } from "@/types/pet";
 import { SavedOutfit } from "@/db/models/pet";
 import Outfit from "./outfit";
+import { compareAppearance } from "@/utils/pets";
 
 interface StoreTabContentProps extends TabPanelProps {
   type: "Store" | "Bag";
@@ -36,7 +37,7 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
   return (
     <TabPanel
       {...props}
-      className={`-mt-[2px] hidden border-2 border-white bg-[#7D83B2] flex-grow overflow-y-auto`}
+      className={`-mt-[2px] hidden border-2 border-white bg-[#7D83B2] min-h-[520px] flex-grow overflow-y-auto`}
       selectedClassName={`!block`}
     >
       <div className="p-4 grid grid-cols-4 gap-4">
@@ -74,10 +75,7 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
               key={index}
               item={item as SavedOutfit}
               isSelected={item.name === selectedItem?.name}
-              isWearing={
-                JSON.stringify({ ...item, name: undefined, _id: undefined }) ==
-                JSON.stringify({ ...petData.appearance, _id: undefined })
-              }
+              isWearing={compareAppearance(petData.appearance, item)}
               setSelectedItem={setSelectedItem}
             />
           ),

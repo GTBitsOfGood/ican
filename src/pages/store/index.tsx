@@ -85,15 +85,16 @@ export default function Store() {
       {pet && petBag ? (
         <Inventory
           topView={
-            <div className="flex justify-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-4xl bg-[#E6E8F9] border-[3px] border-black">
+            <div className="flex justify-center items-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-2xl tablet:text-3xl desktop:text-4xl bg-[#E6E8F9] border-[3px] border-black">
               Balance:
               <Image
                 src="/icons/Coin.svg"
                 alt="Coins"
-                width={38}
-                height={38}
+                width={0}
+                height={0}
+                sizes="100vw"
                 draggable={false}
-                className="select-none object-contain"
+                className="ml-2 w-6 h-6 desktop:w-[38px] desktop:h-[38px] select-none object-contain"
               />
               <div className="pl-1">{pet.coins}</div>
             </div>

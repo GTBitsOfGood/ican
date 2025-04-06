@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React from "react";
+import React, { cloneElement, ReactElement } from "react";
 
 interface InventoryProps {
   outsideClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -18,12 +18,18 @@ export default function Inventory({
 }: InventoryProps) {
   const router = useRouter();
   return (
-    <div className="flex justify-end relative" onClick={outsideClick}>
+    <div
+      className="flex flex-col desktop:flex-row desktop:justify-end relative"
+      onClick={outsideClick}
+    >
       {overlayScreen}
-      <div className="fixed top-0 left-0 w-[26%]">{leftPanel}</div>
-      <div className="flex flex-col w-[74%] min-h-screen bg-[#4C539B] pb-7">
+      <div className="relative desktop:fixed desktop:top-0 desktop:left-0 w-full desktop:w-[26%]">
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        {cloneElement(leftPanel as ReactElement<any>, { topView })}
+      </div>
+      <div className="flex flex-col w-full desktop:w-[74%] desktop:min-h-screen bg-[#4C539B] pb-7">
         <div
-          className={`flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
+          className={`hidden desktop:flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
         >
           {topView}
           <div
