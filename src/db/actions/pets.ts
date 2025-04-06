@@ -1,5 +1,5 @@
 import { HydratedDocument, Types } from "mongoose";
-import PetModel, { Pet, PetDocument } from "../models/pet";
+import PetModel, { Appearance, Pet, PetDocument } from "../models/pet";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
 
@@ -46,11 +46,11 @@ export default class PetDAO {
     }
   }
 
-  static async getPetByPetId(_petId: string): Promise<Pet | null> {
+  static async getPetByPetId(
+    _petId: string,
+  ): Promise<HydratedDocument<Pet> | null> {
     const petId = new Types.ObjectId(_petId);
-
     await dbConnect();
-
     return await PetModel.findOne({ _id: petId });
   }
 
@@ -114,6 +114,34 @@ export default class PetDAO {
     const result = await PetModel.updateOne({ _id: petId }, updateObj);
     if (result.modifiedCount == 0) {
       throw new Error(ERRORS.PET.FAILURE.UPDATE);
+    }
+  }
+
+  static async saveOutfit(
+    _petId: string,
+    appearance: Appearance,
+    name: string,
+  ): Promise<void> {
+    const petId = new Types.ObjectId(_petId);
+    await dbConnect();
+    const result = await PetModel.updateOne(
+      { _id: petId },
+      { $push: { outfits: { name, ...appearance } } },
+    );
+    if (result.modifiedCount == 0) {
+      throw new Error(ERRORS.PET.OUTFIT.FAILURE.CREATE);
+    }
+  }
+
+  static async deleteOutfit(_petId: string, name: string): Promise<void> {
+    const petId = new Types.ObjectId(_petId);
+    await dbConnect();
+    const result = await PetModel.updateOne(
+      { _id: petId },
+      { $pull: { outfits: { name } } },
+    );
+    if (result.modifiedCount == 0) {
+      throw new Error(ERRORS.PET.OUTFIT.FAILURE.DELETE);
     }
   }
 }

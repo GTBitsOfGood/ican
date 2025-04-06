@@ -12,12 +12,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
 
-export default function FoodModal() {
+export default function FoodModal({ foods }: { foods: string[] }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { setSelectedFood } = useFood();
-
-  const foods: string[] = ["avocado", "bread", "burger", "fries", "pizza"];
 
   const [clickedFood, setClickedFood] = useState<string>("");
 
