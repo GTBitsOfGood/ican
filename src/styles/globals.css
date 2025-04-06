@@ -52,6 +52,24 @@ body {
     background: #98d03b;
   }
 
+  .log-scrollbar::-webkit-scrollbar {
+    width: 28px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-track {
+    background: #cee0a05f;
+    border-radius: 0px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-thumb {
+    background: #accc6e;
+    border-radius: 0px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #98d03b;
+  }
+
   .list-scrollbar::-webkit-scrollbar {
     width: 1.5rem;
   }

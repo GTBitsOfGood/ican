@@ -33,3 +33,52 @@ export function convertTo24Hour(
     return `${formattedHours}:${minutes}`;
   });
 }
+
+export const isSameDay = (inputDate: Date) => {
+  const today = new Date();
+  return (
+    inputDate.getFullYear() === today.getFullYear() &&
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getDate() === today.getDate()
+  );
+};
+
+export const isPastDay = (inputDate: Date) => {
+  const yesterday = new Date(inputDate);
+  yesterday.setDate(yesterday.getDate() + 1);
+
+  return isSameDay(yesterday);
+};
+
+export const isNextDay = (inputDate: Date) => {
+  const tomorrow = new Date(inputDate);
+  tomorrow.setDate(tomorrow.getDate() - 1);
+
+  return isSameDay(tomorrow);
+};
+
+// converts am or pm time into standard time
+export const standardizeTime = (
+  time: string,
+): { hours: number; minutes: number; seconds: number } => {
+  let hours = 0;
+  let minutes = 0;
+  const seconds = Number(new Date().getSeconds());
+
+  if (time.endsWith("PM")) {
+    time = time.replace("PM", "").trim();
+    hours = Number(time.split(":")[0]) + 12;
+    minutes = Number(time.split(":")[1]);
+  } else if (time.endsWith("AM") && time.startsWith("12")) {
+    // Handle special case of 12 AM, which is 00:00 in 24-hour format
+    time = time.replace("AM", "").trim();
+    hours = 0;
+    minutes = Number(time.split(":")[1]);
+  } else {
+    time = time.replace("AM", "").trim();
+    hours = Number(time.split(":")[0]);
+    minutes = Number(time.split(":")[1]);
+  }
+
+  return { hours, minutes, seconds };
+};

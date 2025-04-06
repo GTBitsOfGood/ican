@@ -87,6 +87,7 @@ export default {
         borderGrey: "#747474",
         errorRed: "#CE4E4E",
         deleteRed: "#B01515",
+        errorCardRed: "#F8ABAB",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
