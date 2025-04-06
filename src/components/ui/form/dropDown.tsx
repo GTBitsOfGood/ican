@@ -72,7 +72,7 @@ export default function DropDown({
   return (
     <div
       ref={dropdownRef}
-      className={`relative border-2 border-black bg-white text-black font-belanosima text-lg tablet:text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
+      className={`relative border-2 border-black bg-white text-black text-lg tablet:text-2xl ${className} ${disabled ? "opacity-40" : ""}`}
       style={{
         width: currentX && currentX < 768 ? width / 1.5 : width,
       }}
