@@ -68,13 +68,12 @@ export default function Home() {
 
     setRegistering(true);
     try {
-      const response = await AuthHTTPClient.register(
+      await AuthHTTPClient.register(
         name.trim(),
         email.trim(),
         password.trim(),
         confirmPassword.trim(),
       );
-      localStorage.setItem("token", response.token);
       router.push("/");
     } catch (error) {
       if (error instanceof Error && getStatusCode(error) == 400) {

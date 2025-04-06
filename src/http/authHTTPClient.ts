@@ -64,6 +64,7 @@ export default class AuthHTTPClient {
     return await fetchHTTPClient<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
+      credentials: "include",
     });
   }
 
@@ -75,6 +76,7 @@ export default class AuthHTTPClient {
     return await fetchHTTPClient<AuthResponseBody>(`/auth/login-with-google`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
+      credentials: "include",
     });
   }
 
@@ -93,6 +95,7 @@ export default class AuthHTTPClient {
     return await fetchHTTPClient<AuthResponseBody>(`/auth/register`, {
       method: "POST",
       body: JSON.stringify(registrationRequestBody),
+      credentials: "include",
     });
   }
 
@@ -105,6 +108,7 @@ export default class AuthHTTPClient {
       {
         method: "POST",
         body: JSON.stringify(forgotPasswordRequestBody),
+        credentials: "include",
       },
     );
   }
@@ -119,9 +123,7 @@ export default class AuthHTTPClient {
       {
         method: "POST",
         body: JSON.stringify(verificationRequestBody),
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        credentials: "include",
       },
     );
   }
@@ -137,9 +139,7 @@ export default class AuthHTTPClient {
     return fetchHTTPClient<void>(`/auth/change-password`, {
       method: "PATCH",
       body: JSON.stringify(changePasswordRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -148,9 +148,7 @@ export default class AuthHTTPClient {
       `/auth/validate-token`,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        credentials: "include",
         body: JSON.stringify({}),
       },
     );

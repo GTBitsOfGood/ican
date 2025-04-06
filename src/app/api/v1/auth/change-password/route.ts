@@ -1,6 +1,7 @@
 import ForgotPasswordService from "@/services/forgotPasswordCodes";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest) {
@@ -9,6 +10,7 @@ export async function PATCH(req: NextRequest) {
       req,
       req.method,
       req.nextUrl.pathname.toString(),
+      (await cookies()).get("auth_token")?.value,
     );
     const { password, confirmPassword } = await req.json();
 

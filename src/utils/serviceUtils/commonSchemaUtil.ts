@@ -44,6 +44,9 @@ export const tokenSchema = z
     message: "Invalid JWT format",
   });
 
+export const stringSchema = z
+  .string()
+  .nonempty("Must be valid, non-empty string");
 /**
  * createValidateFunction simplifies creating basic validation functions by returning a constant that can be used to validate data to a schema
  * @param schema zod-schema that for the validation function

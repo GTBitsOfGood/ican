@@ -3,6 +3,7 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import BagService from "@/services/bag";
 import { verifyPet } from "@/utils/auth";
+import { cookies } from "next/headers";
 
 const route = "/api/v1/bag/[petId]";
 export async function GET(
@@ -10,7 +11,12 @@ export async function GET(
   { params }: { params: Promise<{ petId: string }> },
 ) {
   try {
-    const tokenUser = await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
