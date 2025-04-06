@@ -2,20 +2,14 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
-import AddMedicationModal, {
-  initialAddMedicationInfo,
-} from "@/components/modals/medication/addMedicationModal";
-import MedicationCard from "@/components/ui/MedicationCard";
-import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
+import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
 import EditMedicationModal from "@/components/modals/medication/editMedicationModal";
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
-import { Medication } from "@/db/models/medication";
 import { useUser } from "@/components/UserContext";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
-import { WithId } from "@/types/models";
 
 interface MedicationPageProps {
   activeModal: string;

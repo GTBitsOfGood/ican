@@ -258,7 +258,7 @@ export default class MedicationService {
 
           allDoses.push({
             id: medication._id,
-            name: medication.medicationId,
+            name: medication.customMedicationId,
             dosage: medication.dosageAmount,
             notes: medication.notes,
             canCheckIn: doseResult.canCheckIn,
