@@ -34,6 +34,8 @@ export default function Home({
   const { pet, setPet } = usePet();
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
+  const [showSuccessModalVisible, setShowSuccessModalVisible] =
+    useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const [feeding, setFeeding] = useState<boolean>(false);
@@ -47,8 +49,12 @@ export default function Home({
       const updatedPetData = await PetHTTPClient.feedPet(pet._id);
       if (pet && updatedPetData.xpLevel > pet.xpLevel) {
         setShowLevelUpModalVisible(true);
+      } else {
+        setShowSuccessModalVisible(true);
       }
+
       setPet(updatedPetData);
+
       setSelectedFood("");
     } catch (e) {
       console.error("Error handling food drop:", e);
@@ -63,7 +69,20 @@ export default function Home({
       {activeModal === "change-pin" && <ChangePinModal />}
       {activeModal === "food" && foods && <FoodModal foods={foods} />}
       {showLevelUpModalVisible && (
-        <LevelUpModal setVisible={setShowLevelUpModalVisible} />
+        <LevelUpModal
+          setVisible={setShowLevelUpModalVisible}
+          level={pet?.xpLevel}
+          xp={pet?.xpGained}
+          levelChanged={true}
+        />
+      )}
+      {showSuccessModalVisible && (
+        <LevelUpModal
+          setVisible={setShowLevelUpModalVisible}
+          level={pet?.xpLevel}
+          xp={pet?.xpGained}
+          levelChanged={false}
+        />
       )}
       {pet ? (
         <div className="min-h-screen flex flex-col relative">

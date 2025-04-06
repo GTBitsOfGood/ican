@@ -101,6 +101,7 @@ export default class PetService {
     const updatedPet: Pet = existingPet;
     if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
       updatedPet.xpLevel += 1;
+      updatedPet.coins += 100;
       updatedPet.xpGained = (XP_GAIN + updatedPet.xpGained) % LEVEL_THRESHOLD;
     } else {
       updatedPet.xpGained += XP_GAIN;
@@ -109,6 +110,7 @@ export default class PetService {
     await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
+      coins: updatedPet.coins,
       food: --updatedPet.food,
     });
     return updatedPet;
