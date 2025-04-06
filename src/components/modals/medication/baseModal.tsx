@@ -101,8 +101,9 @@ export default function MedicationBaseModal({
   return (
     <ModalBackground>
       <ModalContainer
-        className={`flex flex-col  w-full text-white ${currentSection == sections.length - 1 ? "tablet:w-[790px] extraLargeDesktop:w-[1400px]" : "tablet:w-[790px]"} tablet:max-w-[90vw] max-h-[90vh] h-[700px] bg-icanBlue-200`}
+        className={`flex flex-col  w-full text-white ${currentSection == sections.length - 1 ? "tablet:w-[790px] extraLargeDesktop:w-[1400px]" : "tablet:w-[790px]"} p-8 tablet:max-w-[90vw] max-h-[90vh] h-[700px] bg-icanBlue-200`}
         title={modalType == "Add" ? "Add New Medication" : "Edit Medication"}
+        back="/medications"
       >
         {error && (
           <div className="mt-4 h-10 tablet:h-12 w-full px-3 tablet:px-4 bg-iCAN-error/90 flex justify-start items-center text-lg tablet:text-xl">

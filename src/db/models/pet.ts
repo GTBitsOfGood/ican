@@ -1,5 +1,18 @@
 import { Document, model, models, Schema, Types } from "mongoose";
 
+export interface Appearance {
+  clothing?: string;
+  shoes?: string;
+  eyewear?: string;
+  hat?: string;
+  occupation?: string;
+  background?: string;
+}
+
+export interface SavedOutfit extends Appearance {
+  name: string;
+}
+
 export interface Pet {
   petType: string;
   name: string;
@@ -8,23 +21,38 @@ export interface Pet {
   coins: number;
   userId: Types.ObjectId;
   food: number;
-  appearance: {
-    clothes?: string;
-    accessories?: {
-      shoes?: string;
-      eyewear?: string;
-      hat?: string;
-      occupation?: string;
-    };
-    background?: string;
-    food?: string;
-  };
+  appearance: Appearance;
+  outfits: SavedOutfit[];
 }
+
+const appearanceSchema = new Schema<Appearance>(
+  {
+    clothing: { type: String },
+    shoes: { type: String },
+    eyewear: { type: String },
+    hat: { type: String },
+    occupation: { type: String },
+    background: { type: String },
+  },
+  { _id: false },
+);
+
+const savedOutfitSchema = new Schema<SavedOutfit>(
+  {
+    name: { type: String, required: true },
+    clothing: { type: String },
+    shoes: { type: String },
+    eyewear: { type: String },
+    hat: { type: String },
+    occupation: { type: String },
+    background: { type: String },
+  },
+  { _id: false },
+);
 
 export interface PetDocument extends Pet, Document {
   _id: Types.ObjectId;
 }
-
 const petSchema = new Schema<PetDocument>(
   {
     petType: { type: String, required: true },
@@ -44,21 +72,12 @@ const petSchema = new Schema<PetDocument>(
       default: 0,
     },
     appearance: {
-      type: new Schema({
-        clothes: { type: String },
-        accessories: {
-          type: new Schema({
-            shoes: { type: String },
-            eyewear: { type: String },
-            hat: { type: String },
-            occupation: { type: String },
-          }),
-          default: {},
-        },
-        background: { type: String },
-        food: { type: String },
-      }),
+      type: appearanceSchema,
       default: {},
+    },
+    outfits: {
+      type: [savedOutfitSchema],
+      default: [],
     },
   },
   { timestamps: true },

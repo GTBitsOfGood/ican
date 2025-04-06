@@ -2,9 +2,9 @@ import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Home from "../index";
 import LoadingScreen from "@/components/loadingScreen";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
+import MedicationsPage from "..";
 
 export default function EditMedication() {
   const router = useRouter();
@@ -31,7 +31,10 @@ export default function EditMedication() {
 
   if (medicationInfo) {
     return (
-      <Home activeModal="edit-medication" editMedicationInfo={medicationInfo} />
+      <MedicationsPage
+        activeModal="edit-medication"
+        editMedicationInfo={medicationInfo}
+      />
     );
   } else {
     return <LoadingScreen />;
