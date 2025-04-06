@@ -50,10 +50,10 @@ export default function Home({
       if (pet && updatedPetData.xpLevel > pet.xpLevel) {
         setShowLevelUpModalVisible(true);
       } else {
-        setPetData(updatedPetData);
+        setPet(updatedPetData);
         setShowSuccessModalVisible(true);
       }
-      
+
       setSelectedFood("");
     } catch (e) {
       console.error("Error handling food drop:", e);
@@ -70,16 +70,16 @@ export default function Home({
       {showLevelUpModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
-          level={petData?.xpLevel}
-          xp={petData?.xpGained}
+          level={pet?.xpLevel}
+          xp={pet?.xpGained}
           levelChanged={true}
         />
       )}
       {showSuccessModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
-          level={petData?.xpLevel}
-          xp={petData?.xpGained}
+          level={pet?.xpLevel}
+          xp={pet?.xpGained}
           levelChanged={false}
         />
       )}
