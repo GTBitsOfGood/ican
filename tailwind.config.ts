@@ -140,12 +140,6 @@ export default {
         default: "0 4px 0 #7D83B2",
       },
     },
-    backgroundImage: {
-      "error-gradient": ` linear-gradient(0deg, rgba(248, 171, 171, 0.2), rgba(248, 171, 171, 0.2)),
-  #FFF;`,
-      // "completed-gradient":
-      //   "linear-gradient(0deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.10) 100%), #FFF",
-    },
   },
   plugins: [
     function ({ addBase, addUtilities, matchUtilities }: PluginAPI) {
