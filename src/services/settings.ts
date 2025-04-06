@@ -80,7 +80,7 @@ export default class SettingsService {
     }
 
     if (pin) {
-      if (settings.pin && !(await HashingService.compare(pin, settings.pin))) {
+      if (settings.pin && (await HashingService.compare(pin, settings.pin))) {
         throw new InvalidArgumentsError(ERRORS.SETTINGS.INVALID_ARGUMENTS.PIN);
       }
 
