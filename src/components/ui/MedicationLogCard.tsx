@@ -161,7 +161,7 @@ export default function MedicationLogCard({
           )}
         {status === "pending" &&
           calculateTimeLeft().hours === 0 &&
-          calculateTimeLeft().minutes < 20 &&
+          calculateTimeLeft().minutes < 10 &&
           calculateTimeLeft().minutes >= 0 && (
             <>
               <h1 className="text-icanBlue-200 font-quantico text-4xl">
