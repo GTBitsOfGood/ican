@@ -96,21 +96,19 @@ export default function FoodModal({
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="relative">
-                <Image
-                  src="/assets/CongratulationsBackdrop.svg"
-                  width={0}
-                  height={0}
-                  sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
-                  alt="Shine"
-                  className="mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
-                />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-cente h-10">
-                  <ExpBar level={level ? level : 1} currentExp={xp ? xp : 0} />
-                </div>
+            <>
+              <Image
+                src="/assets/CongratulationsBackdrop.svg"
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                alt="Shine"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
+              />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-cente h-10">
+                <ExpBar level={level ? level : 1} currentExp={xp ? xp : 0} />
               </div>
-            </div>
+            </>
           )}
         </ModalBody>
       </ModalContent>
