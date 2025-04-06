@@ -9,11 +9,10 @@ import {
 import ErrorBox from "@/components/ErrorBox";
 import AuthHTTPClient from "@/http/authHTTPClient";
 import { useRouter } from "next/router";
-import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
 
-export default function Home() {
+export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -113,7 +112,7 @@ export default function Home() {
   };
 
   return (
-    <UnauthorizedRoute>
+    <>
       <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2">
         <div
           className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[85%] tiny:w-[80%] minimized:w-[65%] short:w-[55%] desktop:w-[50%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-scroll`}
@@ -210,6 +209,6 @@ export default function Home() {
           )}
         </div>
       </div>
-    </UnauthorizedRoute>
+    </>
   );
 }

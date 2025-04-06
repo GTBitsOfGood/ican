@@ -1,15 +1,14 @@
-import Image from "next/image";
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 import Link from "next/link";
-import { useState } from "react";
+import Image from "next/image";
 import { emailIsValid, passwordIsValid } from "@/utils/validation";
 import AuthHTTPClient from "@/http/authHTTPClient";
 import ErrorBox from "@/components/ErrorBox";
-import { useRouter } from "next/router";
-import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
 
-export default function Home() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -67,7 +66,7 @@ export default function Home() {
   };
 
   return (
-    <UnauthorizedRoute>
+    <>
       <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
         <div
           className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
@@ -153,6 +152,6 @@ export default function Home() {
           )}
         </div>
       </div>
-    </UnauthorizedRoute>
+    </>
   );
 }

@@ -1,4 +1,3 @@
-import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
@@ -7,7 +6,7 @@ import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { Medication } from "@/db/models/medication";
 
-export default function MedicationsPage() {
+export default function Medications() {
   const [medications, setMedications] = useState<Medication[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
@@ -28,17 +27,17 @@ export default function MedicationsPage() {
   };
 
   return (
-    <AuthorizedRoute>
+    <>
+      {deleteModalVisible &&
+        clickedIndex !== undefined &&
+        clickedIndex !== null && (
+          <DeleteMedicationModal
+            medication={medications[clickedIndex]}
+            setDeleteModalVisible={setDeleteModalVisible}
+            handleDelete={() => handleMedicationDelete(clickedIndex)}
+          />
+        )}
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
-        {deleteModalVisible &&
-          clickedIndex !== undefined &&
-          clickedIndex !== null && (
-            <DeleteMedicationModal
-              medication={medications[clickedIndex]}
-              setDeleteModalVisible={setDeleteModalVisible}
-              handleDelete={() => handleMedicationDelete(clickedIndex)}
-            />
-          )}
         <div className="flex w-full justify-between items-center">
           <BackButton link="/settings" />
         </div>
@@ -64,6 +63,6 @@ export default function MedicationsPage() {
           </div>
         </div>
       </div>
-    </AuthorizedRoute>
+    </>
   );
 }

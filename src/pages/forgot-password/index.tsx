@@ -6,7 +6,6 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import AuthHTTPClient from "@/http/authHTTPClient";
-import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import {
   emailValidation,
   passwordRequirementsValidation,
@@ -24,7 +23,7 @@ const Sections = [
   },
   {
     header: "Please check your email",
-    subheader: "We’ve sent a code to",
+    subheader: "We've sent a code to",
   },
   { header: "Reset password", subheader: "Please enter your new password." },
   {
@@ -166,7 +165,7 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <UnauthorizedRoute>
+    <>
       <div
         className={`flex justify-center items-center w-screen h-screen bg-cover bg-no-repeat bg-[url('/assets/Background.svg')]`}
       >
@@ -288,7 +287,7 @@ export default function ForgotPasswordPage() {
               <GoogleLoginButton forgotPassword={true} />
               <div className="flex justify-center items-center">
                 <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
-                  Don’t have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link href="/register" className="underline self-center">
                     Sign Up
                   </Link>
@@ -298,6 +297,6 @@ export default function ForgotPasswordPage() {
           )}
         </div>
       </div>
-    </UnauthorizedRoute>
+    </>
   );
 }

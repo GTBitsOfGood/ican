@@ -1,10 +1,9 @@
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import PetHTTPClient from "@/http/petHTTPClient";
 import { Pet } from "@/types/pet";
-import { useEffect, useState } from "react";
 import InventoryTabs from "@/components/ui/InventoryTabs";
 import InventoryTabContent, {
   StoreItem,
@@ -364,7 +363,7 @@ export default function Store() {
   };
 
   return (
-    <AuthorizedRoute>
+    <>
       {petData && petBag ? (
         <div
           className="flex relative"
@@ -463,6 +462,6 @@ export default function Store() {
           </div>
         </div>
       )}
-    </AuthorizedRoute>
+    </>
   );
 }

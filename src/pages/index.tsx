@@ -9,7 +9,6 @@ import ProfilePicture from "@/components/ui/ProfilePicture";
 import { characterImages } from "@/types/characters";
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
-import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import { useEffect, useState } from "react";
 import PetHTTPClient from "@/http/petHTTPClient";
@@ -87,7 +86,7 @@ export default function Home({
   };
 
   return (
-    <AuthorizedRoute>
+    <>
       {activeModal === "settings" && <SettingsModal />}
       {activeModal === "change-pin" && <ChangePinModal />}
       {activeModal === "add-new-medication" && <AddMedicationModal />}
@@ -157,6 +156,6 @@ export default function Home({
       ) : (
         <LoadingScreen />
       )}
-    </AuthorizedRoute>
+    </>
   );
 }
