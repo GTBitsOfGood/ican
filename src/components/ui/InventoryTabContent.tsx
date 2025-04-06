@@ -67,6 +67,8 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
             >
               <Image
                 src={item.image}
+                width={100}
+                height={100}
                 alt={item.name}
                 draggable="false"
                 className="w-[150px]"
@@ -84,6 +86,8 @@ const InventoryTabContent: React.FC<StoreTabContentProps> = ({
             <Image
               src={"store/Lock.svg"}
               alt={item.name}
+              width={100}
+              height={100}
               className="largeDesktop:w-[121px] desktop:w-[105px] tablet:w-[90px]"
             />
             <div className="mt-[23px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
