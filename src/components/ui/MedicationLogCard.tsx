@@ -163,10 +163,10 @@ export default function MedicationLogCard({
         )}
         {status === "taken" && (
           <>
-            <h3 className="text-[26px] font-quantico text-icanBlue-200">
+            <h3 className="text-[26px] font-quantico text-icanBlue-200 text-center">
               Thanks for taking your medication!
             </h3>
-            <h1 className="text-4xl font-quantico font-bold text-icanBlue-300">
+            <h1 className="text-4xl font-quantico font-bold text-icanBlue-300 text-center">
               Taken at {lastTakenTime()}
             </h1>
           </>
