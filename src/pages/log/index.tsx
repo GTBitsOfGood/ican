@@ -115,7 +115,7 @@ export default function Log() {
                 className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
               />
             </button>
-            <h2 className="text-[48px] font-bold font-quantico text-white">
+            <h2 className="text-[32px] desktop:text-[48px] font-bold font-quantico text-white">
               {humanizeDateComparison(currDate)}, {humanizeDate(currDate)}
             </h2>
             <button onClick={handleNext}>
@@ -133,14 +133,14 @@ export default function Log() {
               <Image
                 src={"/assets/CloseIcon.svg"}
                 alt=""
-                width={28}
-                height={28}
+                width={46}
+                height={46}
                 onClick={handleCloseIcon}
               />
             </button>
           </div>
         </div>
-        <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto scrollbar-custom h-screen">
+        <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar h-screen">
           {isSameDay(currDate) ? (
             <>
               <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">

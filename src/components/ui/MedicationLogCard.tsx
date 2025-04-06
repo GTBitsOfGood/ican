@@ -93,7 +93,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col gap-y-6 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
+      className={`p-5 flex flex-col justify-between ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -113,25 +113,29 @@ export default function MedicationLogCard({
         />
       )}
       {showSuccessModal && <SuccessMedicationModal />}
-      <div className="flex gap-1 items-center">
-        <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
-        <h1 className="text-3xl text-black font-quantico underline">{name}</h1>
-      </div>
-      <div className="flex flex-col gap-y-[16px] font-quantico">
-        <h2 className="font-semibold text-black text-3xl">
-          Scheduled: <span className="font-normal">{scheduledDoseTime}</span>
-        </h2>
-        <h2 className="font-semibold text-black text-3xl">
-          Dosage: <span className="font-normal">{dosage}</span>
-        </h2>
-        <h2 className="font-semibold text-black text-3xl">
-          Notes: <span className="font-normal">{notes}</span>
-        </h2>
-        {status !== "taken" && (
-          <h2 className="text-icanBlue-200 text-3xl">
-            Last Taken: {humanizeLastTakenTime(lastTaken)}
+      <div className="flex flex-col gap-y-6">
+        <div className="flex gap-1 items-center">
+          <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
+          <h1 className="text-3xl text-black font-quantico underline">
+            {name}
+          </h1>
+        </div>
+        <div className="flex flex-col gap-y-[16px] font-quantico">
+          <h2 className="font-semibold text-black text-3xl">
+            Scheduled: <span className="font-normal">{scheduledDoseTime}</span>
           </h2>
-        )}
+          <h2 className="font-semibold text-black text-3xl">
+            Dosage: <span className="font-normal">{dosage}</span>
+          </h2>
+          <h2 className="font-semibold text-black text-3xl">
+            Notes: <span className="font-normal">{notes}</span>
+          </h2>
+          {status !== "taken" && (
+            <h2 className="text-icanBlue-200 text-3xl">
+              Last Taken: {humanizeLastTakenTime(lastTaken)}
+            </h2>
+          )}
+        </div>
       </div>
       <div className="flex flex-col gap-y-2">
         {status === "pending" && !canCheckIn && (
