@@ -33,3 +33,38 @@ export function convertTo24Hour(
     return `${formattedHours}:${minutes}`;
   });
 }
+
+export const isSameDay = (inputDate: Date) => {
+  const today = new Date();
+  return (
+    inputDate.getFullYear() === today.getFullYear() &&
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getDate() === today.getDate()
+  );
+};
+
+// converts am or pm time into standard time
+export const standardizeTime = (
+  time: string,
+): { hours: number; minutes: number } => {
+  if (time.endsWith("PM")) {
+    time = time.replace("PM", "").trim();
+    const hours = Number(time.split(":")[0]) + 12;
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  } else if (time.endsWith("AM") && time.startsWith("12")) {
+    // Handle special case of 12 AM, which is 00:00 in 24-hour format
+    time = time.replace("AM", "").trim();
+    const hours = 0;
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  } else {
+    time = time.replace("AM", "").trim();
+    const hours = Number(time.split(":")[0]);
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  }
+};

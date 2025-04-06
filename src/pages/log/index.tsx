@@ -1,11 +1,8 @@
 import MedicationLogCard, {
   MedicationLogCardProps,
 } from "@/components/ui/MedicationLogCard";
-import {
-  humanizeDate,
-  humanizeDateComparison,
-  standardizeTime,
-} from "@/utils/date";
+import { humanizeDate, humanizeDateComparison } from "@/utils/date";
+import { isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -128,6 +125,44 @@ export default function Log() {
     return flatArr;
   };
 
+  const filterPastDoses = () => {
+    const medications = flatMapMedications();
+    const now = new Date();
+
+    const pastDoses = medications.filter((med) => {
+      const medTime = standardizeTime(med.time); // { hours, minutes }
+
+      const doseDate = new Date();
+      doseDate.setHours(medTime.hours);
+      doseDate.setMinutes(medTime.minutes);
+      doseDate.setSeconds(0);
+      doseDate.setMilliseconds(0);
+
+      return doseDate.getTime() < now.getTime();
+    });
+
+    return pastDoses;
+  };
+
+  const filterFutureDoses = () => {
+    const medications = flatMapMedications();
+    const now = new Date();
+
+    const pastDoses = medications.filter((med) => {
+      const medTime = standardizeTime(med.time); // { hours, minutes }
+
+      const doseDate = new Date();
+      doseDate.setHours(medTime.hours);
+      doseDate.setMinutes(medTime.minutes);
+      doseDate.setSeconds(0);
+      doseDate.setMilliseconds(0);
+
+      return doseDate.getTime() >= now.getTime();
+    });
+
+    return pastDoses;
+  };
+
   return (
     <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between">
       <div className="flex flex-col gap-y-[72px] w-full">
@@ -152,13 +187,37 @@ export default function Log() {
             />
           </button>
         </div>
-        <div className="flex flex-wrap justify-between">
-          {flatMapMedications().map(
-            (log: MedicationLogCardProps, idx: number) => {
-              return <MedicationLogCard {...log} key={idx} />;
-            },
-          )}
-        </div>
+        {isSameDay(currDate) ? (
+          <>
+            <div className="flex flex-wrap justify-between">
+              {filterFutureDoses().map(
+                (log: MedicationLogCardProps, idx: number) => {
+                  return <MedicationLogCard {...log} key={idx} />;
+                },
+              )}
+            </div>
+            <div className="flex flex-col gap-y-6">
+              <h1 className="text-6xl font-quantico font-bold">
+                Previous Doses
+              </h1>
+              <div className="flex flex-wrap justify-between">
+                {filterPastDoses().map(
+                  (log: MedicationLogCardProps, idx: number) => {
+                    return <MedicationLogCard {...log} key={idx} />;
+                  },
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-wrap justify-between">
+            {flatMapMedications().map(
+              (log: MedicationLogCardProps, idx: number) => {
+                return <MedicationLogCard {...log} key={idx} />;
+              },
+            )}
+          </div>
+        )}
       </div>
       <div className="p-9">
         <button>
