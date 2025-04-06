@@ -5,6 +5,7 @@ import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
+import { standardizeTime } from "@/utils/time";
 
 export type MedicationLogCardProps = {
   name: string;
@@ -83,20 +84,9 @@ export default function MedicationLogCard({
   // };
 
   const calculateTimeLeft = () => {
-    time = time.replace("PM", "").replace("AM", "").trim();
-    const date = new Date();
-    const scheduledDate = new Date();
-    scheduledDate.setHours(Number(time.split(":")[0]));
-    scheduledDate.setMinutes(Number(time.split(":")[1]));
+    const { minutes, hours, seconds } = standardizeTime(time);
 
-    const timeDiff = scheduledDate.getTime() - date.getTime();
-
-    if (timeDiff < 0) status = "missed";
-
-    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
+    if (minutes < 0 || hours < 0 || seconds < 0) status = "missed";
     return { hours, minutes, seconds };
   };
 
@@ -111,7 +101,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[linear-gradient(0deg,_rgba(248,171,171,0.2)_0%,_rgba(248,171,171,0.2)_100%)]"} relative shadow-medicationCardShadow`}
+      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[#F8ABAB] bg-opacity-80"} relative shadow-medicationCardShadow w-[500px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -178,8 +168,8 @@ export default function MedicationLogCard({
             </>
           )}
         {(status === "missed" ||
-          (calculateTimeLeft().hours <= 0 &&
-            calculateTimeLeft().minutes <= 0)) && (
+          calculateTimeLeft().hours < 0 ||
+          calculateTimeLeft().minutes < 0) && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
             onClick={handleMissedDoseClick}

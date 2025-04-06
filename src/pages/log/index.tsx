@@ -2,7 +2,12 @@ import MedicationLogCard, {
   MedicationLogCardProps,
 } from "@/components/ui/MedicationLogCard";
 import { humanizeDate, humanizeDateComparison } from "@/utils/date";
-import { isSameDay, standardizeTime } from "@/utils/time";
+import {
+  isFutureDay,
+  isPastDay,
+  isSameDay,
+  standardizeTime,
+} from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -36,7 +41,7 @@ export default function Log() {
         notes: "Take with water and food before!",
         scheduledTimes: [
           {
-            time: "10:20 AM",
+            time: "12:10 PM",
             status: "pending", // Possible values: "pending", "taken", "missed"
           },
         ],
@@ -148,7 +153,7 @@ export default function Log() {
     const medications = flatMapMedications();
     const now = new Date();
 
-    const pastDoses = medications.filter((med) => {
+    const futureDoses = medications.filter((med) => {
       const medTime = standardizeTime(med.time); // { hours, minutes }
 
       const doseDate = new Date();
@@ -160,11 +165,11 @@ export default function Log() {
       return doseDate.getTime() >= now.getTime();
     });
 
-    return pastDoses;
+    return futureDoses;
   };
 
   return (
-    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between">
+    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between pl-12">
       <div className="flex flex-col gap-y-[72px] w-full">
         <div className="flex justify-center items-center">
           <button onClick={handlePrev}>
@@ -173,6 +178,7 @@ export default function Log() {
               alt=""
               width={106}
               height={106}
+              className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
             />
           </button>
           <h2 className="text-[64px] font-bold font-quantico text-white">
@@ -184,12 +190,13 @@ export default function Log() {
               alt=""
               width={106}
               height={106}
+              className={`${isFutureDay(currDate) ? "hidden" : "visible"}`}
             />
           </button>
         </div>
         {isSameDay(currDate) ? (
           <>
-            <div className="flex flex-wrap justify-between">
+            <div className="flex flex-wrap gap-8">
               {filterFutureDoses().map(
                 (log: MedicationLogCardProps, idx: number) => {
                   return <MedicationLogCard {...log} key={idx} />;
@@ -200,7 +207,7 @@ export default function Log() {
               <h1 className="text-6xl font-quantico font-bold">
                 Previous Doses
               </h1>
-              <div className="flex flex-wrap justify-between">
+              <div className="flex flex-wrap gap-8">
                 {filterPastDoses().map(
                   (log: MedicationLogCardProps, idx: number) => {
                     return <MedicationLogCard {...log} key={idx} />;
@@ -210,10 +217,42 @@ export default function Log() {
             </div>
           </>
         ) : (
+          <div className="flex flex-wrap gap-8">
+            {flatMapMedications().map(
+              (log: MedicationLogCardProps, idx: number) => {
+                if (isFutureDay(currDate)) {
+                  return (
+                    <MedicationLogCard {...log} key={idx} status="pending" />
+                  );
+                }
+                const status = log.status;
+                if (status === "pending") {
+                  // if is pending and not equivalent or befo
+                }
+
+                return <MedicationLogCard {...log} key={idx} />;
+              },
+            )}
+          </div>
+        )}
+        {isFutureDay(currDate) && (
           <div className="flex flex-wrap justify-between">
             {flatMapMedications().map(
               (log: MedicationLogCardProps, idx: number) => {
-                return <MedicationLogCard {...log} key={idx} />;
+                return (
+                  <MedicationLogCard {...log} key={idx} status="pending" />
+                );
+              },
+            )}
+          </div>
+        )}
+        {isPastDay(currDate) && (
+          <div className="flex flex-wrap justify-between">
+            {flatMapMedications().map(
+              (log: MedicationLogCardProps, idx: number) => {
+                return (
+                  <MedicationLogCard {...log} key={idx} status="pending" />
+                );
               },
             )}
           </div>
