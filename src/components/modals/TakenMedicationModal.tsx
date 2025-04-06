@@ -64,7 +64,7 @@ export default function MedicationTakenModal({
             </button>
             <button
               onClick={handleTakenLogic}
-              className="bg-icanGreen-100 font-bold px-4 py-2 mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl"
+              className="bg-icanGreen-100 text-black font-bold px-4 py-2 mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl"
             >
               YES
             </button>

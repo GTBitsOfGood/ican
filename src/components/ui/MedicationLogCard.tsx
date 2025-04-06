@@ -93,7 +93,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[500px] my-5`}
+      className={`p-5 flex flex-col gap-y-6 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -117,7 +117,7 @@ export default function MedicationLogCard({
         <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
         <h1 className="text-3xl text-black font-quantico underline">{name}</h1>
       </div>
-      <div className="flex flex-col gap-y-[23px] font-quantico">
+      <div className="flex flex-col gap-y-[16px] font-quantico">
         <h2 className="font-semibold text-black text-3xl">
           Scheduled: <span className="font-normal">{scheduledDoseTime}</span>
         </h2>
@@ -143,7 +143,7 @@ export default function MedicationLogCard({
           <>
             <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
               <span className="underline ">{generateTimeLeftFormat()}</span>{" "}
-              Minutes Left to Take Dose
+              Mins Left to Take Dose
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"

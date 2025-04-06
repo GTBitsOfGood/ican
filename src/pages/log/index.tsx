@@ -102,88 +102,91 @@ export default function Log() {
   };
 
   return (
-    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between pl-12 pt-10">
-      <div className="flex flex-col gap-y-[72px] w-full">
-        <div className="flex justify-center items-center">
-          <button onClick={handlePrev}>
-            <Image
-              src={"/assets/LeftArrowIcon.svg"}
-              alt=""
-              width={106}
-              height={106}
-              className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
-            />
-          </button>
-          <h2 className="text-[48px] font-bold font-quantico text-white">
-            {humanizeDateComparison(currDate)}, {humanizeDate(currDate)}
-          </h2>
-          <button onClick={handleNext}>
-            <Image
-              src={"/assets/RightArrowIcon.svg"}
-              alt=""
-              width={106}
-              height={106}
-              className={`${isNextDay(currDate) ? "hidden" : "visible"}`}
-            />
-          </button>
+    <div className="bg-icanBlue-200 w-screen min-h-screen p-16">
+      <div className="mb-[72px]">
+        <div className="flex justify-between">
+          <div className="flex justify-center items-center w-full">
+            <button onClick={handlePrev}>
+              <Image
+                src={"/assets/LeftArrowIcon.svg"}
+                alt=""
+                width={106}
+                height={106}
+                className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
+              />
+            </button>
+            <h2 className="text-[48px] font-bold font-quantico text-white">
+              {humanizeDateComparison(currDate)}, {humanizeDate(currDate)}
+            </h2>
+            <button onClick={handleNext}>
+              <Image
+                src={"/assets/RightArrowIcon.svg"}
+                alt=""
+                width={106}
+                height={106}
+                className={`${isNextDay(currDate) ? "hidden" : "visible"}`}
+              />
+            </button>
+          </div>
+          <div className="py-9">
+            <button>
+              <Image
+                src={"/assets/CloseIcon.svg"}
+                alt=""
+                width={28}
+                height={28}
+                onClick={handleCloseIcon}
+              />
+            </button>
+          </div>
         </div>
-        {isSameDay(currDate) ? (
-          <>
-            <div className="flex flex-wrap gap-8">
-              {filterFutureDoses().map((log: LogType, idx: number) => {
-                return <MedicationLogCard {...log} key={idx} />;
-              })}
-            </div>
-            <div className="flex flex-col gap-y-6">
-              <h1 className="text-6xl font-quantico font-bold">
-                Previous Doses
-              </h1>
-              <div className="flex flex-wrap gap-8">
-                {filterPastDoses().map((log: LogType, idx: number) => {
+        <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto scrollbar-custom h-screen">
+          {isSameDay(currDate) ? (
+            <>
+              <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
+                {filterFutureDoses().map((log: LogType, idx: number) => {
                   return <MedicationLogCard {...log} key={idx} />;
                 })}
               </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-wrap gap-8">
-            {sortLogs().map((log: LogType, idx: number) => {
-              if (isNextDay(currDate)) {
-                // if next day should not be allowed to check in
+              <div className="flex flex-col gap-y-6">
+                <h1 className="text-6xl font-quantico font-bold text-center largeDesktop:text-start">
+                  Previous Doses
+                </h1>
+                <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
+                  {filterPastDoses().map((log: LogType, idx: number) => {
+                    return <MedicationLogCard {...log} key={idx} />;
+                  })}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
+              {sortLogs().map((log: LogType, idx: number) => {
+                if (isNextDay(currDate)) {
+                  // if next day should not be allowed to check in
+                  return (
+                    <MedicationLogCard
+                      {...log}
+                      key={idx}
+                      status="pending"
+                      canCheckIn={false}
+                    />
+                  );
+                }
+
+                const status = isPastDay(new Date(log.lastTaken));
+
                 return (
                   <MedicationLogCard
                     {...log}
                     key={idx}
-                    status="pending"
-                    canCheckIn={false}
+                    status={status ? "taken" : "missed"}
                   />
                 );
-              }
-
-              const status = isPastDay(new Date(log.lastTaken));
-
-              return (
-                <MedicationLogCard
-                  {...log}
-                  key={idx}
-                  status={status ? "taken" : "missed"}
-                />
-              );
-            })}
-          </div>
-        )}
-      </div>
-      <div className="p-9">
-        <button>
-          <Image
-            src={"/assets/CloseIcon.svg"}
-            alt=""
-            width={28}
-            height={28}
-            sizes="100vw"
-            onClick={handleCloseIcon}
-          />
-        </button>
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
