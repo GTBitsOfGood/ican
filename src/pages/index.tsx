@@ -50,9 +50,10 @@ export default function Home({
       if (pet && updatedPetData.xpLevel > pet.xpLevel) {
         setShowLevelUpModalVisible(true);
       } else {
-        setPet(updatedPetData);
         setShowSuccessModalVisible(true);
       }
+
+      setPet(updatedPetData);
 
       setSelectedFood("");
     } catch (e) {
