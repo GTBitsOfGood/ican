@@ -32,7 +32,7 @@ export const humanizeDate = (date: Date) => {
 
 export const humanizeLastTakenTime = (lastTaken: string) => {
   // 2025-03-09T09:00:00Z
-  // 9:00 A.M., March 9th
+  // 9:00 AM, March 9th
   const date = new Date(lastTaken);
 
   const time = date.toLocaleTimeString("en-US", {
@@ -70,4 +70,30 @@ const getDaySuffix = (day: number) => {
   if (day > 3 && day < 21) return "th"; // Covers 4th-20th
   const suffixes = ["st", "nd", "rd"];
   return suffixes[(day % 10) - 1] || "th";
+};
+
+// converts am or pm time into standard time
+export const standardizeTime = (
+  time: string,
+): { hours: number; minutes: number } => {
+  if (time.endsWith("PM")) {
+    time = time.replace("PM", "").trim();
+    const hours = Number(time.split(":")[0]) + 12;
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  } else if (time.endsWith("AM") && time.startsWith("12")) {
+    // Handle special case of 12 AM, which is 00:00 in 24-hour format
+    time = time.replace("AM", "").trim();
+    const hours = 0;
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  } else {
+    time = time.replace("AM", "").trim();
+    const hours = Number(time.split(":")[0]);
+    const minutes = Number(time.split(":")[1]);
+
+    return { hours, minutes };
+  }
 };

@@ -1,27 +1,20 @@
 import { humanizeLastTakenTime } from "@/utils/date";
 import Image from "next/image";
 
-// type ScheduledTime = {
-//   time: string;
-//   status: "pending" | "taken" | "missed";
-// };
-
-type MedicationLogCardProps = {
+export type MedicationLogCardProps = {
   name: string;
   dosage: string;
   notes: string;
   status: "pending" | "taken" | "missed";
-  scheduledTime: string;
+  time: string;
   // date as a string
   lastTaken: string;
-  //   reapeatUnit: "day" | "week" | "month";
-  //   repeatInterval: number;
 };
 export default function MedicationLogCard({
   name,
   dosage,
   notes,
-  scheduledTime,
+  time,
   status,
   lastTaken,
 }: MedicationLogCardProps) {
@@ -47,8 +40,8 @@ export default function MedicationLogCard({
   const calculateTimeLeft = () => {
     const date = new Date();
     const scheduledDate = new Date();
-    scheduledDate.setHours(Number(scheduledTime.split(":")[0]));
-    scheduledDate.setMinutes(Number(scheduledTime.split(":")[1]));
+    scheduledDate.setHours(Number(time.split(":")[0]));
+    scheduledDate.setMinutes(Number(time.split(":")[1]));
 
     const timeDiff = scheduledDate.getTime() - date.getTime();
 
@@ -73,26 +66,29 @@ export default function MedicationLogCard({
 
     return min + ":" + sec;
   };
+
   return (
     <div
-      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-completed-gradient" : "bg-error-gradient"}`}
+      className={`p-5 flex flex-col gap-y-8 w-[500px] ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[linear-gradient(0deg,_rgba(248,171,171,0.2)_0%,_rgba(248,171,171,0.2)_100%)]"} relative shadow-medicationCardShadow`}
     >
       <div className="flex gap-1">
         <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
         <h1 className="font-4xl text-black font-quantico underline">{name}</h1>
       </div>
       <div className="flex flex-col gap-y-[23px]">
-        <h2 className="font-semibold">
-          Scheduled: <span>{scheduledTime}</span>
+        <h2 className="font-semibold text-black">
+          Scheduled: <span>{time}</span>
         </h2>
-        <h2 className="font-semibold">
+        <h2 className="font-semibold text-black">
           Dosage: <span>{dosage}</span>
         </h2>
-        <h2 className="font-semibold">
+        <h2 className="font-semibold text-black">
           Notes: <span>{notes}</span>
         </h2>
         {status !== "taken" && (
-          <h2>Last Taken: {humanizeLastTakenTime(lastTaken)}</h2>
+          <h2 className="text-icanBlue-200">
+            Last Taken: {humanizeLastTakenTime(lastTaken)}
+          </h2>
         )}
       </div>
       <div className="flex flex-col gap-y-2">
@@ -138,13 +134,15 @@ export default function MedicationLogCard({
           </>
         )}
       </div>
-      <Image
-        src={"/misc/CheckMark.svg"}
-        alt=""
-        width={113}
-        height={95}
-        className="absolute right-5 top-12"
-      />
+      {status === "taken" && (
+        <Image
+          src={"/misc/CheckMark.svg"}
+          alt=""
+          width={113}
+          height={95}
+          className="absolute right-5 top-12"
+        />
+      )}
     </div>
   );
 }
