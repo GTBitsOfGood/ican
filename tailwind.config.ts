@@ -102,7 +102,6 @@ export default {
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
         pixelify: ["var(--font-pixelify)", "sans-serif"],
-        belanosima: ["var(--font-belanosima)", "serif"],
       },
       boxShadow: {
         bubble: "0px 8px 0px 0px rgba(125,131,178,1.00)",
