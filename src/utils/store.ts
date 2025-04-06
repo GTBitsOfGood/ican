@@ -1,5 +1,7 @@
+import { Appearance } from "@/db/models/pet";
+import storeItems from "@/lib/storeItems";
 import { InvalidArgumentsError } from "@/types/exceptions";
-import { AccessoryType, ItemType } from "@/types/store";
+import { ItemType } from "@/types/inventory";
 import { ObjectId } from "mongodb";
 
 export function validatePetId(petId: string) {
@@ -13,18 +15,26 @@ export function validatePetId(petId: string) {
 export function validateItemName(itemName: string) {
   if (typeof itemName !== "string" || itemName.trim() === "") {
     throw new InvalidArgumentsError(
-      "Invalid request body: 'itemName' is required and must be a non-empty string.",
+      "Invalid request body: 'name' is required and must be a non-empty string.",
     );
   }
 }
 
 export function validateItemAttribute(attribute: string) {
-  if (
-    !Object.values(ItemType).includes(attribute as ItemType) &&
-    !Object.values(AccessoryType).includes(attribute as AccessoryType)
-  ) {
+  if (!Object.values(ItemType).includes(attribute as ItemType)) {
     throw new InvalidArgumentsError(
-      "Invalid request body: 'attribute' must be a valid ItemType or AccessoryType.",
+      "Invalid request body: 'attribute' must be a valid ItemType.",
     );
   }
+}
+
+export function validateAppearance(appearance: Appearance) {
+  Object.entries(appearance).map(([type, name]) => {
+    const item = storeItems?.[type]?.[name];
+    if (!item) {
+      throw new InvalidArgumentsError(
+        "Invalid request body: 'The appearance object has items not verified to be in the store.'",
+      );
+    }
+  });
 }

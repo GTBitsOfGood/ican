@@ -70,20 +70,6 @@ export default class MedicationDAO {
     return await MedicationModel.find({ userId });
   }
 
-  static async createMedicationCheckIn(
-    medicationId: string,
-    expiration: Date,
-  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
-    await dbConnect();
-
-    const medicationCheckIn: MedicationCheckIn = {
-      medicationId: new Types.ObjectId(medicationId),
-      expiration,
-    };
-
-    return await MedicationCheckInModel.insertOne(medicationCheckIn);
-  }
-
   static async createMedicationLog(
     medicationId: string,
     dateTaken: Date,
@@ -96,6 +82,28 @@ export default class MedicationDAO {
     };
 
     return await MedicationLogModel.insertOne(medicationCheckIn);
+  }
+
+  static async getMedicationLogs(
+    medicationId: string,
+  ): Promise<HydratedDocument<MedicationLogDocument>[]> {
+    const medicationIdObj = new Types.ObjectId(medicationId);
+    await dbConnect();
+    return await MedicationLogModel.find({
+      medicationId: medicationIdObj,
+    }).sort({ dateTaken: -1 });
+  }
+
+  static async createMedicationCheckIn(
+    medicationId: string,
+  ): Promise<HydratedDocument<MedicationCheckInDocument> | null> {
+    await dbConnect();
+
+    const medicationCheckIn: MedicationCheckIn = {
+      medicationId: new Types.ObjectId(medicationId),
+    };
+
+    return await MedicationCheckInModel.insertOne(medicationCheckIn);
   }
 
   static async getMedicationCheckIn(

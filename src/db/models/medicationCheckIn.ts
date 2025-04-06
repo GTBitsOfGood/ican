@@ -2,7 +2,6 @@ import { Types, Schema, models, model } from "mongoose";
 
 export interface MedicationCheckIn {
   medicationId: Types.ObjectId;
-  expiration: Date;
 }
 
 export interface MedicationCheckInDocument extends MedicationCheckIn, Document {
@@ -17,7 +16,6 @@ const medicationCheckInSchema = new Schema<MedicationCheckInDocument>(
       required: true,
       immutable: true,
     },
-    expiration: { type: Date, required: true },
   },
   { timestamps: true },
 );

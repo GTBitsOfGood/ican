@@ -37,6 +37,12 @@ const ERRORS = Object.freeze({
       DELETE: "Failed to delete pet.",
       UPDATE: "Failed to update pet.",
     },
+    OUTFIT: {
+      FAILURE: {
+        CREATE: "Failed to create outfit",
+        DELETE: "Failed to delete outfit",
+      },
+    },
   },
   BAG: {
     FAILURE: {
@@ -67,6 +73,7 @@ const ERRORS = Object.freeze({
       USER_ID: "UserID is requried and must be a valid ObjectID.",
     },
     NOT_FOUND: "Medication does not exist.",
+    NOT_FOUND_USER: "User does not have any medications.",
     CONFLICT: "Medication already exists",
     FAILURE: {
       DELETE: "Failed to delete medication.",

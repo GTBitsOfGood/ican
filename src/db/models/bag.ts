@@ -2,7 +2,8 @@ import { model, models, Schema, Types } from "mongoose";
 
 export interface BagItem {
   petId: Types.ObjectId;
-  itemName: string;
+  name: string;
+  type: string;
 }
 
 export interface BagItemDocument extends BagItem, Document {
@@ -18,7 +19,11 @@ const bagItemSchema = new Schema<BagItemDocument>(
       index: true,
       immutable: true,
     },
-    itemName: {
+    name: {
+      type: String,
+      required: true,
+    },
+    type: {
       type: String,
       required: true,
     },
@@ -26,7 +31,7 @@ const bagItemSchema = new Schema<BagItemDocument>(
   { timestamps: true },
 );
 
-bagItemSchema.index({ petId: 1, itemName: 1 }, { unique: true });
+bagItemSchema.index({ petId: 1, name: 1 }, { unique: true });
 
 const BagItemModel =
   models.BagItem || model<BagItemDocument>("BagItem", bagItemSchema);

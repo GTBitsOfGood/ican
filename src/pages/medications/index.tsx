@@ -2,7 +2,14 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import { useState, useEffect } from "react";
-
+import AddMedicationModal, {
+  initialAddMedicationInfo,
+} from "@/components/modals/medication/addMedicationModal";
+import MedicationCard from "@/components/ui/MedicationCard";
+import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
+import { Medication } from "@/db/models/medication";
+import { WithId } from "@/types/models";
+import EditMedicationModal from "@/components/modals/medication/editMedicationModal";
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { Medication } from "@/db/models/medication";
@@ -10,9 +17,16 @@ import { useUser } from "@/components/UserContext";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { WithId } from "@/types/models";
 
-export default function MedicationsPage() {
-  const { userId } = useUser();
+interface MedicationPageProps {
+  activeModal: string;
+  editMedicationInfo?: WithId<Medication>;
+}
 
+export default function MedicationsPage({
+  activeModal = "",
+  editMedicationInfo = undefined,
+}: MedicationPageProps) {
+  const { userId } = useUser();
   const [medications, setMedications] = useState<WithId<Medication>[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
@@ -53,6 +67,10 @@ export default function MedicationsPage() {
   return (
     <AuthorizedRoute>
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
+        {activeModal === "add-new-medication" && <AddMedicationModal />}
+        {activeModal === "edit-medication" && (
+          <EditMedicationModal initialInfo={editMedicationInfo} />
+        )}
         {deleteModalVisible &&
           clickedIndex !== undefined &&
           clickedIndex !== null && (
@@ -72,7 +90,7 @@ export default function MedicationsPage() {
             </h1>
             <AddMedicationButton />
           </div>
-          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 medications-scrollbar">
+          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
             {medications.map((medication, index) => {
               return (
                 <MedicationCard

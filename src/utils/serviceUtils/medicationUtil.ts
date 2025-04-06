@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { objectIdSchema } from "./commonSchemaUtil";
 import ERRORS from "../errorMessages";
+import { Medication } from "@/db/models/medication";
+import { DAYS_OF_WEEK } from "@/lib/consts";
+import { MedicationLogDocument } from "@/db/models/medicationLog";
+import { WithId } from "@/types/models";
 
 function isValidTimeString(value: string): boolean {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -243,10 +247,19 @@ export const deleteMedicationSchema = z.object({
 export const getMedicationsSchema = z.object({
   userId: objectIdSchema("userId"),
 });
+export const getMedicationsScheduleSchema = z.object({
+  userId: objectIdSchema("userId"),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD expected)"),
+});
 
 export type CreateMedication = z.infer<typeof createMedicationSchema>;
 export type GetMedication = z.infer<typeof getMedicationSchema>;
 export type GetMedications = z.infer<typeof getMedicationsSchema>;
+export type GetMedicationsSchedule = z.infer<
+  typeof getMedicationsScheduleSchema
+>;
 export type DeleteMedication = z.infer<typeof deleteMedicationSchema>;
 export type UpdateMedication = z.infer<typeof updateMedicationSchema>;
 
@@ -269,3 +282,170 @@ export const validateUpdateMedication = (data: unknown): UpdateMedication => {
 export const validateGetMedications = (data: unknown): GetMedications => {
   return getMedicationsSchema.parse(data);
 };
+
+export const validateGetMedicationsSchedule = (
+  data: unknown,
+): GetMedicationsSchedule => {
+  return getMedicationsScheduleSchema.parse(data);
+};
+
+export function shouldScheduleMedication(
+  medication: WithId<Medication>,
+  givenDate: Date,
+  medicationCreated: Date,
+): boolean {
+  const givenDateTime = givenDate.getTime();
+  const medicationCreatedDateTime = medicationCreated.getTime();
+
+  if (givenDateTime < medicationCreatedDateTime) {
+    return false;
+  }
+
+  if (medication.repeatUnit === "Day") {
+    const daysApart = Math.ceil(
+      (givenDateTime - medicationCreatedDateTime) / (1000 * 60 * 60 * 24),
+    );
+    return daysApart % (medication.repeatInterval ?? 1) === 0;
+  } else if (medication.repeatUnit === "Week") {
+    const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
+    const isDayScheduled =
+      medication.repeatWeeklyOn &&
+      medication.repeatWeeklyOn.includes(givenDayOfWeek);
+
+    if (!isDayScheduled) {
+      return false;
+    }
+
+    const normalizeToStartOfWeek = (date: Date): Date => {
+      const result = new Date(date);
+      const day = result.getUTCDay();
+      result.setUTCDate(result.getUTCDate() - day);
+      result.setUTCHours(0, 0, 0, 0);
+      return result;
+    };
+
+    const lastTakenWeekStart = normalizeToStartOfWeek(
+      medicationCreated as Date,
+    );
+    const givenDateWeekStart = normalizeToStartOfWeek(givenDate);
+    const weeksApart = Math.floor(
+      (givenDateWeekStart.getTime() - lastTakenWeekStart.getTime()) /
+        (1000 * 60 * 60 * 24 * 7),
+    );
+    return weeksApart % (medication.repeatInterval ?? 1) === 0;
+  } else if (medication.repeatUnit === "Month") {
+    if (medication.repeatMonthlyType === "Day") {
+      const scheduledDayOfMonth = medication.repeatMonthlyOnDay;
+      const givenDayOfMonth = givenDate.getUTCDate();
+
+      if (givenDayOfMonth === scheduledDayOfMonth) {
+        const lastTakenMonth = medicationCreated
+          ? medicationCreated.getUTCMonth()
+          : 0;
+        const lastTakenYear = medicationCreated
+          ? medicationCreated.getUTCFullYear()
+          : 0;
+        const givenMonth = givenDate.getUTCMonth();
+        const givenYear = givenDate.getUTCFullYear();
+
+        const monthsApart =
+          (givenYear - lastTakenYear) * 12 + (givenMonth - lastTakenMonth);
+
+        return monthsApart % (medication.repeatInterval ?? 1) === 0;
+      }
+    } else if (medication.repeatMonthlyType === "Week") {
+      const scheduledWeekOfMonth = medication.repeatMonthlyOnWeek;
+      const scheduledDayOfWeek = medication.repeatMonthlyOnWeekDay;
+
+      const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
+      const givenDayOfMonth = givenDate.getUTCDate();
+
+      let weekOfMonth = Math.ceil(givenDayOfMonth / 7);
+
+      if (scheduledWeekOfMonth === 5) {
+        const lastDayOfMonth = new Date(
+          givenDate.getUTCFullYear(),
+          givenDate.getUTCMonth() + 1,
+          0,
+        );
+        const daysUntilEndOfMonth =
+          lastDayOfMonth.getUTCDate() - givenDayOfMonth;
+
+        if (daysUntilEndOfMonth < 7) {
+          weekOfMonth = 5;
+        }
+      }
+
+      if (
+        givenDayOfWeek === scheduledDayOfWeek &&
+        weekOfMonth === scheduledWeekOfMonth
+      ) {
+        const lastTakenMonth = medicationCreated
+          ? medicationCreated.getUTCMonth()
+          : 0;
+        const lastTakenYear = medicationCreated
+          ? medicationCreated.getUTCFullYear()
+          : 0;
+        const givenMonth = givenDate.getUTCMonth();
+        const givenYear = givenDate.getUTCFullYear();
+
+        const monthsApart =
+          (givenYear - lastTakenYear) * 12 + (givenMonth - lastTakenMonth);
+        return monthsApart % (medication.repeatInterval ?? 1) === 0;
+      }
+    }
+  }
+
+  return false;
+}
+
+export function processDoseTime(
+  time: string,
+  date: string,
+  medicationLogs: MedicationLogDocument[],
+) {
+  const [hours, minutes] = time.split(":").map(Number);
+  let status: "pending" | "taken" | "missed" = "pending";
+  let canCheckIn = false;
+
+  const doseTime = new Date(date);
+
+  const offsetMinutes = doseTime.getTimezoneOffset();
+  const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
+  const utcMinute = (minutes + offsetMinutes) % 60;
+
+  doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+
+  const matchingLog = medicationLogs.find((log) => {
+    const logDate = new Date(log.dateTaken);
+    return Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
+  });
+
+  if (matchingLog) {
+    status = "taken";
+  } else {
+    const now = new Date();
+    const currentDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    currentDate.setUTCHours(0, 0, 0, 0);
+
+    const givenDate = new Date(date);
+
+    if (currentDate.getTime() === givenDate.getTime()) {
+      canCheckIn =
+        Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
+    }
+
+    if (now.getTime() - doseTime.getTime() >= 15 * 60 * 1000) {
+      status = "missed";
+    }
+  }
+
+  return {
+    status,
+    canCheckIn,
+  };
+}

@@ -16,11 +16,11 @@ export default {
       desktop: "1024px",
       largeDesktop: "1280px",
       extraLargeDesktop: "1536px",
-      minimized: {
-        raw: "(max-height: 640px)",
-      },
       short: {
         raw: "(max-height: 800px)",
+      },
+      minimized: {
+        raw: "(max-height: 640px)",
       },
       tiny: {
         raw: "(max-height: 480px)",
@@ -87,6 +87,7 @@ export default {
         borderGrey: "#747474",
         errorRed: "#CE4E4E",
         deleteRed: "#B01515",
+        errorCardRed: "#F8ABAB",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -100,8 +101,7 @@ export default {
       },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
-        pixelify: ["var(--font-pixelify-sans)", "sans-serif"],
-        belanosima: ["var(--font-belanosima)", "serif"],
+        pixelify: ["var(--font-pixelify)", "sans-serif"],
       },
       boxShadow: {
         bubble: "0px 8px 0px 0px rgba(125,131,178,1.00)",

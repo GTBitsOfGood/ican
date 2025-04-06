@@ -4,7 +4,7 @@ export default function AddMedicationButton() {
   return (
     <a
       className="flex bg-transparent h-full w-auto justify-center items-stretch"
-      href={"/add-new-medication"}
+      href={"/medications/add"}
     >
       <button className="border-2 border-black border-solid p-2 pb-[0.75rem] bg-icanGreen-100 w-full h-full flex justify-center items-center">
         <span className="font-quantico text-black mobile:text-lg desktop:text-xl">

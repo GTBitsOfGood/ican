@@ -52,16 +52,34 @@ body {
     background: #98d03b;
   }
 
-  .medications-scrollbar::-webkit-scrollbar {
+  .log-scrollbar::-webkit-scrollbar {
+    width: 28px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-track {
+    background: #cee0a05f;
+    border-radius: 0px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-thumb {
+    background: #accc6e;
+    border-radius: 0px;
+  }
+
+  .log-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #98d03b;
+  }
+
+  .list-scrollbar::-webkit-scrollbar {
     width: 1.5rem;
   }
 
-  .medications-scrollbar::-webkit-scrollbar-track {
+  .list-scrollbar::-webkit-scrollbar-track {
     background: #a1a1a1;
     border-radius: 0px;
   }
 
-  .medications-scrollbar::-webkit-scrollbar-thumb {
+  .list-scrollbar::-webkit-scrollbar-thumb {
     background: #f4f4f4;
     border-radius: 0px;
   }
@@ -141,8 +159,24 @@ body {
   }
 }
 
+@keyframes jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  49% {
+    transform: translateY(var(--jump-height, -20px));
+  }
+}
+
 @layer components {
   .spin {
     animation: spin 1s linear infinite;
+  }
+
+  .jump {
+    --jump-height: -20px;
+    --jump-duration: 1s;
+    animation: jump var(--jump-duration) steps(1) infinite;
   }
 }

@@ -39,7 +39,7 @@ export default function AddMedicationModal() {
       userId as string,
       addMedicationInfo,
     );
-    router.push("/");
+    router.push("/medications");
   };
 
   return (
