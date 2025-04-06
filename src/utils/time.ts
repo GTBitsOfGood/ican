@@ -43,32 +43,18 @@ export const isSameDay = (inputDate: Date) => {
   );
 };
 
-export const isNextDay = (curDate: Date): boolean => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+export const isPastDay = (inputDate: Date) => {
+  const yesterday = new Date(inputDate);
+  yesterday.setDate(yesterday.getDate() + 1);
 
-  const target = new Date(curDate);
-  target.setHours(0, 0, 0, 0);
-
-  // Add one day to today and compare
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-
-  return target.getTime() === tomorrow.getTime();
+  return isSameDay(yesterday);
 };
 
-export const isPastDay = (curDate: Date): boolean => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+export const isNextDay = (inputDate: Date) => {
+  const tomorrow = new Date(inputDate);
+  tomorrow.setDate(tomorrow.getDate() - 1);
 
-  const target = new Date(curDate);
-  target.setHours(0, 0, 0, 0);
-
-  // Subtract one day from today and compare
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  return target.getTime() === yesterday.getTime();
+  return isSameDay(tomorrow);
 };
 
 // converts am or pm time into standard time

@@ -93,7 +93,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[#F8ABAB] bg-opacity-80"} relative shadow-medicationCardShadow w-[500px] my-5`}
+      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[500px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -115,20 +115,20 @@ export default function MedicationLogCard({
       {showSuccessModal && <SuccessMedicationModal />}
       <div className="flex gap-1 items-center">
         <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
-        <h1 className="text-4xl text-black font-quantico underline">{name}</h1>
+        <h1 className="text-3xl text-black font-quantico underline">{name}</h1>
       </div>
-      <div className="flex flex-col gap-y-[23px] text-3xl font-quantico">
-        <h2 className="font-semibold text-black">
-          Scheduled: <span>{scheduledDoseTime}</span>
+      <div className="flex flex-col gap-y-[23px] font-quantico">
+        <h2 className="font-semibold text-black text-3xl">
+          Scheduled: <span className="font-normal">{scheduledDoseTime}</span>
         </h2>
-        <h2 className="font-semibold text-black">
-          Dosage: <span>{dosage}</span>
+        <h2 className="font-semibold text-black text-3xl">
+          Dosage: <span className="font-normal">{dosage}</span>
         </h2>
-        <h2 className="font-semibold text-black">
-          Notes: <span>{notes}</span>
+        <h2 className="font-semibold text-black text-3xl">
+          Notes: <span className="font-normal">{notes}</span>
         </h2>
         {status !== "taken" && (
-          <h2 className="text-icanBlue-200">
+          <h2 className="text-icanBlue-200 text-3xl">
             Last Taken: {humanizeLastTakenTime(lastTaken)}
           </h2>
         )}
@@ -141,10 +141,9 @@ export default function MedicationLogCard({
         )}
         {status === "pending" && canCheckIn && (
           <>
-            <h1 className="text-icanBlue-200 font-quantico text-4xl">
-              <span className="underline ">
-                {generateTimeLeftFormat()} Minutes Left to Take Dose
-              </span>
+            <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
+              <span className="underline ">{generateTimeLeftFormat()}</span>{" "}
+              Minutes Left to Take Dose
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
@@ -164,7 +163,7 @@ export default function MedicationLogCard({
         )}
         {status === "taken" && (
           <>
-            <h3 className="text-[32px] font-quantico text-icanBlue-200">
+            <h3 className="text-[26px] font-quantico text-icanBlue-200">
               Thanks for taking your medication!
             </h3>
             <h1 className="text-4xl font-quantico font-bold text-icanBlue-300">

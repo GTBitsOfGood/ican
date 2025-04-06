@@ -19,7 +19,7 @@ export default function Log() {
         canCheckIn: false,
         scheduledDoseTime: "09:00AM",
         status: "pending",
-        lastTaken: "2025-04-04T09:00:00Z",
+        lastTaken: "2025-04-04T11:00:00Z",
         repeatUnit: "days",
         repeatInterval: 1,
       },
@@ -97,8 +97,12 @@ export default function Log() {
     return futureDoses;
   };
 
+  const handleCloseIcon = () => {
+    window.location.href = "/";
+  };
+
   return (
-    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between pl-12">
+    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between pl-12 pt-10">
       <div className="flex flex-col gap-y-[72px] w-full">
         <div className="flex justify-center items-center">
           <button onClick={handlePrev}>
@@ -110,7 +114,7 @@ export default function Log() {
               className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
             />
           </button>
-          <h2 className="text-[64px] font-bold font-quantico text-white">
+          <h2 className="text-[48px] font-bold font-quantico text-white">
             {humanizeDateComparison(currDate)}, {humanizeDate(currDate)}
           </h2>
           <button onClick={handleNext}>
@@ -177,6 +181,7 @@ export default function Log() {
             width={28}
             height={28}
             sizes="100vw"
+            onClick={handleCloseIcon}
           />
         </button>
       </div>

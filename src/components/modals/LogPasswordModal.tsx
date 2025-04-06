@@ -68,7 +68,7 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={onClose} link="/log" />}
     >
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>

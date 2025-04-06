@@ -32,7 +32,18 @@ export const humanizeLastTakenTime = (lastTaken: string) => {
   // 9:00 AM, March 9th
   const date = new Date(lastTaken);
 
-  const time = date.toLocaleTimeString();
+  let time = "";
+
+  let hours = Number(date.getHours().toString());
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  if (Number(hours) > 12) {
+    hours -= 12;
+    time = `${hours}:${minutes} PM`;
+  } else {
+    time = `${hours}:${minutes} AM`;
+  }
+
   console.log(date.getDay());
 
   const month = getMonthToName(date.getMonth() + 1);
