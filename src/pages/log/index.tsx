@@ -1,32 +1,9 @@
-import MedicationLogCard, {
-  MedicationLogCardProps,
-} from "@/components/ui/MedicationLogCard";
+import MedicationLogCard from "@/components/ui/MedicationLogCard";
+import { LogType } from "@/types/log";
 import { humanizeDate, humanizeDateComparison } from "@/utils/date";
-import {
-  isFutureDay,
-  isPastDay,
-  isSameDay,
-  standardizeTime,
-} from "@/utils/time";
+import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
-
-type ScheduledTime = {
-  time: string;
-  status: "pending" | "taken" | "missed";
-};
-
-type LogType = {
-  id: string;
-  name: string;
-  dosage: string;
-  notes: string;
-  scheduledTimes: ScheduledTime[];
-  // date as a string
-  lastTaken: string;
-  repeatUnit: "days" | "weeks" | "months";
-  repeatInterval: number;
-};
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
@@ -39,13 +16,10 @@ export default function Log() {
         name: "DUPIX",
         dosage: "2 Pills",
         notes: "Take with water and food before!",
-        scheduledTimes: [
-          {
-            time: "12:10 PM",
-            status: "pending", // Possible values: "pending", "taken", "missed"
-          },
-        ],
-        lastTaken: "2025-03-09T09:00:00Z",
+        canCheckIn: false,
+        scheduledDoseTime: "09:00AM",
+        status: "pending",
+        lastTaken: "2025-04-04T09:00:00Z",
         repeatUnit: "days",
         repeatInterval: 1,
       },
@@ -54,36 +28,22 @@ export default function Log() {
         name: "TYLEN",
         dosage: "100 mg",
         notes: "Take with water and food before!",
-        scheduledTimes: [
-          {
-            time: "09:00 AM",
-            status: "taken",
-          },
-          {
-            time: "11:00 AM",
-            status: "missed",
-          },
-        ],
-        lastTaken: "2025-03-09T11:00:00Z",
+        canCheckIn: true,
+        scheduledDoseTime: "06:00AM",
+        status: "taken",
+        lastTaken: "2025-04-05T09:00:00Z",
         repeatUnit: "days",
         repeatInterval: 1,
       },
       {
-        id: "med-003",
+        id: "med-002",
         name: "TYLEN",
-        dosage: "200 mg",
+        dosage: "100 mg",
         notes: "Take with water and food before!",
-        scheduledTimes: [
-          {
-            time: "1:00 PM",
-            status: "taken",
-          },
-          {
-            time: "1:00 AM",
-            status: "missed",
-          },
-        ],
-        lastTaken: "2025-03-09T11:00:00Z",
+        canCheckIn: true,
+        scheduledDoseTime: "11:00AM",
+        status: "pending",
+        lastTaken: "2025-04-04T09:00:00Z",
         repeatUnit: "days",
         repeatInterval: 1,
       },
@@ -102,67 +62,36 @@ export default function Log() {
     setCurrDate(newDate);
   };
 
-  const flatMapMedications = () => {
-    let flatArr: MedicationLogCardProps[] = [];
-
-    for (let i = 0; i < data.medications.length; i++) {
-      for (let j = 0; j < data.medications[i].scheduledTimes.length; j++) {
-        const inputData: MedicationLogCardProps = {
-          ...data.medications[i],
-          ...data.medications[i].scheduledTimes[j],
-        };
-        flatArr.push(inputData);
-      }
-    }
-
-    flatArr = flatArr.sort((a, b) => {
-      const aTime = standardizeTime(a.time);
-      const bTime = standardizeTime(b.time);
-      console.log(a.time, aTime, b.time, bTime);
+  const sortLogs = () => {
+    return data.medications.sort((a, b) => {
+      const aTime = standardizeTime(a.scheduledDoseTime);
+      const bTime = standardizeTime(b.scheduledDoseTime);
+      console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
 
       const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
       const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
 
       return aTotalMinutes - bTotalMinutes;
     });
-
-    console.log(flatArr);
-    return flatArr;
   };
 
   const filterPastDoses = () => {
-    const medications = flatMapMedications();
-    const now = new Date();
-
-    const pastDoses = medications.filter((med) => {
-      const medTime = standardizeTime(med.time); // { hours, minutes }
-
-      const doseDate = new Date();
-      doseDate.setHours(medTime.hours);
-      doseDate.setMinutes(medTime.minutes);
-      doseDate.setSeconds(0);
-      doseDate.setMilliseconds(0);
-
-      return doseDate.getTime() < now.getTime();
+    const pastDoses = data.medications.filter((med) => {
+      if (med.status === "missed" || med.status === "taken") {
+        return true;
+      }
+      return false;
     });
 
     return pastDoses;
   };
 
   const filterFutureDoses = () => {
-    const medications = flatMapMedications();
-    const now = new Date();
-
-    const futureDoses = medications.filter((med) => {
-      const medTime = standardizeTime(med.time); // { hours, minutes }
-
-      const doseDate = new Date();
-      doseDate.setHours(medTime.hours);
-      doseDate.setMinutes(medTime.minutes);
-      doseDate.setSeconds(0);
-      doseDate.setMilliseconds(0);
-
-      return doseDate.getTime() >= now.getTime();
+    const futureDoses = data.medications.filter((med) => {
+      if (med.status === "pending") {
+        return true;
+      }
+      return false;
     });
 
     return futureDoses;
@@ -190,71 +119,53 @@ export default function Log() {
               alt=""
               width={106}
               height={106}
-              className={`${isFutureDay(currDate) ? "hidden" : "visible"}`}
+              className={`${isNextDay(currDate) ? "hidden" : "visible"}`}
             />
           </button>
         </div>
         {isSameDay(currDate) ? (
           <>
             <div className="flex flex-wrap gap-8">
-              {filterFutureDoses().map(
-                (log: MedicationLogCardProps, idx: number) => {
-                  return <MedicationLogCard {...log} key={idx} />;
-                },
-              )}
+              {filterFutureDoses().map((log: LogType, idx: number) => {
+                return <MedicationLogCard {...log} key={idx} />;
+              })}
             </div>
             <div className="flex flex-col gap-y-6">
               <h1 className="text-6xl font-quantico font-bold">
                 Previous Doses
               </h1>
               <div className="flex flex-wrap gap-8">
-                {filterPastDoses().map(
-                  (log: MedicationLogCardProps, idx: number) => {
-                    return <MedicationLogCard {...log} key={idx} />;
-                  },
-                )}
+                {filterPastDoses().map((log: LogType, idx: number) => {
+                  return <MedicationLogCard {...log} key={idx} />;
+                })}
               </div>
             </div>
           </>
         ) : (
           <div className="flex flex-wrap gap-8">
-            {flatMapMedications().map(
-              (log: MedicationLogCardProps, idx: number) => {
-                if (isFutureDay(currDate)) {
-                  return (
-                    <MedicationLogCard {...log} key={idx} status="pending" />
-                  );
-                }
-                const status = log.status;
-                if (status === "pending") {
-                  // if is pending and not equivalent or befo
-                }
+            {sortLogs().map((log: LogType, idx: number) => {
+              if (isNextDay(currDate)) {
+                // if next day should not be allowed to check in
+                return (
+                  <MedicationLogCard
+                    {...log}
+                    key={idx}
+                    status="pending"
+                    canCheckIn={false}
+                  />
+                );
+              }
 
-                return <MedicationLogCard {...log} key={idx} />;
-              },
-            )}
-          </div>
-        )}
-        {isFutureDay(currDate) && (
-          <div className="flex flex-wrap justify-between">
-            {flatMapMedications().map(
-              (log: MedicationLogCardProps, idx: number) => {
-                return (
-                  <MedicationLogCard {...log} key={idx} status="pending" />
-                );
-              },
-            )}
-          </div>
-        )}
-        {isPastDay(currDate) && (
-          <div className="flex flex-wrap justify-between">
-            {flatMapMedications().map(
-              (log: MedicationLogCardProps, idx: number) => {
-                return (
-                  <MedicationLogCard {...log} key={idx} status="pending" />
-                );
-              },
-            )}
+              const status = isPastDay(new Date(log.lastTaken));
+
+              return (
+                <MedicationLogCard
+                  {...log}
+                  key={idx}
+                  status={status ? "taken" : "missed"}
+                />
+              );
+            })}
           </div>
         )}
       </div>

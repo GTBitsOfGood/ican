@@ -16,6 +16,7 @@ export const humanizeDateComparison = (date: Date) => {
   }
 };
 
+// return as weekday, month day
 export const humanizeDate = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -31,14 +32,11 @@ export const humanizeLastTakenTime = (lastTaken: string) => {
   // 9:00 AM, March 9th
   const date = new Date(lastTaken);
 
-  const time = date.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const time = date.toLocaleTimeString();
+  console.log(date.getDay());
 
-  const month = getMonthToName(date.getMonth());
-  const day = `${date.getDay()}${getDaySuffix(date.getDay())}`;
+  const month = getMonthToName(date.getMonth() + 1);
+  const day = `${date.getDate()}${getDaySuffix(date.getDate())}`;
 
   return `${time}, ${month} ${day}`;
 };

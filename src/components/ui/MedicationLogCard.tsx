@@ -6,27 +6,19 @@ import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
+import { LogType } from "@/types/log";
 
-export type MedicationLogCardProps = {
-  name: string;
-  dosage: string;
-  notes: string;
-  status: "pending" | "taken" | "missed";
-  time: string;
-  // date as a string
-  lastTaken: string;
-  // must update medication once taken
-  // setMedication: Dispatch<SetStateAction<>>
-};
 export default function MedicationLogCard({
   name,
   dosage,
   notes,
-  time,
+  scheduledDoseTime,
+  canCheckIn,
   status,
+  // date as a string
   lastTaken,
   // setMedication,
-}: MedicationLogCardProps) {
+}: LogType) {
   const [showMissedDoseModal, setShowMissedDoseModal] =
     useState<boolean>(false);
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
@@ -84,7 +76,7 @@ export default function MedicationLogCard({
   // };
 
   const calculateTimeLeft = () => {
-    const { minutes, hours, seconds } = standardizeTime(time);
+    const { minutes, hours, seconds } = standardizeTime(scheduledDoseTime);
 
     if (minutes < 0 || hours < 0 || seconds < 0) status = "missed";
     return { hours, minutes, seconds };
@@ -107,7 +99,7 @@ export default function MedicationLogCard({
         <MissedDoseModal
           setMissedDoseVisible={toggleMissedDoseModal}
           name={name}
-          time={time}
+          time={scheduledDoseTime}
         />
       )}
       {showPasswordModal && (
@@ -127,7 +119,7 @@ export default function MedicationLogCard({
       </div>
       <div className="flex flex-col gap-y-[23px] text-3xl font-quantico">
         <h2 className="font-semibold text-black">
-          Scheduled: <span>{time}</span>
+          Scheduled: <span>{scheduledDoseTime}</span>
         </h2>
         <h2 className="font-semibold text-black">
           Dosage: <span>{dosage}</span>
@@ -142,34 +134,27 @@ export default function MedicationLogCard({
         )}
       </div>
       <div className="flex flex-col gap-y-2">
-        {status === "pending" &&
-          (calculateTimeLeft().minutes >= 10 ||
-            calculateTimeLeft().hours > 0) && (
-            <div className="flex justify-center items-center font-quantico font-bold text-center text-5xl text-icanBlue-300">
-              Upcoming
-            </div>
-          )}
-        {status === "pending" &&
-          calculateTimeLeft().hours === 0 &&
-          calculateTimeLeft().minutes < 10 &&
-          calculateTimeLeft().minutes >= 0 && (
-            <>
-              <h1 className="text-icanBlue-200 font-quantico text-4xl">
-                <span className="underline ">
-                  {generateTimeLeftFormat()} Minutes Left to Take Dose
-                </span>
-              </h1>
-              <button
-                className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
-                onClick={handleTakeClick}
-              >
-                Take
-              </button>
-            </>
-          )}
-        {(status === "missed" ||
-          calculateTimeLeft().hours < 0 ||
-          calculateTimeLeft().minutes < 0) && (
+        {status === "pending" && !canCheckIn && (
+          <div className="flex justify-center items-center font-quantico font-bold text-center text-5xl text-icanBlue-300">
+            Upcoming
+          </div>
+        )}
+        {status === "pending" && canCheckIn && (
+          <>
+            <h1 className="text-icanBlue-200 font-quantico text-4xl">
+              <span className="underline ">
+                {generateTimeLeftFormat()} Minutes Left to Take Dose
+              </span>
+            </h1>
+            <button
+              className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
+              onClick={handleTakeClick}
+            >
+              Take
+            </button>
+          </>
+        )}
+        {status === "missed" && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
             onClick={handleMissedDoseClick}
