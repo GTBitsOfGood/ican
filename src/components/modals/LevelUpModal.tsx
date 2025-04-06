@@ -12,7 +12,7 @@ interface LevelUpModalProps {
   setVisible: (visible: boolean) => void;
 }
 
-export default function FoodModal({ setVisible }: LevelUpModalProps) {
+export default function LevelUpModal({ setVisible }: LevelUpModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {

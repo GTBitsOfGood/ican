@@ -66,6 +66,7 @@ export default class PetHTTPClient {
   static async feedPet(petId: string): Promise<WithId<Pet>> {
     return fetchHTTPClient<WithId<Pet>>(`/pet/${petId}/feed`, {
       method: "PATCH",
+      body: JSON.stringify({}),
       credentials: "include",
     });
   }
