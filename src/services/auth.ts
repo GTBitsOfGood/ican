@@ -144,6 +144,7 @@ export default class AuthService {
       const insertedData = await UserDAO.createUser(newUser);
       userId = insertedData._id.toString();
       await PetService.createPet(userId, `${name}'s Pet`, "dog");
+      await settingsService.createSettings(userId);
     } else {
       userId = existingUser._id.toString();
     }
