@@ -37,6 +37,7 @@ export default function MedicationBaseModal({
   const [currentSection, setCurrentSection] = useState<number>(
     modalTypeToSection[modalType],
   );
+
   const [timesIn12Hour, setTimesIn12Hour] = useState<Time12Hour[]>(
     convertTo12Hour(initialInfo.doseTimes),
   );
@@ -100,7 +101,7 @@ export default function MedicationBaseModal({
   return (
     <ModalBackground>
       <ModalContainer
-        className={`flex flex-col  w-full ${currentSection == sections.length - 1 ? "tablet:w-[790px] extraLargeDesktop:w-[1400px]" : "tablet:w-[790px]"} p-8 tablet:p-16 tablet:max-w-[90vw] max-h-[90vh] h-[700px] bg-icanBlue-200`}
+        className={`flex flex-col  w-full text-white ${currentSection == sections.length - 1 ? "tablet:w-[790px] extraLargeDesktop:w-[1400px]" : "tablet:w-[790px]"} p-8 tablet:max-w-[90vw] max-h-[90vh] h-[700px] bg-icanBlue-200`}
         title={modalType == "Add" ? "Add New Medication" : "Edit Medication"}
         back="/medications"
       >
