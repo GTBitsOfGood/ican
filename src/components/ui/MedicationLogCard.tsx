@@ -93,7 +93,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-white/95" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[500px] my-5`}
+      className={`p-5 flex flex-col gap-y-8 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[500px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -175,6 +175,15 @@ export default function MedicationLogCard({
       {status === "taken" && (
         <Image
           src={"/misc/CheckMark.svg"}
+          alt=""
+          width={113}
+          height={95}
+          className="absolute right-5 top-12"
+        />
+      )}
+      {status === "missed" && (
+        <Image
+          src={"/misc/CrossMark.svg"}
           alt=""
           width={113}
           height={95}

@@ -113,7 +113,7 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-              <Link className="inline-block size-fit" href="/change-pin">
+              <Link className="inline-block size-fit" href="forgot-pin">
                 <button className="bg-white p-2 text-black text-xl">
                   Forgot Pin?
                 </button>
