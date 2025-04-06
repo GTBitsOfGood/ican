@@ -5,8 +5,8 @@ export default class HashingService {
     return await bcrypt.hash(value, 10);
   }
   static async compare(
-    encryptedValue: string,
     comparingValue: string,
+    encryptedValue: string,
   ): Promise<boolean> {
     return await bcrypt.compare(comparingValue, encryptedValue);
   }

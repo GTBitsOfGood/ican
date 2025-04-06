@@ -15,16 +15,14 @@ export default function UnauthorizedRoute({
 
   useEffect(() => {
     const validateToken = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await AuthHTTPClient.validateToken();
-        setUserId(response.decodedToken?.userId);
+        const token = await AuthHTTPClient.validateToken();
+
+        if (!token.isValid) {
+          setLoading(false);
+          return;
+        }
+        setUserId(token.decodedToken?.userId);
         router.push("/");
       } catch (error) {
         setUserId(null);

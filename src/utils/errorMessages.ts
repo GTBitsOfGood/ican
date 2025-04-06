@@ -21,6 +21,7 @@ const ERRORS = Object.freeze({
     },
     FAILURE: {
       PASSWORD_UPDATE: "User password update failed.",
+      DELETE_USER: "User deletion failed.",
     },
   },
   PET: {
@@ -109,6 +110,9 @@ const ERRORS = Object.freeze({
   },
   JWT: {
     UNAUTHORIZED: "Invalid or expired token.",
+  },
+  TOKEN: {
+    UNAUTHORIZED: "Authentication token is missing or malformed",
   },
 });
 
