@@ -22,7 +22,6 @@ import LoadingScreen from "@/components/loadingScreen";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import SuccessModal from "@/components/modals/SuccessModal";
 
 interface HomeProps {
   activeModal: string;
@@ -105,13 +104,16 @@ export default function Home({
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
           level={petData?.xpLevel}
+          xp={petData?.xpGained}
+          levelChanged={true}
         />
       )}
       {showSuccessModalVisible && (
-        <SuccessModal
-          setVisible={setShowSuccessModalVisible}
-          xp={petData?.xpGained}
+        <LevelUpModal
+          setVisible={setShowLevelUpModalVisible}
           level={petData?.xpLevel}
+          xp={petData?.xpGained}
+          levelChanged={false}
         />
       )}
       {petData ? (

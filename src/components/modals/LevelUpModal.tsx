@@ -8,13 +8,21 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import { useEffect } from "react";
 import Image from "next/image";
+import ExpBar from "../ui/ExpBar";
 
 interface LevelUpModalProps {
   setVisible: (visible: boolean) => void;
   level: number | undefined;
+  xp: number | undefined;
+  levelChanged: boolean;
 }
 
-export default function FoodModal({ setVisible, level }: LevelUpModalProps) {
+export default function FoodModal({
+  setVisible,
+  level,
+  xp,
+  levelChanged,
+}: LevelUpModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -48,44 +56,62 @@ export default function FoodModal({ setVisible, level }: LevelUpModalProps) {
       <ModalContent>
         <ModalHeader>Level Up!</ModalHeader>
         <ModalBody>
-          <div className="relative">
-            <Image
-              src="/misc/Banner.svg"
-              width={0}
-              height={0}
-              sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
-              alt="Banner"
-              className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto h-[20vh] tablet:h-[15vh] tiny:h-[18vh]"
-            />
-            <div className="absolute desktop:top-16 tablet:top-16 mobile:top-24 tiny:top-12 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
-              Level {level ? level : 0}
-            </div>
-            <Image
-              src="/misc/Shine.svg"
-              width={0}
-              height={0}
-              sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
-              alt="Shine"
-              className="mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
-            />
-            <div className="flex">
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
-                <div className="flex items-center justify-center text-white desktop:text-5xl tablet:text-4xl mobile:text-3xl tiny:text-2xl font-bold space-x-2">
-                  <span className="text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke">
-                    +100
-                  </span>
-                  <Image
-                    src="/icons/Coin-b.svg"
-                    width={0}
-                    height={0}
-                    sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 50px"
-                    alt="Coin"
-                    className="w-auto h-[10vh] tablet:h-[8vh] tiny:h-[9vh]"
-                  />
+          {levelChanged ? (
+            <div className="relative">
+              <Image
+                src="/misc/Banner.svg"
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                alt="Banner"
+                className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto h-[20vh] tablet:h-[15vh] tiny:h-[18vh]"
+              />
+              <div className="absolute desktop:top-16 tablet:top-16 mobile:top-24 tiny:top-12 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
+                Level {level ? level : 0}
+              </div>
+              <Image
+                src="/misc/Shine.svg"
+                width={0}
+                height={0}
+                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                alt="Shine"
+                className="mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
+              />
+              <div className="flex">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
+                  <div className="flex items-center justify-center text-white desktop:text-5xl tablet:text-4xl mobile:text-3xl tiny:text-2xl font-bold space-x-2">
+                    <span className="text-stroke-4 text-stroke-[#482D0D] text-shadow-[#603A0C] paint-stroke">
+                      +100
+                    </span>
+                    <Image
+                      src="/icons/Coin-b.svg"
+                      width={0}
+                      height={0}
+                      sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 50px"
+                      alt="Coin"
+                      className="w-auto h-[10vh] tablet:h-[8vh] tiny:h-[9vh]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="relative">
+                <Image
+                  src="/assets/CongratulationsBackdrop.svg"
+                  width={0}
+                  height={0}
+                  sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                  alt="Shine"
+                  className="mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
+                />
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-cente h-10">
+                  <ExpBar level={level ? level : 1} currentExp={xp ? xp : 0} />
+                </div>
+              </div>
+            </div>
+          )}
         </ModalBody>
       </ModalContent>
     </Modal>
