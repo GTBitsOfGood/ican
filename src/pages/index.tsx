@@ -19,6 +19,9 @@ import EditMedicationModal from "@/components/modals/medication/editMedicationMo
 import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
 import LoadingScreen from "@/components/loadingScreen";
+import FoodModal from "@/components/modals/FoodModal";
+import { useFood } from "@/components/FoodContext";
+import LevelUpModal from "@/components/modals/LevelUpModal";
 
 interface HomeProps {
   activeModal: string;
@@ -31,6 +34,9 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
+  const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
+    useState<boolean>(false);
+  const { selectedFood, setSelectedFood } = useFood();
 
   useEffect(() => {
     const getPetData = async () => {
@@ -52,6 +58,34 @@ export default function Home({
     getPetData();
   }, [userId]);
 
+  const handleFoodDragOver = (e: React.DragEvent<HTMLImageElement>) => {
+    e.preventDefault();
+  };
+
+  const handleFoodDrop = async (e: React.DragEvent<HTMLImageElement>) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`/api/v1/pet/${petData?._id}/feed`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok && response.status !== 200) {
+        throw new Error("Failed to update pet data");
+      }
+      const updatedPetData = await response.json();
+      if (petData && updatedPetData.xpLevel > petData.xpLevel) {
+        setShowLevelUpModalVisible(true);
+      }
+      setPetData(updatedPetData);
+      setSelectedFood("");
+    } catch (e) {
+      console.error("Error handling food drop:", e);
+    }
+  };
+
   return (
     <AuthorizedRoute>
       {activeModal === "settings" && <SettingsModal />}
@@ -59,6 +93,10 @@ export default function Home({
       {activeModal === "add-new-medication" && <AddMedicationModal />}
       {activeModal === "edit-medication" && (
         <EditMedicationModal initialInfo={editMedicationInfo} />
+      )}
+      {activeModal === "food" && <FoodModal />}
+      {showLevelUpModalVisible && (
+        <LevelUpModal setVisible={setShowLevelUpModalVisible} />
       )}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
@@ -87,7 +125,7 @@ export default function Home({
             <FeedButton />
           </Navbar>
 
-          {/* Character, speech bubble is made relative to the image */}
+          {/* Character, speech bubble and food image is made relative to the image */}
           <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
             <div className="relative w-full h-full">
               <Image
@@ -97,11 +135,22 @@ export default function Home({
                 height={characterImages[petData.petType].height}
                 draggable={false}
                 unoptimized={true}
+                onDragOver={handleFoodDragOver}
+                onDrop={handleFoodDrop}
                 className="select-none mobile:h-[30%] tablet:h-[55%] desktop:h-[75%] largeDesktop:h-full w-auto object-contain"
               />
-              <div className="absolute mobile:bottom-[90%] left-[90%] tablet:bottom-[75%]">
+              <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
                 <Bubble />
               </div>
+              {selectedFood && (
+                <Image
+                  src={`/foods/${selectedFood}.svg`}
+                  alt={selectedFood}
+                  width={150}
+                  height={150}
+                  className="absolute bottom-[25%] right-[-50%] hover:cursor-pointer"
+                />
+              )}
             </div>
           </div>
         </div>

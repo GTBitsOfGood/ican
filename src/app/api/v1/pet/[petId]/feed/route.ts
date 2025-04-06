@@ -20,9 +20,8 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    await PetService.feedPet(petId);
-
-    return new NextResponse(null, { status: 204 });
+    const updatedPet = await PetService.feedPet(petId);
+    return NextResponse.json(updatedPet, { status: 200 });
   } catch (error) {
     return handleError(error);
   }

@@ -16,11 +16,11 @@ export default {
       desktop: "1024px",
       largeDesktop: "1280px",
       extraLargeDesktop: "1536px",
-      minimized: {
-        raw: "(max-height: 640px)",
-      },
       short: {
         raw: "(max-height: 800px)",
+      },
+      minimized: {
+        raw: "(max-height: 640px)",
       },
       tiny: {
         raw: "(max-height: 480px)",
@@ -101,7 +101,7 @@ export default {
       },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
-        pixelify: ["var(--font-pixelify-sans)", "sans-serif"],
+        pixelify: ["var(--font-pixelify)", "sans-serif"],
         belanosima: ["var(--font-belanosima)", "serif"],
       },
       boxShadow: {

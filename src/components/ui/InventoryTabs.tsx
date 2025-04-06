@@ -46,6 +46,8 @@ const InventoryTabs: React.FC<TabsProps> = ({ tabs, onSelectTab }) => {
           >
             <Image
               src={tab.image}
+              width={100}
+              height={100}
               alt={tab.title}
               draggable="false"
               className="mx-auto largeDesktop:w-[67px] desktop:w-[55px] tablet:w-[42px] mb-2"
