@@ -1,4 +1,3 @@
-import { Medication } from "@/db/models/medication";
 import {
   Modal,
   ModalBody,
@@ -9,13 +8,13 @@ import {
 import { useEffect } from "react";
 
 interface TakenModalProps {
-  medication: Medication;
+  name: string;
   setChangeModalVisible: (visible: boolean) => void;
   handleTakenAction: () => void;
 }
 
 export default function MedicationTakenModal({
-  medication,
+  name,
   setChangeModalVisible,
   handleTakenAction,
 }: TakenModalProps) {
@@ -25,7 +24,7 @@ export default function MedicationTakenModal({
     onOpen();
   }, [onOpen]);
 
-  const handleDeleteClick = () => {
+  const handleTakenLogic = () => {
     handleTakenAction();
     handleClose();
   };
@@ -45,20 +44,17 @@ export default function MedicationTakenModal({
           "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl justify-center items-center",
         body: "items-center justify-between",
       }}
-      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[55%] mobile:h-[40%] tablet:h-[35%] tiny:h-[75%] minimized:h-[67.5%] short:h-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[55%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
-      radius="lg"
+      radius="sm"
       placement="center"
       closeButton={<></>}
       isDismissable={false}
     >
       <ModalContent>
-        <ModalHeader>{`Mark ${medication.medicationId} as Taken?`}</ModalHeader>
+        <ModalHeader>{`Mark ${name} as Taken?`}</ModalHeader>
         <ModalBody>
-          <p className="font-normal mobile:text-lg tablet:text-xl largeDesktop:text-2xl tiny:text-md minimized:text-lg small:text-xl">
-            Once a medication has been deleted, the data cannot be restored.
-          </p>
           <div className="flex mobile:w-[70%] tablet:w-[50%] justify-between items-center largeDesktop:mb-4">
             <button
               onClick={handleClose}
@@ -67,7 +63,7 @@ export default function MedicationTakenModal({
               NO
             </button>
             <button
-              onClick={handleDeleteClick}
+              onClick={handleTakenLogic}
               className="bg-icanGreen-100 font-bold px-4 py-2 mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl"
             >
               YES

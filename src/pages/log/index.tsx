@@ -39,7 +39,7 @@ export default function Log() {
         notes: "Take with water and food before!",
         scheduledTimes: [
           {
-            time: "09:00 AM",
+            time: "10:20 AM",
             status: "pending", // Possible values: "pending", "taken", "missed"
           },
         ],
@@ -129,7 +129,7 @@ export default function Log() {
   };
 
   return (
-    <div className="bg-icanBlue-200 w-screen h-screen flex justify-between">
+    <div className="bg-icanBlue-200 w-screen min-h-screen flex justify-between">
       <div className="flex flex-col gap-y-[72px] w-full">
         <div className="flex justify-center items-center">
           <button onClick={handlePrev}>

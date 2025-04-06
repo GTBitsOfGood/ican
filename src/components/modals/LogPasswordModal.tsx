@@ -15,8 +15,13 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
+import Link from "next/link";
 
-export default function LogPasswordModal() {
+type LogPasswordType = {
+  handleNext: () => void;
+};
+
+export default function LogPasswordModal({ handleNext }: LogPasswordType) {
   const { userId } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,7 +32,6 @@ export default function LogPasswordModal() {
     onOpen();
   }, [onOpen]);
 
-  // Currently only updates pin, the logic here should be changed in the future
   const handleClick = async () => {
     if (oldPin.length < 4) {
       setError("ERROR: Pin must be 4 digits");
@@ -40,7 +44,8 @@ export default function LogPasswordModal() {
     try {
       await SettingsHTTPClient.updatePin(userId, oldPin);
       console.log("Pin successfully changed");
-      // What to do upon successful submission?
+
+      handleNext();
     } catch (error) {
       if (error instanceof Error) {
         setError(`Error: ${error.message}`);
@@ -108,18 +113,18 @@ export default function LogPasswordModal() {
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-              <a className="inline-block size-fit" href="forgot-pin">
+              <Link className="inline-block size-fit" href="/change-pin">
                 <button className="bg-white p-2 text-black text-xl">
                   Forgot Pin?
                 </button>
-              </a>
+              </Link>
             </div>
             <button
               type="submit"
               onClick={handleClick}
-              className={`self-end p-2 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
+              className={`self-end p-2 text-black text-xl bg-white`}
             >
-              {error === "" ? "Confirm" : "Try Again"}
+              {error === "" ? "Enter" : "Try Again"}
             </button>
           </div>
         </ModalBody>
