@@ -22,6 +22,7 @@ import LoadingScreen from "@/components/loadingScreen";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface HomeProps {
   activeModal: string;
@@ -35,6 +36,8 @@ export default function Home({
   const { userId } = useUser();
   const [petData, setPetData] = useState<Pet | null>(null);
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
+    useState<boolean>(false);
+  const [showSuccessModalVisible, setShowSuccessModalVisible] =
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
 
@@ -77,9 +80,12 @@ export default function Home({
       }
       const updatedPetData = await response.json();
       if (petData && updatedPetData.xpLevel > petData.xpLevel) {
+        setPetData(updatedPetData);
         setShowLevelUpModalVisible(true);
+      } else {
+        setPetData(updatedPetData);
+        setShowSuccessModalVisible(true);
       }
-      setPetData(updatedPetData);
       setSelectedFood("");
     } catch (e) {
       console.error("Error handling food drop:", e);
@@ -96,7 +102,17 @@ export default function Home({
       )}
       {activeModal === "food" && <FoodModal />}
       {showLevelUpModalVisible && (
-        <LevelUpModal setVisible={setShowLevelUpModalVisible} />
+        <LevelUpModal
+          setVisible={setShowLevelUpModalVisible}
+          level={petData?.xpLevel}
+        />
+      )}
+      {showSuccessModalVisible && (
+        <SuccessModal
+          setVisible={setShowSuccessModalVisible}
+          xp={petData?.xpGained}
+          level={petData?.xpLevel}
+        />
       )}
       {petData ? (
         <div className="min-h-screen flex flex-col relative">
