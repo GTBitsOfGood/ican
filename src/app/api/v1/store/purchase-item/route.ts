@@ -1,4 +1,4 @@
-import { validatePurchase } from "@/services/store";
+import StoreService from "@/services/store";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
@@ -12,10 +12,9 @@ export async function POST(req: NextRequest) {
       req.nextUrl.pathname.toString(),
       (await cookies()).get("auth_token")?.value,
     );
-    const { petId, itemName } = await req.json();
+    const { petId, name, type } = await req.json();
 
-    // Make into class, change function name
-    await validatePurchase(petId, itemName);
+    await StoreService.validatePurchase(petId, name, type);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

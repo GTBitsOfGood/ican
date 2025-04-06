@@ -18,7 +18,7 @@ export default function EditMedicationModal({
   const { userId } = useUser();
 
   if (initialInfo === undefined) {
-    router.push("/");
+    router.push("/medications");
     return;
   }
 
@@ -31,7 +31,7 @@ export default function EditMedicationModal({
     const { _id, ...info } = medicationInfo;
     if (_id) {
       await MedicationHTTPClient.updateMedication(_id, info);
-      router.push("/");
+      router.push("/medications");
     } else {
       throw new ValidationError("The Medication ID is missing.");
     }

@@ -1,11 +1,10 @@
-import { validateEquipItem } from "@/services/pets";
+import PetService from "@/services/pets";
 import { verifyPet } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-// Not implemented as of now
 const route = "/api/v1/pet/[petId]/equip-item";
 export async function PATCH(
   req: NextRequest,
@@ -21,9 +20,9 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    const { itemName } = await req.json();
+    const { name, type } = await req.json();
 
-    await validateEquipItem(petId, itemName);
+    await PetService.validateEquipItem(petId, name, type);
 
     return new NextResponse(null, { status: 204 });
   } catch (err) {

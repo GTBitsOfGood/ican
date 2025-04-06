@@ -1,3 +1,5 @@
+import { Appearance, SavedOutfit } from "@/db/models/pet";
+
 export enum PetType {
   DOG = "dog",
   CAT = "cat",
@@ -14,4 +16,7 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: string;
+  food: number;
+  appearance: Appearance;
+  outfits: SavedOutfit[];
 }

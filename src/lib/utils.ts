@@ -14,3 +14,7 @@ export function removeUndefinedKeys<T extends object>(obj: T): T {
     Object.entries(obj).filter((entry) => entry[1] !== undefined),
   ) as T;
 }
+
+export function ensureValuesArray<T>(obj?: Record<string, T>): T[] {
+  return obj ? Object.values(obj) : [];
+}
