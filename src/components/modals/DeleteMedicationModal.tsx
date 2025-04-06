@@ -8,17 +8,17 @@ import {
 } from "@heroui/react";
 import { useEffect } from "react";
 
-interface ChangePinModalProps {
+interface DeleteMedicationModalProps {
   medication: Medication;
   setDeleteModalVisible: (visible: boolean) => void;
   handleDelete: () => void;
 }
 
-export default function ChangePinModal({
+export default function DeleteMedicationModal({
   medication,
   setDeleteModalVisible,
   handleDelete,
-}: ChangePinModalProps) {
+}: DeleteMedicationModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {

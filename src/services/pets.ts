@@ -4,12 +4,13 @@ import {
   NotFoundError,
 } from "@/types/exceptions";
 import {
+  validateAppearance,
   validateItemAttribute,
   validateItemName,
   validatePetId,
 } from "@/utils/store";
 import BagDAO from "@/db/actions/bag";
-import { AccessoryType, storeItems } from "@/types/store";
+import storeItems from "@/lib/storeItems";
 import {
   validateCreatePet,
   validateDeletePet,
@@ -20,9 +21,11 @@ import {
 import PetDAO from "@/db/actions/pets";
 import { LEVEL_THRESHOLD, XP_GAIN } from "@/utils/constants";
 import { Types } from "mongoose";
-import { Pet } from "@/db/models/pet";
+import { Appearance, Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
 import { WithId } from "@/types/models";
+import { ItemType } from "@/types/inventory";
+import { nameIsValid } from "@/utils/validation";
 
 export default class PetService {
   static async createPet(
@@ -46,6 +49,7 @@ export default class PetService {
       food: 0,
       userId: new Types.ObjectId(userId),
       appearance: {},
+      outfits: [],
     };
 
     const insertedPet = await PetDAO.createNewPet(newPet);
@@ -111,81 +115,100 @@ export default class PetService {
     });
     return updatedPet;
   }
-}
 
-export async function validateEquipItem(petId: string, itemName: string) {
-  validatePetId(petId);
-  validateItemName(itemName);
+  static async validateEquipItem(petId: string, name: string, type: string) {
+    validatePetId(petId);
+    validateItemName(name);
+    validateItemAttribute(type);
 
-  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
-  if (!pet) {
-    throw new NotFoundError("This pet does not exist.");
+    const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
+    if (!pet) {
+      throw new NotFoundError("This pet does not exist.");
+    }
+
+    const item = storeItems?.[type]?.[name] || storeItems.accessory?.[name];
+    if (!item) {
+      throw new NotFoundError("This item does not exist.");
+    }
+
+    const dbItem = await BagDAO.getBagItemByPetIdAndName(petId, name);
+    if (!dbItem) {
+      throw new NotFoundError("This pet does not own this item.");
+    }
+
+    if (Object.values(pet.appearance || {}).includes(name)) {
+      throw new ConflictError("This item is already equipped.");
+    }
+
+    const newAppearance = pet.appearance || {};
+    newAppearance[item.type as Exclude<ItemType, ItemType.FOOD>] = name;
+    await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
   }
 
-  const item = storeItems.find((item) => item.itemName === itemName);
-  if (!item) {
-    throw new NotFoundError("This item does not exist.");
+  static async validateUnequip(petId: string, attribute: string) {
+    validatePetId(petId);
+    validateItemAttribute(attribute);
+
+    const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
+    if (!pet) {
+      throw new NotFoundError("This pet does not exist.");
+    }
+
+    const newAppearance = pet.appearance;
+    newAppearance[attribute as Exclude<ItemType, ItemType.FOOD>] = undefined;
+    await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
   }
 
-  const dbItem = await BagDAO.getBagItemByPetIdAndName(petId, itemName);
-  if (!dbItem) {
-    throw new NotFoundError("This pet does not own this item.");
+  static async validateEquipOutfit(petId: string, appearance: Appearance) {
+    validatePetId(petId);
+    validateAppearance(appearance);
+
+    const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
+    if (!pet) {
+      throw new NotFoundError("This pet does not exist.");
+    }
+
+    await PetDAO.updatePetAppearanceByPetId(petId, appearance);
   }
 
-  if (
-    Object.values(pet.appearance).includes(item.itemName) ||
-    (pet.appearance.accessories &&
-      Object.values(pet.appearance.accessories).includes(item.itemName))
-  ) {
-    throw new ConflictError("This item is already equipped.");
-  }
-  const prevAppearance = pet.appearance;
-  let newAppearance = {};
+  static async saveOutfit(petId: string, name: string, appearance: Appearance) {
+    validatePetId(petId);
+    validateAppearance(appearance);
+    nameIsValid(name);
 
-  if (Object.values(AccessoryType).includes(item.type as AccessoryType)) {
-    newAppearance = {
-      ...prevAppearance,
-      accessories: {
-        ...prevAppearance.accessories,
-        [item.type]: itemName,
-      },
-    };
-  } else {
-    newAppearance = {
-      ...prevAppearance,
-      [item.type]: itemName,
-    };
-  }
+    const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
+    if (!pet) {
+      throw new NotFoundError("This pet does not exist.");
+    }
 
-  await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
-}
+    if (pet.outfits.map((i) => i.name).includes(name)) {
+      throw new ConflictError("Outfit with this name already exists.");
+    }
 
-export async function validateUnequip(petId: string, attribute: string) {
-  validatePetId(petId);
-  validateItemAttribute(attribute);
+    if (
+      pet.outfits
+        .map((i) => JSON.stringify({ ...i, name: undefined }))
+        .includes(JSON.stringify({ ...pet.appearance, _id: undefined }))
+    ) {
+      throw new ConflictError("Similar outfit already exists.");
+    }
 
-  const pet = (await PetDAO.getPetByPetId(petId)) as Pet;
-  if (!pet) {
-    throw new NotFoundError("This pet does not exist.");
+    await PetDAO.saveOutfit(petId, appearance, name);
   }
 
-  const prevAppearance = pet.appearance;
-  let newAppearance = {};
+  static async deleteOutfit(petId: string, name: string) {
+    validatePetId(petId);
+    nameIsValid(name);
 
-  if (Object.values(AccessoryType).includes(attribute as AccessoryType)) {
-    newAppearance = {
-      ...prevAppearance,
-      accessories: {
-        ...prevAppearance.accessories,
-        [attribute]: null,
-      },
-    };
-  } else {
-    newAppearance = {
-      ...prevAppearance,
-      [attribute]: null,
-    };
+    const pet = (await PetDAO.getPetByPetId(petId))?.toObject();
+    if (!pet) {
+      throw new NotFoundError("This pet does not exist.");
+    }
+
+    if (!pet.outfits.map((i) => i.name).includes(name)) {
+      throw new NotFoundError("Outfit not found.");
+    }
+
+    await PetDAO.deleteOutfit(petId, name);
   }
-
-  await PetDAO.updatePetAppearanceByPetId(petId, newAppearance);
 }

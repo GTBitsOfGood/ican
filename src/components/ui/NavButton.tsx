@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={redirect}
-      className="relative aspect-nav-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent p-0"
+      className="z-10 relative aspect-nav-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent p-0"
       type="button"
     >
       <div className="w-full h-full">
