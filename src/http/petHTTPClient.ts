@@ -63,8 +63,8 @@ export default class PetHTTPClient {
     });
   }
 
-  static async feedPet(petId: string): Promise<void> {
-    return fetchHTTPClient<void>(`/pet/${petId}/feed`, {
+  static async feedPet(petId: string): Promise<WithId<Pet>> {
+    return fetchHTTPClient<WithId<Pet>>(`/pet/${petId}/feed`, {
       method: "PATCH",
       credentials: "include",
     });
@@ -82,9 +82,7 @@ export default class PetHTTPClient {
     return fetchHTTPClient<void>(`/pet/${petId}/equip-item`, {
       method: "PATCH",
       body: JSON.stringify(EquipItemRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -95,9 +93,7 @@ export default class PetHTTPClient {
     return fetchHTTPClient<void>(`/pet/${petId}/unequip-item`, {
       method: "PATCH",
       body: JSON.stringify(UnequipRequestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -108,9 +104,7 @@ export default class PetHTTPClient {
     return fetchHTTPClient<void>(`/pet/${petId}/equip-outfit`, {
       method: "PATCH",
       body: JSON.stringify(appearance),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -122,18 +116,14 @@ export default class PetHTTPClient {
     return fetchHTTPClient<void>(`/pet/${petId}/outfit/${name}`, {
       method: "POST",
       body: JSON.stringify(appearance),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
   static async deleteOutfit(petId: string, name: string): Promise<void> {
     return fetchHTTPClient<void>(`/pet/${petId}/outfit/${name}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 }

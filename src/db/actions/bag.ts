@@ -32,6 +32,19 @@ export default class BagDAO {
 
     return item;
   }
+
+  static async getBagItemsByPetIdAndType(
+    petId: string,
+    type: string,
+  ): Promise<HydratedDocument<BagItem>[]> {
+    await dbConnect();
+    const _petId = new Types.ObjectId(petId);
+    return await BagItemModel.find({
+      petId: _petId,
+      type,
+    });
+  }
+
   static async getPetBagGroupedByType(petIdString: string) {
     await dbConnect();
     const petId = new Types.ObjectId(petIdString);

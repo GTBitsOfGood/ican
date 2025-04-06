@@ -28,4 +28,10 @@ export default class BagService {
     });
     return result;
   }
+
+  static async getPetFoods(petId: string): Promise<string[]> {
+    validatePetId(petId);
+    const foods = await BagDAO.getBagItemsByPetIdAndType(petId, "food");
+    return foods.map((food) => storeItems[food.type][food.name].displayName);
+  }
 }

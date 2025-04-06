@@ -211,4 +211,11 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/bag/[petId]/foods": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+    },
+  },
 };

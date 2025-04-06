@@ -16,6 +16,7 @@ export interface Pet {
   xpLevel: number;
   coins: number;
   userId: string;
+  food: number;
   appearance: Appearance;
   outfits: SavedOutfit[];
 }

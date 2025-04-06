@@ -16,6 +16,8 @@ interface PetAppearanceProps {
   appearance: Appearance;
   className: string;
   outfitOnly?: boolean;
+  onDragOver?: (e: React.DragEvent<HTMLImageElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLImageElement>) => void;
 }
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
@@ -24,6 +26,8 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
   appearance,
   className,
   outfitOnly = false,
+  onDragOver,
+  onDrop,
 }) => {
   return (
     <div className={`${className} flex items-center justify-center w-full`}>
@@ -34,6 +38,8 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
           width={characterImages[petType].width}
           height={characterImages[petType].height}
           draggable="false"
+          onDragOver={onDragOver}
+          onDrop={onDrop}
           className="object-contain pointer-events-none select-none relative z-10"
         />
       )}

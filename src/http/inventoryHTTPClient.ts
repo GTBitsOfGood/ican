@@ -12,9 +12,7 @@ export default class InventoryHTTPClient {
     return fetchHTTPClient<void>("/store/purchase-item", {
       method: "POST",
       body: JSON.stringify(requestBody),
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
     });
   }
 
@@ -23,9 +21,14 @@ export default class InventoryHTTPClient {
   ): Promise<Record<string, InventoryItem[]>> {
     return fetchHTTPClient<Record<string, InventoryItem[]>>(`/bag/${petId}`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+      credentials: "include",
+    });
+  }
+
+  static async getPetFoods(petId: string): Promise<string[]> {
+    return fetchHTTPClient<string[]>(`/bag/${petId}/foods`, {
+      method: "GET",
+      credentials: "include",
     });
   }
 }

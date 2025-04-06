@@ -1,12 +1,12 @@
-import PetService from "@/services/pets";
-import { verifyPet } from "@/utils/auth";
+import { NextRequest, NextResponse } from "next/server";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import BagService from "@/services/bag";
+import { verifyPet } from "@/utils/auth";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
-const route = "/api/v1/pet/[petId]/equip-outfit";
-export async function PATCH(
+const route = "/api/v1/bag/[petId]/foods";
+export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ petId: string }> },
 ) {
@@ -20,12 +20,10 @@ export async function PATCH(
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
-    const appearance = await req.json();
+    const items = await BagService.getPetFoods(petId);
 
-    await PetService.validateEquipOutfit(petId, appearance);
-
-    return new NextResponse(null, { status: 204 });
-  } catch (err) {
-    return handleError(err);
+    return NextResponse.json(items, { status: 200 });
+  } catch (error) {
+    return handleError(error);
   }
 }
