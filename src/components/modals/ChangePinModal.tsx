@@ -15,9 +15,11 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
+import { useRouter } from "next/router";
 
 export default function ChangePinModal() {
   const { userId } = useUser();
+  const router = useRouter();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [oldPin, setOldPin] = useState<string>("");
@@ -40,6 +42,7 @@ export default function ChangePinModal() {
     try {
       await SettingsHTTPClient.updatePin(userId, oldPin);
       console.log("Pin successfully changed");
+      router.push("/");
       // What to do upon successful submission?
     } catch (error) {
       if (error instanceof Error) {

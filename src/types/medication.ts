@@ -4,7 +4,7 @@ export type Time12Hour = { time: string; period: "AM" | "PM" };
 
 export interface MedicationInfo {
   formOfMedication?: "Pill" | "Syrup" | "Shot";
-  medicationId: string;
+  customMedicationId: string;
 
   repeatUnit?: "Day" | "Week" | "Month";
   repeatInterval?: number;

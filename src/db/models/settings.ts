@@ -6,7 +6,7 @@ export interface Settings {
   notifications: boolean;
   helpfulTips: boolean;
   largeFontSize: boolean;
-  pin: string;
+  pin: string | null;
 }
 
 export interface SettingsDocument extends Settings, Document {
@@ -15,12 +15,18 @@ export interface SettingsDocument extends Settings, Document {
 
 const settingsSchema = new Schema<SettingsDocument>(
   {
-    userId: { type: Schema.ObjectId, required: true, index: true, ref: "User" },
+    userId: {
+      type: Schema.ObjectId,
+      required: true,
+      index: true,
+      ref: "User",
+      immutable: true,
+    },
     parentalControl: { type: Boolean, required: true },
     notifications: { type: Boolean, required: true },
     helpfulTips: { type: Boolean, required: true },
     largeFontSize: { type: Boolean, required: true },
-    pin: { type: String, required: true },
+    pin: { type: String, required: false },
   },
   { timestamps: true },
 );

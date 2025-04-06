@@ -23,7 +23,7 @@ export const baseMedicationSchema = z.object({
     }),
   }),
 
-  medicationId: z
+  customMedicationId: z
     .string()
     .nonempty(ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID)
     .max(5, ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID),
@@ -235,11 +235,8 @@ const createMedicationSchema = baseMedicationSchema
   })
   .superRefine(medicationRefine);
 
-export const updateMedicationSchema = baseMedicationSchema
-  .extend({
-    userId: objectIdSchema("UserId").optional(),
-  })
-  .superRefine(medicationRefine);
+export const updateMedicationSchema =
+  baseMedicationSchema.superRefine(medicationRefine);
 
 export const getMedicationSchema = z.object({
   id: objectIdSchema("medicationId"),

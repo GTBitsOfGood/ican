@@ -65,6 +65,7 @@ const petSchema = new Schema<PetDocument>(
       required: true,
       index: true,
       ref: "User",
+      immutable: true,
     },
     food: {
       type: Number,

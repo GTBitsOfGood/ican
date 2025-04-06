@@ -7,7 +7,7 @@ import { MedicationInfo } from "@/types/medication";
 
 export const initialAddMedicationInfo: MedicationInfo = {
   formOfMedication: undefined,
-  medicationId: "",
+  customMedicationId: "",
   repeatUnit: undefined,
   repeatInterval: undefined,
   repeatWeeklyOn: [],

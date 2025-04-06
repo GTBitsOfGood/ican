@@ -7,7 +7,7 @@ import { PetProvider } from "@/components/petContext";
 import { FoodProvider } from "@/components/FoodContext";
 
 const clientId =
-  "652062504464-p2onuoqfa412mqojrjmh27k47qqbal03.apps.googleusercontent.com";
+  "809032743829-4ucb77e47tfhv196gkdtu2e2uj278ghl.apps.googleusercontent.com";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (

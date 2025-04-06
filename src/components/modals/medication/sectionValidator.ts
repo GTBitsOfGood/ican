@@ -36,7 +36,7 @@ export default function SectionValidator({
       if (info.formOfMedication === undefined) {
         return { error: "Select a Form Of Medication." };
       }
-      if (info.medicationId == "") {
+      if (info.customMedicationId == "") {
         return { error: "Medication ID is required." };
       }
       break;

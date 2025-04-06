@@ -1,7 +1,11 @@
 import SettingsDAO from "@/db/actions/settings";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
-import { ConflictError, NotFoundError } from "@/types/exceptions";
+import {
+  ConflictError,
+  InvalidArgumentsError,
+  NotFoundError,
+} from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
   validateCreateSettings,
@@ -29,9 +33,8 @@ export default class SettingsService {
       largeFontSize: true,
       notifications: true,
       parentalControl: true,
-      pin: "0000",
+      pin: null,
     };
-
     const settings = await SettingsDAO.createNewSettings(newSettings);
     if (!settings) {
       throw new Error(ERRORS.SETTINGS.FAILURE.CREATE);
@@ -55,11 +58,6 @@ export default class SettingsService {
     updatedSettings: UpdateSettingsRequestBody,
   ): Promise<void> {
     updatedSettings = removeUndefinedKeys(updatedSettings);
-    // Or should we just let it throw an error for this case?
-    // if (Object.keys(updatedSettings).length === 0) {
-    //   // Return early if no settings to update
-    //   return;
-    // }
     const validatedSettings = validateUpdateSettings({
       userId: userIdString,
       ...updatedSettings,
@@ -82,6 +80,10 @@ export default class SettingsService {
     }
 
     if (pin) {
+      if (settings.pin && (await HashingService.compare(pin, settings.pin))) {
+        throw new InvalidArgumentsError(ERRORS.SETTINGS.INVALID_ARGUMENTS.PIN);
+      }
+
       const encryptedPin = await HashingService.hash(pin);
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,

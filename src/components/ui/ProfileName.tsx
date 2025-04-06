@@ -9,15 +9,19 @@ interface ProfileNameProps {
 
 const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   const { userId } = useUser();
-  // Basic placeholder logic
   const [isEditing, setEditing] = useState(false);
   const [name, setName] = useState(initialName);
-  const [inputWidth, setInputWidth] = useState(0);
-  const spanRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const toggleEditing = async () => {
-    if (isEditing && name != initialName) {
+    if (name.trim() === "") {
+      setName(initialName);
+      // Temporary alert popup until a better component can be made
+      alert("Name cannot be empty");
+      return;
+    }
+
+    if (name.trim() !== "" && isEditing && name != initialName) {
       try {
         await PetHTTPClient.updatePet(name, userId as string);
         initialName = name;
@@ -26,45 +30,36 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
         console.error("Error updating pet data:", error);
       }
     }
-
     setEditing((prev) => !prev);
   };
 
   useEffect(() => {
-    if (spanRef.current) {
-      setInputWidth(spanRef.current.offsetWidth);
-    }
-  }, [name]);
-
-  useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
+      inputRef.current.setSelectionRange(name.length, name.length);
     }
-  }, [isEditing]);
+  }, [isEditing, name]);
 
   return (
     <div className="relative inline-flex flex-row flex-1 h-full items-center">
-      {/* Reference span to correctly calculate width of input */}
-      <span
-        ref={spanRef}
-        className="absolute invisible whitespace-pre text-[2rem] font-bold"
-      >
-        {"_" + name}
-      </span>
       <input
         className={`
-          text-[2rem] text-shadow-[#603A0C] paint-stroke text-stroke-4 text-stroke-[#482D0D] font-quantico font-bold bg-transparent text-white
-          ${!isEditing ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none" : "animate-pulse outline-dashed outline-white outline-2"}
+          text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          w-auto min-w-[4rem] max-w-full
+          ${
+            !isEditing
+              ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none"
+              : "animate-pulse outline-dashed outline-white outline-2"
+          }
         `}
         type="text"
         ref={inputRef}
         value={name}
-        style={{ width: `${inputWidth}px` }}
         readOnly={!isEditing}
         onChange={(e) => setName(e.target.value)}
-        maxLength={9}
+        maxLength={20}
+        style={{ width: `${Math.max(name.length, 3)}ch` }}
       />
-
       <button
         className="relative h-3/5 w-fit ml-1 inline-block"
         onClick={toggleEditing}

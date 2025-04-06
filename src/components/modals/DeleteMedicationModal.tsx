@@ -54,7 +54,7 @@ export default function DeleteMedicationModal({
       isDismissable={false}
     >
       <ModalContent>
-        <ModalHeader>{`Are you sure you want to delete ${medication.medicationId}?`}</ModalHeader>
+        <ModalHeader>{`Are you sure you want to delete ${medication.customMedicationId}?`}</ModalHeader>
         <ModalBody>
           <p className="font-normal mobile:text-lg tablet:text-xl largeDesktop:text-2xl tiny:text-md minimized:text-lg small:text-xl">
             Once a medication has been deleted, the data cannot be restored.

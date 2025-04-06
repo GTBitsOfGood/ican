@@ -6,9 +6,11 @@ export const generateAPIAuthCookie = async (
   token: string,
 ): Promise<NextResponse<unknown>> => {
   const expirationDate = generateCookieExpirationTime();
+  const isProduction = process.env.NODE_ENV === "production";
 
   nextResponse.cookies.set("auth_token", token, {
     httpOnly: true,
+    secure: isProduction,
     expires: expirationDate,
   });
 

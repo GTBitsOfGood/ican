@@ -16,11 +16,15 @@ export const handleError = (error: unknown) => {
 
   if (error instanceof Error) {
     if (error instanceof ZodError) {
+      const errorMessage = error.errors
+        .map((err) => `${err.path.join(".")}: ${err.message}`)
+        .join("; ");
+
       return NextResponse.json(
         {
-          errors: error.errors,
+          error: errorMessage,
         },
-        { status },
+        { status: 400 },
       );
     }
 

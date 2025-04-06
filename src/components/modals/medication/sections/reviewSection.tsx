@@ -38,7 +38,7 @@ export default function ReviewSection({
             ID
           </div>
           <div className="flex justify-start basis-[calc(100%-36px)] smallTablet:basis-[calc(100%-41px)] tablet:basis-[calc(100%-191px)] desktop:basis-[calc(100%-251px)] gap-2">
-            {info.medicationId
+            {info.customMedicationId
               .padEnd(5)
               .split("")
               .map((value, i) => (

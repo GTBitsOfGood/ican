@@ -33,23 +33,23 @@ export default class MedicationDAO {
     return await MedicationModel.findById(_id);
   }
 
-  static async getUserMedicationByMedicationId(
-    medicationId: string,
+  static async getUserMedicationByCustomMedicationId(
+    customMedicationId: string,
     _userId: string | Types.ObjectId,
   ): Promise<HydratedDocument<MedicationDocument> | null> {
     const userId =
       _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
     await dbConnect();
-    return await MedicationModel.findOne({ medicationId, userId });
+    return await MedicationModel.findOne({ customMedicationId, userId });
   }
 
   static async updateMedicationById(
     id: string,
-    updateObj: Medication,
+    updateObj: Partial<Omit<Medication, "userId">>,
   ): Promise<void> {
     const _id = new Types.ObjectId(id);
     await dbConnect();
-    await MedicationModel.replaceOne({ _id }, updateObj);
+    await MedicationModel.updateOne({ _id }, { $set: updateObj });
   }
 
   static async deleteMedicationById(

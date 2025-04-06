@@ -8,6 +8,15 @@ export interface MedicationLogBody {
 }
 
 export default class MedicationHTTPClient {
+  static async getAllUserMedications(
+    userId: string,
+  ): Promise<WithId<Medication>[]> {
+    return await fetchHTTPClient(`/medications/${userId}`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
+
   static async createMedication(
     userId: string,
     medicationInfo: MedicationInfo,
@@ -36,6 +45,13 @@ export default class MedicationHTTPClient {
     return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "PATCH",
       body: JSON.stringify(medicationInfo),
+      credentials: "include",
+    });
+  }
+
+  static async deleteMedication(medicationId: string) {
+    return await fetchHTTPClient(`/medication/${medicationId}`, {
+      method: "DELETE",
       credentials: "include",
     });
   }

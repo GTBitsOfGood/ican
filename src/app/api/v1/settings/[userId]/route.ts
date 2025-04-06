@@ -44,6 +44,7 @@ export async function PATCH(
 
     const { helpfulTips, largeFontSize, notifications, parentalControl } =
       await req.json();
+
     await SettingsService.updateSettings(userId, {
       helpfulTips,
       largeFontSize,

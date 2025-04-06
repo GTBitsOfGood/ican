@@ -14,6 +14,6 @@ export async function POST() {
       { status: 200 },
     );
   } catch (error) {
-    handleError(error);
+    return handleError(error);
   }
 }

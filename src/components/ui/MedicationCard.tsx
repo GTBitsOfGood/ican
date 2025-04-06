@@ -2,10 +2,11 @@ import React from "react";
 import { Pill, Trash, PencilSimple } from "@phosphor-icons/react";
 import { Medication } from "@/db/models/medication";
 import { convertTo12Hour } from "@/utils/time";
+import { WithId } from "@/types/models";
 
 interface MedicationCardProps {
   index: number;
-  medication: Medication;
+  medication: WithId<Medication>;
   setDeleteModalVisible: (visible: boolean) => void;
   setClickedIndex: (index: number) => void;
 }
@@ -72,7 +73,7 @@ export default function MedicationCard({
             weight="light"
           />
           <h1 className="mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-quantico underline">
-            {medication.medicationId}
+            {medication.customMedicationId}
           </h1>
         </div>
         <div className="flex flex-col w-full">
@@ -109,7 +110,7 @@ export default function MedicationCard({
           weight="light"
         />
         <a
-          href="/edit-new-medication"
+          href={`/edit-medication/${medication._id}`}
           target="_blank"
           className="hover:cursor-pointer"
         >

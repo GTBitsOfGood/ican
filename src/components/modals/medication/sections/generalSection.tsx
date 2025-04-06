@@ -52,14 +52,14 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
       <FormSubtitle>Create a medication ID of up to 5 characters</FormSubtitle>
       <IDInput
         values={
-          info.medicationId
-            ? [...info.medicationId.split(""), "", "", "", ""].slice(0, 5)
+          info.customMedicationId
+            ? [...info.customMedicationId.split(""), "", "", "", ""].slice(0, 5)
             : ["", "", "", "", ""]
         }
         setValues={(newValues: string[]) =>
           setInfo((prev) => {
             const temp = { ...prev };
-            temp.medicationId = newValues.join("") as string;
+            temp.customMedicationId = newValues.join("") as string;
             return temp;
           })
         }
