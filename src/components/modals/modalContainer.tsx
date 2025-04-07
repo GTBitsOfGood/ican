@@ -21,7 +21,7 @@ export default function ModalContainer({
       <div
         className={`flex ${back ? "justify-between" : "justify-center"} items-start`}
       >
-        <div className="border-b tablet:border-b-2 font-bold text-2xl tablet:text-4xl">
+        <div className="text-white border-b tablet:border-b-2 font-bold text-2xl tablet:text-4xl">
           {title}
         </div>
         {typeof back === "string" ? (
