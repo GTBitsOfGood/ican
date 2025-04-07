@@ -64,8 +64,7 @@ export default function MedicationCard({
     <div className="bg-white p-4 text-black flex flex-col justify-between gap-6 items-center shadow-medicationCardShadow">
       <a
         className="flex w-full flex-col gap-4 items-center"
-        href="/medications/edit"
-        target="_blank"
+        href={`/medications/edit/${medication._id}`}
       >
         <div className="flex items-center gap-2 self-start mb-4">
           <Pill
@@ -110,8 +109,7 @@ export default function MedicationCard({
           weight="light"
         />
         <a
-          href={`/edit-medication/${medication._id}`}
-          target="_blank"
+          href={`/medications/edit/${medication._id}`}
           className="hover:cursor-pointer"
         >
           <PencilSimple
