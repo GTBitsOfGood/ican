@@ -16,6 +16,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
 import Link from "next/link";
+import ERRORS from "@/utils/errorMessages";
 
 type LogPasswordType = {
   handleNext: () => void;
@@ -25,7 +26,7 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
   const { userId } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [oldPin, setOldPin] = useState<string>("");
+  const [pin, setPin] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -33,17 +34,17 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
   }, [onOpen]);
 
   const handleClick = async () => {
-    if (oldPin.length < 4) {
-      setError("ERROR: Pin must be 4 digits");
-      return;
-    }
     if (!userId) {
       setError("You must be logged in to perform this action");
       return;
     }
     try {
-      await SettingsHTTPClient.updatePin(userId, oldPin);
+      const isValid = await SettingsHTTPClient.verifyPin(userId, pin);
       console.log("Pin successfully changed");
+
+      if (!isValid) {
+        setError(ERRORS.SETTINGS.UNAUTHORIZED.VERIFY_PIN);
+      }
 
       handleNext();
     } catch (error) {
@@ -87,7 +88,7 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
                 <InputOTP
                   maxLength={4}
                   onChange={(newValue: string) => {
-                    setOldPin(newValue);
+                    setPin(newValue);
                     setError("");
                   }}
                   pattern={REGEXP_ONLY_DIGITS}

@@ -173,6 +173,13 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/settings/verify-pin": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/pet/[petId]/equip-item": {
     allowedMethods: {
       PATCH: {

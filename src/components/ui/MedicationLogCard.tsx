@@ -75,20 +75,31 @@ export default function MedicationLogCard({
   //   setShowSuccessModal(!showSuccessModal);
   // };
 
-  const calculateTimeLeft = () => {
-    const { minutes, hours, seconds } = standardizeTime(scheduledDoseTime);
+  const generateTimeLeftFormat = (): string => {
+    const { hours, minutes, seconds } = standardizeTime(scheduledDoseTime);
 
-    if (minutes < 0 || hours < 0 || seconds < 0) status = "missed";
-    return { hours, minutes, seconds };
-  };
+    const now = new Date();
 
-  const generateTimeLeftFormat = () => {
-    const { minutes, seconds } = calculateTimeLeft();
-    const min = String(minutes);
+    // Create a Date object for today at the scheduled time
+    const scheduled = new Date(now);
+    scheduled.setHours(hours, minutes, seconds, 0);
 
-    const sec = String(seconds);
+    const timeDiffMs = scheduled.getTime() - now.getTime();
 
-    return min.padStart(2, "0") + ":" + sec.padStart(2, "0");
+    const totalSeconds = Math.floor(timeDiffMs / 1000);
+    // 15 because timeout is 15 minutes before dose time and 15 miiutes after
+    const leftMinutes = Math.floor(totalSeconds / 60) + 15;
+    const leftSeconds = Math.abs(totalSeconds) % 60;
+
+    if (leftMinutes < 0) {
+      status = "missed";
+    }
+
+    return (
+      String(leftMinutes).padStart(2, "0") +
+      ":" +
+      String(leftSeconds).padStart(2, "0")
+    );
   };
 
   return (
