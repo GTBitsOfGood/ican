@@ -60,6 +60,8 @@ export default class MedicationHTTPClient {
   static async medicationCheckIn(medicationId: string): Promise<void> {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
+      body: JSON.stringify({}),
+      credentials: "include",
     });
   }
 
@@ -71,6 +73,7 @@ export default class MedicationHTTPClient {
     return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
+      credentials: "include",
     });
   }
   // date must be in yyyy-mm-dd format

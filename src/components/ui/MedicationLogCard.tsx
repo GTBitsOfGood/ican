@@ -7,8 +7,10 @@ import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
+import MedicationHTTPClient from "@/http/medicationHTTPClient";
 
 export default function MedicationLogCard({
+  id,
   name,
   dosage,
   notes,
@@ -24,12 +26,6 @@ export default function MedicationLogCard({
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-  const handleTakeClick = () => {
-    togglePasswordModal();
-  };
-  const handleMissedDoseClick = () => {
-    toggleMissedDoseModal();
-  };
 
   const lastTakenTime = () => {
     const date = new Date(lastTaken);
@@ -49,7 +45,8 @@ export default function MedicationLogCard({
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
-  const handleTakeMedicationAction = () => {
+  const handleTakeMedicationAction = async () => {
+    await MedicationHTTPClient.medicationCheckIn(id);
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
@@ -160,7 +157,7 @@ export default function MedicationLogCard({
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
-              onClick={handleTakeClick}
+              onClick={togglePasswordModal}
             >
               Take
             </button>
@@ -169,7 +166,7 @@ export default function MedicationLogCard({
         {status === "missed" && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
-            onClick={handleMissedDoseClick}
+            onClick={toggleMissedDoseModal}
           >
             Missed Dose
           </button>
