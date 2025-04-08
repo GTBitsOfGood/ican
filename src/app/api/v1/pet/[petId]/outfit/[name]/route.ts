@@ -12,7 +12,12 @@ export async function POST(
   { params }: { params: Promise<{ petId: string; name: string }> },
 ) {
   try {
-    const tokenUser = await validateRoutes(req, req.method, route);
+    const tokenUser = await validateRoutes(
+      req,
+      req.method,
+      route,
+      (await cookies()).get("auth_token")?.value,
+    );
     const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
