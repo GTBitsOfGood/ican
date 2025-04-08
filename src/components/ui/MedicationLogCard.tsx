@@ -7,8 +7,10 @@ import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
+import MedicationHTTPClient from "@/http/medicationHTTPClient";
 
 export default function MedicationLogCard({
+  id,
   name,
   dosage,
   notes,
@@ -24,12 +26,7 @@ export default function MedicationLogCard({
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-  const handleTakeClick = () => {
-    togglePasswordModal();
-  };
-  const handleMissedDoseClick = () => {
-    toggleMissedDoseModal();
-  };
+  const [pin, setPin] = useState<string>("");
 
   const lastTakenTime = () => {
     const date = new Date(lastTaken);
@@ -49,7 +46,8 @@ export default function MedicationLogCard({
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
-  const handleTakeMedicationAction = () => {
+  const handleTakeMedicationAction = async () => {
+    await MedicationHTTPClient.medicationLog(id, pin);
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
@@ -58,7 +56,8 @@ export default function MedicationLogCard({
     setShowMissedDoseModal(!showMissedDoseModal);
   };
 
-  const togglePasswordModal = () => {
+  const togglePasswordModal = async () => {
+    await MedicationHTTPClient.medicationCheckIn(id);
     setShowPasswordModal(!showPasswordModal);
   };
 
@@ -71,24 +70,31 @@ export default function MedicationLogCard({
     setShowConfirmModal(!showConfirmModal);
   };
 
-  // const toggleSuccessModal = () => {
-  //   setShowSuccessModal(!showSuccessModal);
-  // };
+  const generateTimeLeftFormat = (): string => {
+    const { hours, minutes, seconds } = standardizeTime(scheduledDoseTime);
 
-  const calculateTimeLeft = () => {
-    const { minutes, hours, seconds } = standardizeTime(scheduledDoseTime);
+    const now = new Date();
 
-    if (minutes < 0 || hours < 0 || seconds < 0) status = "missed";
-    return { hours, minutes, seconds };
-  };
+    // Create a Date object for today at the scheduled time
+    const scheduled = new Date(now);
+    scheduled.setHours(hours, minutes, seconds, 0);
 
-  const generateTimeLeftFormat = () => {
-    const { minutes, seconds } = calculateTimeLeft();
-    const min = String(minutes);
+    const timeDiffMs = scheduled.getTime() - now.getTime();
 
-    const sec = String(seconds);
+    const totalSeconds = Math.floor(timeDiffMs / 1000);
+    // 15 because timeout is 15 minutes before dose time and 15 miiutes after
+    const leftMinutes = Math.floor(totalSeconds / 60) + 15;
+    const leftSeconds = Math.abs(totalSeconds) % 60;
 
-    return min.padStart(2, "0") + ":" + sec.padStart(2, "0");
+    if (leftMinutes < 0) {
+      status = "missed";
+    }
+
+    return (
+      String(leftMinutes).padStart(2, "0") +
+      ":" +
+      String(leftSeconds).padStart(2, "0")
+    );
   };
 
   return (
@@ -103,7 +109,10 @@ export default function MedicationLogCard({
         />
       )}
       {showPasswordModal && (
-        <LogPasswordModal handleNext={handlePasswordConfirmationNext} />
+        <LogPasswordModal
+          handleNext={handlePasswordConfirmationNext}
+          setPin={setPin}
+        />
       )}
       {showConfirmModal && (
         <MedicationTakenModal
@@ -149,7 +158,7 @@ export default function MedicationLogCard({
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
-              onClick={handleTakeClick}
+              onClick={togglePasswordModal}
             >
               Take
             </button>
@@ -158,7 +167,7 @@ export default function MedicationLogCard({
         {status === "missed" && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
-            onClick={handleMissedDoseClick}
+            onClick={toggleMissedDoseModal}
           >
             Missed Dose
           </button>

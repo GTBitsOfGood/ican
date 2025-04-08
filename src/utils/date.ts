@@ -44,8 +44,6 @@ export const humanizeLastTakenTime = (lastTaken: string) => {
     time = `${hours}:${minutes} AM`;
   }
 
-  console.log(date.getDay());
-
   const month = getMonthToName(date.getMonth() + 1);
   const day = `${date.getDate()}${getDaySuffix(date.getDate())}`;
 

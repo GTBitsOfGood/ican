@@ -1,5 +1,6 @@
 import { Medication } from "@/db/models/medication";
 import fetchHTTPClient from "@/http/fetchHTTPClient";
+import { LogType } from "@/types/log";
 import { MedicationInfo } from "@/types/medication";
 import { WithId } from "@/types/models";
 
@@ -59,6 +60,8 @@ export default class MedicationHTTPClient {
   static async medicationCheckIn(medicationId: string): Promise<void> {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
+      body: JSON.stringify({}),
+      credentials: "include",
     });
   }
 
@@ -70,6 +73,20 @@ export default class MedicationHTTPClient {
     return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
       body: JSON.stringify(medicationLogBody),
+      credentials: "include",
     });
+  }
+  // date must be in yyyy-mm-dd format
+  static async getMedicationSchedule(
+    userId: string,
+    date: string,
+  ): Promise<{ date: string; medications: LogType[] }> {
+    return fetchHTTPClient<{ date: string; medications: LogType[] }>(
+      `/medications/${userId}/schedule?date=${date}`,
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    );
   }
 }

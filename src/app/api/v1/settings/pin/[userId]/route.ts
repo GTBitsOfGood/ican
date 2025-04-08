@@ -19,7 +19,7 @@ export async function PATCH(
       (await cookies()).get("auth_token")?.value,
     );
     const userId = (await params).userId;
-    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED);
+    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.UserID);
 
     const { pin } = await req.json();
     await SettingsService.updatePin(userId, pin);
