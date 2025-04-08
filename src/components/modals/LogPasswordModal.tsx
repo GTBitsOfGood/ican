@@ -13,25 +13,17 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useUser } from "../UserContext";
 import Link from "next/link";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 
 type LogPasswordType = {
   handleNext: () => void;
-  medicationId: string;
-  pin: string;
   setPin: Dispatch<SetStateAction<string>>;
 };
 
 export default function LogPasswordModal({
   handleNext,
-  medicationId,
-  pin,
   setPin,
 }: LogPasswordType) {
-  const { userId } = useUser();
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [error, setError] = useState<string>("");
 
@@ -40,14 +32,7 @@ export default function LogPasswordModal({
   }, [onOpen]);
 
   const handleClick = async () => {
-    if (!userId) {
-      setError("You must be logged in to perform this action");
-      return;
-    }
     try {
-      await MedicationHTTPClient.medicationLog(medicationId, pin);
-      console.log("Log successfully made");
-
       handleNext();
     } catch (error) {
       if (error instanceof Error) {

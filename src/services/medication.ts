@@ -110,6 +110,7 @@ export default class MedicationService {
       now.getMonth(),
       now.getDate(),
     );
+    currentDate.setUTCHours(0, 0, 0, 0);
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
@@ -181,6 +182,7 @@ export default class MedicationService {
       now.getMonth(),
       now.getDate(),
     );
+    currentDate.setUTCHours(0, 0, 0, 0);
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(

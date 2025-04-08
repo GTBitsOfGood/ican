@@ -70,10 +70,6 @@ export default function MedicationLogCard({
     setShowConfirmModal(!showConfirmModal);
   };
 
-  // const toggleSuccessModal = () => {
-  //   setShowSuccessModal(!showSuccessModal);
-  // };
-
   const generateTimeLeftFormat = (): string => {
     const { hours, minutes, seconds } = standardizeTime(scheduledDoseTime);
 
@@ -115,8 +111,6 @@ export default function MedicationLogCard({
       {showPasswordModal && (
         <LogPasswordModal
           handleNext={handlePasswordConfirmationNext}
-          medicationId={id}
-          pin={pin}
           setPin={setPin}
         />
       )}
