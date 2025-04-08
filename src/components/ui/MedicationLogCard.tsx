@@ -29,6 +29,10 @@ export default function MedicationLogCard({
   const [pin, setPin] = useState<string>("");
 
   const lastTakenTime = () => {
+    if (!lastTaken) {
+      return "N/A";
+    }
+
     const date = new Date(lastTaken);
     const hours = date.getHours().toString().padStart(2, "0");
     const minutes = date.getMinutes().toString().padStart(2, "0");

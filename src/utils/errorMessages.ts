@@ -83,7 +83,7 @@ const ERRORS = Object.freeze({
   },
   SETTINGS: {
     INVALID_ARGUMENTS: {
-      UserID: "UserID is required and must be a valid ObjectID.",
+      USER_ID: "UserID is required and must be a valid ObjectID.",
       PIN: "New pin must be different from current pin.",
     },
     NOT_FOUND: "Settings do not exist for this user",

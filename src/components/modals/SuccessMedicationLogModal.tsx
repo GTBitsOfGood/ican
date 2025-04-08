@@ -26,7 +26,7 @@ export default function SuccessMedicationModal() {
           "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl justify-center items-center",
         body: "items-center justify-between",
       }}
-      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[45%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[50%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"

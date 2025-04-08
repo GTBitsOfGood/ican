@@ -28,6 +28,9 @@ export const humanizeDate = (date: Date) => {
 };
 
 export const humanizeLastTakenTime = (lastTaken: string) => {
+  if (!lastTaken) {
+    return "N/A";
+  }
   // 2025-03-09T09:00:00Z
   // 9:00 AM, March 9th
   const date = new Date(lastTaken);
