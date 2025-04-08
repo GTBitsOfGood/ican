@@ -44,16 +44,4 @@ export default class SettingsHTTPClient {
       credentials: "include",
     });
   }
-
-  static async verifyPin(userId: string, pin: string): Promise<boolean> {
-    const verifyPinRequestBody = {
-      pin,
-      userId,
-    };
-    return fetchHTTPClient<boolean>(`/settings/verify-pin`, {
-      method: "POST",
-      body: JSON.stringify(verifyPinRequestBody),
-      credentials: "include",
-    });
-  }
 }

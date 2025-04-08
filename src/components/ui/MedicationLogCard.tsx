@@ -26,6 +26,7 @@ export default function MedicationLogCard({
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [pin, setPin] = useState<string>("");
 
   const lastTakenTime = () => {
     const date = new Date(lastTaken);
@@ -46,7 +47,7 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = async () => {
-    await MedicationHTTPClient.medicationCheckIn(id);
+    await MedicationHTTPClient.medicationLog(id, pin);
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
@@ -55,7 +56,8 @@ export default function MedicationLogCard({
     setShowMissedDoseModal(!showMissedDoseModal);
   };
 
-  const togglePasswordModal = () => {
+  const togglePasswordModal = async () => {
+    await MedicationHTTPClient.medicationCheckIn(id);
     setShowPasswordModal(!showPasswordModal);
   };
 
@@ -111,7 +113,12 @@ export default function MedicationLogCard({
         />
       )}
       {showPasswordModal && (
-        <LogPasswordModal handleNext={handlePasswordConfirmationNext} />
+        <LogPasswordModal
+          handleNext={handlePasswordConfirmationNext}
+          medicationId={id}
+          pin={pin}
+          setPin={setPin}
+        />
       )}
       {showConfirmModal && (
         <MedicationTakenModal

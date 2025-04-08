@@ -405,6 +405,7 @@ export function processDoseTime(
   medicationLogs: MedicationLogDocument[],
 ) {
   const [hours, minutes] = time.split(":").map(Number);
+  console.log(hours, minutes);
   let status: "pending" | "taken" | "missed" = "pending";
   let canCheckIn = false;
 
@@ -414,10 +415,15 @@ export function processDoseTime(
   const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
   const utcMinute = (minutes + offsetMinutes) % 60;
 
+  console.log(offsetMinutes, utcHour, utcHour);
+
   doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+
+  console.log(medicationLogs);
 
   const matchingLog = medicationLogs.find((log) => {
     const logDate = new Date(log.dateTaken);
+    console.log(logDate.getTime(), doseTime.getTime());
     return Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
   });
 
@@ -427,14 +433,15 @@ export function processDoseTime(
     const now = new Date();
     const currentDate = new Date(
       now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
+      now.getUTCMonth() + 1,
+      now.getUTCDate(),
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
 
     const givenDate = new Date(date);
 
     if (currentDate.getTime() === givenDate.getTime()) {
+      console.log(now.getTime() - doseTime.getTime());
+
       canCheckIn =
         Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
     }

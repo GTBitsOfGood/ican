@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import {
   Modal,
   ModalContent,
@@ -13,20 +13,26 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
 import Link from "next/link";
-import ERRORS from "@/utils/errorMessages";
+import MedicationHTTPClient from "@/http/medicationHTTPClient";
 
 type LogPasswordType = {
   handleNext: () => void;
+  medicationId: string;
+  pin: string;
+  setPin: Dispatch<SetStateAction<string>>;
 };
 
-export default function LogPasswordModal({ handleNext }: LogPasswordType) {
+export default function LogPasswordModal({
+  handleNext,
+  medicationId,
+  pin,
+  setPin,
+}: LogPasswordType) {
   const { userId } = useUser();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [pin, setPin] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -39,12 +45,8 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
       return;
     }
     try {
-      const isValid = await SettingsHTTPClient.verifyPin(userId, pin);
-      console.log("Pin successfully changed");
-
-      if (!isValid) {
-        setError(ERRORS.SETTINGS.UNAUTHORIZED.VERIFY_PIN);
-      }
+      await MedicationHTTPClient.medicationLog(medicationId, pin);
+      console.log("Log successfully made");
 
       handleNext();
     } catch (error) {
