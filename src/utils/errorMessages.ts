@@ -93,7 +93,7 @@ const ERRORS = Object.freeze({
       UPDATE: "Failed to update user settings.",
     },
     UNAUTHORIZED: {
-      UserID: "User is not permitted to get or modify another user's settings",
+      USER_ID: "User is not permitted to get or modify another user's settings",
       VERIFY_PIN: "Invalid pin was provided.",
     },
   },

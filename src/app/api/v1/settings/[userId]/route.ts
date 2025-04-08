@@ -19,7 +19,7 @@ export async function GET(
       (await cookies()).get("auth_token")?.value,
     );
     const userId = (await params).userId;
-    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.UserID);
+    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const settings = await SettingsService.getSettings(userId);
     return NextResponse.json(settings, { status: 200 });
@@ -40,7 +40,7 @@ export async function PATCH(
       (await cookies()).get("auth_token")?.value,
     );
     const userId = (await params).userId;
-    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.UserID);
+    verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const { helpfulTips, largeFontSize, notifications, parentalControl } =
       await req.json();

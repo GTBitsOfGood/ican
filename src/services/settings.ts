@@ -5,7 +5,6 @@ import {
   ConflictError,
   InvalidArgumentsError,
   NotFoundError,
-  UnauthorizedError,
 } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
@@ -90,21 +89,5 @@ export default class SettingsService {
         pin: encryptedPin,
       });
     }
-  }
-
-  static async verifyPin(userId: string, pin: string): Promise<boolean> {
-    await validateUpdatePin({ userId, pin });
-    const settings = await SettingsDAO.getSettingsByUserId(userId);
-    if (!settings) {
-      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
-    }
-
-    const isValid = await HashingService.compare(pin, settings?.pin as string);
-
-    if (!isValid) {
-      throw new UnauthorizedError(ERRORS.SETTINGS.UNAUTHORIZED.VERIFY_PIN);
-    }
-
-    return isValid;
   }
 }
