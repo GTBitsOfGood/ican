@@ -1,3 +1,4 @@
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 import SettingsService from "@/services/settings";
 import { verifyUser } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
@@ -22,7 +23,9 @@ export async function GET(
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const settings = await SettingsService.getSettings(userId);
-    return NextResponse.json(settings, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+
+    return NextResponse.json(settings, { status: 200, headers });
   } catch (err) {
     return handleError(err);
   }
