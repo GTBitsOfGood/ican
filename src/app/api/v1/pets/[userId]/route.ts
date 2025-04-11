@@ -1,3 +1,4 @@
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 import PetService from "@/services/pets";
 import { verifyUser } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
@@ -24,7 +25,9 @@ export async function GET(
     verifyUser(tokenUser, userId, ERRORS.PET.UNAUTHORIZED); // Unsure if needed for get route
 
     const pet = await PetService.getPet(userId);
-    return NextResponse.json(pet, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+
+    return NextResponse.json(pet, { status: 200, headers });
   } catch (error) {
     return handleError(error);
   }

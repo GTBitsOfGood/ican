@@ -4,6 +4,7 @@ import { validateRoutes } from "@/utils/validateRoute";
 import BagService from "@/services/bag";
 import { verifyPet } from "@/utils/auth";
 import { cookies } from "next/headers";
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 
 const route = "/api/v1/bag/[petId]";
 export async function GET(
@@ -22,7 +23,8 @@ export async function GET(
 
     const items = await BagService.validateBagRequest(petId);
 
-    return NextResponse.json(items, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+    return NextResponse.json(items, { status: 200, headers });
   } catch (error) {
     return handleError(error);
   }

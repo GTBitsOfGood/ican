@@ -1,3 +1,4 @@
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 import MedicationService from "@/services/medication";
 import { MedicationSchedule } from "@/types/medication";
 import { verifyUser } from "@/utils/auth";
@@ -29,7 +30,8 @@ export async function GET(
     const schedule: MedicationSchedule =
       await MedicationService.getMedicationsSchedule(userId, date);
 
-    return NextResponse.json(schedule, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+    return NextResponse.json(schedule, { status: 200, headers });
   } catch (err) {
     return handleError(err);
   }

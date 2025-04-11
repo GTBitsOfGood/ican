@@ -5,6 +5,7 @@ import ERRORS from "@/utils/errorMessages";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 
 const route = "/api/v1/medications/[userId]";
 export async function GET(
@@ -23,7 +24,8 @@ export async function GET(
 
     const medication = await MedicationService.getMedications(userId);
 
-    return NextResponse.json(medication, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+    return NextResponse.json(medication, { status: 200, headers });
   } catch (err) {
     return handleError(err);
   }

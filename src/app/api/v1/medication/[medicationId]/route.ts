@@ -1,4 +1,5 @@
 import { Medication } from "@/db/models/medication";
+import { cacheControlMiddleware } from "@/middleware/cache-control";
 import MedicationService from "@/services/medication";
 import { verifyMedication } from "@/utils/auth";
 import { handleError } from "@/utils/errorHandler";
@@ -24,7 +25,8 @@ export async function GET(
     const medication: Medication =
       await MedicationService.getMedication(medicationId);
 
-    return NextResponse.json(medication, { status: 200 });
+    const headers = cacheControlMiddleware(req);
+    return NextResponse.json(medication, { status: 200, headers });
   } catch (err) {
     return handleError(err);
   }
