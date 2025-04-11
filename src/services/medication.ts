@@ -20,7 +20,7 @@ import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
 import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
-import { getCurrentDateByTimezone } from "@/utils/date";
+import { convertDateToTimezone, getCurrentDateByTimezone } from "@/utils/date";
 import SettingsService from "./settings";
 import { UnauthorizedError } from "@/types/exceptions";
 import { Pet } from "@/db/models/pet";
@@ -220,7 +220,8 @@ export default class MedicationService {
       throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
     }
 
-    const currentDate = getCurrentDateByTimezone(timezone);
+    let givenDate = new Date(date);
+    givenDate = convertDateToTimezone(givenDate, timezone);
     const allDoses = [];
 
     for (const medication of medications) {
@@ -233,19 +234,19 @@ export default class MedicationService {
 
       const shouldSchedule = shouldScheduleMedication(
         medication,
-        currentDate,
+        givenDate,
         medicationCreated,
       );
 
       if (shouldSchedule) {
         for (const time of medication.doseTimes) {
           const [doseHour, doseMinute] = time.split(":").map(Number);
-          const scheduledDoseTime = new Date(currentDate);
+          const scheduledDoseTime = new Date(givenDate);
           scheduledDoseTime.setHours(doseHour);
           scheduledDoseTime.setMinutes(doseMinute);
           const doseResult = processDoseTime(
             scheduledDoseTime,
-            currentDate,
+            givenDate,
             logs,
             timezone,
           );
@@ -267,7 +268,7 @@ export default class MedicationService {
     }
 
     const medicationSchedule = {
-      date: currentDate,
+      date: givenDate,
       medications: allDoses,
     };
 

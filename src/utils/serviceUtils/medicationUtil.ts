@@ -375,10 +375,13 @@ export function shouldScheduleMedication(
   givenDate: Date,
   medicationCreated: Date,
 ): boolean {
+  const givenDateMidnight = new Date(givenDate);
+  givenDateMidnight.setUTCHours(0, 0, 0, 0);
+
   const givenDateTime = givenDate.getTime();
   const medicationCreatedDateTime = medicationCreated.getTime();
 
-  if (givenDateTime < medicationCreatedDateTime) {
+  if (givenDateMidnight.getTime() < medicationCreatedDateTime) {
     return false;
   }
 
@@ -386,6 +389,7 @@ export function shouldScheduleMedication(
     const daysApart = Math.ceil(
       (givenDateTime - medicationCreatedDateTime) / (1000 * 60 * 60 * 24),
     );
+
     return daysApart % (medication.repeatInterval ?? 1) === 0;
   } else if (medication.repeatUnit === "Week") {
     const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
