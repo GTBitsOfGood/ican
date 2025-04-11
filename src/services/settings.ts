@@ -47,7 +47,7 @@ export default class SettingsService {
     const settings = await SettingsDAO.getSettingsByUserId(userId);
 
     if (!settings) {
-      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND.SETTINGS);
     }
     return { ...settings.toObject(), _id: settings._id.toString() };
   }
@@ -64,7 +64,7 @@ export default class SettingsService {
     });
     const settings = await SettingsDAO.getSettingsByUserId(userIdString);
     if (!settings) {
-      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND.SETTINGS);
     }
 
     await SettingsDAO.updateSettingsByUserId(userIdString, {
@@ -76,7 +76,7 @@ export default class SettingsService {
     await validateUpdatePin({ userId, pin });
     const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
-      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND.SETTINGS);
     }
 
     if (pin) {
