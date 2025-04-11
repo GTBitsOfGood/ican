@@ -3,7 +3,11 @@ import MedicationLogCard from "@/components/ui/MedicationLogCard";
 import { useUser } from "@/components/UserContext";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { LogType } from "@/types/log";
-import { humanizeDate, humanizeDateComparison } from "@/utils/date";
+import {
+  getCurrentDateByTimezone,
+  humanizeDate,
+  humanizeDateComparison,
+} from "@/utils/date";
 import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -49,15 +53,13 @@ export default function Log() {
         };
 
         for (let x = -1; x < 2; x++) {
-          const date = new Date();
+          const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          const date = getCurrentDateByTimezone(timezone);
           date.setDate(now.getDate() + x);
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
-          console.log(userId);
 
-          const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          console.log(timezone);
           const data = await MedicationHTTPClient.getMedicationSchedule(
             userId as string,
             `${year}-${month}-${day}`,
