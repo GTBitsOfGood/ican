@@ -1,3 +1,5 @@
+import { toZonedTime } from "date-fns-tz";
+
 // compares date given to current day
 export const humanizeDateComparison = (date: Date) => {
   const currDate = new Date();
@@ -79,12 +81,9 @@ const getDaySuffix = (day: number) => {
 };
 
 export function getCurrentDateByTimezone(timeZone: string): Date {
-  const now = new Date();
-  const localeString = now.toLocaleString("en-US", { timeZone });
-  return new Date(localeString);
+  return toZonedTime(new Date(), timeZone);
 }
 
 export function convertDateToTimezone(date: Date, timeZone: string): Date {
-  const localeString = date.toLocaleString("en-US", { timeZone });
-  return new Date(localeString);
+  return toZonedTime(date, timeZone);
 }
