@@ -3,28 +3,30 @@ import {
   ConflictError,
   IllegalOperationError,
   NotFoundError,
-  UnauthorizedError,
 } from "@/types/exceptions";
-import { validateParams } from "@/utils/medication";
-import { validatePins } from "@/utils/settings";
-import { FOOD_INC } from "@/utils/constants";
-import PetDAO from "@/db/actions/pets";
-import SettingsService from "./settings";
 import {
   validateCreateMedication,
   validateDeleteMedication,
   validateGetMedication,
   validateGetMedications,
-  validateGetMedicationsSchedule,
   validateUpdateMedication,
-  shouldScheduleMedication,
   processDoseTime,
+  validateCreateMedicationCheckIn,
+  validateCreateMedicationLog,
+  shouldScheduleMedication,
+  validateGetMedicationsSchedule,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
-import { Pet } from "@/db/models/pet";
 import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
+import { getCurrentDateByTimezone } from "@/utils/date";
+import SettingsService from "./settings";
+import { UnauthorizedError } from "@/types/exceptions";
+import { Pet } from "@/db/models/pet";
+import { FOOD_INC } from "@/utils/constants";
+import { validatePins } from "@/utils/settings";
+import PetDAO from "@/db/actions/pets";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -46,7 +48,7 @@ export default class MedicationService {
     validateGetMedication({ id });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
-      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND);
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND.MEDICATION);
     }
     return {
       ...existingMedication.toObject(),
@@ -61,7 +63,7 @@ export default class MedicationService {
     validateUpdateMedication({ id, ...updatedMedication });
     const existingMedication = await MedicationDAO.getMedicationById(id);
     if (!existingMedication) {
-      throw new ConflictError(ERRORS.MEDICATION.NOT_FOUND);
+      throw new ConflictError(ERRORS.MEDICATION.NOT_FOUND.MEDICATION);
     }
 
     if (updatedMedication.formOfMedication) {
@@ -74,7 +76,7 @@ export default class MedicationService {
     const existingMedication = await MedicationDAO.getMedicationById(id);
 
     if (!existingMedication) {
-      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND);
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND.MEDICATION);
     }
 
     await MedicationDAO.deleteMedicationById(id);
@@ -91,32 +93,28 @@ export default class MedicationService {
     }));
   }
 
-  static async createMedicationCheckIn(medicationId: string) {
-    // Validate parameters
-    validateParams({ id: medicationId });
+  static async createMedicationCheckIn(medicationId: string, timezone: string) {
+    validateCreateMedicationCheckIn(medicationId, timezone);
 
-    // Check if the medication exists
-    const existingMedication =
-      await MedicationDAO.getMedicationById(medicationId);
-
-    if (!existingMedication) {
-      throw new NotFoundError("This medication does not exist");
+    const medication = await MedicationDAO.getMedicationById(medicationId);
+    if (!medication) {
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND.MEDICATION);
     }
 
-    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
-    const now = new Date();
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    currentDate.setUTCHours(0, 0, 0, 0);
+    const logs = await MedicationDAO.getMedicationLogs(medicationId);
+    const currentDate = getCurrentDateByTimezone(timezone);
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
+    const canCheckIn = medication.doseTimes.some((doseTime) => {
+      const [doseHour, doseMinute] = doseTime.split(":").map(Number);
+      const scheduledDoseTime = new Date(currentDate);
+      scheduledDoseTime.setHours(doseHour);
+      scheduledDoseTime.setMinutes(doseMinute);
+
       const { canCheckIn } = processDoseTime(
-        time,
-        currentDate.toISOString(),
-        medicationLogs,
+        scheduledDoseTime,
+        currentDate,
+        logs,
+        timezone,
       );
 
       return canCheckIn;
@@ -140,55 +138,51 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(medicationId: string, pin: string) {
-    // Validate parameters
-    validateParams({ id: medicationId });
+  static async createMedicationLog(
+    medicationId: string,
+    pin: string,
+    timezone: string,
+  ) {
+    validateCreateMedicationLog(medicationId, pin, timezone);
 
-    // Check if the pet exists
-    const existingMedication: Medication | null =
+    const medication: Medication | null =
       await MedicationDAO.getMedicationById(medicationId);
 
-    if (!existingMedication || !existingMedication.userId) {
-      throw new NotFoundError("This medication does not exist");
+    if (!medication) {
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND.MEDICATION);
     }
 
-    const userId = existingMedication.userId.toString();
-
+    const userId = medication.userId.toString();
     const settings = await SettingsService.getSettings(userId);
 
-    // check if pin related to userid is the same as the pin sent through the request body
-    if (!settings.pin) {
-      throw new NotFoundError("Pin is not set");
+    if (!settings || !settings.pin) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND.PIN);
     }
+
     if (!(await validatePins(settings.pin, pin))) {
-      throw new UnauthorizedError("Pin is invalid");
+      throw new UnauthorizedError(ERRORS.SETTINGS.UNAUTHORIZED.VERIFY_PIN);
     }
 
-    // check if medication exists
+    const checkIn = await MedicationDAO.getMedicationCheckIn(medicationId);
 
-    const existingMedicationCheckIn =
-      await MedicationDAO.getMedicationCheckIn(medicationId);
-
-    if (!existingMedicationCheckIn) {
-      throw new NotFoundError(
-        "There is no check in associated with this medication for this user.",
-      );
+    if (!checkIn) {
+      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND.CHECK_IN);
     }
 
-    const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
-    const now = new Date();
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    currentDate.setUTCHours(0, 0, 0, 0);
+    const logs = await MedicationDAO.getMedicationLogs(medicationId);
+    const currentDate = getCurrentDateByTimezone(timezone);
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
+    const canCheckIn = medication.doseTimes.some((doseTime) => {
+      const [doseHour, doseMinute] = doseTime.split(":").map(Number);
+      const scheduledDoseTime = new Date(currentDate);
+      scheduledDoseTime.setHours(doseHour);
+      scheduledDoseTime.setMinutes(doseMinute);
+
       const { canCheckIn } = processDoseTime(
-        time,
-        currentDate.toISOString(),
-        medicationLogs,
+        scheduledDoseTime,
+        currentDate,
+        logs,
+        timezone,
       );
 
       return canCheckIn;
@@ -200,24 +194,25 @@ export default class MedicationService {
       throw new IllegalOperationError("Cannot log medication right now.");
     }
 
-    // find pet
     const existingPet: Pet | null = await PetDAO.getPetByUserId(userId);
 
     if (!existingPet) {
-      throw new NotFoundError("No pet found for the user");
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
 
-    // add food to pet
     await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
     });
 
-    // create medication log in
     await MedicationDAO.createMedicationLog(medicationId, new Date());
   }
 
-  static async getMedicationsSchedule(userId: string, date: string) {
-    validateGetMedicationsSchedule({ userId, date });
+  static async getMedicationsSchedule(
+    userId: string,
+    date: string,
+    timezone: string,
+  ) {
+    validateGetMedicationsSchedule(userId, date, timezone);
 
     const medications = await this.getMedications(userId);
 
@@ -225,38 +220,35 @@ export default class MedicationService {
       throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
     }
 
-    const now = new Date();
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-
-    currentDate.setUTCHours(0, 0, 0, 0);
-
-    const givenDate = new Date(date);
-
+    const currentDate = getCurrentDateByTimezone(timezone);
     const allDoses = [];
 
     for (const medication of medications) {
-      const medicationLogs = await MedicationDAO.getMedicationLogs(
-        medication._id,
-      );
+      const logs = await MedicationDAO.getMedicationLogs(medication._id);
 
-      const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
+      const lastLog = logs.length > 0 ? logs[0] : null;
       const lastTaken = lastLog ? lastLog.dateTaken : null;
       const medicationCreated = medication.createdAt;
       medicationCreated.setUTCHours(0, 0, 0, 0);
 
       const shouldSchedule = shouldScheduleMedication(
         medication,
-        givenDate,
+        currentDate,
         medicationCreated,
       );
 
       if (shouldSchedule) {
         for (const time of medication.doseTimes) {
-          const doseResult = processDoseTime(time, date, medicationLogs);
+          const [doseHour, doseMinute] = time.split(":").map(Number);
+          const scheduledDoseTime = new Date(currentDate);
+          scheduledDoseTime.setHours(doseHour);
+          scheduledDoseTime.setMinutes(doseMinute);
+          const doseResult = processDoseTime(
+            scheduledDoseTime,
+            currentDate,
+            logs,
+            timezone,
+          );
 
           allDoses.push({
             id: medication._id,
@@ -275,7 +267,7 @@ export default class MedicationService {
     }
 
     const medicationSchedule = {
-      date: givenDate,
+      date: currentDate,
       medications: allDoses,
     };
 

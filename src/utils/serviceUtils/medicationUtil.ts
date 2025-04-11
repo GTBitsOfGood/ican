@@ -5,6 +5,8 @@ import { Medication } from "@/db/models/medication";
 import { DAYS_OF_WEEK } from "@/lib/consts";
 import { MedicationLogDocument } from "@/db/models/medicationLog";
 import { WithId } from "@/types/models";
+import { InvalidArgumentsError } from "@/types/exceptions";
+import { convertDateToTimezone } from "../date";
 
 function isValidTimeString(value: string): boolean {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -283,11 +285,90 @@ export const validateGetMedications = (data: unknown): GetMedications => {
   return getMedicationsSchema.parse(data);
 };
 
-export const validateGetMedicationsSchedule = (
-  data: unknown,
-): GetMedicationsSchedule => {
-  return getMedicationsScheduleSchema.parse(data);
-};
+// Michael: I did not use Zod to perform validation here on purpose. In hindsight, Zod is a bit more harder to maintain than this imo.
+export function validateCreateMedicationCheckIn(
+  medicationId: string,
+  timezone: string,
+) {
+  if (
+    !medicationId ||
+    typeof medicationId !== "string" ||
+    medicationId.trim() === ""
+  ) {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID,
+    );
+  }
+
+  if (
+    !timezone ||
+    typeof timezone !== "string" ||
+    timezone.trim() === "" ||
+    !Intl.supportedValuesOf("timeZone").includes(timezone)
+  ) {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.TIMEZONE,
+    );
+  }
+}
+
+export function validateCreateMedicationLog(
+  medicationId: string,
+  pin: string,
+  timezone: string,
+) {
+  if (
+    !medicationId ||
+    typeof medicationId !== "string" ||
+    medicationId.trim() === ""
+  ) {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID,
+    );
+  }
+
+  if (!pin || typeof pin !== "string" || pin.trim() === "") {
+    throw new InvalidArgumentsError(ERRORS.MEDICATION.INVALID_ARGUMENTS.PIN);
+  }
+
+  if (
+    !timezone ||
+    typeof timezone !== "string" ||
+    timezone.trim() === "" ||
+    !Intl.supportedValuesOf("timeZone").includes(timezone)
+  ) {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.TIMEZONE,
+    );
+  }
+}
+
+export function validateGetMedicationsSchedule(
+  userId: string,
+  date: string,
+  timezone: string,
+) {
+  if (!userId || typeof userId !== "string" || userId.trim() === "") {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.USER_ID,
+    );
+  }
+
+  if (!date || typeof date !== "string" || date.trim() === "") {
+    throw new InvalidArgumentsError(ERRORS.MEDICATION.INVALID_ARGUMENTS.DATE);
+  }
+
+  if (
+    !timezone ||
+    typeof timezone !== "string" ||
+    timezone.trim() === "" ||
+    !Intl.supportedValuesOf("timeZone").includes(timezone)
+  ) {
+    throw new InvalidArgumentsError(
+      ERRORS.MEDICATION.INVALID_ARGUMENTS.TIMEZONE,
+    );
+  }
+}
 
 export function shouldScheduleMedication(
   medication: WithId<Medication>,
@@ -400,52 +481,46 @@ export function shouldScheduleMedication(
 }
 
 export function processDoseTime(
-  time: string,
-  date: string,
-  medicationLogs: MedicationLogDocument[],
+  scheduledDoseTime: Date,
+  currentDate: Date,
+  logs: MedicationLogDocument[],
+  timezone: string,
 ) {
-  const [hours, minutes] = time.split(":").map(Number);
-  let status: "pending" | "taken" | "missed" = "pending";
-  let canCheckIn = false;
-
-  const doseTime = new Date(date);
-
-  const offsetMinutes = doseTime.getTimezoneOffset();
-  const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
-  const utcMinute = (minutes + offsetMinutes) % 60;
-
-  doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
-
-  const matchingLog = medicationLogs.find((log) => {
-    const logDate = new Date(log.dateTaken);
-    return Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
+  const matchingLog = logs.find((log) => {
+    const logDate = convertDateToTimezone(new Date(log.dateTaken), timezone);
+    return (
+      Math.abs(logDate.getTime() - scheduledDoseTime.getTime()) <=
+      15 * 60 * 1000
+    );
   });
 
   if (matchingLog) {
-    status = "taken";
-  } else {
-    const now = new Date();
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    currentDate.setUTCHours(0, 0, 0, 0);
-
-    const givenDate = new Date(date);
-
-    if (currentDate.getTime() === givenDate.getTime()) {
-      canCheckIn =
-        Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
-    }
-
-    if (now.getTime() - doseTime.getTime() >= 15 * 60 * 1000) {
-      status = "missed";
-    }
+    console.log("taken");
+    return {
+      status: "taken",
+      canCheckIn: false,
+    };
   }
 
+  if (currentDate.getTime() > scheduledDoseTime.getTime() + 15 * 60 * 1000) {
+    console.log("missed");
+    return {
+      status: "missed",
+      canCheckIn: false,
+    };
+  }
+
+  if (currentDate.getTime() < scheduledDoseTime.getTime() - 15 * 60 * 1000) {
+    console.log("pending");
+    return {
+      status: "pending",
+      canCheckIn: false,
+    };
+  }
+
+  console.log("can check in");
   return {
-    status,
-    canCheckIn,
+    status: "pending",
+    canCheckIn: true,
   };
 }

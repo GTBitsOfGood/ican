@@ -77,3 +77,14 @@ const getDaySuffix = (day: number) => {
   const suffixes = ["st", "nd", "rd"];
   return suffixes[(day % 10) - 1] || "th";
 };
+
+export function getCurrentDateByTimezone(timeZone: string): Date {
+  const now = new Date();
+  const localeString = now.toLocaleString("en-US", { timeZone });
+  return new Date(localeString);
+}
+
+export function convertDateToTimezone(date: Date, timeZone: string): Date {
+  const localeString = date.toLocaleString("en-US", { timeZone });
+  return new Date(localeString);
+}

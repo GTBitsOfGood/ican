@@ -51,7 +51,8 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = async () => {
-    await MedicationHTTPClient.medicationLog(id, pin);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    await MedicationHTTPClient.medicationLog(id, pin, timezone);
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
@@ -61,7 +62,8 @@ export default function MedicationLogCard({
   };
 
   const togglePasswordModal = async () => {
-    await MedicationHTTPClient.medicationCheckIn(id);
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    await MedicationHTTPClient.medicationCheckIn(id, timezone);
     setShowPasswordModal(!showPasswordModal);
   };
 

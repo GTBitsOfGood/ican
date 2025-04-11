@@ -56,6 +56,7 @@ const ERRORS = Object.freeze({
         "Form of Medication is required and must be a non-empty string that has a length less than 6.",
       MEDICATION_ID:
         "MedicationID is required and must be a non-empty string that has a length less than 6.",
+      PIN: "Pin is required and must be a non-empty string that has a length of 4.",
       REPEAT_INTERVAL:
         "RepeatInterval is required and must be a positive non-zero number.",
       REPEAT_UNIT: "RepeatUnit is required and must be a non-empty string.",
@@ -71,8 +72,14 @@ const ERRORS = Object.freeze({
       DOSAGE_AMOUNT: "DosageAmount is required and must be a non-empty string",
       DOSE_TIMES: "DoseTimes is required and must be a non-empty array.",
       USER_ID: "UserID is requried and must be a valid ObjectID.",
+      TIMEZONE: "Timezone is required and must be a valid timezone.",
+      DATE: "Date is required and must be a valid date.",
     },
-    NOT_FOUND: "Medication does not exist.",
+    NOT_FOUND: {
+      MEDICATION: "Medication does not exist.",
+      CHECK_IN:
+        "There is no check in associated with this medication for this user.",
+    },
     NOT_FOUND_USER: "User does not have any medications.",
     CONFLICT: "Medication already exists",
     FAILURE: {
@@ -86,7 +93,10 @@ const ERRORS = Object.freeze({
       USER_ID: "UserID is required and must be a valid ObjectID.",
       PIN: "New pin must be different from current pin.",
     },
-    NOT_FOUND: "Settings do not exist for this user",
+    NOT_FOUND: {
+      SETTINGS: "Settings do not exist for this user",
+      PIN: "Pin does not exist for this user",
+    },
     CONFLICT: "Settings already exists for this user.",
     FAILURE: {
       CREATE: "Failed to create user settings.",

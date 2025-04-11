@@ -20,9 +20,9 @@ export async function POST(
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
 
-    const { pin } = await req.json();
+    const { pin, timezone } = await req.json();
 
-    await MedicationService.createMedicationLog(medicationId, pin);
+    await MedicationService.createMedicationLog(medicationId, pin, timezone);
 
     return NextResponse.json({}, { status: 201 });
   } catch (error) {

@@ -55,10 +55,15 @@ export default function Log() {
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()).padStart(2, "0");
           console.log(userId);
+
+          const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          console.log(timezone);
           const data = await MedicationHTTPClient.getMedicationSchedule(
             userId as string,
             `${year}-${month}-${day}`,
+            timezone,
           );
+
           console.log(data);
 
           if (x === -1) {

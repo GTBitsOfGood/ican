@@ -19,9 +19,10 @@ export async function POST(
       (await cookies()).get("auth_token")?.value,
     );
     const medicationId = (await params).medicationId;
+    const { timezone } = await req.json();
     await verifyMedication(tokenUser, medicationId);
 
-    await MedicationService.createMedicationCheckIn(medicationId);
+    await MedicationService.createMedicationCheckIn(medicationId, timezone);
 
     return NextResponse.json({}, { status: 201 });
   } catch (error) {
