@@ -91,7 +91,7 @@ export default class MedicationService {
     }));
   }
 
-  static async createMedicationCheckIn(medicationId: string) {
+  static async createMedicationCheckIn(medicationId: string, timezone: string) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -105,12 +105,16 @@ export default class MedicationService {
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
     const now = new Date();
-    const currentDate = new Date(
+    const currentUtcDate = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
+    currentUtcDate.setUTCHours(0, 0, 0, 0);
+
+    const currentDate = new Date(
+      currentUtcDate.toLocaleString("en-US", { timeZone: timezone }),
+    );
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
@@ -140,7 +144,11 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(medicationId: string, pin: string) {
+  static async createMedicationLog(
+    medicationId: string,
+    pin: string,
+    timezone: string,
+  ) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -177,12 +185,16 @@ export default class MedicationService {
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
     const now = new Date();
-    const currentDate = new Date(
+    const currentUtcDate = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
+    currentUtcDate.setUTCHours(0, 0, 0, 0);
+
+    const currentDate = new Date(
+      currentUtcDate.toLocaleString("en-US", { timeZone: timezone }),
+    );
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
