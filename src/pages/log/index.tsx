@@ -58,6 +58,7 @@ export default function Log() {
           const data = await MedicationHTTPClient.getMedicationSchedule(
             userId as string,
             `${year}-${month}-${day}`,
+            new Date().toLocaleString("en-us"),
           );
           console.log(data);
 
