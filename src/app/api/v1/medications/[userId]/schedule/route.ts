@@ -18,6 +18,7 @@ export async function GET(
   const userId = (await params).userId;
   const date = searchParams.get("date") as string;
   const localTime = searchParams.get("localTime") as string;
+
   try {
     const tokenUser = await validateRoutes(
       req,

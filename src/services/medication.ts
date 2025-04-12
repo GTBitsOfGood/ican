@@ -271,9 +271,17 @@ export default class MedicationService {
 
       if (shouldSchedule) {
         for (const time of medication.doseTimes) {
+          const now = new Date(localTime);
+          const currentDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+          );
+          currentDate.setUTCHours(0, 0, 0, 0);
+
           const doseResult = processDoseTime(
             time,
-            date,
+            currentDate.toISOString(),
             medicationLogs,
             localTime,
           );
