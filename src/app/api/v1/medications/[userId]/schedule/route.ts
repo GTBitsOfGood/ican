@@ -17,6 +17,7 @@ export async function GET(
   const { searchParams } = new URL(req.url);
   const userId = (await params).userId;
   const date = searchParams.get("date") as string;
+  const timezone = searchParams.get("timezone") as string;
 
   try {
     const tokenUser = await validateRoutes(
@@ -28,7 +29,7 @@ export async function GET(
     verifyUser(tokenUser, userId, ERRORS.MEDICATION.UNAUTHORIZED);
 
     const schedule: MedicationSchedule =
-      await MedicationService.getMedicationsSchedule(userId, date);
+      await MedicationService.getMedicationsSchedule(userId, date, timezone);
 
     const headers = cacheControlMiddleware(req);
     return NextResponse.json(schedule, { status: 200, headers });

@@ -19,6 +19,7 @@ import {
   validateUpdateMedication,
   shouldScheduleMedication,
   processDoseTime,
+  checkInEligible,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
@@ -91,19 +92,16 @@ export default class MedicationService {
     }));
   }
 
-  static async createMedicationCheckIn(medicationId: string) {
-    // Validate parameters
+  static async createMedicationCheckIn(medicationId: string, timezone: string) {
     validateParams({ id: medicationId });
 
-    // Check if the medication exists
-    const existingMedication =
-      await MedicationDAO.getMedicationById(medicationId);
-
-    if (!existingMedication) {
+    const medication = await MedicationDAO.getMedicationById(medicationId);
+    if (!medication) {
       throw new NotFoundError("This medication does not exist");
     }
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
+
     const now = new Date();
     const currentDate = new Date(
       now.getFullYear(),
@@ -112,15 +110,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
-      const { canCheckIn } = processDoseTime(
-        time,
-        currentDate.toISOString(),
-        medicationLogs,
-      );
-
-      return canCheckIn;
-    });
+    const canCheckIn: boolean = checkInEligible(
+      medication,
+      currentDate,
+      medicationLogs,
+      timezone,
+    );
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
@@ -140,7 +135,11 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(medicationId: string, pin: string) {
+  static async createMedicationLog(
+    medicationId: string,
+    pin: string,
+    timezone: string,
+  ) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -184,15 +183,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
-      const { canCheckIn } = processDoseTime(
-        time,
-        currentDate.toISOString(),
-        medicationLogs,
-      );
-
-      return canCheckIn;
-    });
+    const canCheckIn = checkInEligible(
+      existingMedication,
+      currentDate,
+      medicationLogs,
+      timezone,
+    );
 
     await MedicationDAO.deleteMedicationCheckIn(medicationId);
 
@@ -216,7 +212,11 @@ export default class MedicationService {
     await MedicationDAO.createMedicationLog(medicationId, new Date());
   }
 
-  static async getMedicationsSchedule(userId: string, date: string) {
+  static async getMedicationsSchedule(
+    userId: string,
+    date: string,
+    timezone: string,
+  ) {
     validateGetMedicationsSchedule({ userId, date });
 
     const medications = await this.getMedications(userId);
@@ -256,7 +256,12 @@ export default class MedicationService {
 
       if (shouldSchedule) {
         for (const time of medication.doseTimes) {
-          const doseResult = processDoseTime(time, date, medicationLogs);
+          const doseResult = processDoseTime(
+            time,
+            givenDate,
+            medicationLogs,
+            timezone,
+          );
 
           allDoses.push({
             id: medication._id,

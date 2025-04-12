@@ -5,6 +5,7 @@ import { Medication } from "@/db/models/medication";
 import { DAYS_OF_WEEK } from "@/lib/consts";
 import { MedicationLogDocument } from "@/db/models/medicationLog";
 import { WithId } from "@/types/models";
+import { convertToLocalTime } from "../date";
 
 function isValidTimeString(value: string): boolean {
   const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
@@ -399,12 +400,33 @@ export function shouldScheduleMedication(
   return false;
 }
 
-export function processDoseTime(
-  time: string,
-  date: string,
+export function checkInEligible(
+  medication: Medication,
+  currentDate: Date,
   medicationLogs: MedicationLogDocument[],
+  timezone: string,
+): boolean {
+  const canCheckIn = medication.doseTimes.some((time) => {
+    const { canCheckIn } = processDoseTime(
+      time,
+      currentDate,
+      medicationLogs,
+      timezone,
+    );
+
+    return canCheckIn;
+  });
+
+  return canCheckIn;
+}
+
+export function processDoseTime(
+  scheduledDoseTime: string,
+  date: Date,
+  medicationLogs: MedicationLogDocument[],
+  timezone: string,
 ) {
-  const [hours, minutes] = time.split(":").map(Number);
+  const [hours, minutes] = scheduledDoseTime.split(":").map(Number);
   let status: "pending" | "taken" | "missed" = "pending";
   let canCheckIn = false;
 
@@ -415,10 +437,13 @@ export function processDoseTime(
   const utcMinute = (minutes + offsetMinutes) % 60;
 
   doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+  const localDoseTime = convertToLocalTime(doseTime, timezone);
 
   const matchingLog = medicationLogs.find((log) => {
-    const logDate = new Date(log.dateTaken);
-    return Math.abs(logDate.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
+    const logDate = convertToLocalTime(new Date(log.dateTaken), timezone);
+    return (
+      Math.abs(logDate.getTime() - localDoseTime.getTime()) <= 15 * 60 * 1000
+    );
   });
 
   if (matchingLog) {
@@ -431,15 +456,20 @@ export function processDoseTime(
       now.getDate(),
     );
     currentDate.setUTCHours(0, 0, 0, 0);
+    const localCurrentDate = convertToLocalTime(currentDate, timezone);
 
     const givenDate = new Date(date);
+    const localGivenDate = convertToLocalTime(givenDate, timezone);
 
-    if (currentDate.getTime() === givenDate.getTime()) {
+    if (localCurrentDate.getTime() === localGivenDate.getTime()) {
       canCheckIn =
-        Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
+        Math.abs(now.getTime() - localDoseTime.getTime()) <= 15 * 60 * 1000;
     }
 
-    if (now.getTime() - doseTime.getTime() >= 15 * 60 * 1000) {
+    if (
+      localCurrentDate.getTime() - localDoseTime.getTime() >=
+      15 * 60 * 1000
+    ) {
       status = "missed";
     }
   }

@@ -77,3 +77,7 @@ const getDaySuffix = (day: number) => {
   const suffixes = ["st", "nd", "rd"];
   return suffixes[(day % 10) - 1] || "th";
 };
+
+export function convertToLocalTime(date: Date, timeZone: string) {
+  return new Date(date.toLocaleString("en-US", { timeZone }));
+}

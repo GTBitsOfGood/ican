@@ -4,10 +4,6 @@ import { LogType } from "@/types/log";
 import { MedicationInfo } from "@/types/medication";
 import { WithId } from "@/types/models";
 
-export interface MedicationLogBody {
-  pin: string;
-}
-
 export default class MedicationHTTPClient {
   static async getAllUserMedications(
     userId: string,
@@ -57,22 +53,25 @@ export default class MedicationHTTPClient {
     });
   }
 
-  static async medicationCheckIn(medicationId: string): Promise<void> {
+  static async medicationCheckIn(
+    medicationId: string,
+    timezone: string,
+  ): Promise<void> {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
-      body: JSON.stringify({}),
+      body: JSON.stringify({ timezone }),
       credentials: "include",
     });
   }
 
-  static async medicationLog(medicationId: string, pin: string): Promise<void> {
-    const medicationLogBody: MedicationLogBody = {
-      pin,
-    };
-
+  static async medicationLog(
+    medicationId: string,
+    pin: string,
+    timezone: string,
+  ): Promise<void> {
     return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
       method: "POST",
-      body: JSON.stringify(medicationLogBody),
+      body: JSON.stringify({ pin, timezone }),
       credentials: "include",
     });
   }
@@ -80,9 +79,10 @@ export default class MedicationHTTPClient {
   static async getMedicationSchedule(
     userId: string,
     date: string,
+    timezone: string,
   ): Promise<{ date: string; medications: LogType[] }> {
     return fetchHTTPClient<{ date: string; medications: LogType[] }>(
-      `/medications/${userId}/schedule?date=${date}`,
+      `/medications/${userId}/schedule?date=${date}&timezone=${timezone}`,
       {
         method: "GET",
         credentials: "include",
