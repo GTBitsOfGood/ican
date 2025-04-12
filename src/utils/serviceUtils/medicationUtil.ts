@@ -403,6 +403,7 @@ export function processDoseTime(
   time: string,
   date: string,
   medicationLogs: MedicationLogDocument[],
+  localTime: string,
 ) {
   const [hours, minutes] = time.split(":").map(Number);
   let status: "pending" | "taken" | "missed" = "pending";
@@ -424,7 +425,7 @@ export function processDoseTime(
   if (matchingLog) {
     status = "taken";
   } else {
-    const now = new Date();
+    const now = new Date(localTime);
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
