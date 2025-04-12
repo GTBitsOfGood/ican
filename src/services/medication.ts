@@ -115,11 +115,14 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
+    console.log(currentDate);
+
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
         time,
         currentDate.toISOString(),
         medicationLogs,
+        localTime,
       );
 
       return canCheckIn;
@@ -143,7 +146,11 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(medicationId: string, pin: string) {
+  static async createMedicationLog(
+    medicationId: string,
+    pin: string,
+    localTime: string,
+  ) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -179,7 +186,7 @@ export default class MedicationService {
     }
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
-    const now = new Date();
+    const now = new Date(localTime);
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -192,6 +199,7 @@ export default class MedicationService {
         time,
         currentDate.toISOString(),
         medicationLogs,
+        localTime,
       );
 
       return canCheckIn;
@@ -219,7 +227,11 @@ export default class MedicationService {
     await MedicationDAO.createMedicationLog(medicationId, new Date());
   }
 
-  static async getMedicationsSchedule(userId: string, date: string) {
+  static async getMedicationsSchedule(
+    userId: string,
+    date: string,
+    localTime: string,
+  ) {
     validateGetMedicationsSchedule({ userId, date });
 
     const medications = await this.getMedications(userId);
@@ -228,7 +240,7 @@ export default class MedicationService {
       throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
     }
 
-    const now = new Date();
+    const now = new Date(localTime);
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -259,7 +271,12 @@ export default class MedicationService {
 
       if (shouldSchedule) {
         for (const time of medication.doseTimes) {
-          const doseResult = processDoseTime(time, date, medicationLogs);
+          const doseResult = processDoseTime(
+            time,
+            date,
+            medicationLogs,
+            localTime,
+          );
 
           allDoses.push({
             id: medication._id,
