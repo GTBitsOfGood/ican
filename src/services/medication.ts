@@ -91,7 +91,10 @@ export default class MedicationService {
     }));
   }
 
-  static async createMedicationCheckIn(medicationId: string) {
+  static async createMedicationCheckIn(
+    medicationId: string,
+    localTime: string,
+  ) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -104,7 +107,7 @@ export default class MedicationService {
     }
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
-    const now = new Date();
+    const now = new Date(localTime);
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
