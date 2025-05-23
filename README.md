@@ -4,6 +4,13 @@
 
 This project is a web-based application that gamifies medication adherence for children in clinical trials, with the goal of increasing adherence by creating a direct, engaging incentive for children. The envisioned app involves caring for a virtual pet whose health reflects the child's adherence to their medication regimen. This model for gamification is inspired by modern Tamagotchi applications in which reaching certain goals allows a user to care for a pet, plant, or other charismatic entity that reflects the user’s status in reaching personal goals.
 
+## Tech Stack
+
+- TypeScript
+- Next.js
+- MongoDB
+- TailwindCSS
+
 ## Repo Walkthrough
 
 Find a full explanation of this repo [here](https://www.notion.so/gtbitsofgood/Repo-Walkthrough-17bbd5d1ba158080a73cd8133042f06f?pvs=4).
