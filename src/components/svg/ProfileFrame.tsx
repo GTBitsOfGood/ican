@@ -68,7 +68,7 @@ const ProfileFrame = () => {
         />
       </svg>
     </>
-  )
-}
+  );
+};
 
 export default ProfileFrame;

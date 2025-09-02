@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 interface TextOutlineProps {
   text?: string;
-  strokeColor?: string;  
+  strokeColor?: string;
   strokeWidth?: string;
   shadowColor?: string;
   fillColor?: string;
