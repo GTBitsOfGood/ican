@@ -112,7 +112,7 @@ export default class PetService {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
       food: updatedPet.food,
-      coins: updatedPet.coins
+      coins: updatedPet.coins,
     });
     return updatedPet;
   }
