@@ -57,9 +57,6 @@ export default function TimeSection({
                         }
                       }
                       if (parseInt(minutes) > 59) minutes = "59";
-                      console.log("hour: ", hours);
-                      console.log("minutes: ", minutes);
-                      console.log("newValue:", newValue);
                       const temp = prev.map((item) => ({ ...item }));
                       temp[i].time =
                         `${hours}${newValue.length >= 3 ? ":" : ""}${minutes}`;
@@ -128,7 +125,15 @@ export default function TimeSection({
                     let hours: string = newValue.slice(0, 2);
                     let minutes: string = newValue.slice(2, 4);
 
-                    if (parseInt(hours) > 12) hours = "12";
+                    if (parseInt(hours) > 12) {
+                      if (newValue.length == 2) {
+                        hours = "0" + newValue[0];
+                        minutes = newValue[1];
+                        newValue = hours + minutes;
+                      } else {
+                        hours = "12";
+                      }
+                    }
                     if (parseInt(minutes) > 59) minutes = "59";
 
                     const newTimes = prev.map((item) => ({ ...item }));
