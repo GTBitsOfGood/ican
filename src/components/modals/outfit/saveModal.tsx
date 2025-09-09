@@ -3,13 +3,19 @@ import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import InputBox from "@/components/ui/form/inputBox";
 import ModalButton from "@/components/ui/modals/modalButton";
+import { usePet } from "@/components/petContext";
 import PetHTTPClient from "@/http/petHTTPClient";
+import { useUser } from "@/components/UserContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OutfitSaveModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
+  const { data: pet } = usePet();
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
   const [name, setName] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -26,19 +32,7 @@ export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
 
     try {
       await PetHTTPClient.saveOutfit(pet._id, name, appearance);
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          outfits: [
-            ...prev.outfits,
-            {
-              name,
-              ...appearance,
-            },
-          ],
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
       setModal(false);
     } catch (error) {
       setError((error as Error).message);
