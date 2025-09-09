@@ -104,10 +104,14 @@ export default function Bag() {
       _id: undefined,
       name: undefined,
     };
-    await PetHTTPClient.equipOutfit(
-      pet._id,
-      newAppearance as Omit<SavedOutfit, "name">,
-    );
+    try {
+      await PetHTTPClient.equipOutfit(
+        pet._id,
+        newAppearance as Omit<SavedOutfit, "name">,
+      );
+    } catch (error) {
+      console.error("error equipping outfit", error);
+    }
 
     queryClient.invalidateQueries({ queryKey: ["pet", userId] });
   };
