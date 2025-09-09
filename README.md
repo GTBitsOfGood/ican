@@ -48,10 +48,14 @@ If you are unable to use the commands to retrieve the `.env` file, you can downl
 
 ### Development
 
-To start the Next.js dev server, run:
+To start the Next.js dev server, run both of these commands at the same time:
 
 ```sh
 npm run dev
+```
+
+```sh
+docker compose up
 ```
 
 ### Code Formatting
