@@ -7,9 +7,9 @@ import InputBox from "@/components/ui/form/inputBox";
 import WeekDaySelector from "../../../ui/modals/weekDaySelector";
 import CheckBox from "@/components/ui/form/checkBox";
 import HorizontalRule from "@/components/ui/form/horizontalRule";
-import Label from "@/components/ui/form/label";
 import FormText from "@/components/ui/form/formText";
 import { DAYS_OF_WEEK } from "@/lib/consts";
+import SpecialLabel from "@/components/ui/form/specialLabel";
 
 interface RepetitionSectionProps {
   info: MedicationInfo;
@@ -23,7 +23,7 @@ export default function RepetitionSection({
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl gap={16} mobileColumn={true}>
-        <Label>Repeat every</Label>
+        <SpecialLabel type="required">Repeat every</SpecialLabel>
         <FormControl gap={16}>
           <InputBox
             maxLength={2}
@@ -65,7 +65,9 @@ export default function RepetitionSection({
         </FormControl>
       </FormControl>
       <div className="mt-8">
-        {info.repeatUnit == "Week" && <Label>Repeat on</Label>}
+        {info.repeatUnit == "Week" && (
+          <SpecialLabel type="required">Repeat on</SpecialLabel>
+        )}
         {info.repeatUnit == "Month" && (
           <div>
             <FormControl gap={16}>
@@ -81,9 +83,19 @@ export default function RepetitionSection({
                 }
               />
               <div className="flex flex-col justify-start items-start gap-4">
-                <FormText disabled={info.repeatMonthlyType != "Week"}>
-                  Repeat monthly on the
-                </FormText>
+                <span className="flex flex-row items-center gap-0">
+                  <FormText disabled={info.repeatMonthlyType != "Week"}>
+                    Repeat monthly on the
+                  </FormText>
+                  <FormText
+                    className={
+                      "text-red-500" +
+                      (info.repeatMonthlyType != "Week" ? " invisible" : "")
+                    }
+                  >
+                    *
+                  </FormText>
+                </span>
                 <FormControl gap={16} mobileColumn={true}>
                   <DropDown
                     disabled={info.repeatMonthlyType != "Week"}
@@ -145,9 +157,19 @@ export default function RepetitionSection({
                   })
                 }
               />
-              <FormText disabled={info.repeatMonthlyType != "Day"}>
-                Repeat monthly on day
-              </FormText>
+              <span className="flex flex-row items-center gap-0">
+                <FormText disabled={info.repeatMonthlyType != "Day"}>
+                  Repeat monthly on day
+                </FormText>
+                <FormText
+                  className={
+                    "text-red-500" +
+                    (info.repeatMonthlyType != "Day" ? " invisible" : "")
+                  }
+                >
+                  *
+                </FormText>
+              </span>
               <InputBox
                 disabled={info.repeatMonthlyType != "Day"}
                 maxLength={2}

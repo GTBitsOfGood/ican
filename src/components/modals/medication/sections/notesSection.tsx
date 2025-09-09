@@ -1,7 +1,7 @@
 import { MedicationInfo } from "@/types/medication";
-import Label from "@/components/ui/form/label";
 import TextBox from "@/components/ui/form/textBox";
 import { Dispatch, SetStateAction } from "react";
+import SpecialLabel from "@/components/ui/form/specialLabel";
 
 interface NotesSectionProps {
   info: MedicationInfo;
@@ -11,7 +11,7 @@ interface NotesSectionProps {
 export default function NotesSection({ info, setInfo }: NotesSectionProps) {
   return (
     <div>
-      <Label>General Notes</Label>
+      <SpecialLabel type="optional">General Notes</SpecialLabel>
       <TextBox
         value={info.notes}
         onChange={(newValue) =>

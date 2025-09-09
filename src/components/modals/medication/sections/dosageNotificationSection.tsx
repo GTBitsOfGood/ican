@@ -56,9 +56,18 @@ export default function DosageNotificationSection({
             }
             className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
           />
-          <FormText disabled={info.dosesUnit != "Doses"}>
-            dose(s) per day
-          </FormText>
+          <span className="flex flex-row items-center gap-0">
+            <FormText disabled={info.dosesUnit != "Doses"}>
+              dose(s) per day
+            </FormText>
+            <FormText
+              className={
+                "text-red-500" + (info.dosesUnit != "Doses" ? " invisible" : "")
+              }
+            >
+              *
+            </FormText>
+          </span>
         </FormControl>
         <HorizontalRule
           ruleClassName="border-2 border-icanGreen-200"
@@ -77,7 +86,16 @@ export default function DosageNotificationSection({
               })
             }
           />
-          <FormText disabled={info.dosesUnit != "Hours"}>Take every</FormText>
+          <span className="flex flex-row items-center gap-0">
+            <FormText disabled={info.dosesUnit != "Hours"}>Take every</FormText>
+            <FormText
+              className={
+                "text-red-500" + (info.dosesUnit != "Hours" ? " invisible" : "")
+              }
+            >
+              *
+            </FormText>
+          </span>
           <InputBox
             disabled={info.dosesUnit != "Hours"}
             maxLength={2}

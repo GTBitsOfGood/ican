@@ -3,13 +3,13 @@
 import { Dispatch, SetStateAction } from "react";
 import { MedicationInfo, Time12Hour } from "@/types/medication";
 import FormControl from "@/components/ui/form/formControl";
-import Label from "@/components/ui/form/label";
 import InputBox from "@/components/ui/form/inputBox";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
 import CheckBox from "@/components/ui/form/checkBox";
 import FormText from "@/components/ui/form/formText";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
+import SpecialLabel from "@/components/ui/form/specialLabel";
 
 interface TimeSectionProps {
   info: MedicationInfo;
@@ -30,7 +30,10 @@ export default function TimeSection({
         <div className="flex flex-col w-full gap-6 max-h-[45vh] tablet:max-h-[35vh] pb-12 overflow-y-auto scrollbar-custom">
           {timesIn12Hour.map((time, i) => (
             <FormControl gap={16} key={i} mobileColumn={true}>
-              <Label disabled={!info.includeTimes}>{`Time #${i + 1}`}</Label>
+              <SpecialLabel
+                type="required"
+                disabled={!info.includeTimes}
+              >{`Dose #${i + 1}`}</SpecialLabel>
               <FormControl gap={16}>
                 <InputBox
                   disabled={!info.includeTimes}
@@ -44,9 +47,19 @@ export default function TimeSection({
                       let hours: string = newValue.slice(0, 2);
                       let minutes: string = newValue.slice(2, 4);
 
-                      if (parseInt(hours) > 12) hours = "12";
+                      if (parseInt(hours) > 12) {
+                        if (newValue.length == 2) {
+                          hours = "0" + newValue[0];
+                          minutes = newValue[1];
+                          newValue = hours + minutes;
+                        } else {
+                          hours = "12";
+                        }
+                      }
                       if (parseInt(minutes) > 59) minutes = "59";
-
+                      console.log("hour: ", hours);
+                      console.log("minutes: ", minutes);
+                      console.log("newValue:", newValue);
                       const temp = prev.map((item) => ({ ...item }));
                       temp[i].time =
                         `${hours}${newValue.length >= 3 ? ":" : ""}${minutes}`;
@@ -102,7 +115,7 @@ export default function TimeSection({
         </FormSubtitle>
         <div className="mt-8">
           <FormControl gap={16} mobileColumn={true}>
-            <Label>Time #1</Label>
+            <SpecialLabel type="required">Time #1</SpecialLabel>
             <FormControl gap={16}>
               <InputBox
                 maxLength={5}

@@ -4,13 +4,13 @@ import FormControl from "@/components/ui/form/formControl";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
 import IDInput from "@/components/ui/modals/idInput";
-import Label from "@/components/ui/form/label";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 import {
   InjectionIcon,
   LiquidIcon,
   PillIcon,
 } from "@/components/ui/modals/medicationIcons";
+import SpecialLabel from "@/components/ui/form/specialLabel";
 
 interface GeneralSectionProps {
   info: MedicationInfo;
@@ -21,7 +21,7 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl mobileColumn={true}>
-        <Label>Form of Medication</Label>
+        <SpecialLabel type="required">Form of Medication</SpecialLabel>
         <DropDown
           width={220}
           value={info.formOfMedication || ""}
@@ -48,7 +48,9 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
           />
         </DropDown>
       </FormControl>
-      <Label className="mt-8">Medication ID</Label>
+      <SpecialLabel type="required" className="mt-8">
+        Medication ID
+      </SpecialLabel>
       <FormSubtitle>Create a medication ID of up to 5 characters</FormSubtitle>
       <IDInput
         values={

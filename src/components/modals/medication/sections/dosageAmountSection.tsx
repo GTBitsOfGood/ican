@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { MedicationInfo } from "@/types/medication";
 import InputBox from "@/components/ui/form/inputBox";
-import Label from "@/components/ui/form/label";
+import SpecialLabel from "@/components/ui/form/specialLabel";
 
 interface DosageAmountSectionProps {
   info: MedicationInfo;
@@ -14,7 +14,7 @@ export default function DosageAmountSection({
 }: DosageAmountSectionProps) {
   return (
     <div>
-      <Label>Dosage</Label>
+      <SpecialLabel type="required">Dosage</SpecialLabel>
       <InputBox
         maxLength={50}
         value={info.dosageAmount || ""}
