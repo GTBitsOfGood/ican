@@ -6,7 +6,7 @@ import InventoryHTTPClient from "@/http/inventoryHTTPClient";
 import LoadingScreen from "@/components/loadingScreen";
 
 export default function Food() {
-  const { pet } = usePet();
+  const { data: pet } = usePet();
   const [foods, setFoods] = useState<string[] | undefined>(undefined);
   const router = useRouter();
 

@@ -19,6 +19,8 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import PetHTTPClient from "@/http/petHTTPClient";
 import { motion } from "motion/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@/components/UserContext";
 
 interface HomeProps {
   activeModal: string;
@@ -31,7 +33,9 @@ export default function Home({
 }: HomeProps) {
   const constraintsRef = useRef<HTMLDivElement>(null);
   const foodRef = useRef<HTMLDivElement>(null);
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
   const [showSuccessModalVisible, setShowSuccessModalVisible] =
@@ -53,7 +57,7 @@ export default function Home({
         setShowSuccessModalVisible(true);
       }
 
-      setPet(updatedPetData);
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
 
       setSelectedFood("");
     } catch (e) {

@@ -3,7 +3,6 @@ import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import InputBox from "@/components/ui/form/inputBox";
 import ModalButton from "@/components/ui/modals/modalButton";
-import { usePet } from "@/components/petContext";
 import PetHTTPClient from "@/http/petHTTPClient";
 
 interface OutfitSaveModalProps {
@@ -11,7 +10,6 @@ interface OutfitSaveModalProps {
 }
 
 export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
-  const { pet, setPet } = usePet();
   const [name, setName] = useState<string>("");
   const [error, setError] = useState<string>("");
 

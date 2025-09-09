@@ -12,9 +12,13 @@ import { usePet } from "@/components/petContext";
 import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@/components/UserContext";
 
 export default function Store() {
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
   const [petBag, setPetBag] = useState<Record<string, InventoryItem[]> | null>(
     null,
   );
@@ -51,15 +55,7 @@ export default function Store() {
         type: (selectedItem as InventoryItem).type,
       });
 
-      setPet((prev) => {
-        if (!prev) {
-          return prev;
-        }
-        return {
-          ...prev,
-          coins: prev.coins - (selectedItem as InventoryItem).cost,
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
 
       const tempBag = { ...petBag };
       if (tempBag?.[(selectedItem as InventoryItem).type as ItemType]) {

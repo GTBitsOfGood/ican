@@ -5,6 +5,8 @@ import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import ModalButton from "@/components/ui/modals/modalButton";
 import PetHTTPClient from "@/http/petHTTPClient";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@/components/UserContext";
 
 interface OutfitDeleteModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
@@ -17,7 +19,9 @@ export default function OutfitDeleteModal({
   selectedItem,
   setSelectedItem,
 }: OutfitDeleteModalProps) {
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
   const [error, setError] = useState<string>("");
 
   const deleteOutfit = async () => {
@@ -26,15 +30,9 @@ export default function OutfitDeleteModal({
 
     try {
       await PetHTTPClient.deleteOutfit(pet._id, selectedItem.name);
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          outfits: [...prev.outfits].filter(
-            (i) => i.name !== selectedItem.name,
-          ),
-        };
-      });
+
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
+
       setSelectedItem(null);
       setModal(false);
     } catch (error) {

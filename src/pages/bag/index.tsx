@@ -12,9 +12,13 @@ import PetHTTPClient from "@/http/petHTTPClient";
 import OutfitSaveModal from "@/components/modals/outfit/saveModal";
 import OutfitDeleteModal from "@/components/modals/outfit/deleteModal";
 import { compareAppearance } from "@/utils/pets";
+import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "@/components/UserContext";
 
 export default function Bag() {
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const queryClient = useQueryClient();
+  const { userId } = useUser();
   const [petBag, setPetBag] = useState<Record<string, InventoryItem[]> | null>(
     null,
   );
@@ -53,16 +57,7 @@ export default function Bag() {
         (selectedItem as InventoryItem).type,
       );
 
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [(selectedItem as InventoryItem).type]: selectedItem.name,
-          },
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
 
       console.log("Item successfully equiped");
     } catch (error) {
@@ -79,16 +74,8 @@ export default function Bag() {
         (selectedItem as InventoryItem).type,
       );
 
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [(selectedItem as InventoryItem).type]: undefined,
-          },
-        };
-      });
+      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
+
       setSelectedItem(null);
     } catch (error) {
       console.error("Error unequiping item", error);
@@ -112,31 +99,17 @@ export default function Bag() {
   const equipOutfit = async () => {
     if (!pet || !selectedItem || "level" in selectedItem) return;
 
-    try {
-      const newAppearance = {
-        ...selectedItem,
-        _id: undefined,
-        name: undefined,
-      };
-      await PetHTTPClient.equipOutfit(
-        pet._id,
-        newAppearance as Omit<SavedOutfit, "name">,
-      );
+    const newAppearance = {
+      ...selectedItem,
+      _id: undefined,
+      name: undefined,
+    };
+    await PetHTTPClient.equipOutfit(
+      pet._id,
+      newAppearance as Omit<SavedOutfit, "name">,
+    );
 
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...(selectedItem as SavedOutfit),
-            name: undefined,
-            _id: undefined,
-          },
-        };
-      });
-    } catch (error) {
-      console.error("error equipping outfit", error);
-    }
+    queryClient.invalidateQueries({ queryKey: ["pet", userId] });
   };
 
   return (
