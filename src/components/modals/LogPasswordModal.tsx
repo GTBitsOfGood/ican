@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
+import SettingsService from "@/services/settings";
+import { useUser } from "../UserContext";
 
 type LogPasswordType = {
   handleNext: () => void;
@@ -26,13 +28,20 @@ export default function LogPasswordModal({
 }: LogPasswordType) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [error, setError] = useState<string>("");
+  const { userId } = useUser();
+  const [enteredPin, setEnteredPin] = useState<string>("");
 
   useEffect(() => {
     onOpen();
   }, [onOpen]);
 
   const handleClick = async () => {
+    if (!userId) {
+      setError("You must be logged in to perform this action");
+      return;
+    }
     try {
+      SettingsService.validatePin(userId, enteredPin);
       handleNext();
     } catch (error) {
       if (error instanceof Error) {
@@ -76,6 +85,7 @@ export default function LogPasswordModal({
                   maxLength={4}
                   onChange={(newValue: string) => {
                     setPin(newValue);
+                    setEnteredPin(newValue);
                     setError("");
                   }}
                   pattern={REGEXP_ONLY_DIGITS}
