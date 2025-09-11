@@ -51,7 +51,10 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
       <SpecialLabel type="required" className="mt-8">
         Medication ID
       </SpecialLabel>
-      <FormSubtitle>Create a medication ID of up to 5 characters</FormSubtitle>
+      <FormSubtitle>
+        Choose up to 5 characters to create an ID to help you remember which
+        medication to take.
+      </FormSubtitle>
       <IDInput
         values={
           info.customMedicationId

@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 import { MedicationInfo, Time12Hour } from "@/types/medication";
 import SectionValidator from "./sectionValidator";
 import { useRouter } from "next/router";
+import { useMedications } from "@/components/MedicationContext";
 
 interface SectionSelectorProps {
   modalType: "Edit" | "Add";
@@ -38,6 +39,13 @@ export default function SectionSelector({
   onSubmit,
 }: SectionSelectorProps) {
   const router = useRouter();
+  const { medicationIds } = useMedications();
+  const isNextDisabled =
+    (currentSection === 2 &&
+      (info.repeatInterval === 0 ||
+        (info.repeatMonthlyOnDay != null && info.repeatMonthlyOnDay === 0))) ||
+    (currentSection == 3 &&
+      (info.dosesPerDay == 0 || info.doseIntervalInHours == 0));
 
   const backAction = () => {
     setError("");
@@ -62,6 +70,7 @@ export default function SectionSelector({
       info,
       currentSection,
       timesIn12Hour,
+      medicationIds,
     });
     if (error) {
       setError(error);
@@ -125,6 +134,8 @@ export default function SectionSelector({
         className="max-w-max justify-self-end"
         action={(e) => nextAction(e)}
         type="success"
+        disabled={isNextDisabled}
+        disableMode={"gray"}
       >
         {currentSection === sectionSize - 1
           ? modalType === "Edit"

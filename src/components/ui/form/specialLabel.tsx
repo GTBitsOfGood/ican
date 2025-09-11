@@ -16,10 +16,7 @@ export default function SpecialLabel({
   let ending = null;
   if (type == "required") {
     ending = (
-      <Label
-        className={"text-red-500 " + (disabled ? " invisible" : "")}
-        disabled={disabled}
-      >
+      <Label className="text-iCAN-error" disabled={disabled}>
         *
       </Label>
     );

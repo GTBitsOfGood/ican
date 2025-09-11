@@ -10,6 +10,7 @@ import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { useUser } from "@/components/UserContext";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
+import { useMedications } from "@/components/MedicationContext";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -21,6 +22,7 @@ export default function MedicationsPage({
   editMedicationInfo = undefined,
 }: MedicationPageProps) {
   const { userId } = useUser();
+  const { setMedicationIds } = useMedications();
   const [medications, setMedications] = useState<WithId<Medication>[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
@@ -35,6 +37,9 @@ export default function MedicationsPage({
         const medicationsData =
           await MedicationHTTPClient.getAllUserMedications(userId);
         setMedications(medicationsData);
+        setMedicationIds(
+          new Set(medicationsData.map((med) => med.customMedicationId)),
+        );
       } catch (error) {
         console.error("Error fetching medications:", error);
       }

@@ -20,6 +20,7 @@ export default function RepetitionSection({
   info,
   setInfo,
 }: RepetitionSectionProps) {
+  console.log(info.repeatMonthlyOnDay);
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl gap={16} mobileColumn={true}>
@@ -45,7 +46,8 @@ export default function RepetitionSection({
                 return temp;
               })
             }
-            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
+            className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
+              ${info.repeatInterval == 0 ? " border-iCAN-error" : ""}`}
           />
           <DropDown
             width={220}
@@ -64,6 +66,11 @@ export default function RepetitionSection({
           </DropDown>
         </FormControl>
       </FormControl>
+      <p
+        className={`text-lg text-iCAN-error mt-1 ${info.repeatInterval == 0 ? "" : " invisible"}`}
+      >
+        Please enter a number greater than 0.
+      </p>
       <div className="mt-8">
         {info.repeatUnit == "Week" && (
           <SpecialLabel type="required">Repeat on</SpecialLabel>
@@ -78,6 +85,7 @@ export default function RepetitionSection({
                   setInfo((prev) => {
                     const temp = { ...prev };
                     temp.repeatMonthlyType = "Week";
+                    temp.repeatMonthlyOnDay = undefined;
                     return temp;
                   })
                 }
@@ -88,10 +96,8 @@ export default function RepetitionSection({
                     Repeat monthly on the
                   </FormText>
                   <FormText
-                    className={
-                      "text-red-500" +
-                      (info.repeatMonthlyType != "Week" ? " invisible" : "")
-                    }
+                    className="text-iCAN-error"
+                    disabled={info.repeatMonthlyType != "Week"}
                   >
                     *
                   </FormText>
@@ -153,6 +159,8 @@ export default function RepetitionSection({
                   setInfo((prev) => {
                     const temp = { ...prev };
                     temp.repeatMonthlyType = "Day";
+                    temp.repeatMonthlyOnWeek = undefined;
+                    temp.repeatMonthlyOnWeekDay = undefined;
                     return temp;
                   })
                 }
@@ -162,10 +170,8 @@ export default function RepetitionSection({
                   Repeat monthly on day
                 </FormText>
                 <FormText
-                  className={
-                    "text-red-500" +
-                    (info.repeatMonthlyType != "Day" ? " invisible" : "")
-                  }
+                  className="text-iCAN-error"
+                  disabled={info.repeatMonthlyType != "Day"}
                 >
                   *
                 </FormText>
@@ -187,8 +193,6 @@ export default function RepetitionSection({
                       let valueNum = Number(newValue);
                       if (valueNum > 31) {
                         valueNum = 31;
-                      } else if (valueNum < 1) {
-                        valueNum = 1;
                       }
                       temp.repeatMonthlyOnDay =
                         valueNum as MedicationInfo["repeatMonthlyOnDay"];
@@ -196,12 +200,19 @@ export default function RepetitionSection({
                     return temp;
                   })
                 }
-                className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
+                className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
+                  ${info.repeatMonthlyOnDay != null && info.repeatMonthlyOnDay === 0 ? "border-iCAN-error" : ""}`}
               />
             </FormControl>
           </div>
         )}
       </div>
+      <p
+        className={`text-lg text-iCAN-error mt-1
+        ${info.repeatMonthlyOnDay != null && info.repeatMonthlyOnDay === 0 ? "" : " invisible"}`}
+      >
+        Please enter a number greater than 0.
+      </p>
       {info.repeatUnit == "Week" && (
         <WeekDaySelector
           selectedDays={info.repeatWeeklyOn}
