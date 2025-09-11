@@ -34,9 +34,9 @@ export default function LogPasswordModal({
   const handleClick = async () => {
     try {
       handleNext();
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(`Error: ${error.message}`);
+    } catch (e) {
+      if (e instanceof Error) {
+        setError(`Error: ${e.message}`);
       } else {
         setError(`Unexpected error occured.`);
       }
