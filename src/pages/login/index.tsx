@@ -14,6 +14,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [generalError, setGeneralError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
   const router = useRouter();
 
@@ -21,19 +22,19 @@ export default function Home() {
     e.preventDefault();
     let errorDetected = false;
 
+    // Clear all errors first
+    setEmailError("");
+    setPasswordError("");
+    setGeneralError("");
+
     if (!emailIsValid(email.trim())) {
       setEmailError("Please enter a valid email.");
       errorDetected = true;
-    } else {
-      setEmailError("");
     }
+
     if (!passwordIsValid(password.trim())) {
-      setPasswordError(
-        "Password must contain at least 6 characters, 1 number, & 1 symbol.",
-      );
+      setPasswordError("Password incorrect, please check again.");
       errorDetected = true;
-    } else {
-      setPasswordError("");
     }
 
     if (errorDetected) {
@@ -45,9 +46,18 @@ export default function Home() {
       await AuthHTTPClient.login(email.trim(), password.trim());
       router.push("/");
     } catch (error) {
-      if (error instanceof Error && getStatusCode(error) == 400) {
-        setPasswordError((error as Error).message);
-        setEmailError("");
+      if (error instanceof Error) {
+        const statusCode = getStatusCode(error);
+
+        if (statusCode === 404) {
+          setGeneralError(
+            "We couldn't find an account with this email. Try again or Sign Up.",
+          );
+        } else if (statusCode === 401 || statusCode === 400) {
+          setPasswordError("Password incorrect, please check again.");
+        } else {
+          setGeneralError("An error occurred. Please try again.");
+        }
       }
     } finally {
       setLoggingIn(false);
@@ -59,11 +69,13 @@ export default function Home() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setEmailError("");
+    setGeneralError("");
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     setPasswordError("");
+    setGeneralError("");
   };
 
   return (
@@ -79,11 +91,13 @@ export default function Home() {
             width={248}
             height={167}
           />
-          <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
-            Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
-          </div>
+          {!loggingIn && (
+            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+              Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
+            </div>
+          )}
           {loggingIn ? (
-            <div className="flex justify-between space-between items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
+            <div className="flex justify-center items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
               LOGGING IN
               <Image
                 className="ml-3 spin"
@@ -102,6 +116,11 @@ export default function Home() {
                 <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-4">
                   Log In
                 </div>
+                {generalError && (
+                  <div className="self-start w-full mb-2">
+                    <ErrorBox message={generalError} />
+                  </div>
+                )}
                 <input
                   className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
@@ -141,7 +160,7 @@ export default function Home() {
                   <div className="text-textGrey px-4">or</div>
                   <div className="border border-textGrey w-full" />
                 </div>
-                <GoogleLoginButton setError={setEmailError} />
+                <GoogleLoginButton setError={setGeneralError} />
               </div>
               <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                 Don&apos;t have an account?{" "}
