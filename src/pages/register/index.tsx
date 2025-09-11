@@ -22,6 +22,7 @@ export default function Home() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [generalError, setGeneralError] = useState("");
   const [registering, setRegistering] = useState(false);
   const router = useRouter();
 
@@ -29,27 +30,28 @@ export default function Home() {
     e.preventDefault();
     let errorDetected = false;
 
+    // Clear all errors first
+    setNameError("");
+    setEmailError("");
+    setPasswordError("");
+    setConfirmPasswordError("");
+    setGeneralError("");
+
     if (!nameIsValid(name.trim())) {
       setNameError("Please enter a valid name.");
       errorDetected = true;
-    } else {
-      setNameError("");
     }
 
     if (!emailIsValid(email.trim())) {
       setEmailError("Please enter a valid email.");
       errorDetected = true;
-    } else {
-      setEmailError("");
     }
 
     if (!passwordIsValid(password.trim())) {
       setPasswordError(
-        "Password must contain at least 6 characters, 1 number, & 1 symbol.",
+        "Must contain at least 6 characters, 1 number, & 1 symbol.",
       );
       errorDetected = true;
-    } else {
-      setPasswordError("");
     }
 
     if (
@@ -58,8 +60,6 @@ export default function Home() {
     ) {
       setConfirmPasswordError("Passwords do not match.");
       errorDetected = true;
-    } else {
-      setConfirmPasswordError("");
     }
 
     if (errorDetected) {
@@ -76,12 +76,16 @@ export default function Home() {
       );
       router.push("/");
     } catch (error) {
-      if (error instanceof Error && getStatusCode(error) == 400) {
-        setPasswordError((error as Error).message);
-        setEmailError("");
-      } else {
-        setEmailError((error as Error).message);
-        setPasswordError("");
+      if (error instanceof Error) {
+        const statusCode = getStatusCode(error);
+
+        if (statusCode === 409) {
+          setEmailError("An account with this email already exists.");
+        } else if (statusCode === 400) {
+          setGeneralError("Please check your information and try again.");
+        } else {
+          setGeneralError("An error occurred. Please try again.");
+        }
       }
     } finally {
       setRegistering(false);
@@ -93,16 +97,19 @@ export default function Home() {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
     setNameError("");
+    setGeneralError("");
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setEmailError("");
+    setGeneralError("");
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     setPasswordError("");
+    setGeneralError("");
   };
 
   const handleConfirmPasswordChange = (
@@ -110,6 +117,7 @@ export default function Home() {
   ) => {
     setConfirmPassword(e.target.value);
     setConfirmPasswordError("");
+    setGeneralError("");
   };
 
   return (
@@ -126,19 +134,21 @@ export default function Home() {
             height={167}
           />
 
-          {registering ? (
-            <div className="self-center w-[80%] my-4 text-center text-black text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+          {!registering && (
+            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
               Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
-              <div className="flex justify-center items-center text-white self-start text-[36px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
-                <p className="mr-4">CREATING ACCOUNT</p>
-                <Image
-                  className="spin"
-                  src="/loading.svg"
-                  alt="loading"
-                  width={50}
-                  height={50}
-                />
-              </div>
+            </div>
+          )}
+          {registering ? (
+            <div className="flex justify-center items-center text-white text-[48px] font-bold text-shadow-default text-stroke-2 text-stroke-default mt-6 mb-4">
+              CREATING ACCOUNT
+              <Image
+                className="ml-3 spin"
+                src="/loading.svg"
+                alt="loading"
+                width={60}
+                height={60}
+              />
             </div>
           ) : (
             <>
@@ -149,6 +159,11 @@ export default function Home() {
                 <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 minimized:mb-1 desktop:mb-2">
                   Sign Up
                 </div>
+                {generalError && (
+                  <div className="self-start w-full mb-2">
+                    <ErrorBox message={generalError} />
+                  </div>
+                )}
                 <input
                   className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${nameError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg desktop:text-[24px]/[32px] desktop:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
@@ -197,7 +212,7 @@ export default function Home() {
                     <div className="text-textGrey px-4">or</div>
                     <div className="border border-textGrey w-full" />
                   </div>
-                  <GoogleLoginButton setError={setEmailError} />
+                  <GoogleLoginButton setError={setGeneralError} />
                 </div>
                 <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                   Have an account?{" "}
