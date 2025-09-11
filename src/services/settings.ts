@@ -5,7 +5,6 @@ import {
   ConflictError,
   InvalidArgumentsError,
   NotFoundError,
-  UnauthorizedError,
 } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
@@ -14,7 +13,6 @@ import {
   validateUpdatePin,
   validateUpdateSettings,
 } from "@/utils/serviceUtils/settingsUtil";
-import { validatePins } from "@/utils/settings";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
@@ -72,17 +70,6 @@ export default class SettingsService {
     await SettingsDAO.updateSettingsByUserId(userIdString, {
       ...validatedSettings,
     });
-  }
-
-  static async validatePin(userId: string, pin: string) {
-    const settings = await SettingsService.getSettings(userId);
-    // check if pin related to userid is the same as the pin inputted
-    if (!settings.pin) {
-      throw new NotFoundError("Pin is not set");
-    }
-    if (!(await validatePins(settings.pin, pin))) {
-      throw new UnauthorizedError("Pin is invalid");
-    }
   }
 
   static async updatePin(userId: string, pin: string) {
