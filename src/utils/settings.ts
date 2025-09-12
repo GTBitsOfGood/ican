@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export async function encryptPin(pin: string): Promise<string> {
   const code = await bcrypt.hash(pin, 10);

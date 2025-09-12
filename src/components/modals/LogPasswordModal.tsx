@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -14,34 +14,35 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
-import SettingsService from "@/services/settings";
 import { useUser } from "../UserContext";
+import SettingsHTTPClient from "@/http/settingsHTTPClient";
 
 type LogPasswordType = {
   handleNext: () => void;
-  setPin: Dispatch<SetStateAction<string>>;
 };
 
-export default function LogPasswordModal({
-  handleNext,
-  setPin,
-}: LogPasswordType) {
+export default function LogPasswordModal({ handleNext }: LogPasswordType) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [error, setError] = useState<string>("");
   const { userId } = useUser();
-  const [enteredPin, setEnteredPin] = useState<string>("");
+  const [pin, setPin] = useState<string>("");
 
   useEffect(() => {
     onOpen();
   }, [onOpen]);
 
   const handleClick = async () => {
+    if (pin.length < 4) {
+      setError("ERROR: Pin must be 4 digits");
+      return;
+    }
     if (!userId) {
       setError("You must be logged in to perform this action");
       return;
     }
+
     try {
-      SettingsService.validatePin(userId, enteredPin);
+      SettingsHTTPClient.validatePin(userId, pin);
       handleNext();
     } catch (error) {
       if (error instanceof Error) {
@@ -85,7 +86,6 @@ export default function LogPasswordModal({
                   maxLength={4}
                   onChange={(newValue: string) => {
                     setPin(newValue);
-                    setEnteredPin(newValue);
                     setError("");
                   }}
                   pattern={REGEXP_ONLY_DIGITS}

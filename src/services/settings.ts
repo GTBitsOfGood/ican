@@ -75,7 +75,10 @@ export default class SettingsService {
   }
 
   static async validatePin(userId: string, pin: string) {
-    const settings = await SettingsService.getSettings(userId);
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
+    if (!settings) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+    }
     // check if pin related to userid is the same as the pin inputted
     if (!settings.pin) {
       throw new NotFoundError("Pin is not set");
