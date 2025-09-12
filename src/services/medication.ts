@@ -3,13 +3,10 @@ import {
   ConflictError,
   IllegalOperationError,
   NotFoundError,
-  UnauthorizedError,
 } from "@/types/exceptions";
 import { validateParams } from "@/utils/medication";
-import { validatePins } from "@/utils/settings";
 import { FOOD_INC } from "@/utils/constants";
 import PetDAO from "@/db/actions/pets";
-import SettingsService from "./settings";
 import {
   validateCreateMedication,
   validateDeleteMedication,
@@ -146,11 +143,7 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(
-    medicationId: string,
-    pin: string,
-    localTime: string,
-  ) {
+  static async createMedicationLog(medicationId: string, localTime: string) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -163,16 +156,6 @@ export default class MedicationService {
     }
 
     const userId = existingMedication.userId.toString();
-
-    const settings = await SettingsService.getSettings(userId);
-
-    // check if pin related to userid is the same as the pin sent through the request body
-    if (!settings.pin) {
-      throw new NotFoundError("Pin is not set");
-    }
-    if (!(await validatePins(settings.pin, pin))) {
-      throw new UnauthorizedError("Pin is invalid");
-    }
 
     // check if medication exists
 

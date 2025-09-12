@@ -171,6 +171,9 @@ export const routesMap: RoutesMap = {
       PATCH: {
         isAuthorized: true,
       },
+      POST: {
+        isAuthorized: true,
+      },
     },
   },
   "/api/v1/pet/[petId]/equip-item": {

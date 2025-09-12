@@ -4,10 +4,6 @@ import { LogType } from "@/types/log";
 import { MedicationInfo } from "@/types/medication";
 import { WithId } from "@/types/models";
 
-export interface MedicationLogBody {
-  pin: string;
-}
-
 export default class MedicationHTTPClient {
   static async getAllUserMedications(
     userId: string,
@@ -70,11 +66,9 @@ export default class MedicationHTTPClient {
 
   static async medicationLog(
     medicationId: string,
-    pin: string,
     localTime: string,
   ): Promise<void> {
     const medicationLogBody = {
-      pin,
       localTime,
     };
 
