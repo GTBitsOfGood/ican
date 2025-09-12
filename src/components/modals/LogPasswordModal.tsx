@@ -47,6 +47,7 @@ export default function LogPasswordModal({
       if (link) {
         window.location.href = link;
       }
+      onClose();
     } catch (error) {
       if (error instanceof Error) {
         setError(`Error: ${error.message}`);
@@ -69,7 +70,9 @@ export default function LogPasswordModal({
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} link="/settings" />}
+      closeButton={
+        <ModalCloseButton onClose={onClose} link={window.location.href} />
+      }
     >
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>
