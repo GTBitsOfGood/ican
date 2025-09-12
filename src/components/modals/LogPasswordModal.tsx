@@ -18,7 +18,7 @@ import { useUser } from "../UserContext";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 
 type LogPasswordType = {
-  handleNext: () => void;
+  handleNext?: () => void;
 };
 
 export default function LogPasswordModal({ handleNext }: LogPasswordType) {
@@ -43,7 +43,9 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
 
     try {
       SettingsHTTPClient.validatePin(userId, pin);
-      handleNext();
+      if (handleNext) {
+        handleNext();
+      }
     } catch (error) {
       if (error instanceof Error) {
         setError(`Error: ${error.message}`);

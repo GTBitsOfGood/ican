@@ -160,7 +160,11 @@ export default function SettingsModal() {
                   />
                   <h5 className="text-3xl">Logout</h5>
                 </div>
-                <ModalNextButton link="settings" onClick={handleLogout} />
+                <ModalNextButton
+                  link="settings"
+                  onClick={handleLogout}
+                  requirePin={true}
+                />
               </div>
             </div>
             <div className="flex flex-col w-full gap-7">
@@ -183,7 +187,7 @@ export default function SettingsModal() {
                   />
                   <h5 className="text-3xl">Medications</h5>
                 </div>
-                <ModalNextButton link="medications" />
+                <ModalNextButton link="medications" requirePin={true} />
               </div>
               <div className="flex justify-between items-center pl-4">
                 <div className="flex">

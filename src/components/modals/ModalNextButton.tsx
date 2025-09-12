@@ -1,42 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
+import LogPasswordModal from "../modals/LogPasswordModal";
 
 interface ModalNextButtonProps {
   link: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+  requirePin?: boolean;
 }
 
 export default function ModalNextButton({
   link,
   onClick,
+  requirePin,
 }: ModalNextButtonProps) {
+  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
+
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (requirePin == true) {
+      setShowPasswordModal(true);
+    }
     if (onClick) {
       e.preventDefault();
       await onClick(e);
-      window.location.href = link;
     }
   };
 
   return (
-    <a
-      className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
-      href={link}
-      onClick={handleClick}
-    >
-      <button className="w-full h-full flex justify-center items-center">
-        <svg
-          fill="black"
-          className="w-8 h-8"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-        >
-          {" "}
-          <path
-            d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z"
+    <>
+      {showPasswordModal && (
+        <LogPasswordModal handleNext={() => console.log(link)} />
+      )}
+      <a
+        className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
+        onClick={handleClick}
+      >
+        <button className="w-full h-full flex justify-center items-center">
+          <svg
             fill="black"
-          />{" "}
-        </svg>
-      </button>
-    </a>
+            className="w-8 h-8"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            {" "}
+            <path
+              d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z"
+              fill="black"
+            />{" "}
+          </svg>
+        </button>
+      </a>
+    </>
   );
 }
