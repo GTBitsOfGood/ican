@@ -68,7 +68,7 @@ export default function MedicationLogCard({
       id,
       new Date().toLocaleString("en-us"),
     );
-    setShowConfirmModal(true);
+    openPasswordModal();
   };
 
   const toggleMissedDoseModal = () => {
@@ -118,7 +118,7 @@ export default function MedicationLogCard({
       )}
       {showPasswordModal && (
         <LogPasswordModal
-          handleNext={handleMedicationCheckIn}
+          handleNext={() => setShowConfirmModal(true)}
           isOpen={showPasswordModal}
           onClose={closePasswordModal}
         />
@@ -167,7 +167,7 @@ export default function MedicationLogCard({
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
-              onClick={openPasswordModal}
+              onClick={handleMedicationCheckIn}
             >
               Take
             </button>
