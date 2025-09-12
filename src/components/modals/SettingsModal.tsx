@@ -13,6 +13,7 @@ import SettingsHTTPClient from "@/http/settingsHTTPClient";
 import { useUser } from "../UserContext";
 import AuthHTTPClient from "@/http/authHTTPClient";
 import UserHTTPClient from "@/http/userHTTPClient";
+import Image from "next/image";
 
 export default function SettingsModal() {
   const { userId } = useUser();
@@ -149,7 +150,16 @@ export default function SettingsModal() {
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Logout</h5>
+                <div className="flex">
+                  <Image
+                    src={"store/Lock.svg"}
+                    alt={"Locked"}
+                    className="w-11 l-11 object-contain"
+                    height={0}
+                    width={0}
+                  />
+                  <h5 className="text-3xl">Logout</h5>
+                </div>
                 <ModalNextButton link="settings" onClick={handleLogout} />
               </div>
             </div>
@@ -163,15 +173,42 @@ export default function SettingsModal() {
                 />
               </div>
               <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Medications</h5>
+                <div className="flex">
+                  <Image
+                    src={"store/Lock.svg"}
+                    alt={"Locked"}
+                    className="w-11 l-11 object-contain"
+                    height={0}
+                    width={0}
+                  />
+                  <h5 className="text-3xl">Medications</h5>
+                </div>
                 <ModalNextButton link="medications" />
               </div>
               <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Change Pin</h5>
+                <div className="flex">
+                  <Image
+                    src={"store/Lock.svg"}
+                    alt={"Locked"}
+                    className="w-11 l-11 object-contain"
+                    height={0}
+                    width={0}
+                  />
+                  <h5 className="text-3xl">Change Pin</h5>
+                </div>
                 <ModalNextButton link="change-pin" />
               </div>
               <div className="flex justify-between items-center pl-4">
-                <h5 className="text-3xl">Delete Account</h5>
+                <div className="flex">
+                  <Image
+                    src={"store/Lock.svg"}
+                    alt={"Locked"}
+                    className="w-11 l-11 object-contain"
+                    height={0}
+                    width={0}
+                  />
+                  <h5 className="text-3xl">Delete Account</h5>
+                </div>
                 <ModalNextButton
                   link="settings"
                   onClick={handleDeleteAccount}
