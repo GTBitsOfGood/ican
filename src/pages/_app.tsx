@@ -2,7 +2,6 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { belanosima, pixelifySans, quantico } from "@/styles/font";
 import { UserProvider } from "@/components/UserContext";
-import { MedicationProvider } from "@/components/MedicationContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { PetProvider } from "@/components/petContext";
 import { FoodProvider } from "@/components/FoodContext";
@@ -22,13 +21,11 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={clientId}>
           <UserProvider>
-            <MedicationProvider>
-              <PetProvider>
-                <FoodProvider>
-                  <Component {...pageProps} />
-                </FoodProvider>
-              </PetProvider>
-            </MedicationProvider>
+            <PetProvider>
+              <FoodProvider>
+                <Component {...pageProps} />
+              </FoodProvider>
+            </PetProvider>
           </UserProvider>
         </GoogleOAuthProvider>
       </QueryClientProvider>
