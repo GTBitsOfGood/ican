@@ -65,9 +65,11 @@ export default async function fetchHTTPClient<T>(
 
   if (!response.ok) {
     const errorBody = await response.json();
-    throw new Error(
+    const error = new Error(
       errorBody.error || `HTTP error! Status: ${response.status}`,
     );
+    (error as Error & { status: number }).status = response.status;
+    throw error;
   }
 
   if (response.status == 204) {
