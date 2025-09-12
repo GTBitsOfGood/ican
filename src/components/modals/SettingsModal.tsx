@@ -200,7 +200,7 @@ export default function SettingsModal() {
                   />
                   <h5 className="text-3xl">Change Pin</h5>
                 </div>
-                <ModalNextButton link="change-pin" />
+                <ModalNextButton link="change-pin" requirePin={true} />
               </div>
               <div className="flex justify-between items-center pl-4">
                 <div className="flex">
@@ -216,6 +216,7 @@ export default function SettingsModal() {
                 <ModalNextButton
                   link="settings"
                   onClick={handleDeleteAccount}
+                  requirePin={true}
                 />
               </div>
             </div>

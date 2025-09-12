@@ -5,7 +5,6 @@ import {
   ConflictError,
   InvalidArgumentsError,
   NotFoundError,
-  UnauthorizedError,
 } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
@@ -84,7 +83,7 @@ export default class SettingsService {
       throw new NotFoundError("Pin is not set");
     }
     if (!(await validatePins(settings.pin, pin))) {
-      throw new UnauthorizedError("Pin is invalid");
+      throw new InvalidArgumentsError("Pin is invalid");
     }
   }
 

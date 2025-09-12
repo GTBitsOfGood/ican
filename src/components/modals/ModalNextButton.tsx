@@ -19,10 +19,12 @@ export default function ModalNextButton({
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (requirePin == true) {
       onOpen();
-    }
-    if (onClick) {
-      e.preventDefault();
-      await onClick(e);
+    } else {
+      if (onClick) {
+        e.preventDefault();
+        await onClick(e);
+      }
+      window.location.href = link;
     }
   };
 
@@ -32,7 +34,8 @@ export default function ModalNextButton({
         <LogPasswordModal
           isOpen={isOpen}
           onClose={onClose}
-          handleNext={() => console.log(link)}
+          handleNext={onClick}
+          link={link}
         />
       )}
       <a
