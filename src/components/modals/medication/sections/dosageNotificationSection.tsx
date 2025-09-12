@@ -84,7 +84,7 @@ export default function DosageNotificationSection({
             </FormText>
             <FormText
               className="text-iCAN-error"
-              disabled={info.dosesUnit != "Doses"}
+              disabled={info.dosesUnit !== "Doses"}
             >
               *
             </FormText>
@@ -92,7 +92,7 @@ export default function DosageNotificationSection({
         </FormControl>
         <p
           className={`text-lg text-iCAN-error mt-1
-          ${info.dosesPerDay == 0 ? "" : " invisible"}`}
+          ${info.dosesPerDay === 0 ? "" : " invisible"}`}
         >
           Please enter a number greater than 0.
         </p>
@@ -136,13 +136,14 @@ export default function DosageNotificationSection({
                 return temp;
               })
             }
-            className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl ${info.doseIntervalInHours == 0 ? "border-iCAN-error" : ""}`}
+            className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
+              ${info.doseIntervalInHours === 0 ? "border-iCAN-error" : ""}`}
           />
           <span className="flex flex-row items-center gap-0">
-            <FormText disabled={info.dosesUnit != "Hours"}>hours</FormText>
+            <FormText disabled={info.dosesUnit !== "Hours"}>hours</FormText>
             <FormText
               className="text-iCAN-error"
-              disabled={info.dosesUnit != "Hours"}
+              disabled={info.dosesUnit !== "Hours"}
             >
               *
             </FormText>
@@ -151,9 +152,9 @@ export default function DosageNotificationSection({
       </div>
       <p
         className={`text-lg mt-2
-        ${info.doseIntervalInHours == 0 ? "text-iCAN-error" : "opacity-70"}`}
+        ${info.doseIntervalInHours === 0 ? "text-iCAN-error" : "opacity-70"}`}
       >
-        {info.doseIntervalInHours == 0
+        {info.doseIntervalInHours === 0
           ? "Please enter a number greater than 0."
           : "For ex: your doses will be scheduled at 9:00AM, 3:00PM, 9:00PM"}
       </p>

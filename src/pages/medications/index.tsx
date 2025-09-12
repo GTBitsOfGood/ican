@@ -10,7 +10,6 @@ import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
 import { useUser } from "@/components/UserContext";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
-import { useMedications } from "@/components/MedicationContext";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -22,10 +21,12 @@ export default function MedicationsPage({
   editMedicationInfo = undefined,
 }: MedicationPageProps) {
   const { userId } = useUser();
-  const { setMedicationIds } = useMedications();
   const [medications, setMedications] = useState<WithId<Medication>[]>([]);
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
+  const medicationIds = new Set(
+    medications.map((med) => med.customMedicationId),
+  );
 
   useEffect(() => {
     const fetchMedications = async () => {
@@ -37,9 +38,6 @@ export default function MedicationsPage({
         const medicationsData =
           await MedicationHTTPClient.getAllUserMedications(userId);
         setMedications(medicationsData);
-        setMedicationIds(
-          new Set(medicationsData.map((med) => med.customMedicationId)),
-        );
       } catch (error) {
         console.error("Error fetching medications:", error);
       }
@@ -66,9 +64,14 @@ export default function MedicationsPage({
   return (
     <AuthorizedRoute>
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
-        {activeModal === "add-new-medication" && <AddMedicationModal />}
+        {activeModal === "add-new-medication" && (
+          <AddMedicationModal medicationIds={medicationIds} />
+        )}
         {activeModal === "edit-medication" && (
-          <EditMedicationModal initialInfo={editMedicationInfo} />
+          <EditMedicationModal
+            initialInfo={editMedicationInfo}
+            medicationIds={medicationIds}
+          />
         )}
         {deleteModalVisible &&
           clickedIndex !== undefined &&

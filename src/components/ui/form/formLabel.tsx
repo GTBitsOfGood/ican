@@ -7,7 +7,7 @@ interface LabelProps {
   disabled?: boolean;
 }
 
-export default function SpecialLabel({
+export default function FormLabel({
   children,
   className,
   disabled = false,

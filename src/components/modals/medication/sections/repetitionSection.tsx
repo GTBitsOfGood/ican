@@ -9,7 +9,7 @@ import CheckBox from "@/components/ui/form/checkBox";
 import HorizontalRule from "@/components/ui/form/horizontalRule";
 import FormText from "@/components/ui/form/formText";
 import { DAYS_OF_WEEK } from "@/lib/consts";
-import SpecialLabel from "@/components/ui/form/specialLabel";
+import FormLabel from "@/components/ui/form/formLabel";
 
 interface RepetitionSectionProps {
   info: MedicationInfo;
@@ -20,11 +20,10 @@ export default function RepetitionSection({
   info,
   setInfo,
 }: RepetitionSectionProps) {
-  console.log(info.repeatMonthlyOnDay);
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl gap={16} mobileColumn={true}>
-        <SpecialLabel type="required">Repeat every</SpecialLabel>
+        <FormLabel type="required">Repeat every</FormLabel>
         <FormControl gap={16}>
           <InputBox
             maxLength={2}
@@ -47,7 +46,7 @@ export default function RepetitionSection({
               })
             }
             className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
-              ${info.repeatInterval == 0 ? " border-iCAN-error" : ""}`}
+              ${info.repeatInterval === 0 ? " border-iCAN-error" : ""}`}
           />
           <DropDown
             width={220}
@@ -67,15 +66,15 @@ export default function RepetitionSection({
         </FormControl>
       </FormControl>
       <p
-        className={`text-lg text-iCAN-error mt-1 ${info.repeatInterval == 0 ? "" : " invisible"}`}
+        className={`text-lg text-iCAN-error mt-1 ${info.repeatInterval === 0 ? "" : " invisible"}`}
       >
         Please enter a number greater than 0.
       </p>
       <div className="mt-8">
-        {info.repeatUnit == "Week" && (
-          <SpecialLabel type="required">Repeat on</SpecialLabel>
+        {info.repeatUnit === "Week" && (
+          <FormLabel type="required">Repeat on</FormLabel>
         )}
-        {info.repeatUnit == "Month" && (
+        {info.repeatUnit === "Month" && (
           <div>
             <FormControl gap={16}>
               <CheckBox
@@ -92,19 +91,19 @@ export default function RepetitionSection({
               />
               <div className="flex flex-col justify-start items-start gap-4">
                 <span className="flex flex-row items-center gap-0">
-                  <FormText disabled={info.repeatMonthlyType != "Week"}>
+                  <FormText disabled={info.repeatMonthlyType !== "Week"}>
                     Repeat monthly on the
                   </FormText>
                   <FormText
                     className="text-iCAN-error"
-                    disabled={info.repeatMonthlyType != "Week"}
+                    disabled={info.repeatMonthlyType !== "Week"}
                   >
                     *
                   </FormText>
                 </span>
                 <FormControl gap={16} mobileColumn={true}>
                   <DropDown
-                    disabled={info.repeatMonthlyType != "Week"}
+                    disabled={info.repeatMonthlyType !== "Week"}
                     width={220}
                     value={info.repeatMonthlyOnWeek?.toString() || ""}
                     setValue={(newValue: string) =>
@@ -123,7 +122,7 @@ export default function RepetitionSection({
                     <Option value="4">Fourth</Option>
                   </DropDown>
                   <DropDown
-                    disabled={info.repeatMonthlyType != "Week"}
+                    disabled={info.repeatMonthlyType !== "Week"}
                     width={220}
                     value={info.repeatMonthlyOnWeekDay || ""}
                     setValue={(newValue: string) =>
@@ -166,18 +165,18 @@ export default function RepetitionSection({
                 }
               />
               <span className="flex flex-row items-center gap-0">
-                <FormText disabled={info.repeatMonthlyType != "Day"}>
+                <FormText disabled={info.repeatMonthlyType !== "Day"}>
                   Repeat monthly on day
                 </FormText>
                 <FormText
                   className="text-iCAN-error"
-                  disabled={info.repeatMonthlyType != "Day"}
+                  disabled={info.repeatMonthlyType !== "Day"}
                 >
                   *
                 </FormText>
               </span>
               <InputBox
-                disabled={info.repeatMonthlyType != "Day"}
+                disabled={info.repeatMonthlyType !== "Day"}
                 maxLength={2}
                 value={info.repeatMonthlyOnDay?.toString() || ""}
                 onChange={(newValue: string) =>
@@ -201,7 +200,7 @@ export default function RepetitionSection({
                   })
                 }
                 className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
-                  ${info.repeatMonthlyOnDay != null && info.repeatMonthlyOnDay === 0 ? "border-iCAN-error" : ""}`}
+                  ${info.repeatMonthlyOnDay !== undefined && info.repeatMonthlyOnDay === 0 ? "border-iCAN-error" : ""}`}
               />
             </FormControl>
           </div>
@@ -209,7 +208,7 @@ export default function RepetitionSection({
       </div>
       <p
         className={`text-lg text-iCAN-error mt-1
-        ${info.repeatMonthlyOnDay != null && info.repeatMonthlyOnDay === 0 ? "" : " invisible"}`}
+        ${info.repeatMonthlyOnDay !== undefined && info.repeatMonthlyOnDay === 0 ? "" : " invisible"}`}
       >
         Please enter a number greater than 0.
       </p>

@@ -9,7 +9,7 @@ import Option from "@/components/ui/form/option";
 import CheckBox from "@/components/ui/form/checkBox";
 import FormText from "@/components/ui/form/formText";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
-import SpecialLabel from "@/components/ui/form/specialLabel";
+import FormLabel from "@/components/ui/form/formLabel";
 
 interface TimeSectionProps {
   info: MedicationInfo;
@@ -30,10 +30,10 @@ export default function TimeSection({
         <div className="flex flex-col w-full gap-6 max-h-[45vh] tablet:max-h-[35vh] pb-12 overflow-y-auto scrollbar-custom">
           {timesIn12Hour.map((time, i) => (
             <FormControl gap={16} key={i} mobileColumn={true}>
-              <SpecialLabel
+              <FormLabel
                 type="required"
                 disabled={!info.includeTimes}
-              >{`Dose #${i + 1}`}</SpecialLabel>
+              >{`Dose #${i + 1}`}</FormLabel>
               <FormControl gap={16}>
                 <InputBox
                   disabled={!info.includeTimes}
@@ -48,7 +48,7 @@ export default function TimeSection({
                       let minutes: string = newValue.slice(2, 4);
 
                       if (parseInt(hours) > 12) {
-                        if (newValue.length == 2) {
+                        if (newValue.length === 2) {
                           hours = "0" + newValue[0];
                           minutes = newValue[1];
                           newValue = hours + minutes;
@@ -112,7 +112,7 @@ export default function TimeSection({
         </FormSubtitle>
         <div className="mt-8">
           <FormControl gap={16} mobileColumn={true}>
-            <SpecialLabel type="required">Time #1</SpecialLabel>
+            <FormLabel type="required">Time #1</FormLabel>
             <FormControl gap={16}>
               <InputBox
                 maxLength={5}
@@ -126,7 +126,7 @@ export default function TimeSection({
                     let minutes: string = newValue.slice(2, 4);
 
                     if (parseInt(hours) > 12) {
-                      if (newValue.length == 2) {
+                      if (newValue.length === 2) {
                         hours = "0" + newValue[0];
                         minutes = newValue[1];
                         newValue = hours + minutes;

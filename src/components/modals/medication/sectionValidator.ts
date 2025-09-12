@@ -5,7 +5,7 @@ interface SectionValidatorType {
   info: MedicationInfo;
   currentSection: number;
   timesIn12Hour: Time12Hour[];
-  medicationIds: Set<string> | null;
+  medicationIds?: Set<string>;
 }
 
 interface SectionValidatorReturnType {

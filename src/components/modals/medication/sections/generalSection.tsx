@@ -10,7 +10,7 @@ import {
   LiquidIcon,
   PillIcon,
 } from "@/components/ui/modals/medicationIcons";
-import SpecialLabel from "@/components/ui/form/specialLabel";
+import FormLabel from "@/components/ui/form/formLabel";
 
 interface GeneralSectionProps {
   info: MedicationInfo;
@@ -21,7 +21,7 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl mobileColumn={true}>
-        <SpecialLabel type="required">Form of Medication</SpecialLabel>
+        <FormLabel type="required">Form of Medication</FormLabel>
         <DropDown
           width={220}
           value={info.formOfMedication || ""}
@@ -48,9 +48,9 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
           />
         </DropDown>
       </FormControl>
-      <SpecialLabel type="required" className="mt-8">
+      <FormLabel type="required" className="mt-8">
         Medication ID
-      </SpecialLabel>
+      </FormLabel>
       <FormSubtitle>
         Choose up to 5 characters to create an ID to help you remember which
         medication to take.
