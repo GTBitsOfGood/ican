@@ -3,10 +3,7 @@ import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import InputBox from "@/components/ui/form/inputBox";
 import ModalButton from "@/components/ui/modals/modalButton";
-import { usePet } from "@/components/petContext";
-import PetHTTPClient from "@/http/petHTTPClient";
-import { useUser } from "@/components/UserContext";
-import { useQueryClient } from "@tanstack/react-query";
+import { usePet, useSavePetOutfit } from "@/components/hooks/usePet";
 
 interface OutfitSaveModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
@@ -14,8 +11,7 @@ interface OutfitSaveModalProps {
 
 export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
   const { data: pet } = usePet();
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
+  const savePetOutfitMutation = useSavePetOutfit();
   const [name, setName] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -30,13 +26,23 @@ export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
 
     const appearance = { ...pet.appearance, _id: undefined };
 
-    try {
-      await PetHTTPClient.saveOutfit(pet._id, name, appearance);
-      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
-      setModal(false);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    // TODO Add more duplicate checks here in the future for name (and appearence)
+
+    savePetOutfitMutation.mutate(
+      {
+        petId: pet._id,
+        name: name.trim(),
+        appearance,
+      },
+      {
+        onSuccess: () => {
+          setModal(false);
+        },
+        onError: (error) => {
+          setError((error as Error).message);
+        },
+      },
+    );
   };
 
   return (

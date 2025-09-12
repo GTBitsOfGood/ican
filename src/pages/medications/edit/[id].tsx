@@ -1,33 +1,30 @@
-import { Medication } from "@/db/models/medication";
-import { WithId } from "@/types/models";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import LoadingScreen from "@/components/loadingScreen";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import MedicationsPage from "..";
+import { useMedication } from "@/components/hooks/useMedication";
 
 export default function EditMedication() {
   const router = useRouter();
   const { id: medicationId } = router.query;
-  const [medicationInfo, setMedicationInfo] = useState<WithId<Medication>>();
+  const {
+    data: medicationInfo,
+    isLoading,
+    isError,
+  } = useMedication(
+    router.isReady && typeof medicationId === "string"
+      ? medicationId
+      : undefined,
+  );
 
-  useEffect(() => {
-    if (!router.isReady || typeof medicationId !== "string") {
-      return;
-    }
+  if (isError) {
+    console.error("Failed to fetch medication");
+    router.push("/");
+    return <LoadingScreen />;
+  }
 
-    const fetchMedication = async () => {
-      try {
-        const info = await MedicationHTTPClient.getMedication(medicationId);
-        setMedicationInfo(info);
-      } catch (error) {
-        console.error("Failed to fetch medication:", error);
-        router.push("/");
-      }
-    };
-
-    fetchMedication();
-  }, [router, medicationId]);
+  if (isLoading || !medicationInfo) {
+    return <LoadingScreen />;
+  }
 
   if (medicationInfo) {
     return (
@@ -36,7 +33,5 @@ export default function EditMedication() {
         editMedicationInfo={medicationInfo}
       />
     );
-  } else {
-    return <LoadingScreen />;
   }
 }

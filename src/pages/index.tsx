@@ -9,7 +9,7 @@ import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
-import { usePet } from "@/components/petContext";
+import { useFeedPet, usePet } from "@/components/hooks/usePet";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import { PetType } from "@/types/pet";
 import FoodModal from "@/components/modals/FoodModal";
@@ -17,10 +17,7 @@ import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
 import { useRef, useState } from "react";
 import Image from "next/image";
-import PetHTTPClient from "@/http/petHTTPClient";
 import { motion } from "motion/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUser } from "@/components/UserContext";
 
 interface HomeProps {
   activeModal: string;
@@ -34,37 +31,35 @@ export default function Home({
   const constraintsRef = useRef<HTMLDivElement>(null);
   const foodRef = useRef<HTMLDivElement>(null);
   const { data: pet } = usePet();
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
+  const feedPetMutation = useFeedPet();
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
   const [showSuccessModalVisible, setShowSuccessModalVisible] =
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
-  const [feeding, setFeeding] = useState<boolean>(false);
+  const feeding = feedPetMutation.isPending;
 
   const handleFoodDrop = async () => {
     if (!pet) return;
     if (distance == null || distance > 150) return;
     if (feeding) return;
-    try {
-      setFeeding(true);
-      const updatedPetData = await PetHTTPClient.feedPet(pet._id);
-      if (pet && updatedPetData.xpLevel > pet.xpLevel) {
-        setShowLevelUpModalVisible(true);
-      } else {
-        setShowSuccessModalVisible(true);
-      }
 
-      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
+    const previousLevel = pet.xpLevel;
 
-      setSelectedFood("");
-    } catch (e) {
-      console.error("Error handling food drop:", e);
-    } finally {
-      setFeeding(false);
-    }
+    feedPetMutation.mutate(pet._id, {
+      onSuccess: (updatedPetData) => {
+        if (updatedPetData && updatedPetData.xpLevel > previousLevel) {
+          setShowLevelUpModalVisible(true);
+        } else {
+          setShowSuccessModalVisible(true);
+        }
+        setSelectedFood("");
+      },
+      onError: (error) => {
+        console.error("Error handling food drop:", error);
+      },
+    });
   };
 
   return (
@@ -95,7 +90,7 @@ export default function Home({
             <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
               <ProfilePicture character={pet.petType} />
               <ProfileInfo
-                name={pet.name}
+                // name={pet.name}
                 level={pet.xpLevel}
                 coins={pet.coins}
                 currentExp={pet.xpGained}

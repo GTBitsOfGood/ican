@@ -1,12 +1,9 @@
-import { usePet } from "@/components/petContext";
+import { useDeletePetOutfit, usePet } from "@/components/hooks/usePet";
 import { SavedOutfit } from "@/db/models/pet";
 import { Dispatch, SetStateAction, useState } from "react";
 import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import ModalButton from "@/components/ui/modals/modalButton";
-import PetHTTPClient from "@/http/petHTTPClient";
-import { useQueryClient } from "@tanstack/react-query";
-import { useUser } from "@/components/UserContext";
 
 interface OutfitDeleteModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
@@ -20,24 +17,28 @@ export default function OutfitDeleteModal({
   setSelectedItem,
 }: OutfitDeleteModalProps) {
   const { data: pet } = usePet();
-  const queryClient = useQueryClient();
-  const { userId } = useUser();
+  const deletePetOutfitMutation = useDeletePetOutfit();
   const [error, setError] = useState<string>("");
 
   const deleteOutfit = async () => {
     if (!pet) return;
     setError("");
 
-    try {
-      await PetHTTPClient.deleteOutfit(pet._id, selectedItem.name);
-
-      queryClient.invalidateQueries({ queryKey: ["pet", userId] });
-
-      setSelectedItem(null);
-      setModal(false);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    deletePetOutfitMutation.mutate(
+      {
+        petId: pet._id,
+        outfitName: selectedItem.name,
+      },
+      {
+        onSuccess: () => {
+          setSelectedItem(null);
+          setModal(false);
+        },
+        onError: (error) => {
+          setError((error as Error).message);
+        },
+      },
+    );
   };
 
   return (
