@@ -11,7 +11,7 @@ export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
     <AnimatePresence mode="wait">
       <div
         onClick={() => setState(!state)}
-        className="flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[17%] desktop:w-[14%] largeDesktop:w-[11%] h-12 py-2 px-[0.75rem] border-2 border-white"
+        className="flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[17%] desktop:w-[14%] largeDesktop:w-[26%] h-12 py-2 px-[0.75rem] border-2 border-black"
       >
         {state ? (
           <>
@@ -21,7 +21,7 @@ export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-lg text-white"
+              className="text-lg text-[#1E2353]"
             >
               ON
             </motion.p>
@@ -50,7 +50,7 @@ export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="text-lg text-white"
+              className="text-lg text-black"
             >
               OFF
             </motion.p>
