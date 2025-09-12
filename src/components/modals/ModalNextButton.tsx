@@ -23,7 +23,7 @@ export default function ModalNextButton({
 
   return (
     <a
-      className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
+      className="flex bg-white w-[26%] p-2 justify-center items-stretch"
       href={link}
       onClick={handleClick}
     >
