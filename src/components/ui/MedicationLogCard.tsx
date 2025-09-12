@@ -63,6 +63,14 @@ export default function MedicationLogCard({
     setShowSuccessModal(true);
   };
 
+  const handleMedicationCheckIn = async () => {
+    await MedicationHTTPClient.medicationCheckIn(
+      id,
+      new Date().toLocaleString("en-us"),
+    );
+    setShowConfirmModal(true);
+  };
+
   const toggleMissedDoseModal = () => {
     setShowMissedDoseModal(!showMissedDoseModal);
   };
@@ -110,7 +118,7 @@ export default function MedicationLogCard({
       )}
       {showPasswordModal && (
         <LogPasswordModal
-          handleNext={() => setShowConfirmModal(true)}
+          handleNext={handleMedicationCheckIn}
           isOpen={showPasswordModal}
           onClose={closePasswordModal}
         />
