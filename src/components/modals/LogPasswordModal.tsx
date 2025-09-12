@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-} from "@heroui/react";
+import React, { useState } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
 import ModalCloseButton from "./ModalCloseButton";
 import {
   InputOTP,
@@ -18,18 +12,19 @@ import { useUser } from "../UserContext";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 
 type LogPasswordType = {
+  isOpen: boolean;
+  onClose: () => void;
   handleNext?: () => void;
 };
 
-export default function LogPasswordModal({ handleNext }: LogPasswordType) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+export default function LogPasswordModal({
+  isOpen,
+  onClose,
+  handleNext,
+}: LogPasswordType) {
   const [error, setError] = useState<string>("");
   const { userId } = useUser();
   const [pin, setPin] = useState<string>("");
-
-  useEffect(() => {
-    onOpen();
-  }, [onOpen]);
 
   const handleClick = async () => {
     if (pin.length < 4) {
@@ -68,7 +63,7 @@ export default function LogPasswordModal({ handleNext }: LogPasswordType) {
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} link="/log" />}
+      closeButton={<ModalCloseButton onClose={onClose} link="/settings" />}
     >
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>

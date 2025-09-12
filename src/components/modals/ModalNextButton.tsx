@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import LogPasswordModal from "../modals/LogPasswordModal";
+import { useDisclosure } from "@heroui/react";
 
 interface ModalNextButtonProps {
   link: string;
@@ -12,11 +13,12 @@ export default function ModalNextButton({
   onClick,
   requirePin,
 }: ModalNextButtonProps) {
-  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
+  //for managing pin modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (requirePin == true) {
-      setShowPasswordModal(true);
+      onOpen();
     }
     if (onClick) {
       e.preventDefault();
@@ -26,8 +28,12 @@ export default function ModalNextButton({
 
   return (
     <>
-      {showPasswordModal && (
-        <LogPasswordModal handleNext={() => console.log(link)} />
+      {isOpen && (
+        <LogPasswordModal
+          isOpen={isOpen}
+          onClose={onClose}
+          handleNext={() => console.log(link)}
+        />
       )}
       <a
         className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
