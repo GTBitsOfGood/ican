@@ -38,15 +38,7 @@ export const usePurchaseItem = () => {
   const { userId } = useUser();
 
   return useMutation({
-    mutationFn: ({
-      petId,
-      name,
-      type,
-    }: {
-      petId: string;
-      name: string;
-      type: string;
-    }) => InventoryHTTPClient.purchaseItem({ petId, name, type }),
+    mutationFn: InventoryHTTPClient.purchaseItem,
     onSettled: (_, __, variables) => {
       if (userId) {
         queryClient.invalidateQueries({ queryKey: PET_QUERY_KEYS.pet(userId) });

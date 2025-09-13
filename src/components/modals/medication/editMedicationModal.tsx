@@ -30,7 +30,10 @@ export default function EditMedicationModal({
     }
     const { _id, ...info } = medicationInfo;
     if (_id) {
-      await MedicationHTTPClient.updateMedication(_id, info);
+      await MedicationHTTPClient.updateMedication({
+        medicationId: _id,
+        medicationInfo: info,
+      });
       router.push("/medications");
     } else {
       throw new ValidationError("The Medication ID is missing.");

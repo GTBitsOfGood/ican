@@ -20,10 +20,6 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => AuthHTTPClient.logout(),
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: AUTH_QUERY_KEYS.validateToken
-      // });
-
       // Clear ALL cached data, since they are not needed anymore, and is cleaner
       queryClient.clear();
 

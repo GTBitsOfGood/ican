@@ -40,6 +40,7 @@ export const useCreatePet = () => {
     onSuccess: (data) => {
       if (userId) {
         queryClient.setQueryData(PET_QUERY_KEYS.pet(userId), data);
+        queryClient.invalidateQueries({ queryKey: PET_QUERY_KEYS.pet(userId) });
       }
     },
   });

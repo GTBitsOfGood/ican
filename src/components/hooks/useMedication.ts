@@ -83,18 +83,7 @@ export const useUpdateMedication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      medicationId,
-      medicationInfo,
-    }: {
-      medicationId: string;
-      medicationInfo: MedicationInfo;
-    }) => {
-      return MedicationHTTPClient.updateMedication(
-        medicationId,
-        medicationInfo,
-      );
-    },
+    mutationFn: MedicationHTTPClient.updateMedication,
     onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({
         queryKey: MEDICATION_QUERY_KEYS.medication(variables.medicationId),
@@ -134,15 +123,7 @@ export const useMedicationCheckIn = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      medicationId,
-      localTime,
-    }: {
-      medicationId: string;
-      localTime: string;
-    }) => {
-      return MedicationHTTPClient.medicationCheckIn(medicationId, localTime);
-    },
+    mutationFn: MedicationHTTPClient.medicationCheckIn,
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
@@ -158,17 +139,7 @@ export const useMedicationLog = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      medicationId,
-      pin,
-      localTime,
-    }: {
-      medicationId: string;
-      pin: string;
-      localTime: string;
-    }) => {
-      return MedicationHTTPClient.medicationLog(medicationId, pin, localTime);
-    },
+    mutationFn: MedicationHTTPClient.medicationLog,
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
