@@ -5,6 +5,10 @@ import MedicationBaseModal from "./baseModal";
 import { useRouter } from "next/navigation";
 import { MedicationInfo } from "@/types/medication";
 
+interface AddMedicationModalProps {
+  medicationIds?: Set<string>;
+}
+
 export const initialAddMedicationInfo: MedicationInfo = {
   formOfMedication: undefined,
   customMedicationId: "",
@@ -25,7 +29,9 @@ export const initialAddMedicationInfo: MedicationInfo = {
   notes: "",
 };
 
-export default function AddMedicationModal() {
+export default function AddMedicationModal({
+  medicationIds,
+}: AddMedicationModalProps) {
   const router = useRouter();
   const { userId } = useUser();
 
@@ -45,6 +51,7 @@ export default function AddMedicationModal() {
   return (
     <MedicationBaseModal
       modalType="Add"
+      medicationIds={medicationIds}
       onSubmit={onSubmit}
       initialInfo={initialAddMedicationInfo}
     />

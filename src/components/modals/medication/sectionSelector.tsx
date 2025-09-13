@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 
 interface SectionSelectorProps {
   modalType: "Edit" | "Add";
+  medicationIds?: Set<string>;
   currentSection: number;
   sectionSize: number;
   setCurrentSection: Dispatch<SetStateAction<number>>;
@@ -23,6 +24,7 @@ interface SectionSelectorProps {
 
 export default function SectionSelector({
   modalType,
+  medicationIds,
   currentSection,
   setCurrentSection,
   sectionSize,
@@ -38,6 +40,11 @@ export default function SectionSelector({
   onSubmit,
 }: SectionSelectorProps) {
   const router = useRouter();
+  const isNextDisabled =
+    (currentSection === 2 &&
+      (info.repeatInterval === 0 || info.repeatMonthlyOnDay === 0)) ||
+    (currentSection === 3 &&
+      (info.dosesPerDay === 0 || info.doseIntervalInHours === 0));
 
   const backAction = () => {
     setError("");
@@ -62,6 +69,7 @@ export default function SectionSelector({
       info,
       currentSection,
       timesIn12Hour,
+      medicationIds,
     });
     if (error) {
       setError(error);
@@ -125,6 +133,8 @@ export default function SectionSelector({
         className="max-w-max justify-self-end"
         action={(e) => nextAction(e)}
         type="success"
+        disabled={isNextDisabled}
+        disableMode={"gray"}
       >
         {currentSection === sectionSize - 1
           ? modalType === "Edit"

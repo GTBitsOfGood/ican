@@ -4,6 +4,7 @@ interface ButtonProps {
   children: ReactNode;
   type?: "default" | "danger" | "success" | "blue";
   disabled?: boolean;
+  disableMode?: "hide" | "gray";
   action: MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
@@ -21,14 +22,20 @@ export default function ModalButton({
   className,
   type = "default",
   disabled = false,
+  disableMode = "hide",
 }: ButtonProps) {
   const color = typeBackgroundColors[type];
+  const disabledClass = disabled
+    ? disableMode === "gray"
+      ? "opacity-40"
+      : "opacity-0"
+    : "";
 
   return (
     <button
       onClick={action}
       disabled={disabled}
-      className={`${className} ${disabled ? "opacity-0" : ""} bg-iCAN-Blue-300 px-3 tablet:px-5 py-2 text-xl tablet:text-3xl ${color}`}
+      className={`${className} ${disabledClass} bg-iCAN-Blue-300 px-3 tablet:px-5 py-2 text-xl tablet:text-3xl ${color}`}
       type="button"
     >
       {children}
