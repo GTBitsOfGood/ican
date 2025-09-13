@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface ModalSwitchProps {
   state: boolean;
-  setState: React.Dispatch<React.SetStateAction<boolean>>;
+  setState: (value: boolean) => void;
 }
 
 export default function ModalSwitch({ state, setState }: ModalSwitchProps) {

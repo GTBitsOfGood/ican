@@ -1,34 +1,38 @@
-import PetHTTPClient from "@/http/petHTTPClient";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { useUser } from "../UserContext";
+import { useUpdatePetName, usePet } from "../hooks/usePet";
 
-interface ProfileNameProps {
-  name: string;
-}
+const ProfileName: React.FC = () => {
+  const { data: pet } = usePet();
+  const updatePetNameMutation = useUpdatePetName();
 
-const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
-  const { userId } = useUser();
   const [isEditing, setEditing] = useState(false);
-  const [name, setName] = useState(initialName);
+  const [editingName, setEditingName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const toggleEditing = async () => {
-    if (name.trim() === "") {
-      setName(initialName);
-      // Temporary alert popup until a better component can be made
-      alert("Name cannot be empty");
-      return;
-    }
+  const currentName = pet?.name || "";
 
-    if (name.trim() !== "" && isEditing && name != initialName) {
-      try {
-        await PetHTTPClient.updatePet(name, userId as string);
-        initialName = name;
-        console.log("Pet data updated successfully");
-      } catch (error) {
-        console.error("Error updating pet data:", error);
+  const toggleEditing = async () => {
+    if (isEditing) {
+      if (editingName.trim() === "") {
+        alert("Name cannot be empty");
+        setEditingName(currentName);
+        return;
       }
+
+      if (editingName.trim() !== currentName) {
+        updatePetNameMutation.mutate(editingName.trim(), {
+          onSuccess: () => {
+            console.log("Pet data updated successfully");
+          },
+          onError: (error) => {
+            console.error("Error updating pet data:", error);
+            alert("Failed to update pet name. Please try again.");
+          },
+        });
+      }
+    } else {
+      setEditingName(currentName);
     }
     setEditing((prev) => !prev);
   };
@@ -36,9 +40,14 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.setSelectionRange(name.length, name.length);
+      inputRef.current.setSelectionRange(
+        editingName.length,
+        editingName.length,
+      );
     }
-  }, [isEditing, name]);
+  }, [isEditing, editingName.length]);
+
+  const displayName = isEditing ? editingName : currentName;
 
   return (
     <div className="relative inline-flex flex-row flex-1 h-full items-center">
@@ -54,15 +63,18 @@ const ProfileName: React.FC<ProfileNameProps> = ({ name: initialName }) => {
         `}
         type="text"
         ref={inputRef}
-        value={name}
-        readOnly={!isEditing}
-        onChange={(e) => setName(e.target.value)}
+        value={displayName}
+        readOnly={!isEditing || updatePetNameMutation.isPending}
+        onChange={(e) => setEditingName(e.target.value)}
         maxLength={20}
-        style={{ width: `${Math.max(name.length, 3)}ch` }}
+        style={{ width: `${Math.max(displayName.length || 3, 3)}ch` }}
       />
       <button
-        className="relative h-3/5 w-fit ml-1 inline-block"
+        className={`relative h-3/5 w-fit ml-1 inline-block ${
+          updatePetNameMutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+        }`}
         onClick={toggleEditing}
+        disabled={updatePetNameMutation.isPending}
       >
         <Image
           src="/icons/Edit.svg"

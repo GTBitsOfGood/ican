@@ -39,10 +39,13 @@ export default class MedicationHTTPClient {
     });
   }
 
-  static async updateMedication(
-    medicationId: string,
-    medicationInfo: MedicationInfo,
-  ) {
+  static async updateMedication({
+    medicationId,
+    medicationInfo,
+  }: {
+    medicationId: string;
+    medicationInfo: MedicationInfo;
+  }) {
     return await fetchHTTPClient(`/medication/${medicationId}`, {
       method: "PATCH",
       body: JSON.stringify(medicationInfo),
@@ -57,10 +60,13 @@ export default class MedicationHTTPClient {
     });
   }
 
-  static async medicationCheckIn(
-    medicationId: string,
-    localTime: string,
-  ): Promise<void> {
+  static async medicationCheckIn({
+    medicationId,
+    localTime,
+  }: {
+    medicationId: string;
+    localTime: string;
+  }): Promise<void> {
     return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
       method: "POST",
       body: JSON.stringify({ localTime }),
@@ -68,11 +74,15 @@ export default class MedicationHTTPClient {
     });
   }
 
-  static async medicationLog(
-    medicationId: string,
-    pin: string,
-    localTime: string,
-  ): Promise<void> {
+  static async medicationLog({
+    medicationId,
+    pin,
+    localTime,
+  }: {
+    medicationId: string;
+    pin: string;
+    localTime: string;
+  }): Promise<void> {
     const medicationLogBody = {
       pin,
       localTime,

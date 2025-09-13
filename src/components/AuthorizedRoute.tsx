@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import React from "react";
-import AuthHTTPClient from "@/http/authHTTPClient";
 import { useUser } from "./UserContext";
 import Image from "next/image";
+import { useValidateToken } from "./hooks/useAuth";
 
 export default function AuthorizedRoute({
   children,
@@ -12,48 +12,37 @@ export default function AuthorizedRoute({
 }) {
   const router = useRouter();
   const { setUserId } = useUser();
-  const [loading, setLoading] = useState(false);
+  const { data: token, isLoading, isError } = useValidateToken();
 
   useEffect(() => {
-    const validateToken = async () => {
-      try {
-        const token = await AuthHTTPClient.validateToken();
-        setLoading(true);
-
-        if (!token.isValid) {
-          setLoading(false);
-          router.push("/login");
-          return;
-        }
-        setUserId(token.decodedToken?.userId);
-      } catch (error) {
-        console.log("error with validation: ", error);
+    if (!isLoading) {
+      if (isError || !token?.isValid) {
         setUserId(null);
         router.push("/login");
-      } finally {
-        setLoading(false);
+      } else if (token?.decodedToken?.userId) {
+        setUserId(token.decodedToken.userId);
       }
-    };
+    }
+  }, [isLoading, isError, token, router, setUserId]);
 
-    validateToken();
-  }, [router, setUserId]);
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Image
+          className="spin"
+          src="/loading.svg"
+          alt="loading"
+          width={100}
+          height={100}
+          style={{ filter: "brightness(0) invert(1)" }}
+        />
+      </div>
+    );
+  }
 
-  return (
-    <>
-      {loading ? (
-        <div className="flex justify-center items-center h-screen">
-          <Image
-            className="spin"
-            src="/loading.svg"
-            alt="loading"
-            width={100}
-            height={100}
-            style={{ filter: "brightness(0) invert(1)" }}
-          />
-        </div>
-      ) : (
-        children
-      )}
-    </>
-  );
+  if (isError || !token?.isValid) {
+    return null;
+  }
+
+  return <>{children}</>;
 }

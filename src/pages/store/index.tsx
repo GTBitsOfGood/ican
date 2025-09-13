@@ -1,84 +1,50 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useEffect, useState } from "react";
-import InventoryHTTPClient from "@/http/inventoryHTTPClient";
+import { useState } from "react";
 import InventoryLeftPanel from "@/components/inventory/InventoryLeftPanel";
 import InventoryTabContainer from "@/components/inventory/InventoryTabContainer";
 import LoadingScreen from "@/components/loadingScreen";
 import PurchaseScreen from "@/components/inventory/purchaseScreen";
-import { InventoryItem, ItemType } from "@/types/inventory";
+import { InventoryItem } from "@/types/inventory";
 import storeItems from "@/lib/storeItems";
 import { ensureValuesArray } from "@/lib/utils";
-import { usePet } from "@/components/petContext";
+import { usePet } from "@/components/hooks/usePet";
 import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
+import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
 
 export default function Store() {
-  const { pet, setPet } = usePet();
-  const [petBag, setPetBag] = useState<Record<string, InventoryItem[]> | null>(
-    null,
-  );
+  const { data: pet } = usePet();
+  const { data: petBag } = usePetBag(pet?._id);
+  const purchaseItemMutation = usePurchaseItem();
+
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<
     InventoryItem | SavedOutfit | null
   >(null);
 
-  useEffect(() => {
-    const getPetBag = async () => {
-      if (!pet) return;
-      try {
-        const newPetBag = await InventoryHTTPClient.getPetBag(pet._id);
-        if (newPetBag) {
-          setPetBag(newPetBag);
-        } else {
-          console.log("No bag");
-        }
-      } catch (error) {
-        console.error("Error fetching pet data:", error);
-      }
-    };
-
-    getPetBag();
-  }, [pet]);
-
   const purchaseItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
-    try {
-      await InventoryHTTPClient.purchaseItem({
+    purchaseItemMutation.mutate(
+      {
         petId: pet._id,
         name: selectedItem.name,
         type: (selectedItem as InventoryItem).type,
-      });
-
-      setPet((prev) => {
-        if (!prev) {
-          return prev;
-        }
-        return {
-          ...prev,
-          coins: prev.coins - (selectedItem as InventoryItem).cost,
-        };
-      });
-
-      const tempBag = { ...petBag };
-      if (tempBag?.[(selectedItem as InventoryItem).type as ItemType]) {
-        tempBag[(selectedItem as InventoryItem).type as ItemType].push(
-          selectedItem as InventoryItem,
-        );
-      } else {
-        tempBag[(selectedItem as InventoryItem).type as ItemType] = [
-          selectedItem as InventoryItem,
-        ];
-      }
-      setPetBag(tempBag);
-
-      setShowPurchasedScreen(true);
-      console.log("Item successfully purchased");
-    } catch (error) {
-      console.error("Error purchasing item", error);
-    }
+      },
+      {
+        onSuccess: () => {
+          setShowPurchasedScreen(true);
+          console.log("Item successfully purchased");
+        },
+        onError: (error) => {
+          console.error("Error purchasing item", error);
+        },
+      },
+    );
   };
+
+  const isPurchasing = purchaseItemMutation.isPending;
 
   return (
     <AuthorizedRoute>
@@ -125,16 +91,19 @@ export default function Store() {
                   <button
                     onClick={purchaseItem}
                     disabled={
+                      isPurchasing ||
                       !selectedItem ||
                       pet.coins < (selectedItem as InventoryItem).cost
                     }
                     className={`font-quantico ${selectedItem && pet.coins >= (selectedItem as InventoryItem).cost ? "hover:bg-icanGreen-200" : "!bg-iCAN-error"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
                     type="button"
                   >
-                    {selectedItem &&
-                    pet.coins >= (selectedItem as InventoryItem).cost
-                      ? "Purchase"
-                      : "Insufficient Funds"}
+                    {isPurchasing
+                      ? "Purchasing..."
+                      : selectedItem &&
+                          pet.coins >= (selectedItem as InventoryItem).cost
+                        ? "Purchase"
+                        : "Insufficient Funds"}
                   </button>
                 )
               }
