@@ -41,10 +41,6 @@ export default function SettingsModal() {
     updateSettingsMutation.mutate({ notifications: value });
   };
 
-  const handleHelpfulTipsChange = (value: boolean) => {
-    updateSettingsMutation.mutate({ helpfulTips: value });
-  };
-
   const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     logoutMutation.mutate();
@@ -140,50 +136,40 @@ export default function SettingsModal() {
                     </div>
                     <ModalNextButton link="medications" />
                   </div>
-                  {settings.parentalControl && (
-                    <>
-                      <div className="flex justify-between items-center pl-4">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src="/store/Lock.svg"
-                            alt="Locked"
-                            className="w-8 h-8 object-contain"
-                            height={32}
-                            width={32}
-                          />
-                          <h5 className="text-3xl">Change Pin</h5>
-                        </div>
-                        <ModalNextButton link="change-pin" />
-                      </div>
-                      <div className="flex justify-between items-center pl-4">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src="/store/Lock.svg"
-                            alt="Locked"
-                            className="w-8 h-8 object-contain"
-                            height={32}
-                            width={32}
-                          />
-                          <h5 className="text-3xl">Delete Account</h5>
-                        </div>
-                        <ModalNextButton
-                          link="settings"
-                          onClick={handleDeleteAccount}
-                          preventNavigation={true}
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
                         />
-                      </div>
-                    </>
-                  )}
-                  {!settings.parentalControl && (
-                    <div className="flex justify-between items-center pl-4">
-                      <h5 className="text-3xl">Delete Account</h5>
-                      <ModalNextButton
-                        link="settings"
-                        onClick={handleDeleteAccount}
-                        preventNavigation={true}
-                      />
+                      )}
+                      <h5 className="text-3xl">Change Pin</h5>
                     </div>
-                  )}
+                    <ModalNextButton link="change-pin" />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
+                      <h5 className="text-3xl">Delete Account</h5>
+                    </div>
+                    <ModalNextButton
+                      link="settings"
+                      onClick={handleDeleteAccount}
+                      preventNavigation={true}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -238,4 +224,3 @@ export default function SettingsModal() {
     </>
   );
 }
-
