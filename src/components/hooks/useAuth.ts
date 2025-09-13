@@ -11,6 +11,8 @@ export const useValidateToken = () => {
     queryKey: AUTH_QUERY_KEYS.validateToken,
     queryFn: () => AuthHTTPClient.validateToken(),
     staleTime: 10 * 60 * 1000,
+    // turn off retrying here because an error === we're not logged in
+    retry: false,
   });
 };
 

@@ -12,6 +12,7 @@ import ModalNextButton from "./ModalNextButton";
 import { useUser } from "../UserContext";
 import { useSettings, useUpdateSettings } from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
+import Image from "next/image";
 
 export default function SettingsModal() {
   const { userId } = useUser();
@@ -40,10 +41,6 @@ export default function SettingsModal() {
     updateSettingsMutation.mutate({ notifications: value });
   };
 
-  const handleHelpfulTipsChange = (value: boolean) => {
-    updateSettingsMutation.mutate({ helpfulTips: value });
-  };
-
   const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     logoutMutation.mutate();
@@ -57,7 +54,7 @@ export default function SettingsModal() {
 
   const handleConfirmDelete = async () => {
     onDeleteModalClose();
-    
+
     if (!userId) {
       console.error("UserId is null");
       return;
@@ -80,7 +77,7 @@ export default function SettingsModal() {
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="w-[70%] h-[90%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+        className="w-[80%] h-[60%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
         onClose={onClose}
         radius="lg"
@@ -90,68 +87,96 @@ export default function SettingsModal() {
         <ModalContent>
           <ModalHeader>Settings</ModalHeader>
           <ModalBody>
-            <div className="flex flex-col items-center w-[95%] gap-10">
-              <div className="flex flex-col w-full gap-7">
-                <h3 className="font-bold text-5xl">General</h3>
-                <div className="flex justify-between items-center pl-4">
-                  <h5 className="text-3xl">Notifications</h5>
-                  <ModalSwitch
-                    state={settings.notifications}
-                    setState={handleNotificationsChange}
-                  />
-                </div>
-                <div className="flex justify-between items-center pl-4">
-                  <div className="flex items-center">
-                    <h5 className="text-3xl pr-2">Helpful Tips</h5>
-                    <div className="flex justify-center items-center border-[1px] border-white w-[1.75rem] h-[1.75rem]">
-                      <p className="text-2xl font-pixelify font-normal">?</p>
-                    </div>
+            <div className="flex flex-col items-center w-[95%] text-[#1E2353] gap-10">
+              <div className="flex w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6">
+                <div className="flex flex-col w-1/2 gap-7">
+                  <div className="flex justify-between items-center pl-4">
+                    <h5 className="text-3xl">Parental Control</h5>
+                    <ModalSwitch
+                      state={settings.parentalControl}
+                      setState={handleParentalControlsChange}
+                    />
                   </div>
-                  <ModalSwitch
-                    state={settings.helpfulTips}
-                    setState={handleHelpfulTipsChange}
-                  />
+                  <div className="flex justify-between items-center pl-4">
+                    <h5 className="text-3xl">Notifications</h5>
+                    <ModalSwitch
+                      state={settings.notifications}
+                      setState={handleNotificationsChange}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
+                      <h5 className="text-3xl">Logout</h5>
+                    </div>
+                    <ModalNextButton link="settings" onClick={handleLogout} />
+                  </div>
                 </div>
-                <div className="flex justify-between items-center pl-4">
-                  <h5 className="text-3xl">Logout</h5>
-                  <ModalNextButton link="settings" onClick={handleLogout} />
-                </div>
-              </div>
-              <div className="flex flex-col w-full gap-7">
-                <h3 className="font-bold text-5xl">Parental</h3>
-                <div className="flex justify-between items-center pl-4">
-                  <h5 className="text-3xl">Parental Controls</h5>
-                  <ModalSwitch
-                    state={settings.parentalControl}
-                    setState={handleParentalControlsChange}
-                  />
-                </div>
-                <div className="flex justify-between items-center pl-4">
-                  <h5 className="text-3xl">Medications</h5>
-                  <ModalNextButton link="medications" />
-                </div>
-                {settings.parentalControl && (
-                  <>
-                    <div className="flex justify-between items-center pl-4">
+                <div className="flex flex-col w-1/2 gap-7">
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
+                      <h5 className="text-3xl">Medications</h5>
+                    </div>
+                    <ModalNextButton link="medications" />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
                       <h5 className="text-3xl">Change Pin</h5>
-                      <ModalNextButton link="change-pin" />
                     </div>
-                    <div className="flex justify-between items-center pl-4">
+                    <ModalNextButton link="change-pin" />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {settings.parentalControl && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
                       <h5 className="text-3xl">Delete Account</h5>
-                      <ModalNextButton
-                        link="settings"
-                        onClick={handleDeleteAccount}
-                        preventNavigation={true}
-                      />
                     </div>
-                  </>
-                )}
+                    <ModalNextButton
+                      link="settings"
+                      onClick={handleDeleteAccount}
+                      preventNavigation={true}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </ModalBody>
         </ModalContent>
       </Modal>
-      
+
       <Modal
         backdrop="opaque"
         classNames={{
