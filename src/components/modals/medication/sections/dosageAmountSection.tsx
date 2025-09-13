@@ -32,7 +32,7 @@ export default function DosageAmountSection({
         {(info.dosageAmount?.length || 0) === 50 ? (
           <p className="text-lg opacity-50">50 Character limit reached</p>
         ) : (
-          <p></p>
+          <p></p> // empty <p> tag is so that the "xx/50" text stays right aligned
         )}
         <p className="text-lg mt-2">{info.dosageAmount?.length || 0}/50</p>
       </div>

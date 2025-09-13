@@ -42,9 +42,7 @@ export default function SectionSelector({
   const router = useRouter();
   const isNextDisabled =
     (currentSection === 2 &&
-      (info.repeatInterval === 0 ||
-        (info.repeatMonthlyOnDay !== undefined &&
-          info.repeatMonthlyOnDay === 0))) ||
+      (info.repeatInterval === 0 || info.repeatMonthlyOnDay === 0)) ||
     (currentSection === 3 &&
       (info.dosesPerDay === 0 || info.doseIntervalInHours === 0));
 
