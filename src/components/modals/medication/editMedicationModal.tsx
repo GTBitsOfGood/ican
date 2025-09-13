@@ -9,13 +9,22 @@ import { useRouter } from "next/navigation";
 
 interface EditMedicationModalProps {
   initialInfo?: WithId<Medication>;
+  medicationIds?: Set<string>;
 }
 
 export default function EditMedicationModal({
   initialInfo,
+  medicationIds,
 }: EditMedicationModalProps) {
   const router = useRouter();
   const { userId } = useUser();
+  const filteredMedicationIds = medicationIds
+    ? new Set(
+        [...medicationIds].filter(
+          (id) => id !== initialInfo?.customMedicationId,
+        ),
+      )
+    : undefined;
 
   if (initialInfo === undefined) {
     router.push("/medications");
@@ -45,6 +54,7 @@ export default function EditMedicationModal({
       modalType="Edit"
       onSubmit={onSubmit}
       initialInfo={initialInfo}
+      medicationIds={filteredMedicationIds}
     />
   );
 }

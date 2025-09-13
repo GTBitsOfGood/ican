@@ -5,6 +5,7 @@ interface SectionValidatorType {
   info: MedicationInfo;
   currentSection: number;
   timesIn12Hour: Time12Hour[];
+  medicationIds?: Set<string>;
 }
 
 interface SectionValidatorReturnType {
@@ -28,6 +29,7 @@ export default function SectionValidator({
   info,
   currentSection,
   timesIn12Hour,
+  medicationIds,
 }: SectionValidatorType): SectionValidatorReturnType {
   const updatedInfo = { ...info };
   let updatedTimes = [...timesIn12Hour];
@@ -38,6 +40,11 @@ export default function SectionValidator({
       }
       if (info.customMedicationId == "") {
         return { error: "Medication ID is required." };
+      }
+      if (medicationIds?.has(info.customMedicationId)) {
+        return {
+          error: "Medication ID is already used. Choose a different one.",
+        };
       }
       break;
     case 1: // dosage amount

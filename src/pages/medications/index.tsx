@@ -26,6 +26,9 @@ export default function MedicationsPage({
   const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
+  const medicationIds = new Set(
+    medications.map((med) => med.customMedicationId),
+  );
 
   const handleMedicationDelete = async (index: number) => {
     const medicationId = medications[index]._id;
@@ -44,9 +47,14 @@ export default function MedicationsPage({
   return (
     <AuthorizedRoute>
       <div className="min-h-screen max-h-screen flex flex-col items-center gap-4 relative px-2 pt-4 pb-8 bg-icanBlue-200">
-        {activeModal === "add-new-medication" && <AddMedicationModal />}
+        {activeModal === "add-new-medication" && (
+          <AddMedicationModal medicationIds={medicationIds} />
+        )}
         {activeModal === "edit-medication" && (
-          <EditMedicationModal initialInfo={editMedicationInfo} />
+          <EditMedicationModal
+            initialInfo={editMedicationInfo}
+            medicationIds={medicationIds}
+          />
         )}
         {deleteModalVisible &&
           clickedIndex !== undefined &&
