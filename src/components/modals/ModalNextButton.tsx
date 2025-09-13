@@ -3,17 +3,21 @@ import React from "react";
 interface ModalNextButtonProps {
   link: string;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+  preventNavigation?: boolean;
 }
 
 export default function ModalNextButton({
   link,
   onClick,
+  preventNavigation,
 }: ModalNextButtonProps) {
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (onClick) {
       e.preventDefault();
       await onClick(e);
-      window.location.href = link;
+      if (!preventNavigation) {
+        window.location.href = link;
+      }
     }
   };
 
