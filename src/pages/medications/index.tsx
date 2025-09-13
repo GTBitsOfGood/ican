@@ -1,15 +1,17 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
 import EditMedicationModal from "@/components/modals/medication/editMedicationModal";
 import MedicationCard from "@/components/ui/MedicationCard";
 import DeleteMedicationModal from "@/components/modals/DeleteMedicationModal";
-import { useUser } from "@/components/UserContext";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
+import {
+  useDeleteMedication,
+  useUserMedications,
+} from "@/components/hooks/useMedication";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -20,45 +22,26 @@ export default function MedicationsPage({
   activeModal = "",
   editMedicationInfo = undefined,
 }: MedicationPageProps) {
-  const { userId } = useUser();
-  const [medications, setMedications] = useState<WithId<Medication>[]>([]);
+  const { data: medications = [] } = useUserMedications();
+  const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
   const medicationIds = new Set(
     medications.map((med) => med.customMedicationId),
   );
 
-  useEffect(() => {
-    const fetchMedications = async () => {
-      if (!userId) {
-        return;
-      }
-
-      try {
-        const medicationsData =
-          await MedicationHTTPClient.getAllUserMedications(userId);
-        setMedications(medicationsData);
-      } catch (error) {
-        console.error("Error fetching medications:", error);
-      }
-    };
-
-    fetchMedications();
-  }, [userId]);
-
   const handleMedicationDelete = async (index: number) => {
-    try {
-      await MedicationHTTPClient.deleteMedication(medications[index]._id);
-      setMedications((prev) => {
-        const newMedications = [...prev];
-        newMedications.splice(index, 1);
-        return newMedications;
-      });
-      setDeleteModalVisible(false);
-      setClickedIndex(undefined);
-    } catch (error) {
-      console.error("Error deleting medications:", error);
-    }
+    const medicationId = medications[index]._id;
+
+    deleteMedicationMutation.mutate(medicationId, {
+      onSuccess: () => {
+        setDeleteModalVisible(false);
+        setClickedIndex(undefined);
+      },
+      onError: (error) => {
+        console.error("Error deleting medications:", error);
+      },
+    });
   };
 
   return (
