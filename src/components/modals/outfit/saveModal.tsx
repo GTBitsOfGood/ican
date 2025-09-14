@@ -3,15 +3,15 @@ import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import InputBox from "@/components/ui/form/inputBox";
 import ModalButton from "@/components/ui/modals/modalButton";
-import { usePet } from "@/components/petContext";
-import PetHTTPClient from "@/http/petHTTPClient";
+import { usePet, useSavePetOutfit } from "@/components/hooks/usePet";
 
 interface OutfitSaveModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const savePetOutfitMutation = useSavePetOutfit();
   const [name, setName] = useState<string>("");
   const [error, setError] = useState<string>("");
 
@@ -26,25 +26,23 @@ export default function OutfitSaveModal({ setModal }: OutfitSaveModalProps) {
 
     const appearance = { ...pet.appearance, _id: undefined };
 
-    try {
-      await PetHTTPClient.saveOutfit(pet._id, name, appearance);
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          outfits: [
-            ...prev.outfits,
-            {
-              name,
-              ...appearance,
-            },
-          ],
-        };
-      });
-      setModal(false);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    // TODO Add more duplicate checks here in the future for name (and appearence)
+
+    savePetOutfitMutation.mutate(
+      {
+        petId: pet._id,
+        name: name.trim(),
+        appearance,
+      },
+      {
+        onSuccess: () => {
+          setModal(false);
+        },
+        onError: (error) => {
+          setError((error as Error).message);
+        },
+      },
+    );
   };
 
   return (

@@ -9,13 +9,22 @@ import { useRouter } from "next/navigation";
 
 interface EditMedicationModalProps {
   initialInfo?: WithId<Medication>;
+  medicationIds?: Set<string>;
 }
 
 export default function EditMedicationModal({
   initialInfo,
+  medicationIds,
 }: EditMedicationModalProps) {
   const router = useRouter();
   const { userId } = useUser();
+  const filteredMedicationIds = medicationIds
+    ? new Set(
+        [...medicationIds].filter(
+          (id) => id !== initialInfo?.customMedicationId,
+        ),
+      )
+    : undefined;
 
   if (initialInfo === undefined) {
     router.push("/medications");
@@ -30,7 +39,10 @@ export default function EditMedicationModal({
     }
     const { _id, ...info } = medicationInfo;
     if (_id) {
-      await MedicationHTTPClient.updateMedication(_id, info);
+      await MedicationHTTPClient.updateMedication({
+        medicationId: _id,
+        medicationInfo: info,
+      });
       router.push("/medications");
     } else {
       throw new ValidationError("The Medication ID is missing.");
@@ -42,6 +54,7 @@ export default function EditMedicationModal({
       modalType="Edit"
       onSubmit={onSubmit}
       initialInfo={initialInfo}
+      medicationIds={filteredMedicationIds}
     />
   );
 }

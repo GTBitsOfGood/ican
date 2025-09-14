@@ -3,7 +3,7 @@ import ExpBar from "./ExpBar";
 import ProfileName from "./ProfileName";
 
 interface ProfileInfoProps {
-  name: string;
+  // name: string;
   level: number;
   coins: number;
   currentExp: number;
@@ -11,7 +11,7 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  name,
+  // name,
   level,
   coins,
   currentExp,
@@ -19,7 +19,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full w-fit gap-2">
-      <ProfileName name={name} />
+      <ProfileName />
       <ExpBar level={level} currentExp={currentExp} totalExp={totalExp} />
 
       <div className="flex flex-1 flex-row w-fit items-center gap-3 4xl:gap-4">

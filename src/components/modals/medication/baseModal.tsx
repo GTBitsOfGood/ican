@@ -18,6 +18,7 @@ interface MedicationBaseModalProps {
   modalType: "Edit" | "Add";
   onSubmit: (medicationInfo: WithOptionalId<MedicationInfo>) => void;
   initialInfo: WithOptionalId<MedicationInfo>;
+  medicationIds?: Set<string>;
 }
 
 const modalTypeToSection = {
@@ -29,6 +30,7 @@ export default function MedicationBaseModal({
   modalType,
   onSubmit,
   initialInfo,
+  medicationIds,
 }: MedicationBaseModalProps) {
   const [medicationInfo, setMedicationInfo] =
     useState<WithOptionalId<MedicationInfo>>(initialInfo);
@@ -121,6 +123,7 @@ export default function MedicationBaseModal({
         </div>
         <SectionSelector
           modalType={modalType}
+          medicationIds={medicationIds}
           currentSection={currentSection}
           setCurrentSection={setCurrentSection}
           sectionSize={sections.length}

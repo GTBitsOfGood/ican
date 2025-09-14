@@ -1,83 +1,46 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+import { useMedicationSchedule } from "@/components/hooks/useMedication";
 import MedicationLogCard from "@/components/ui/MedicationLogCard";
-import { useUser } from "@/components/UserContext";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { LogType } from "@/types/log";
 import { humanizeDate, humanizeDateComparison } from "@/utils/date";
 import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
-  const { userId } = useUser();
-  console.log(userId);
 
-  const [data, setData] = useState<{
-    today: { date: string; medications: LogType[] };
-    yesterday: { date: string; medications: LogType[] };
-    tomorrow: { date: string; medications: LogType[] };
-  }>();
+  const getDateString = (date: Date, offset: number) => {
+    const newDate = new Date(date);
+    newDate.setDate(date.getDate() + offset);
+    const year = newDate.getFullYear();
+    const month = String(newDate.getMonth() + 1).padStart(2, "0");
+    const day = String(newDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-  useEffect(() => {
-    const init = async () => {
-      console.log(userId);
-      if (!userId) {
-        return;
-      } // curr date data
+  const localTime = new Date().toLocaleString("en-us");
 
-      try {
-        const now = new Date();
+  const { data: yesterdayData } = useMedicationSchedule(
+    getDateString(currDate, -1),
+    localTime,
+  );
 
-        const obj: {
-          today: { date: string; medications: LogType[] };
-          yesterday: { date: string; medications: LogType[] };
-          tomorrow: { date: string; medications: LogType[] };
-        } = {
-          today: {
-            date: "",
-            medications: [],
-          },
-          yesterday: {
-            date: "",
-            medications: [],
-          },
-          tomorrow: {
-            date: "",
-            medications: [],
-          },
-        };
+  const { data: todayData } = useMedicationSchedule(
+    getDateString(currDate, 0),
+    localTime,
+  );
 
-        for (let x = -1; x < 2; x++) {
-          const date = new Date();
-          date.setDate(now.getDate() + x);
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate()).padStart(2, "0");
-          console.log(userId);
-          const data = await MedicationHTTPClient.getMedicationSchedule(
-            userId as string,
-            `${year}-${month}-${day}`,
-            new Date().toLocaleString("en-us"),
-          );
-          console.log(data);
+  const { data: tomorrowData } = useMedicationSchedule(
+    getDateString(currDate, 1),
+    localTime,
+  );
 
-          if (x === -1) {
-            obj["yesterday"] = data;
-          } else if (x === 0) {
-            obj["today"] = data;
-          } else if (x === 1) {
-            obj["tomorrow"] = data;
-          }
-        }
-
-        setData(obj);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    init();
-  }, [userId]);
+  const data = {
+    yesterday: yesterdayData || { date: "", medications: [] },
+    today: todayData || { date: "", medications: [] },
+    tomorrow: tomorrowData || { date: "", medications: [] },
+  };
 
   const handlePrev = () => {
     const newDate = new Date(currDate);
@@ -92,45 +55,22 @@ export default function Log() {
   };
 
   const sortLogs = (day: "yesterday" | "today" | "tomorrow") => {
-    if (day === "today")
-      return data?.today.medications.sort((a, b) => {
-        const aTime = standardizeTime(a.scheduledDoseTime);
-        const bTime = standardizeTime(b.scheduledDoseTime);
-        console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
+    if (!data[day]) return [];
 
-        const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
-        const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
+    return [...data[day].medications].sort((a, b) => {
+      const aTime = standardizeTime(a.scheduledDoseTime);
+      const bTime = standardizeTime(b.scheduledDoseTime);
+      console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
 
-        return aTotalMinutes - bTotalMinutes;
-      });
+      const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
+      const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
 
-    if (day === "tomorrow")
-      return data?.tomorrow.medications.sort((a, b) => {
-        const aTime = standardizeTime(a.scheduledDoseTime);
-        const bTime = standardizeTime(b.scheduledDoseTime);
-        console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
-
-        const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
-        const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
-
-        return aTotalMinutes - bTotalMinutes;
-      });
-
-    if (day === "yesterday")
-      return data?.yesterday.medications.sort((a, b) => {
-        const aTime = standardizeTime(a.scheduledDoseTime);
-        const bTime = standardizeTime(b.scheduledDoseTime);
-        console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
-
-        const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
-        const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
-
-        return aTotalMinutes - bTotalMinutes;
-      });
+      return aTotalMinutes - bTotalMinutes;
+    });
   };
 
   const filterPastDoses = (day: "yesterday" | "today" | "tomorrow") => {
-    if (!data) return;
+    if (!data[day]) return [];
 
     const pastDoses = data[day].medications.filter((med) => {
       if (med.status === "missed" || med.status === "taken") {
@@ -143,7 +83,8 @@ export default function Log() {
   };
 
   const filterFutureDoses = (day: "yesterday" | "today" | "tomorrow") => {
-    if (!data) return;
+    if (!data[day]) return [];
+
     const futureDoses = data[day].medications.filter((med) => {
       if (med.status === "pending") {
         return true;

@@ -1,10 +1,9 @@
-import { usePet } from "@/components/petContext";
+import { useDeletePetOutfit, usePet } from "@/components/hooks/usePet";
 import { SavedOutfit } from "@/db/models/pet";
 import { Dispatch, SetStateAction, useState } from "react";
 import ModalBackground from "../modalBackground";
 import ModalContainer from "../modalContainer";
 import ModalButton from "@/components/ui/modals/modalButton";
-import PetHTTPClient from "@/http/petHTTPClient";
 
 interface OutfitDeleteModalProps {
   setModal: Dispatch<SetStateAction<boolean>>;
@@ -17,29 +16,29 @@ export default function OutfitDeleteModal({
   selectedItem,
   setSelectedItem,
 }: OutfitDeleteModalProps) {
-  const { pet, setPet } = usePet();
+  const { data: pet } = usePet();
+  const deletePetOutfitMutation = useDeletePetOutfit();
   const [error, setError] = useState<string>("");
 
   const deleteOutfit = async () => {
     if (!pet) return;
     setError("");
 
-    try {
-      await PetHTTPClient.deleteOutfit(pet._id, selectedItem.name);
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          outfits: [...prev.outfits].filter(
-            (i) => i.name !== selectedItem.name,
-          ),
-        };
-      });
-      setSelectedItem(null);
-      setModal(false);
-    } catch (error) {
-      setError((error as Error).message);
-    }
+    deletePetOutfitMutation.mutate(
+      {
+        petId: pet._id,
+        outfitName: selectedItem.name,
+      },
+      {
+        onSuccess: () => {
+          setSelectedItem(null);
+          setModal(false);
+        },
+        onError: (error) => {
+          setError((error as Error).message);
+        },
+      },
+    );
   };
 
   return (

@@ -55,21 +55,58 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = async () => {
+<<<<<<< HEAD
+    await MedicationHTTPClient.medicationLog(
+      id,
+      new Date().toLocaleString("en-us"),
+    );
+||||||| 575ab7b
+    await MedicationHTTPClient.medicationLog(
+      id,
+      pin,
+      new Date().toLocaleString("en-us"),
+    );
+=======
     await MedicationHTTPClient.medicationLog({
       medicationId: id,
       pin,
       localTime: new Date().toLocaleString("en-us"),
     });
+>>>>>>> main
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
 
+<<<<<<< HEAD
   const handleMedicationCheckIn = async () => {
+    await MedicationHTTPClient.medicationCheckIn(
+      id,
+      new Date().toLocaleString("en-us"),
+    );
+    openPasswordModal();
+||||||| 575ab7b
+  const toggleMissedDoseModal = () => {
+    setShowMissedDoseModal(!showMissedDoseModal);
+  };
+
+  const togglePasswordModal = async () => {
+    await MedicationHTTPClient.medicationCheckIn(
+      id,
+      new Date().toLocaleString("en-us"),
+    );
+    setShowPasswordModal(!showPasswordModal);
+=======
+  const toggleMissedDoseModal = () => {
+    setShowMissedDoseModal(!showMissedDoseModal);
+  };
+
+  const togglePasswordModal = async () => {
     await MedicationHTTPClient.medicationCheckIn({
       medicationId: id,
       localTime: new Date().toLocaleString("en-us"),
     });
-    openPasswordModal();
+    setShowPasswordModal(!showPasswordModal);
+>>>>>>> main
   };
 
   const toggleMissedDoseModal = () => {

@@ -70,13 +70,28 @@ export default class MedicationHTTPClient {
     });
   }
 
+<<<<<<< HEAD
+  static async medicationLog(
+    medicationId: string,
+    localTime: string,
+  ): Promise<void> {
+||||||| 575ab7b
+  static async medicationLog(
+    medicationId: string,
+    pin: string,
+    localTime: string,
+  ): Promise<void> {
+=======
   static async medicationLog({
     medicationId,
+    pin,
     localTime,
   }: {
     medicationId: string;
+    pin: string;
     localTime: string;
   }): Promise<void> {
+>>>>>>> main
     const medicationLogBody = {
       localTime,
     };

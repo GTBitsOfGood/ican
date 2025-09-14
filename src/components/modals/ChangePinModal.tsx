@@ -13,12 +13,11 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import SettingsHTTPClient from "@/http/settingsHTTPClient";
-import { useUser } from "../UserContext";
 import { useRouter } from "next/router";
+import { useUpdatePin } from "../hooks/useSettings";
 
 export default function ChangePinModal() {
-  const { userId } = useUser();
+  const updatePinMutation = useUpdatePin();
   const router = useRouter();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,23 +34,27 @@ export default function ChangePinModal() {
       setError("ERROR: Pin must be 4 digits");
       return;
     }
-    if (!userId) {
-      setError("You must be logged in to perform this action");
-      return;
-    }
-    try {
-      await SettingsHTTPClient.updatePin(userId, oldPin);
-      console.log("Pin successfully changed");
-      router.push("/");
-      // What to do upon successful submission?
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(`Error: ${error.message}`);
-      } else {
-        setError(`Unexpected error occured.`);
-      }
-    }
+
+    updatePinMutation.mutate(oldPin, {
+      onSuccess: () => {
+        console.log("Pin successfully changed");
+        router.push("/");
+      },
+      onError: (error) => {
+        if (error instanceof Error) {
+          setError(`Error: ${error.message}`);
+        } else {
+          setError(`Unexpected error occurred.`);
+        }
+      },
+    });
   };
+
+  const displayError =
+    error ||
+    (updatePinMutation.error
+      ? `Error: ${updatePinMutation.error.message}`
+      : "");
 
   return (
     <Modal
@@ -76,12 +79,12 @@ export default function ChangePinModal() {
           </h1>
           <div className="w-full h-[80%] flex flex-col gap-8 justify-between">
             <div className="w-full h-[80%] flex flex-col justify-center gap-4">
-              {error && (
+              {displayError && (
                 <div className="flex gap-2 justify-center items-center">
                   <div className="flex justify-center items-center border-[1px] border-solid border-white font-pixelify w-[1rem] h-[1rem]">
                     <p>!</p>
                   </div>
-                  <p className="text-center font-normal">{error}</p>
+                  <p className="text-center font-normal">{displayError}</p>
                 </div>
               )}
               <div className="w-full flex justify-center items-center">
@@ -97,19 +100,19 @@ export default function ChangePinModal() {
                   <InputOTPGroup className="flex justify-between items-center w-full">
                     <InputOTPSlot
                       index={0}
-                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${displayError ? "bg-[#FFC3C3]" : "bg-white"}`}
                     />
                     <InputOTPSlot
                       index={1}
-                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${displayError ? "bg-[#FFC3C3]" : "bg-white"}`}
                     />
                     <InputOTPSlot
                       index={2}
-                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${displayError ? "bg-[#FFC3C3]" : "bg-white"}`}
                     />
                     <InputOTPSlot
                       index={3}
-                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${error ? "bg-[#FFC3C3]" : "bg-white"}`}
+                      className={`mobile:w-[8vw] mobile:h-[8vw] desktop:w-[10vw] desktop:h-[10vw] border-black text-5xl text-black font-bold first:rounded-none last:rounded-none rounded-none ${displayError ? "bg-[#FFC3C3]" : "bg-white"}`}
                     />
                   </InputOTPGroup>
                 </InputOTP>
@@ -123,9 +126,9 @@ export default function ChangePinModal() {
             <button
               type="submit"
               onClick={handleClick}
-              className={`self-end p-2 text-black text-xl ${error === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
+              className={`self-end p-2 text-black text-xl ${displayError === "" ? "bg-icanGreen-100" : "bg-[#FFC3C3]"}`}
             >
-              {error === "" ? "Enter" : "Try Again"}
+              {displayError === "" ? "Enter" : "Try Again"}
             </button>
           </div>
         </ModalBody>

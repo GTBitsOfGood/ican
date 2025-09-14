@@ -3,7 +3,6 @@ import type { AppProps } from "next/app";
 import { belanosima, pixelifySans, quantico } from "@/styles/font";
 import { UserProvider } from "@/components/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { PetProvider } from "@/components/petContext";
 import { FoodProvider } from "@/components/FoodContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
@@ -21,11 +20,9 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={clientId}>
           <UserProvider>
-            <PetProvider>
-              <FoodProvider>
-                <Component {...pageProps} />
-              </FoodProvider>
-            </PetProvider>
+            <FoodProvider>
+              <Component {...pageProps} />
+            </FoodProvider>
           </UserProvider>
         </GoogleOAuthProvider>
       </QueryClientProvider>

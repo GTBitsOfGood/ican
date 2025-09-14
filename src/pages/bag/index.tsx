@@ -1,23 +1,29 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useEffect, useState } from "react";
-import InventoryHTTPClient from "@/http/inventoryHTTPClient";
+import { useState } from "react";
 import InventoryLeftPanel from "@/components/inventory/InventoryLeftPanel";
 import InventoryTabContainer from "@/components/inventory/InventoryTabContainer";
 import LoadingScreen from "@/components/loadingScreen";
 import { InventoryItem } from "@/types/inventory";
-import { usePet } from "@/components/petContext";
+import {
+  useEquipPetItem,
+  useEquipPetOutfit,
+  usePet,
+  useUnequipPetItem,
+} from "@/components/hooks/usePet";
 import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
-import PetHTTPClient from "@/http/petHTTPClient";
 import OutfitSaveModal from "@/components/modals/outfit/saveModal";
 import OutfitDeleteModal from "@/components/modals/outfit/deleteModal";
 import { compareAppearance } from "@/utils/pets";
+import { usePetBag } from "@/components/hooks/useInventory";
 
 export default function Bag() {
-  const { pet, setPet } = usePet();
-  const [petBag, setPetBag] = useState<Record<string, InventoryItem[]> | null>(
-    null,
-  );
+  const { data: pet } = usePet();
+  const { data: petBag } = usePetBag(pet?._id);
+  const equipItemMutation = useEquipPetItem();
+  const unequipItemMutation = useUnequipPetItem();
+  const equipOutfitMutation = useEquipPetOutfit();
+
   const [selectedItem, setSelectedItem] = useState<
     InventoryItem | SavedOutfit | null
   >(null);
@@ -25,74 +31,43 @@ export default function Bag() {
   const [deleteSelectedOutfit, setDeleteSelectedOutfit] =
     useState<boolean>(false);
 
-  useEffect(() => {
-    const getPetBag = async () => {
-      if (!pet) return;
-      try {
-        const newPetBag = await InventoryHTTPClient.getPetBag(pet._id);
-        if (newPetBag) {
-          setPetBag(newPetBag);
-        } else {
-          console.log("No bag");
-        }
-      } catch (error) {
-        console.error("Error fetching pet data:", error);
-      }
-    };
-
-    getPetBag();
-  }, [pet]);
-
   const equipItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
-    try {
-      await PetHTTPClient.equipItem(
-        pet._id,
-        selectedItem.name,
-        (selectedItem as InventoryItem).type,
-      );
-
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [(selectedItem as InventoryItem).type]: selectedItem.name,
-          },
-        };
-      });
-
-      console.log("Item successfully equiped");
-    } catch (error) {
-      console.error("Error purchasing item", error);
-    }
+    equipItemMutation.mutate(
+      {
+        petId: pet._id,
+        name: selectedItem.name,
+        type: (selectedItem as InventoryItem).type,
+      },
+      {
+        onSuccess: () => {
+          console.log("Item successfully equipped");
+        },
+        onError: (error) => {
+          console.error("Error equipping item", error);
+        },
+      },
+    );
   };
 
   const unequipItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
-    try {
-      await PetHTTPClient.unequipItem(
-        pet._id,
-        (selectedItem as InventoryItem).type,
-      );
-
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...prev.appearance,
-            [(selectedItem as InventoryItem).type]: undefined,
-          },
-        };
-      });
-      setSelectedItem(null);
-    } catch (error) {
-      console.error("Error unequiping item", error);
-    }
+    unequipItemMutation.mutate(
+      {
+        petId: pet._id,
+        attribute: (selectedItem as InventoryItem).type,
+      },
+      {
+        onSuccess: () => {
+          setSelectedItem(null);
+        },
+        onError: (error) => {
+          console.error("Error unequipping item", error);
+        },
+      },
+    );
   };
 
   const isitemEquipped = () => {
@@ -112,32 +87,29 @@ export default function Bag() {
   const equipOutfit = async () => {
     if (!pet || !selectedItem || "level" in selectedItem) return;
 
-    try {
-      const newAppearance = {
-        ...selectedItem,
-        _id: undefined,
-        name: undefined,
-      };
-      await PetHTTPClient.equipOutfit(
-        pet._id,
-        newAppearance as Omit<SavedOutfit, "name">,
-      );
+    const newAppearance = {
+      ...selectedItem,
+      _id: undefined,
+      name: undefined,
+    };
 
-      setPet((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          appearance: {
-            ...(selectedItem as SavedOutfit),
-            name: undefined,
-            _id: undefined,
-          },
-        };
-      });
-    } catch (error) {
-      console.error("error equipping outfit", error);
-    }
+    equipOutfitMutation.mutate(
+      {
+        petId: pet._id,
+        appearance: newAppearance as Omit<SavedOutfit, "name">,
+      },
+      {
+        onError: (error) => {
+          console.error("error equipping outfit", error);
+        },
+      },
+    );
   };
+
+  const isLoading =
+    equipItemMutation.isPending ||
+    unequipItemMutation.isPending ||
+    equipOutfitMutation.isPending;
 
   return (
     <AuthorizedRoute>
@@ -191,6 +163,7 @@ export default function Bag() {
                 selectedItem && "level" in selectedItem ? (
                   <button
                     onClick={isitemEquipped() ? unequipItem : equipItem}
+                    disabled={isLoading}
                     className={`font-quantico ${isitemEquipped() ? "bg-icanGreen-200" : "bg-iCAN-Blue-300"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white`}
                     type="button"
                   >
@@ -200,6 +173,7 @@ export default function Bag() {
                   selectedItem && (
                     <button
                       onClick={isOutfitEquipped() ? undefined : equipOutfit}
+                      disabled={isLoading || isOutfitEquipped()}
                       className={`font-quantico ${isOutfitEquipped() ? "bg-icanGreen-200" : "bg-iCAN-Blue-300"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white`}
                       type="button"
                     >

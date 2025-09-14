@@ -19,7 +19,7 @@ export default function ReviewSection({
       <div className="flex flex-col gap-4 tablet:gap-8 pr-6">
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full tablet:basis-[130px] desktop:basis-[190px] text-xl desktop:text-3xl font-bold">
-            Form
+            Form<span className="text-iCAN-error">*</span>
           </div>
           <InputBox
             readOnly={true}
@@ -35,7 +35,7 @@ export default function ReviewSection({
         </div>
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full tablet:basis-[130px] desktop:basis-[190px] text-xl desktop:text-3xl font-bold">
-            ID
+            ID<span className="text-iCAN-error">*</span>
           </div>
           <div className="flex justify-start basis-[calc(100%-36px)] smallTablet:basis-[calc(100%-41px)] tablet:basis-[calc(100%-191px)] desktop:basis-[calc(100%-251px)] gap-2">
             {info.customMedicationId
@@ -59,7 +59,7 @@ export default function ReviewSection({
         </div>
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">
-            Dosage
+            Dosage<span className="text-iCAN-error">*</span>
           </div>
           <InputBox
             readOnly={true}
@@ -75,7 +75,7 @@ export default function ReviewSection({
         </div>
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">
-            Repeat every
+            Repeat every<span className="text-iCAN-error">*</span>
           </div>
           <InputBox
             readOnly={true}
@@ -100,7 +100,7 @@ export default function ReviewSection({
         </div>
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">
-            Notify me
+            Notify me<span className="text-iCAN-error">*</span>
           </div>
           <InputBox
             readOnly={true}
@@ -135,7 +135,7 @@ export default function ReviewSection({
           </div>
           <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4 pr-6">
             <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">
-              Take
+              Take<span className="text-iCAN-error">*</span>
             </div>
             <InputBox
               readOnly={true}
@@ -159,7 +159,10 @@ export default function ReviewSection({
                 className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4"
                 key={i}
               >
-                <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">{`Time #${i + 1}`}</div>
+                <div className="basis-full smallTablet:basis-[130px] desktop:basis-[190px] text-lg smallTablet:text-xl desktop:text-3xl font-bold">
+                  {`Dose #${i + 1}`}
+                  <span className="text-iCAN-error">*</span>
+                </div>
                 <InputBox
                   readOnly={true}
                   value={`${time.time} ${time.period}`}

@@ -4,17 +4,28 @@ import { useDisclosure } from "@heroui/react";
 
 interface ModalNextButtonProps {
   link: string;
+<<<<<<< HEAD
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   requirePin?: boolean;
+||||||| 575ab7b
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+=======
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
   preventNavigation?: boolean;
+>>>>>>> main
 }
 
 export default function ModalNextButton({
   link,
   onClick,
+<<<<<<< HEAD
   requirePin,
+||||||| 575ab7b
+=======
   preventNavigation,
+>>>>>>> main
 }: ModalNextButtonProps) {
+<<<<<<< HEAD
   //for managing pin modal
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -26,13 +37,27 @@ export default function ModalNextButton({
         e.preventDefault();
         await onClick(e);
       }
+      window.location.href = link;
+||||||| 575ab7b
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) {
+      e.preventDefault();
+      await onClick(e);
+      window.location.href = link;
+=======
+  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) {
+      e.preventDefault();
+      await onClick(e);
       if (!preventNavigation) {
         window.location.href = link;
       }
+>>>>>>> main
     }
   };
 
   return (
+<<<<<<< HEAD
     <>
       {isOpen && (
         <LogPasswordModal
@@ -42,10 +67,35 @@ export default function ModalNextButton({
           link={link}
         />
       )}
-      <div className="flex bg-white w-[26%] p-2 justify-center items-stretch">
+      <div className="flex bg-white w-[9.5%] p-2 justify-center items-stretch">
         <button
           className="w-full h-full flex justify-center items-center"
           onClick={handleClick}
+||||||| 575ab7b
+    <a
+      className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
+      href={link}
+      onClick={handleClick}
+    >
+      <button className="w-full h-full flex justify-center items-center">
+        <svg
+          fill="black"
+          className="w-8 h-8"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+=======
+    <a
+      className="flex bg-white w-[26%] p-2 justify-center items-stretch"
+      href={link}
+      onClick={handleClick}
+    >
+      <button className="w-full h-full flex justify-center items-center">
+        <svg
+          fill="black"
+          className="w-8 h-8"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+>>>>>>> main
         >
           <svg
             fill="black"

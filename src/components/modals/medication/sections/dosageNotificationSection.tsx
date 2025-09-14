@@ -20,6 +20,27 @@ export default function DosageNotificationSection({
 }: DosageNotificationSectionProps) {
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
+      <div className="mb-12 mt-8">
+        <FormControl gap={16} mobileColumn={true}>
+          <Label>Notify me</Label>
+          <DropDown
+            width={300}
+            value={info.notificationFrequency || ""}
+            setValue={(newValue: string) =>
+              setInfo((prev) => {
+                const temp = { ...prev };
+                temp.notificationFrequency =
+                  newValue as MedicationInfo["notificationFrequency"];
+                return temp;
+              })
+            }
+          >
+            <Option value="Once / Day Of Dose" />
+            <Option value="Every Dose" />
+          </DropDown>
+        </FormControl>
+      </div>
+
       <div>
         <FormControl gap={16}>
           <CheckBox
@@ -28,6 +49,7 @@ export default function DosageNotificationSection({
               setInfo((prev) => {
                 const temp = { ...prev };
                 temp.dosesUnit = "Doses";
+                temp.doseIntervalInHours = undefined;
                 return temp;
               })
             }
@@ -54,12 +76,26 @@ export default function DosageNotificationSection({
                 return temp;
               })
             }
-            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
+            className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl ${info.dosesPerDay == 0 ? "border-iCAN-error" : ""}`}
           />
-          <FormText disabled={info.dosesUnit != "Doses"}>
-            dose(s) per day
-          </FormText>
+          <span className="flex flex-row items-center gap-0">
+            <FormText disabled={info.dosesUnit != "Doses"}>
+              dose(s) per day
+            </FormText>
+            <FormText
+              className="text-iCAN-error"
+              disabled={info.dosesUnit !== "Doses"}
+            >
+              *
+            </FormText>
+          </span>
         </FormControl>
+        <p
+          className={`text-lg text-iCAN-error mt-1
+          ${info.dosesPerDay === 0 ? "" : " invisible"}`}
+        >
+          Please enter a number greater than 0.
+        </p>
         <HorizontalRule
           ruleClassName="border-2 border-icanGreen-200"
           textClassName="text-2xl tablet:text-4xl font-bold text-icanGreen-200"
@@ -73,6 +109,7 @@ export default function DosageNotificationSection({
               setInfo((prev) => {
                 const temp = { ...prev };
                 temp.dosesUnit = "Hours";
+                temp.dosesPerDay = undefined;
                 return temp;
               })
             }
@@ -99,31 +136,28 @@ export default function DosageNotificationSection({
                 return temp;
               })
             }
-            className="w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl"
+            className={`w-12 tablet:w-16 h-[40px] tablet:h-[52px] text-2xl tablet:text-4xl
+              ${info.doseIntervalInHours === 0 ? "border-iCAN-error" : ""}`}
           />
-          <FormText disabled={info.dosesUnit != "Hours"}>hours</FormText>
+          <span className="flex flex-row items-center gap-0">
+            <FormText disabled={info.dosesUnit !== "Hours"}>hours</FormText>
+            <FormText
+              className="text-iCAN-error"
+              disabled={info.dosesUnit !== "Hours"}
+            >
+              *
+            </FormText>
+          </span>
         </FormControl>
       </div>
-      <div className="mt-8">
-        <FormControl gap={16} mobileColumn={true}>
-          <Label>Notify me</Label>
-          <DropDown
-            width={220}
-            value={info.notificationFrequency || ""}
-            setValue={(newValue: string) =>
-              setInfo((prev) => {
-                const temp = { ...prev };
-                temp.notificationFrequency =
-                  newValue as MedicationInfo["notificationFrequency"];
-                return temp;
-              })
-            }
-          >
-            <Option value="Day Of Dose" />
-            <Option value="Every Dose" />
-          </DropDown>
-        </FormControl>
-      </div>
+      <p
+        className={`text-lg mt-2
+        ${info.doseIntervalInHours === 0 ? "text-iCAN-error" : "opacity-70"}`}
+      >
+        {info.doseIntervalInHours === 0
+          ? "Please enter a number greater than 0."
+          : "For ex: your doses will be scheduled at 9:00AM, 3:00PM, 9:00PM"}
+      </p>
     </div>
   );
 }
