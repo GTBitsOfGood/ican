@@ -8,7 +8,7 @@ const ERRORS = Object.freeze({
     },
     NOT_FOUND: "User does not exist.",
     CONFLICT: {
-      USER: "User already exists.",
+      USER: "An account with this email already exists.",
       PASSWORD: "Password and Confirm Password must be equal.",
       PROVIDER: {
         GOOGLE: "User is signed in with google.",
