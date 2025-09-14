@@ -4,7 +4,7 @@ import { useDisclosure } from "@heroui/react";
 
 interface ModalNextButtonProps {
   link: string;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   requirePin?: boolean;
 }
 
@@ -16,7 +16,7 @@ export default function ModalNextButton({
   //for managing pin modal
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (requirePin == true) {
       onOpen();
     } else {
@@ -38,11 +38,11 @@ export default function ModalNextButton({
           link={link}
         />
       )}
-      <a
-        className="flex bg-white w-[9.5%] p-2 justify-center items-stretch"
-        onClick={handleClick}
-      >
-        <button className="w-full h-full flex justify-center items-center">
+      <div className="flex bg-white w-[9.5%] p-2 justify-center items-stretch">
+        <button
+          className="w-full h-full flex justify-center items-center"
+          onClick={handleClick}
+        >
           <svg
             fill="black"
             className="w-8 h-8"
@@ -56,7 +56,7 @@ export default function ModalNextButton({
             />{" "}
           </svg>
         </button>
-      </a>
+      </div>
     </>
   );
 }

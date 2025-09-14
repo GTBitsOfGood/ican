@@ -49,7 +49,7 @@ export default function SettingsModal() {
       setSettingsChanged(true);
     };
 
-  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       await AuthHTTPClient.logout();
@@ -60,7 +60,7 @@ export default function SettingsModal() {
   };
 
   const handleDeleteAccount = async (
-    e: React.MouseEvent<HTMLAnchorElement>,
+    e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     try {

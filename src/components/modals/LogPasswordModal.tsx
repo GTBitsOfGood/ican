@@ -14,7 +14,7 @@ import SettingsHTTPClient from "@/http/settingsHTTPClient";
 type LogPasswordType = {
   isOpen: boolean;
   onClose: () => void;
-  handleNext?: (e: React.MouseEvent<HTMLAnchorElement>) => void | Promise<void>;
+  handleNext?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   link?: string;
 };
 
@@ -28,7 +28,7 @@ export default function LogPasswordModal({
   const { userId } = useUser();
   const [pin, setPin] = useState<string>("");
 
-  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     if (pin.length < 4) {
       setError("ERROR: Pin must be 4 digits");
       return;
@@ -123,15 +123,14 @@ export default function LogPasswordModal({
                 </button>
               </Link>
             </div>
-            <a
-              type="submit"
-              onClick={handleClick}
-              className={`self-end p-2 text-black text-xl bg-white`}
-            >
-              <button className="w-full h-full flex justify-center items-center">
+            <div className={`self-end p-2 text-black text-xl bg-white`}>
+              <button
+                className="w-full h-full flex justify-center items-center"
+                onClick={handleClick}
+              >
                 {error === "" ? "Enter" : "Try Again"}
               </button>
-            </a>
+            </div>
           </div>
         </ModalBody>
       </ModalContent>
