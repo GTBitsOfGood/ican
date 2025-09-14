@@ -3,6 +3,23 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 const BASE_URL = "/api/v1";
 
 /**
+ * HTTP error class that includes status code
+ */
+export class HTTPError extends Error {
+  public readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "HTTPError";
+    this.status = status;
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, HTTPError);
+    }
+  }
+}
+
+/**
  * Verifies the fetchService parameters based on the method type, the standard is based on MDN standards
  * @param method HTTP method of request
  * @param request Request information
@@ -65,9 +82,11 @@ export default async function fetchHTTPClient<T>(
 
   if (!response.ok) {
     const errorBody = await response.json();
-    throw new Error(
+    const error = new HTTPError(
       errorBody.error || `HTTP error! Status: ${response.status}`,
+      response.status,
     );
+    throw error;
   }
 
   if (response.status == 204) {

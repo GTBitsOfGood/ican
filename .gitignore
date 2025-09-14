@@ -40,6 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
 .eslintcache
 bitwarden.env
 yarn.lock

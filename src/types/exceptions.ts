@@ -1,3 +1,7 @@
+import { HTTPError } from "@/http/fetchHTTPClient";
+
+export { HTTPError };
+
 export class NotFoundError extends Error {
   constructor(message = "Resource not found") {
     super(message);
@@ -41,8 +45,12 @@ export class MethodNotAllowedError extends Error {
 }
 
 export const getStatusCode = (error: Error | unknown): number => {
+  if (error instanceof HTTPError) {
+    return error.status;
+  }
+
   if (error instanceof Error) {
-    switch (error.name) {
+    switch (error.constructor.name) {
       case "NotFoundError":
         return 404;
       case "InvalidArgumentsError":
@@ -53,7 +61,7 @@ export const getStatusCode = (error: Error | unknown): number => {
         return 409;
       case "ValidationError":
         return 422;
-      case "IllegalOperationsError":
+      case "IllegalOperationError":
         return 403;
       case "MethodNotAllowedError":
         return 405;
