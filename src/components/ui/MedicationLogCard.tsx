@@ -57,7 +57,6 @@ export default function MedicationLogCard({
   const handleTakeMedicationAction = async () => {
     await MedicationHTTPClient.medicationLog({
       medicationId: id,
-      pin,
       localTime: new Date().toLocaleString("en-us"),
     });
     setShowConfirmModal(false);
