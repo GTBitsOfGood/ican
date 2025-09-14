@@ -30,7 +30,6 @@ export default function Home() {
     e.preventDefault();
     let errorDetected = false;
 
-    // Clear all errors first
     setNameError("");
     setEmailError("");
     setPasswordError("");
