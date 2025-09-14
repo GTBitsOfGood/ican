@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 export default class HashingService {
   static async hash(value: string): Promise<string> {
