@@ -43,8 +43,7 @@ export default function LogPasswordModal({
       if (handleNext) {
         e.preventDefault();
         await handleNext(e);
-      }
-      if (link) {
+      } else if (link) {
         window.location.href = link;
       }
       onClose();
