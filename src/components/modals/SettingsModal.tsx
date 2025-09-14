@@ -41,12 +41,12 @@ export default function SettingsModal() {
     updateSettingsMutation.mutate({ notifications: value });
   };
 
-  const handleLogout = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     logoutMutation.mutate();
   };
 
-  const handleDeleteAccount = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleDeleteAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     onDeleteModalOpen();
@@ -117,7 +117,11 @@ export default function SettingsModal() {
                       )}
                       <h5 className="text-3xl">Logout</h5>
                     </div>
-                    <ModalNextButton link="settings" onClick={handleLogout} />
+                    <ModalNextButton
+                      link="settings"
+                      onClick={handleLogout}
+                      requirePin={settings.parentalControl}
+                    />
                   </div>
                 </div>
                 <div className="flex flex-col w-1/2 gap-7">
@@ -134,7 +138,10 @@ export default function SettingsModal() {
                       )}
                       <h5 className="text-3xl">Medications</h5>
                     </div>
-                    <ModalNextButton link="medications" />
+                    <ModalNextButton
+                      link="medications"
+                      requirePin={settings.parentalControl}
+                    />
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
@@ -149,7 +156,10 @@ export default function SettingsModal() {
                       )}
                       <h5 className="text-3xl">Change Pin</h5>
                     </div>
-                    <ModalNextButton link="change-pin" />
+                    <ModalNextButton
+                      link="change-pin"
+                      requirePin={settings.parentalControl}
+                    />
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
@@ -168,6 +178,7 @@ export default function SettingsModal() {
                       link="settings"
                       onClick={handleDeleteAccount}
                       preventNavigation={true}
+                      requirePin={settings.parentalControl}
                     />
                   </div>
                 </div>

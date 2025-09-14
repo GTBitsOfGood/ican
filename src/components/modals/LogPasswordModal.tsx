@@ -1,11 +1,5 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-} from "@heroui/react";
+import React, { useState } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
 import ModalCloseButton from "./ModalCloseButton";
 import {
   InputOTP,
@@ -14,26 +8,45 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
+import { useUser } from "../UserContext";
+import SettingsHTTPClient from "@/http/settingsHTTPClient";
 
 type LogPasswordType = {
-  handleNext: () => void;
-  setPin: Dispatch<SetStateAction<string>>;
+  isOpen: boolean;
+  onClose: () => void;
+  handleNext?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  link?: string;
 };
 
 export default function LogPasswordModal({
+  isOpen,
+  onClose,
   handleNext,
-  setPin,
+  link,
 }: LogPasswordType) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [error, setError] = useState<string>("");
+  const { userId } = useUser();
+  const [pin, setPin] = useState<string>("");
 
-  useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (pin.length < 4) {
+      setError("ERROR: Pin must be 4 digits");
+      return;
+    }
+    if (!userId) {
+      setError("You must be logged in to perform this action");
+      return;
+    }
 
-  const handleClick = async () => {
     try {
-      handleNext();
+      await SettingsHTTPClient.validatePin(userId, pin);
+      if (handleNext) {
+        e.preventDefault();
+        await handleNext(e);
+      } else if (link) {
+        window.location.href = link;
+      }
+      onClose();
     } catch (error) {
       if (error instanceof Error) {
         setError(`Error: ${error.message}`);
@@ -56,7 +69,9 @@ export default function LogPasswordModal({
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} link="/log" />}
+      closeButton={
+        <ModalCloseButton onClose={onClose} link={window.location.href} />
+      }
     >
       <ModalContent>
         <ModalHeader>Enter Pin</ModalHeader>
@@ -107,13 +122,14 @@ export default function LogPasswordModal({
                 </button>
               </Link>
             </div>
-            <button
-              type="submit"
-              onClick={handleClick}
-              className={`self-end p-2 text-black text-xl bg-white`}
-            >
-              {error === "" ? "Enter" : "Try Again"}
-            </button>
+            <div className={`self-end p-2 text-black text-xl bg-white`}>
+              <button
+                className="w-full h-full flex justify-center items-center"
+                onClick={handleClick}
+              >
+                {error === "" ? "Enter" : "Try Again"}
+              </button>
+            </div>
           </div>
         </ModalBody>
       </ModalContent>

@@ -34,6 +34,17 @@ export default class SettingsHTTPClient {
     });
   }
 
+  static async validatePin(userId: string, pin: string) {
+    const validatePinRequestBody: UpdateSettingsPinRequestBody = {
+      pin,
+    };
+    return fetchHTTPClient<void>(`/settings/pin/${userId}`, {
+      method: "POST",
+      body: JSON.stringify(validatePinRequestBody),
+      credentials: "include",
+    });
+  }
+
   static async updatePin(userId: string, pin: string) {
     const updatePinRequestBody: UpdateSettingsPinRequestBody = {
       pin,

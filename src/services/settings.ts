@@ -13,6 +13,7 @@ import {
   validateUpdatePin,
   validateUpdateSettings,
 } from "@/utils/serviceUtils/settingsUtil";
+import { validatePins } from "@/utils/settings";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
@@ -70,6 +71,21 @@ export default class SettingsService {
     await SettingsDAO.updateSettingsByUserId(userIdString, {
       ...validatedSettings,
     });
+  }
+
+  /** throws on invalid pin */
+  static async validatePin(userId: string, pin: string) {
+    const settings = await SettingsDAO.getSettingsByUserId(userId);
+    if (!settings) {
+      throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
+    }
+    // check if pin related to userid is the same as the pin inputted
+    if (!settings.pin) {
+      throw new NotFoundError("Pin is not set");
+    }
+    if (!(await validatePins(settings.pin, pin))) {
+      throw new InvalidArgumentsError("Pin is invalid");
+    }
   }
 
   static async updatePin(userId: string, pin: string) {

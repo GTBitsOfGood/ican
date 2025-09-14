@@ -8,6 +8,7 @@ import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
+import { useDisclosure } from "@heroui/react";
 
 export default function MedicationLogCard({
   id,
@@ -23,10 +24,13 @@ export default function MedicationLogCard({
 }: LogType) {
   const [showMissedDoseModal, setShowMissedDoseModal] =
     useState<boolean>(false);
-  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
+  const {
+    isOpen: showPasswordModal,
+    onOpen: openPasswordModal,
+    onClose: closePasswordModal,
+  } = useDisclosure(); //for managing pin modal
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
-  const [pin, setPin] = useState<string>("");
 
   const lastTakenTime = () => {
     if (!lastTaken) {
@@ -53,28 +57,22 @@ export default function MedicationLogCard({
   const handleTakeMedicationAction = async () => {
     await MedicationHTTPClient.medicationLog({
       medicationId: id,
-      pin,
       localTime: new Date().toLocaleString("en-us"),
     });
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
 
-  const toggleMissedDoseModal = () => {
-    setShowMissedDoseModal(!showMissedDoseModal);
-  };
-
-  const togglePasswordModal = async () => {
+  const handleMedicationCheckIn = async () => {
     await MedicationHTTPClient.medicationCheckIn({
       medicationId: id,
       localTime: new Date().toLocaleString("en-us"),
     });
-    setShowPasswordModal(!showPasswordModal);
+    openPasswordModal();
   };
 
-  const handlePasswordConfirmationNext = () => {
-    setShowPasswordModal(false);
-    setShowConfirmModal(true);
+  const toggleMissedDoseModal = () => {
+    setShowMissedDoseModal(!showMissedDoseModal);
   };
 
   const toggleConfirmModal = () => {
@@ -83,7 +81,6 @@ export default function MedicationLogCard({
 
   const generateTimeLeftFormat = (): string => {
     const { hours, minutes, seconds } = standardizeTime(scheduledDoseTime);
-
     const now = new Date();
 
     // Create a Date object for today at the scheduled time
@@ -121,8 +118,9 @@ export default function MedicationLogCard({
       )}
       {showPasswordModal && (
         <LogPasswordModal
-          handleNext={handlePasswordConfirmationNext}
-          setPin={setPin}
+          handleNext={() => setShowConfirmModal(true)}
+          isOpen={showPasswordModal}
+          onClose={closePasswordModal}
         />
       )}
       {showConfirmModal && (
@@ -169,7 +167,7 @@ export default function MedicationLogCard({
             </h1>
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
-              onClick={togglePasswordModal}
+              onClick={handleMedicationCheckIn}
             >
               Take
             </button>

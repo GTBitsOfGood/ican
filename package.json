@@ -19,7 +19,7 @@
     "@phosphor-icons/react": "^2.1.7",
     "@react-oauth/google": "^0.12.1",
     "@tanstack/react-query": "^5.85.9",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "bw": "^0.0.0",
     "child_process": "^1.0.2",
     "child-process": "^1.0.2",
@@ -46,7 +46,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
+    "@types/bcrypt": "^6.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.17",

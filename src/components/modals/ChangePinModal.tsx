@@ -72,8 +72,11 @@ export default function ChangePinModal() {
       closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
-        <ModalHeader>Enter Pin</ModalHeader>
+        <ModalHeader>Change Pin</ModalHeader>
         <ModalBody>
+          <h1 className="text-xl">
+            Enter the new pin you would like to change to
+          </h1>
           <div className="w-full h-[80%] flex flex-col gap-8 justify-between">
             <div className="w-full h-[80%] flex flex-col justify-center gap-4">
               {displayError && (
