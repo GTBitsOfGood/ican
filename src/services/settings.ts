@@ -73,6 +73,7 @@ export default class SettingsService {
     });
   }
 
+  /** throws on invalid pin */
   static async validatePin(userId: string, pin: string) {
     const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
