@@ -117,11 +117,6 @@ export default function ChangePinModal() {
                   </InputOTPGroup>
                 </InputOTP>
               </div>
-              <a className="inline-block size-fit" href="forgot-pin">
-                <button className="bg-white p-2 text-black text-xl">
-                  Forgot Pin?
-                </button>
-              </a>
             </div>
             <button
               type="submit"
