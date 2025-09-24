@@ -52,6 +52,8 @@ export default function ForgotPinModal() {
       setDisplayError((error as Error).message);
       return;
     }
+
+    window.location.href = "change-pin";
   };
 
   return (
