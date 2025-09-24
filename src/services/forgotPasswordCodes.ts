@@ -98,12 +98,6 @@ export default class ForgotPasswordService {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
-    if (user.provider !== Provider.PASSWORD) {
-      throw new IllegalOperationError(
-        ERRORS.FORGOTPASSWORDCODE.ILLEGAL_ARGUMENTS.PROVIDER,
-      );
-    }
-
     const forgotPasswordCode =
       await ForgotPasswordCodeDAO.getForgotPasswordCodeByUserId(user._id);
     if (!forgotPasswordCode)
