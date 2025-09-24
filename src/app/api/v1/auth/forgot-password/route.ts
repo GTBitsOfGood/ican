@@ -12,11 +12,14 @@ export async function POST(req: NextRequest) {
       req.nextUrl.pathname.toString(),
       (await cookies()).get("auth_token")?.value,
     );
-    const { email } = await req.json();
+    const { email, userId } = await req.json();
 
-    const userId = await ForgotPasswordService.sendPasswordCode(email);
+    const validatedUserId = await ForgotPasswordService.sendPasswordCode(
+      email,
+      userId,
+    );
 
-    return NextResponse.json({ userId }, { status: 200 });
+    return NextResponse.json({ validatedUserId }, { status: 200 });
   } catch (error) {
     return handleError(error);
   }

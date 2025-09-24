@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
     if (page == 0) {
       try {
         console.log(email);
-        const response = await AuthHTTPClient.forgotPassword(email);
+        const response = await AuthHTTPClient.forgotPassword({ email: email });
         if (response.userId) {
           setUserId(response.userId);
         }
@@ -155,7 +155,7 @@ export default function ForgotPasswordPage() {
   const handleTimerReset = async () => {
     if (time === 0) {
       try {
-        await AuthHTTPClient.forgotPassword(email);
+        await AuthHTTPClient.forgotPassword({ email: email });
       } catch {
         console.error("error occured");
         return;
