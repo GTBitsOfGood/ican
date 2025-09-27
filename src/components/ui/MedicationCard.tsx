@@ -223,7 +223,7 @@ export default function MedicationCard({
           <p className="font-quantico font-bold mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl">
             Dosage:
           </p>
-          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2">
+          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2 break-words">
             {medication.dosageAmount}
           </p>
         </div>
@@ -232,7 +232,7 @@ export default function MedicationCard({
           <p className="font-quantico font-bold mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl">
             Next Dose:
           </p>
-          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2">
+          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2 break-words">
             {getNextDosePhrase(medication)}
           </p>
         </div>
@@ -240,7 +240,7 @@ export default function MedicationCard({
           <p className="font-quantico font-bold mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl">
             Notification Type:
           </p>
-          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2">
+          <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2 break-words">
             {notificationFrequency}
           </p>
         </div>
