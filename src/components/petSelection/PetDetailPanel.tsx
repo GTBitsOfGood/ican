@@ -21,27 +21,30 @@ export default function PetDetailPanel({
   }
 
   return (
-    <div className="flex flex-col items-center text-center text-white max-w-md">
+    <div className="flex flex-col items-center text-center text-black max-w-md">
       {/* Character Name */}
-      <h2 className="text-4xl font-bold mb-2 font-pixelify text-white">
+      <h2
+        className="text-5xl font-bold mb-3 font-pixelify"
+        style={{ color: "#4C539B" }}
+      >
         {character.name}
       </h2>
 
       {/* Name Change Note */}
-      <p className="text-sm text-white/70 mb-6">*This name can be changed.</p>
+      <p className="text-base text-gray-600 mb-8">*This name can be changed.</p>
 
       {/* Character Description */}
-      <p className="text-base mb-8 leading-relaxed max-w-xs">
+      <p className="text-lg mb-10 leading-relaxed max-w-md text-black">
         {character.description}
       </p>
 
       {/* Large Character Image */}
-      <div className="mb-8">
+      <div className="mb-10">
         <Image
           src={character.image}
           alt={character.name}
-          width={160}
-          height={160}
+          width={220}
+          height={220}
           className="pixelated"
         />
       </div>
@@ -51,14 +54,24 @@ export default function PetDetailPanel({
         onClick={onSelect}
         disabled={isCreating}
         className={`
-          px-12 py-4 bg-[#2c3694] text-white font-bold rounded-xl text-lg
-          transition-all duration-200 min-w-[140px] shadow-lg
+          px-16 py-5 text-white font-bold rounded-lg text-xl font-pixelify
+          transition-all duration-200 min-w-[180px] shadow-lg
           ${
             isCreating
               ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-[#1e2463] hover:shadow-xl active:scale-95"
+              : "hover:shadow-xl active:scale-95"
           }
         `}
+        style={{
+          backgroundColor: "#4C539B",
+          ...(isCreating
+            ? {}
+            : {
+                ":hover": {
+                  backgroundColor: "#3a4075",
+                },
+              }),
+        }}
       >
         {isCreating ? "Creating..." : "Select"}
       </button>

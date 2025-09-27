@@ -40,10 +40,13 @@ export default function FirstPetPage() {
 
   return (
     <PetSelectionRoute>
-      <div className="min-h-screen bg-gradient-to-br from-[#7D83B2] to-[#2c3694] flex flex-col">
+      <div
+        className="min-h-screen flex flex-col"
+        style={{ backgroundColor: "#4C539B" }}
+      >
         {/* Header */}
         <div className="flex justify-center pt-8 pb-6">
-          <div className="bg-white px-8 py-3 rounded-xl shadow-lg">
+          <div className="bg-white border-4 border-black px-8 py-3 rounded-xl shadow-lg">
             <h1 className="text-2xl font-bold text-black font-pixelify">
               Select a Character
             </h1>
@@ -51,8 +54,8 @@ export default function FirstPetPage() {
         </div>
 
         {/* Main Content - Side by Side Layout */}
-        <div className="flex-1 flex items-center justify-center px-8">
-          <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="w-full max-w-7xl flex flex-row gap-16 items-center justify-center">
             {/* Left Side - Pet Grid */}
             <div className="flex justify-center">
               <PetGrid
@@ -65,11 +68,16 @@ export default function FirstPetPage() {
 
             {/* Right Side - Pet Details */}
             <div className="flex justify-center">
-              <PetDetailPanel
-                character={selectedCharacter}
-                onSelect={handleSelectPet}
-                isCreating={createPetMutation.isPending}
-              />
+              <div
+                className="p-12 rounded-2xl shadow-lg min-w-[500px]"
+                style={{ backgroundColor: "#E6E8F9" }}
+              >
+                <PetDetailPanel
+                  character={selectedCharacter}
+                  onSelect={handleSelectPet}
+                  isCreating={createPetMutation.isPending}
+                />
+              </div>
             </div>
           </div>
         </div>
