@@ -19,6 +19,7 @@ interface SectionSelectorProps {
   spareTimesIn12Hour: Time12Hour[];
   setSpareTimesIn12Hour: Dispatch<SetStateAction<Time12Hour[]>>;
   setError: Dispatch<SetStateAction<string>>;
+  setGeneralError: Dispatch<SetStateAction<string>>;
   onSubmit: (medicationInfo: MedicationInfo, e?: React.FormEvent) => void;
 }
 
@@ -37,6 +38,7 @@ export default function SectionSelector({
   spareTimesIn12Hour,
   setSpareTimesIn12Hour,
   setError,
+  setGeneralError,
   onSubmit,
 }: SectionSelectorProps) {
   const router = useRouter();
@@ -48,6 +50,7 @@ export default function SectionSelector({
 
   const backAction = () => {
     setError("");
+    setGeneralError("");
     if (modalType == "Add" || (modalType == "Edit" && currentSection == 4)) {
       setCurrentSection((prev) => Math.max(0, prev - 1));
     } else {
@@ -65,14 +68,19 @@ export default function SectionSelector({
   const nextAction = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setError("");
-    const { error, newInfo, newTime } = SectionValidator({
+    setGeneralError("");
+    const { error, errorType, newInfo, newTime } = SectionValidator({
       info,
       currentSection,
       timesIn12Hour,
       medicationIds,
     });
     if (error) {
-      setError(error);
+      if (errorType === "withinModal") {
+        setGeneralError(error);
+      } else {
+        setError(error);
+      }
       return;
     }
     if (newInfo) {

@@ -6,10 +6,10 @@ import FormControl from "@/components/ui/form/formControl";
 import InputBox from "@/components/ui/form/inputBox";
 import DropDown from "@/components/ui/form/dropDown";
 import Option from "@/components/ui/form/option";
-import CheckBox from "@/components/ui/form/checkBox";
 import FormText from "@/components/ui/form/formText";
 import FormSubtitle from "@/components/ui/form/formSubtitle";
 import FormLabel from "@/components/ui/form/formLabel";
+import CheckmarkCheckBox from "@/components/ui/form/checkmarkCheckBox";
 
 interface TimeSectionProps {
   info: MedicationInfo;
@@ -26,7 +26,7 @@ export default function TimeSection({
 }: TimeSectionProps) {
   if (info.dosesUnit === "Doses") {
     return (
-      <div className="flex flex-col smallTablet:items-center tablet:items-start justify-between h-full">
+      <div className="flex flex-col smallTablet:items-center tablet:items-start h-full">
         <div className="flex flex-col w-full gap-6 max-h-[45vh] tablet:max-h-[35vh] pb-12 overflow-y-auto scrollbar-custom">
           {timesIn12Hour.map((time, i) => (
             <FormControl gap={16} key={i} mobileColumn={true}>
@@ -84,9 +84,9 @@ export default function TimeSection({
             </FormControl>
           ))}
         </div>
-        <div>
+        <div className="mt-8">
           <FormControl gap={16}>
-            <CheckBox
+            <CheckmarkCheckBox
               checked={!info.includeTimes}
               onChange={() =>
                 setInfo((prev) => {

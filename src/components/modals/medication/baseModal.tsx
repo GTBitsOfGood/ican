@@ -48,11 +48,13 @@ export default function MedicationBaseModal({
   );
 
   const [error, setError] = useState<string>("");
+  const [generalError, setGeneralError] = useState<string>("");
 
   const sections = [
     <GeneralSection
       info={medicationInfo}
       setInfo={setMedicationInfo}
+      generalError={generalError}
       key={0}
     />,
     <DosageAmountSection
@@ -136,6 +138,7 @@ export default function MedicationBaseModal({
           spareTimesIn12Hour={spareTimesIn12Hour}
           setSpareTimesIn12Hour={setSpareTimesIn12Hour}
           setError={setError}
+          setGeneralError={setGeneralError}
           onSubmit={submitHandler}
         />
       </ModalContainer>

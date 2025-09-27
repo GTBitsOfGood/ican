@@ -10,6 +10,7 @@ interface SectionValidatorType {
 
 interface SectionValidatorReturnType {
   error?: string;
+  errorType?: string;
   newInfo?: MedicationInfo;
   newTime?: Time12Hour[];
 }
@@ -43,7 +44,8 @@ export default function SectionValidator({
       }
       if (medicationIds?.has(info.customMedicationId)) {
         return {
-          error: "Medication ID is already used. Choose a different one.",
+          error: "This Medication ID is already in use. Please choose another.",
+          errorType: "withinModal",
         };
       }
       break;
