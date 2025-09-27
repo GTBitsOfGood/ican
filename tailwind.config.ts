@@ -101,7 +101,7 @@ export default {
       },
       fontFamily: {
         quantico: ["var(--font-quantico)", "sans-serif"],
-        pixelify: ["var(--font-pixelify)", "sans-serif"],
+        pixelify: ["var(--font-pixelify-sans)", "sans-serif"],
       },
       boxShadow: {
         bubble: "0px 8px 0px 0px rgba(125,131,178,1.00)",
@@ -202,7 +202,7 @@ export default {
       addBase({
         ":root": {
           "--font-quantico": "'Quantico', sans-serif",
-          "--font-pixelify": "'Pixelify Sans', sans-serif",
+          "--font-pixelify-sans": "'Pixelify Sans', sans-serif",
         },
       });
     },

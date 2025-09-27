@@ -73,7 +73,7 @@ export default function Home() {
         password.trim(),
         confirmPassword.trim(),
       );
-      router.push("/");
+      router.push("/first-pet");
     } catch (error) {
       if (error instanceof Error) {
         const statusCode = getStatusCode(error);
