@@ -3,22 +3,20 @@ import PetCharacterCard from "./PetCharacterCard";
 
 interface PetGridProps {
   characters: PetCharacter[];
-  selectedCharacter: PetCharacter | null;
   onCharacterSelect: (character: PetCharacter) => void;
 }
 
 export default function PetGrid({
   characters,
-  selectedCharacter,
   onCharacterSelect,
 }: PetGridProps) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-6">
       {characters.map((character) => (
         <PetCharacterCard
           key={character.type}
           character={character}
-          isSelected={selectedCharacter?.type === character.type}
+          isSelected={false} // No pets in grid are selected (selected pet is shown on right)
           onClick={() => onCharacterSelect(character)}
         />
       ))}

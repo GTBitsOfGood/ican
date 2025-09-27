@@ -15,24 +15,23 @@ export default function PetCharacterCard({
   return (
     <div
       className={`
-        cursor-pointer border-2 rounded-lg p-4 transition-all duration-200
+        cursor-pointer border-4 rounded-xl p-8 transition-all duration-200 w-32 h-32
+        flex items-center justify-center
         ${
           isSelected
-            ? "border-white bg-white/20 shadow-lg"
-            : "border-white/50 hover:border-white hover:bg-white/10"
+            ? "border-white bg-white/30 shadow-2xl scale-105"
+            : "border-white/60 hover:border-white hover:bg-white/15 hover:scale-102"
         }
       `}
       onClick={onClick}
     >
-      <div className="flex justify-center items-center h-20 w-20 mx-auto">
-        <Image
-          src={character.image}
-          alt={character.name}
-          width={80}
-          height={80}
-          className="pixelated"
-        />
-      </div>
+      <Image
+        src={character.image}
+        alt={character.name}
+        width={96}
+        height={96}
+        className="pixelated"
+      />
     </div>
   );
 }

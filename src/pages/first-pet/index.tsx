@@ -9,7 +9,7 @@ import PetSelectionRoute from "@/components/PetSelectionRoute";
 
 export default function FirstPetPage() {
   const [selectedCharacter, setSelectedCharacter] =
-    useState<PetCharacter | null>(PET_CHARACTERS[0]); // Default to first character (dog)
+    useState<PetCharacter | null>(PET_CHARACTERS[0]); // Default to Dog (Paws!)
   const { userId } = useUser();
   const router = useRouter();
   const createPetMutation = useCreatePet();
@@ -43,36 +43,33 @@ export default function FirstPetPage() {
       <div className="min-h-screen bg-gradient-to-br from-[#7D83B2] to-[#2c3694] flex flex-col">
         {/* Header */}
         <div className="flex justify-center pt-8 pb-6">
-          <div className="bg-white px-6 py-2 rounded-lg">
-            <h1 className="text-xl font-bold text-black font-pixelify">
+          <div className="bg-white px-8 py-3 rounded-xl shadow-lg">
+            <h1 className="text-2xl font-bold text-black font-pixelify">
               Select a Character
             </h1>
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Side by Side Layout */}
         <div className="flex-1 flex items-center justify-center px-8">
-          <div className="w-full max-w-6xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* Left Side - Pet Grid */}
-              <div className="flex justify-center">
-                <div className="w-fit">
-                  <PetGrid
-                    characters={PET_CHARACTERS}
-                    selectedCharacter={selectedCharacter}
-                    onCharacterSelect={handleCharacterSelect}
-                  />
-                </div>
-              </div>
+          <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left Side - Pet Grid */}
+            <div className="flex justify-center">
+              <PetGrid
+                characters={PET_CHARACTERS.filter(
+                  (char) => char.type !== selectedCharacter?.type,
+                )} // Show 4 unselected pets
+                onCharacterSelect={handleCharacterSelect}
+              />
+            </div>
 
-              {/* Right Side - Pet Details */}
-              <div className="flex justify-center">
-                <PetDetailPanel
-                  character={selectedCharacter}
-                  onSelect={handleSelectPet}
-                  isCreating={createPetMutation.isPending}
-                />
-              </div>
+            {/* Right Side - Pet Details */}
+            <div className="flex justify-center">
+              <PetDetailPanel
+                character={selectedCharacter}
+                onSelect={handleSelectPet}
+                isCreating={createPetMutation.isPending}
+              />
             </div>
           </div>
         </div>
