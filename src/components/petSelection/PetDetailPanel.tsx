@@ -21,17 +21,17 @@ export default function PetDetailPanel({
   }
 
   return (
-    <div className="flex flex-col items-center text-center text-white">
+    <div className="flex flex-col items-center text-center text-white max-w-md">
       {/* Character Name */}
       <h2 className="text-4xl font-bold mb-2 font-pixelify text-white">
         {character.name}
       </h2>
 
       {/* Name Change Note */}
-      <p className="text-sm text-white/70 mb-4">*This name can be changed.</p>
+      <p className="text-sm text-white/70 mb-6">*This name can be changed.</p>
 
       {/* Character Description */}
-      <p className="text-base mb-6 leading-relaxed max-w-xs">
+      <p className="text-base mb-8 leading-relaxed max-w-xs">
         {character.description}
       </p>
 
@@ -40,8 +40,8 @@ export default function PetDetailPanel({
         <Image
           src={character.image}
           alt={character.name}
-          width={150}
-          height={150}
+          width={160}
+          height={160}
           className="pixelated"
         />
       </div>
@@ -51,12 +51,12 @@ export default function PetDetailPanel({
         onClick={onSelect}
         disabled={isCreating}
         className={`
-          px-8 py-3 bg-[#2c3694] text-white font-bold rounded-lg text-lg
-          transition-all duration-200 min-w-[120px]
+          px-12 py-4 bg-[#2c3694] text-white font-bold rounded-xl text-lg
+          transition-all duration-200 min-w-[140px] shadow-lg
           ${
             isCreating
               ? "opacity-50 cursor-not-allowed"
-              : "hover:bg-[#1e2463] active:scale-95"
+              : "hover:bg-[#1e2463] hover:shadow-xl active:scale-95"
           }
         `}
       >
