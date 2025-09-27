@@ -4,9 +4,10 @@ import InputBox from "@/components/ui/form/inputBox";
 interface IdInputProps {
   values: string[];
   setValues: (newValues: string[]) => void;
+  error: boolean;
 }
 
-const IDInput = ({ values, setValues }: IdInputProps) => {
+const IDInput = ({ values, setValues, error }: IdInputProps) => {
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -45,7 +46,7 @@ const IDInput = ({ values, setValues }: IdInputProps) => {
           ref={inputRefs[index]}
           className={`
              w-12 h-12 smallTablet:w-14 smallTablet:h-14 text-4xl tablet:w-20 tablet:h-20 tablet:text-6xl
-            ${value.length == 0 ? "bg-icanBlue-100" : ""}
+            ${value.length == 0 ? "bg-icanBlue-100" : ""} ${error ? "border-iCAN-error" : ""}
           `}
         />
       ))}
