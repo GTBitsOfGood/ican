@@ -179,4 +179,11 @@ body {
     --jump-duration: 1s;
     animation: jump var(--jump-duration) steps(1) infinite;
   }
+
+  .pixelated {
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
 }
