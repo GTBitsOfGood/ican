@@ -31,10 +31,12 @@ export default function PetDetailPanel({
       </h2>
 
       {/* Name Change Note */}
-      <p className="text-base text-gray-600 mb-8">*This name can be changed.</p>
+      <p className="text-base text-gray-600 mb-8 font-quantico">
+        *This name can be changed.
+      </p>
 
       {/* Character Description */}
-      <p className="text-lg mb-10 leading-relaxed max-w-md text-black">
+      <p className="text-lg mb-10 leading-relaxed max-w-md text-black font-quantico">
         {character.description}
       </p>
 
@@ -54,7 +56,7 @@ export default function PetDetailPanel({
         onClick={onSelect}
         disabled={isCreating}
         className={`
-          px-16 py-5 text-white font-bold rounded-lg text-xl font-pixelify
+          px-16 py-5 text-white font-bold rounded-lg text-2xl font-pixelify
           transition-all duration-200 min-w-[180px] shadow-lg
           ${
             isCreating

@@ -45,9 +45,9 @@ export default function FirstPetPage() {
         style={{ backgroundColor: "#4C539B" }}
       >
         {/* Header */}
-        <div className="flex justify-center pt-8 pb-6">
-          <div className="bg-white border-4 border-black px-8 py-3 rounded-xl shadow-lg">
-            <h1 className="text-2xl font-bold text-black font-pixelify">
+        <div className="flex justify-center pt-6 lg:pt-8 pb-4 lg:pb-6">
+          <div className="bg-white border-4 border-black px-6 lg:px-8 py-2 lg:py-3 rounded-xl shadow-lg">
+            <h1 className="text-xl lg:text-2xl font-bold text-black font-pixelify">
               Select a Character
             </h1>
           </div>
