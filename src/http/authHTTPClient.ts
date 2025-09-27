@@ -46,6 +46,11 @@ export interface AuthResponseBody {
   token: string;
 }
 
+export interface GoogleAuthResponseBody {
+  userId: string;
+  isNewUser?: boolean;
+}
+
 export interface ForgotPasswordResponseBody {
   userId: string;
 }
@@ -76,16 +81,21 @@ export default class AuthHTTPClient {
     });
   }
 
-  static async loginWithGoogle(userInfo: UserInfo): Promise<AuthResponseBody> {
+  static async loginWithGoogle(
+    userInfo: UserInfo,
+  ): Promise<GoogleAuthResponseBody> {
     const loginRequestBody: LoginWithGoogleRequestBody = {
       name: userInfo.name,
       email: userInfo.email,
     };
-    return await fetchHTTPClient<AuthResponseBody>(`/auth/login-with-google`, {
-      method: "POST",
-      body: JSON.stringify(loginRequestBody),
-      credentials: "include",
-    });
+    return await fetchHTTPClient<GoogleAuthResponseBody>(
+      `/auth/login-with-google`,
+      {
+        method: "POST",
+        body: JSON.stringify(loginRequestBody),
+        credentials: "include",
+      },
+    );
   }
 
   static async register(
