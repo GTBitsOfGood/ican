@@ -236,6 +236,7 @@ export default function Onboard() {
             onComplete={handleChooseMedication}
           />
         );
+      // TODO, after choosing pet, onboarding status for user should be set to true
       case OnboardingStep.ChoosePet:
         return (
           <CompletionStep
