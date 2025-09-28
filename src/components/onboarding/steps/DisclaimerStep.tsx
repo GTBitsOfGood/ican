@@ -18,27 +18,35 @@ export default function DisclaimerStep({
   onSubmit,
 }: DisclaimerStepProps) {
   return (
-    <OnboardingCard>
-      <BackButton onClick={onBack} />
+    <div className="w-full flex flex-col items-center gap-4">
+      <div className="mobile:block desktop:hidden self-start [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+        <BackButton onClick={onBack} />
+      </div>
 
-      <OnboardingHeader
-        title="Disclaimer"
-        titleColor="red"
-        description="This app is not a substitute for medical advice..."
-        className="text-5xl"
-      />
+      <OnboardingCard>
+        <div className="mobile:hidden desktop:block [&>a]:w-24 [&>a]:h-24 [&>a>button]:w-full [&>a>button]:h-full">
+          <BackButton onClick={onBack} />
+        </div>
 
-      <Confirmation
-        text="I understand this app is not a substitute for medical advice  "
-        checked={consentChecked}
-        onChange={onConsentChange}
-      />
+        <OnboardingHeader
+          title="Disclaimer"
+          titleColor="red"
+          description="This app is not a substitute for medical advice..."
+          className="text-5xl"
+        />
 
-      <OnboardingActionButton
-        text="I understand"
-        onClick={onSubmit}
-        disabled={!consentChecked}
-      />
-    </OnboardingCard>
+        <Confirmation
+          text="I understand this app is not a substitute for medical advice  "
+          checked={consentChecked}
+          onChange={onConsentChange}
+        />
+
+        <OnboardingActionButton
+          text="I understand"
+          onClick={onSubmit}
+          disabled={!consentChecked}
+        />
+      </OnboardingCard>
+    </div>
   );
 }
