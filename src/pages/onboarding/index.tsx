@@ -77,7 +77,7 @@ export default function Onboard() {
         return;
       }
 
-      // Pins match, save to account
+      // If pins are the same, we can save it
       updatePin.mutate(confirmPin, {
         onSuccess: () => {
           setPinError("");
@@ -192,7 +192,7 @@ export default function Onboard() {
             pin={pin}
             onPinChange={(value) => {
               setPin(value);
-              if (pinError) setPinError(""); // Clear error when user starts typing
+              if (pinError) setPinError("");
             }}
             onBack={handleBack}
             onSubmit={handlePinSubmit}

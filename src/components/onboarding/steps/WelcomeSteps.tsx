@@ -15,8 +15,8 @@ export default function WelcomeSteps({
   onParentSetup,
 }: WelcomeStepsProps) {
   return (
-    <div className="h-[486px] px-16 bg-white rounded-[64px] inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
-      <div className="w-full h-40 relative">
+    <div className="w-[90%] max-w-sm max-h-96 h-[50%] px-7 bg-white rounded-lg desktop:max-h-none desktop:h-auto desktop:py-16 desktop:max-w-none desktop:w-auto desktop:px-16 desktop:rounded-[64px] inline-flex flex-col justify-center items-center gap-3.5 desktop:gap-8 overflow-hidden">
+      <div className="w-full h-24 desktop:h-40 relative">
         <Image
           src="/icanLogo.svg"
           alt="International Children Advisory Network Logo"
@@ -26,11 +26,11 @@ export default function WelcomeSteps({
       </div>
       {currentStep === OnboardingStep.Welcome && (
         <>
-          <p className="font-quantico font-bold text-black text-bold text-4xl text-center">
+          <p className="font-quantico font-bold text-black text-bold text-2xl desktop:text-4xl text-center">
             Helping families track medications with ease.
           </p>
           <button
-            className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
+            className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-lg desktop:text-3xl font-normal font-quantico"
             onClick={onGetStarted}
             type="button"
           >
@@ -40,19 +40,19 @@ export default function WelcomeSteps({
       )}
       {currentStep === OnboardingStep.Setup && (
         <>
-          <p className="font-quantico font-bold text-black text-bold text-4xl text-center">
+          <p className="font-quantico font-bold text-black text-bold text-2xl desktop:text-4xl text-center">
             Who are you setting up this app for?
           </p>
-          <div className="w-full gap-9 flex flex-col">
+          <div className="w-full gap-3.5 desktop:gap-9 flex flex-col items-center">
             <button
-              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
+              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-lg desktop:text-3xl font-normal font-quantico"
               onClick={onParentSetup}
               type="button"
             >
               For My Child!
             </button>
             <button
-              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
+              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-lg desktop:text-3xl font-normal font-quantico"
               onClick={onChildSetup}
               type="button"
             >
