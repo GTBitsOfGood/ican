@@ -1,0 +1,34 @@
+interface OnboardingBackButtonProps {
+  onClick?: () => void;
+  className?: string;
+}
+
+// TODO Potentially don't need className
+export default function OnboardingBackButton({
+  onClick,
+  className = "",
+}: OnboardingBackButtonProps) {
+  return (
+    <div className={`h-[6.5rem] select-none ${className}`}>
+      <button
+        className="aspect-square h-full flex justify-center items-center select-none"
+        onClick={onClick}
+        type="button"
+      >
+        <svg
+          width="101"
+          height="102"
+          viewBox="0 0 101 102"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full select-none"
+        >
+          <path
+            d="M65.741 65.2895V58.7154L26.2966 58.7154V52.1413H19.7225V58.7154H13.1484L13.1484 65.2895H19.7225L19.7225 71.8636H26.2966V65.2895H65.741ZM32.8707 78.4376H26.2966V71.8636H32.8707V78.4376ZM32.8707 78.4376H39.4447V85.0117H32.8707V78.4376ZM32.8707 45.5673H26.2966L26.2966 52.1413H32.8707V45.5673ZM32.8707 45.5673H39.4447L39.4447 38.9932H32.8707L32.8707 45.5673Z"
+            fill="#CEE0A0"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
