@@ -1,11 +1,12 @@
 import Confirmation from "@/components/ui/form/confirmation";
 import OnboardingCard from "../shared/OnboardingCard";
-import OnboardingBackButton from "../shared/OnboardingBackButton";
+import BackButton from "../../ui/BackButton";
 import OnboardingHeader from "../shared/OnboardingHeader";
 import OnboardingActionButton from "../shared/OnboardingActionButton";
+import { ConsentStepType, OnboardingStep } from "@/types/onboarding";
 
 interface ConsentStepsProps {
-  currentStep: "Parent" | "Child";
+  currentStep: ConsentStepType;
   consentChecked: boolean;
   onConsentChange: (checked: boolean) => void;
   onBack?: () => void;
@@ -19,11 +20,11 @@ export default function ConsentSteps({
   onBack,
   onSubmit,
 }: ConsentStepsProps) {
-  const isParent = currentStep === "Parent";
+  const isParent = currentStep === OnboardingStep.ParentUserConsent;
 
   return (
     <OnboardingCard>
-      <OnboardingBackButton onClick={onBack} />
+      <BackButton onClick={onBack} />
 
       <OnboardingHeader
         subtitle={isParent ? "Hey parents, don't forget your" : "Hey Kids"}

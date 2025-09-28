@@ -1,17 +1,18 @@
 import Image from "next/image";
+import { WelcomeStepType, OnboardingStep } from "@/types/onboarding";
 
 interface WelcomeStepsProps {
-  currentStep: "Welcome" | "Setup";
+  currentStep: WelcomeStepType;
   onGetStarted?: () => void;
   onChildSetup?: () => void;
-  onSelfSetup?: () => void;
+  onParentSetup?: () => void;
 }
 
 export default function WelcomeSteps({
   currentStep,
   onGetStarted,
   onChildSetup,
-  onSelfSetup,
+  onParentSetup,
 }: WelcomeStepsProps) {
   return (
     <div className="h-[486px] px-16 bg-white rounded-[64px] inline-flex flex-col justify-center items-center gap-8 overflow-hidden">
@@ -23,13 +24,13 @@ export default function WelcomeSteps({
           className="object-contain"
         />
       </div>
-      {currentStep === "Welcome" && (
+      {currentStep === OnboardingStep.Welcome && (
         <>
           <p className="font-quantico font-bold text-black text-bold text-4xl text-center">
             Helping families track medications with ease.
           </p>
           <button
-            className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-['Quantico']"
+            className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
             onClick={onGetStarted}
             type="button"
           >
@@ -37,22 +38,22 @@ export default function WelcomeSteps({
           </button>
         </>
       )}
-      {currentStep === "Setup" && (
+      {currentStep === OnboardingStep.Setup && (
         <>
           <p className="font-quantico font-bold text-black text-bold text-4xl text-center">
             Who are you setting up this app for?
           </p>
           <div className="w-full gap-9 flex flex-col">
             <button
-              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-['Quantico']"
-              onClick={onChildSetup}
+              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
+              onClick={onParentSetup}
               type="button"
             >
               For My Child!
             </button>
             <button
-              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-['Quantico']"
-              onClick={onSelfSetup}
+              className="bg-[#77A000] hover:bg-blue-900 transition-colors self-stretch px-4 py-3 inline-flex justify-center items-center gap-2.5 overflow-hidden text-white text-3xl font-normal font-quantico"
+              onClick={onChildSetup}
               type="button"
             >
               For Myself!

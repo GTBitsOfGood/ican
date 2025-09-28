@@ -5,16 +5,18 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import OnboardingCard from "../shared/OnboardingCard";
-import OnboardingBackButton from "../shared/OnboardingBackButton";
+import BackButton from "../../ui/BackButton";
 import OnboardingHeader from "../shared/OnboardingHeader";
 import OnboardingActionButton from "../shared/OnboardingActionButton";
+import { PinStepType, OnboardingStep } from "@/types/onboarding";
 
 interface PinStepsProps {
-  currentStep: "Setup" | "Confirm";
+  currentStep: PinStepType;
   pin: string;
   onPinChange: (value: string) => void;
   onBack?: () => void;
   onSubmit?: () => void;
+  error?: string;
 }
 
 export default function PinSteps({
@@ -23,18 +25,26 @@ export default function PinSteps({
   onPinChange,
   onBack,
   onSubmit,
+  error,
 }: PinStepsProps) {
-  const isSetup = currentStep === "Setup";
+  const isSetup = currentStep === OnboardingStep.ParentPinSetup;
 
   return (
     <OnboardingCard>
-      <OnboardingBackButton onClick={onBack} />
+      <BackButton onClick={onBack} />
 
       <OnboardingHeader
         subtitle="Hey Parents,"
         title={isSetup ? "Set Security Pin!" : "Please Confirm Your Pin!"}
         description="This helps us protect sensitive information."
       />
+
+      {/* Temporary error message */}
+      {error && (
+        <div className="text-red-500 rounded text-center font-bold text-4xl font-quantico !mb-0">
+          {error}
+        </div>
+      )}
 
       <div className="w-full">
         <InputOTP

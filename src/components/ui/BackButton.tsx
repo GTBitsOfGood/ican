@@ -1,16 +1,20 @@
 import React from "react";
 
 interface BackButtonProps {
-  link: string;
+  link?: string;
+  onClick?: () => void;
 }
 
-export default function BackButton({ link }: BackButtonProps) {
+export default function BackButton({ link, onClick }: BackButtonProps) {
   return (
     <a
       className="flex bg-transparent w-[5%] p-2 justify-center items-stretch"
       href={link}
     >
-      <button className="w-full h-full flex justify-center items-center">
+      <button
+        className="w-full h-full flex justify-center items-center"
+        onClick={onClick}
+      >
         <svg
           className="fill-icanGreen-100"
           xmlns="http://www.w3.org/2000/svg"

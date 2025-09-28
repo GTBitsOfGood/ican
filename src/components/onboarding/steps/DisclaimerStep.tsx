@@ -1,6 +1,6 @@
 import Confirmation from "@/components/ui/form/confirmation";
 import OnboardingCard from "../shared/OnboardingCard";
-import OnboardingBackButton from "../shared/OnboardingBackButton";
+import BackButton from "../../ui/BackButton";
 import OnboardingHeader from "../shared/OnboardingHeader";
 import OnboardingActionButton from "../shared/OnboardingActionButton";
 
@@ -19,7 +19,7 @@ export default function DisclaimerStep({
 }: DisclaimerStepProps) {
   return (
     <OnboardingCard>
-      <OnboardingBackButton onClick={onBack} />
+      <BackButton onClick={onBack} />
 
       <OnboardingHeader
         title="Disclaimer"
