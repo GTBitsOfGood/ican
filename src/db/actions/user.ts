@@ -56,4 +56,31 @@ export default class UserDAO {
       throw new Error(ERRORS.USER.FAILURE.DELETE_USER);
     }
   }
+
+  static async updateOnboardingStatus(
+    id: string | Types.ObjectId,
+    isOnboarded: boolean,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await UserModel.updateOne(
+      { _id: _id },
+      { isOnboarded: isOnboarded },
+    );
+    if (result.modifiedCount === 0) {
+      throw new Error("Failed to update onboarding status");
+    }
+  }
+
+  static async getOnboardingStatus(
+    id: string | Types.ObjectId,
+  ): Promise<boolean> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const user = await UserModel.findById(_id).select("isOnboarded");
+    if (!user) {
+      throw new Error(ERRORS.USER.NOT_FOUND);
+    }
+    return user.isOnboarded ?? false;
+  }
 }
