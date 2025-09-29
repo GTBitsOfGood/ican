@@ -18,6 +18,10 @@ export default function MedicationCard({
   setDeleteModalVisible,
   setClickedIndex,
 }: MedicationCardProps) {
+  const nextDosePhrase = useMemo(
+    () => getNextDosePhrase(medication),
+    [medication],
+  );
   const getNextDosePhrase = (medication: WithId<Medication>): string => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -206,7 +210,7 @@ export default function MedicationCard({
             Next Dose:
           </p>
           <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2 break-words">
-            {useMemo(() => getNextDosePhrase(medication), [medication])}
+            {nextDosePhrase}
           </p>
         </div>
         <div className="flex flex-col w-full">
