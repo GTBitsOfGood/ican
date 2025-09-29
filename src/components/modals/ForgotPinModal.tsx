@@ -6,6 +6,7 @@ import {
   ModalBody,
   useDisclosure,
 } from "@heroui/react";
+import { useUser } from "../UserContext";
 import ModalCloseButton from "./ModalCloseButton";
 import {
   InputOTP,
@@ -13,48 +14,49 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { useRouter } from "next/router";
-import { useUpdatePin } from "../hooks/useSettings";
+import AuthHTTPClient from "@/http/authHTTPClient";
 
-export default function ChangePinModal() {
-  const updatePinMutation = useUpdatePin();
-  const router = useRouter();
-
+export default function ForgotPinModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [oldPin, setOldPin] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const { userId } = useUser();
+  const [otp, setOTP] = useState<string>("");
+  const [displayError, setDisplayError] = useState<string>("");
 
   useEffect(() => {
     onOpen();
   }, [onOpen]);
 
-  // Currently only updates pin, the logic here should be changed in the future
+  //sends OTP
+  useEffect(() => {
+    (async () => {
+      try {
+        await AuthHTTPClient.forgotPassword({ userId: userId! });
+      } catch (error) {
+        setDisplayError((error as Error).message);
+        return;
+      }
+    })();
+  }, []);
+
   const handleClick = async () => {
-    if (oldPin.length < 4) {
-      setError("ERROR: Pin must be 4 digits");
+    if (!userId) {
+      setDisplayError("You must be logged in to perform this action");
+      return;
+    }
+    if (otp.length < 4) {
+      setDisplayError("ERROR: Pin must be 4 digits");
       return;
     }
 
-    updatePinMutation.mutate(oldPin, {
-      onSuccess: () => {
-        console.log("Pin successfully changed");
-        router.push("/");
-      },
-      onError: (error) => {
-        if (error instanceof Error) {
-          setError(`Error: ${error.message}`);
-        } else {
-          setError(`Unexpected error occurred.`);
-        }
-      },
-    });
-  };
+    try {
+      await AuthHTTPClient.verifyForgotPassword(userId, otp);
+    } catch (error) {
+      setDisplayError((error as Error).message);
+      return;
+    }
 
-  const displayError =
-    error ||
-    (updatePinMutation.error
-      ? `Error: ${updatePinMutation.error.message}`
-      : "");
+    window.location.href = "change-pin";
+  };
 
   return (
     <Modal
@@ -72,10 +74,11 @@ export default function ChangePinModal() {
       closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
-        <ModalHeader>Change Pin</ModalHeader>
+        <ModalHeader>Forgot Pin</ModalHeader>
         <ModalBody>
           <h1 className="text-xl">
-            Enter the new pin you would like to change to
+            We have sent a one-time pin to your email. Enter it below to reset
+            your pin.
           </h1>
           <div className="w-full h-[80%] flex flex-col gap-8 justify-between">
             <div className="w-full h-[80%] flex flex-col justify-center gap-4">
@@ -91,8 +94,8 @@ export default function ChangePinModal() {
                 <InputOTP
                   maxLength={4}
                   onChange={(newValue: string) => {
-                    setOldPin(newValue);
-                    setError("");
+                    setDisplayError("");
+                    setOTP(newValue);
                   }}
                   pattern={REGEXP_ONLY_DIGITS}
                   containerClassName="flex justify-between items-center w-full"

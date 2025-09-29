@@ -25,20 +25,30 @@ import { Provider } from "@/types/user";
 
 export default class ForgotPasswordService {
   static async sendPasswordCode(
-    email: string | undefined,
+    email?: string | undefined,
+    userId?: string,
   ): Promise<Types.ObjectId> {
-    validateSendPasswordCode({ email });
-    const user = await UserDAO.getUserFromEmail(email);
+    validateSendPasswordCode({ email, userId });
+    console.log(email, userId);
+
+    let user;
+    if (email) {
+      user = await UserDAO.getUserFromEmail(email);
+    } else if (userId) {
+      user = await UserDAO.getUserFromId(userId);
+    }
+
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
-    if (user.provider !== Provider.PASSWORD) {
+    if (user.provider !== Provider.PASSWORD && email) {
       throw new IllegalOperationError(
         ERRORS.FORGOTPASSWORDCODE.ILLEGAL_ARGUMENTS.PROVIDER,
       );
     }
 
+    email = user.email;
     const code = get4DigitCode();
     const expirationDate = generateExpirationDate();
     const encryptedCode = await HashingService.hash(code);
@@ -69,7 +79,12 @@ export default class ForgotPasswordService {
     try {
       await EmailService.sendEmail(email!, emailSubject, emailHtml);
     } catch {
-      throw new Error(ERRORS.MAIL.FAILURE);
+      if (process.env.NODE_ENV === "development") {
+        console.log("In development env");
+        console.log(emailHtml);
+      } else {
+        throw new Error(ERRORS.MAIL.FAILURE);
+      }
     }
 
     return user._id;
@@ -84,12 +99,6 @@ export default class ForgotPasswordService {
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
-    }
-
-    if (user.provider !== Provider.PASSWORD) {
-      throw new IllegalOperationError(
-        ERRORS.FORGOTPASSWORDCODE.ILLEGAL_ARGUMENTS.PROVIDER,
-      );
     }
 
     const forgotPasswordCode =
