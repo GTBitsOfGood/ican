@@ -79,9 +79,12 @@ export default class ForgotPasswordService {
     try {
       await EmailService.sendEmail(email!, emailSubject, emailHtml);
     } catch {
-      //throw new Error(ERRORS.MAIL.FAILURE);
-      console.log("Email is not working at the momemnt");
-      console.log(emailHtml);
+      if (process.env.NODE_ENV === "development") {
+        console.log("In development env");
+        console.log(emailHtml);
+      } else {
+        throw new Error(ERRORS.MAIL.FAILURE);
+      }
     }
 
     return user._id;
