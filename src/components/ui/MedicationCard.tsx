@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Pill, Trash, PencilSimple } from "@phosphor-icons/react";
 import { Medication } from "@/db/models/medication";
-import { convertTo12Hour } from "@/utils/time";
 import { WithId } from "@/types/models";
+import { convertTo12Hour } from "@/utils/time";
+import { DAYS_OF_WEEK } from "@/lib/consts";
 
 interface MedicationCardProps {
   index: number;
@@ -18,7 +19,6 @@ export default function MedicationCard({
   setClickedIndex,
 }: MedicationCardProps) {
   const getNextDosePhrase = (medication: WithId<Medication>): string => {
-    console.log(medication);
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
@@ -55,19 +55,6 @@ export default function MedicationCard({
       return `${months[date.getMonth()]} ${getOrdinal(date.getDate())}`;
     };
 
-    const getDayName = (dayIndex: number): string => {
-      const days = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      return days[dayIndex];
-    };
-
     let nextDoseDate: Date;
 
     if (medication.repeatUnit === "Day") {
@@ -75,15 +62,7 @@ export default function MedicationCard({
       nextDoseDate.setDate(today.getDate() + (medication.repeatInterval || 1));
     } else if (medication.repeatUnit === "Week") {
       const targetDay = medication.repeatWeeklyOn[0];
-      const targetDayIndex = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ].indexOf(targetDay);
+      const targetDayIndex = DAYS_OF_WEEK.indexOf(targetDay);
 
       nextDoseDate = new Date(today);
       const daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
@@ -114,15 +93,9 @@ export default function MedicationCard({
         medication.repeatMonthlyOnWeek &&
         medication.repeatMonthlyOnWeekDay
       ) {
-        const targetDayIndex = [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ].indexOf(medication.repeatMonthlyOnWeekDay);
+        const targetDayIndex = DAYS_OF_WEEK.indexOf(
+          medication.repeatMonthlyOnWeekDay,
+        );
         const weekNumber = medication.repeatMonthlyOnWeek;
 
         nextDoseDate.setDate(1);
@@ -171,12 +144,12 @@ export default function MedicationCard({
       nextDoseDate >= startOfThisWeek &&
       nextDoseDate < startOfNextWeek
     ) {
-      dayPhrase = `This ${getDayName(nextDoseDate.getDay())}`;
+      dayPhrase = `This ${DAYS_OF_WEEK[nextDoseDate.getDay()]}`;
     } else if (
       nextDoseDate >= startOfNextWeek &&
       nextDoseDate <= endOfNextWeek
     ) {
-      dayPhrase = `Next ${getDayName(nextDoseDate.getDay())}`;
+      dayPhrase = `Next ${DAYS_OF_WEEK[nextDoseDate.getDay()]}`;
     } else {
       dayPhrase = formatDateWithMonth(nextDoseDate);
     }
@@ -233,7 +206,7 @@ export default function MedicationCard({
             Next Dose:
           </p>
           <p className="font-quantico mobile:text-md tablet:text-lg desktop:text-xl largeDesktop:text-2xl tablet:pl-2 break-words">
-            {getNextDosePhrase(medication)}
+            {useMemo(() => getNextDosePhrase(medication), [medication])}
           </p>
         </div>
         <div className="flex flex-col w-full">
