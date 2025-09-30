@@ -18,10 +18,6 @@ export default function MedicationCard({
   setDeleteModalVisible,
   setClickedIndex,
 }: MedicationCardProps) {
-  const nextDosePhrase = useMemo(
-    () => getNextDosePhrase(medication),
-    [medication],
-  );
   const getNextDosePhrase = (medication: WithId<Medication>): string => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -169,6 +165,10 @@ export default function MedicationCard({
 
     return dayPhrase;
   };
+  const nextDosePhrase = useMemo(
+    () => getNextDosePhrase(medication),
+    [medication],
+  );
 
   const notificationFrequency =
     medication.notificationFrequency === "Every Dose"
