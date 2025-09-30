@@ -6,7 +6,6 @@ import {
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
-import PetService from "./pets";
 import UserDAO from "@/db/actions/user";
 import {
   validateLogin,
@@ -69,8 +68,6 @@ export default class AuthService {
     if (!_id) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
-    // Used a default name for pet
-    await PetService.createPet(_id.toString(), `${name}'s Pet`, "dog");
 
     // create settings
     await settingsService.createSettings(_id.toString());
@@ -132,6 +129,7 @@ export default class AuthService {
     });
 
     let userId;
+    let isNewUser = false;
 
     const existingUser = await UserDAO.getUserFromEmail(email);
     if (!existingUser) {
@@ -143,8 +141,8 @@ export default class AuthService {
 
       const insertedData = await UserDAO.createUser(newUser);
       userId = insertedData._id.toString();
-      await PetService.createPet(userId, `${name}'s Pet`, "dog");
       await settingsService.createSettings(userId);
+      isNewUser = true;
     } else {
       userId = existingUser._id.toString();
     }
@@ -155,7 +153,7 @@ export default class AuthService {
 
     const token = JWTService.generateToken({ userId }, 10800000);
 
-    return { token, userId };
+    return { token, userId, isNewUser };
   }
 
   // Validate JWT token and ensure user exists
