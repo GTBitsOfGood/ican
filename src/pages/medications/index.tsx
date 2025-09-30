@@ -13,6 +13,9 @@ import {
   useDeleteMedication,
   useUserMedications,
 } from "@/components/hooks/useMedication";
+import { useUser } from "@/components/UserContext";
+import { useOnboardingStatus } from "@/components/hooks/useAuth";
+import { OnboardingStep } from "@/types/onboarding";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -27,9 +30,19 @@ export default function MedicationsPage({
   const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
+  const { userId } = useUser();
+  const { data: isOnboarded = true } = useOnboardingStatus(userId);
   const medicationIds = new Set(
     medications.map((med) => med.customMedicationId),
   );
+
+  const handleBackClick = () => {
+    if (!isOnboarded) {
+      window.location.href = `/onboarding/?step=${OnboardingStep.ChoosePet}`;
+    } else {
+      window.location.href = "/settings";
+    }
+  };
 
   const handleMedicationDelete = async (index: number) => {
     const medicationId = medications[index]._id;
@@ -67,7 +80,7 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <BackButton link="/settings" />
+          <BackButton onClick={handleBackClick} />
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">

@@ -14,4 +14,15 @@ export default class UserService {
 
     await UserDAO.deleteUserFromId(userId);
   }
+
+  static async getOnboardingStatus(userId: string): Promise<boolean> {
+    return await UserDAO.getOnboardingStatus(userId);
+  }
+
+  static async updateOnboardingStatus(
+    userId: string,
+    isOnboarded: boolean,
+  ): Promise<void> {
+    await UserDAO.updateOnboardingStatus(userId, isOnboarded);
+  }
 }
