@@ -1,6 +1,7 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
+import Link from "next/link";
 import { useState } from "react";
 import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
@@ -86,20 +87,32 @@ export default function MedicationsPage({
             <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white underline">
               Medications
             </h1>
-            <AddMedicationButton />
+            {medications.length !== 0 && <AddMedicationButton />}
           </div>
           <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
-            {medications.map((medication, index) => {
-              return (
-                <MedicationCard
-                  key={index}
-                  index={index}
-                  medication={medication}
-                  setDeleteModalVisible={setDeleteModalVisible}
-                  setClickedIndex={setClickedIndex}
-                />
-              );
-            })}
+            {medications.length === 0 ? (
+              <Link
+                href="/medications/add"
+                className="bg-white bg-opacity-10 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow"
+                style={{ minHeight: "400px" }}
+              >
+                <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white">
+                  + ADD NEW
+                </h2>
+              </Link>
+            ) : (
+              medications.map((medication, index) => {
+                return (
+                  <MedicationCard
+                    key={index}
+                    index={index}
+                    medication={medication}
+                    setDeleteModalVisible={setDeleteModalVisible}
+                    setClickedIndex={setClickedIndex}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
       </div>
