@@ -21,32 +21,35 @@ export default function PetDetailPanel({
   }
 
   return (
-    <div className="flex flex-col items-center text-center text-black max-w-md">
+    <div className="flex flex-col items-center text-center text-black w-full px-12 py-16">
       {/* Character Name */}
       <h2
-        className="text-5xl font-bold mb-3 font-pixelify"
+        className="text-6xl font-bold mb-4 font-quantico"
         style={{ color: "#4C539B" }}
       >
         {character.name}
       </h2>
 
       {/* Name Change Note */}
-      <p className="text-base text-gray-600 mb-8 font-quantico">
+      <p className="text-base text-gray-600 mb-10 font-quantico">
         *This name can be changed.
       </p>
 
       {/* Character Description */}
-      <p className="text-lg mb-10 leading-relaxed max-w-md text-black font-quantico">
+      <p
+        className="text-xl font-bold mb-12 leading-relaxed font-quantico px-12 max-w-md"
+        style={{ color: "#4C539B" }}
+      >
         {character.description}
       </p>
 
       {/* Large Character Image */}
-      <div className="mb-10">
+      <div className="mb-12">
         <Image
           src={character.image}
           alt={character.name}
-          width={220}
-          height={220}
+          width={240}
+          height={240}
           className="pixelated"
         />
       </div>
@@ -56,23 +59,16 @@ export default function PetDetailPanel({
         onClick={onSelect}
         disabled={isCreating}
         className={`
-          px-16 py-5 text-white font-bold rounded-lg text-2xl font-pixelify
-          transition-all duration-200 min-w-[180px] shadow-lg
+          px-16 py-4 text-white font-bold text-2xl font-quantico
+          transition-all duration-200 min-w-[180px]
           ${
             isCreating
               ? "opacity-50 cursor-not-allowed"
-              : "hover:shadow-xl active:scale-95"
+              : "hover:opacity-90 active:scale-95"
           }
         `}
         style={{
           backgroundColor: "#4C539B",
-          ...(isCreating
-            ? {}
-            : {
-                ":hover": {
-                  backgroundColor: "#3a4075",
-                },
-              }),
         }}
       >
         {isCreating ? "Creating..." : "Select"}

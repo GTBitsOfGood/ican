@@ -11,12 +11,12 @@ export default function PetGrid({
   onCharacterSelect,
 }: PetGridProps) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-2 gap-8">
       {characters.map((character) => (
         <PetCharacterCard
           key={character.type}
           character={character}
-          isSelected={false} // No pets in grid are selected (selected pet is shown on right)
+          isSelected={false}
           onClick={() => onCharacterSelect(character)}
         />
       ))}

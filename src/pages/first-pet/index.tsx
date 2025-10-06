@@ -8,15 +8,38 @@ import { useUser } from "@/components/UserContext";
 import PetSelectionRoute from "@/components/PetSelectionRoute";
 
 export default function FirstPetPage() {
-  const [selectedCharacter, setSelectedCharacter] =
-    useState<PetCharacter | null>(PET_CHARACTERS[0]); // Default to Dog (Paws!)
+  // Start with Paws selected (index 0), show other 4 in grid
+  const [selectedCharacterIndex, setSelectedCharacterIndex] = useState(0);
+  const [petPositions, setPetPositions] = useState([0, 1, 2, 3, 4]); // Original positions
   const { userId } = useUser();
   const router = useRouter();
   const createPetMutation = useCreatePet();
 
+  const selectedCharacter = PET_CHARACTERS[selectedCharacterIndex];
+
   const handleCharacterSelect = (character: PetCharacter) => {
-    setSelectedCharacter(character);
+    const clickedIndex = PET_CHARACTERS.findIndex(
+      (c) => c.type === character.type,
+    );
+    if (clickedIndex !== -1) {
+      // Swap positions: clicked pet becomes selected, selected pet goes to clicked pet's position
+      const newPositions = [...petPositions];
+      const selectedPos = newPositions.indexOf(selectedCharacterIndex);
+      const clickedPos = newPositions.indexOf(clickedIndex);
+
+      // Swap the positions
+      newPositions[selectedPos] = clickedIndex;
+      newPositions[clickedPos] = selectedCharacterIndex;
+
+      setPetPositions(newPositions);
+      setSelectedCharacterIndex(clickedIndex);
+    }
   };
+
+  // Get the 4 characters that should be shown in the grid (not the selected one)
+  const gridCharacters = petPositions
+    .filter((index) => index !== selectedCharacterIndex)
+    .map((index) => PET_CHARACTERS[index]);
 
   const handleSelectPet = async () => {
     if (!selectedCharacter || !userId) return;
@@ -40,46 +63,35 @@ export default function FirstPetPage() {
 
   return (
     <PetSelectionRoute>
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: "#4C539B" }}
-      >
-        {/* Header */}
-        <div className="flex justify-center pt-6 lg:pt-8 pb-4 lg:pb-6">
-          <div className="bg-white border-4 border-black px-6 lg:px-8 py-2 lg:py-3 rounded-xl shadow-lg">
-            <h1 className="text-xl lg:text-2xl font-bold text-black font-pixelify">
-              Select a Character
-            </h1>
-          </div>
-        </div>
+      <div className="min-h-screen flex" style={{ backgroundColor: "#4C539B" }}>
+        {/* Left Side - Pet Grid with Header */}
+        <div className="flex-1 flex flex-col justify-center px-8">
+          <div className="flex justify-center">
+            <div className="flex flex-col">
+              {/* Header above grid - aligned with grid */}
+              <div className="mb-6 flex justify-start">
+                <div className="bg-white border-4 border-black px-6 py-3 rounded-xl shadow-lg">
+                  <h1 className="text-lg font-bold text-black font-quantico uppercase">
+                    SELECT A CHARACTER
+                  </h1>
+                </div>
+              </div>
 
-        {/* Main Content - Side by Side Layout */}
-        <div className="flex-1 flex items-center justify-center px-4">
-          <div className="w-full max-w-7xl flex flex-row gap-16 items-center justify-center">
-            {/* Left Side - Pet Grid */}
-            <div className="flex justify-center">
               <PetGrid
-                characters={PET_CHARACTERS.filter(
-                  (char) => char.type !== selectedCharacter?.type,
-                )} // Show 4 unselected pets
+                characters={gridCharacters}
                 onCharacterSelect={handleCharacterSelect}
               />
             </div>
-
-            {/* Right Side - Pet Details */}
-            <div className="flex justify-center">
-              <div
-                className="p-12 rounded-2xl shadow-lg min-w-[500px]"
-                style={{ backgroundColor: "#E6E8F9" }}
-              >
-                <PetDetailPanel
-                  character={selectedCharacter}
-                  onSelect={handleSelectPet}
-                  isCreating={createPetMutation.isPending}
-                />
-              </div>
-            </div>
           </div>
+        </div>
+
+        {/* Right Side - Pet Details */}
+        <div className="w-[600px] bg-white flex items-center justify-center">
+          <PetDetailPanel
+            character={selectedCharacter}
+            onSelect={handleSelectPet}
+            isCreating={createPetMutation.isPending}
+          />
         </div>
 
         {/* Error Display */}
