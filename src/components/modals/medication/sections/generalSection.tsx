@@ -15,9 +15,14 @@ import FormLabel from "@/components/ui/form/formLabel";
 interface GeneralSectionProps {
   info: MedicationInfo;
   setInfo: Dispatch<SetStateAction<MedicationInfo>>;
+  generalError: string;
 }
 
-export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
+export default function GeneralSection({
+  info,
+  setInfo,
+  generalError,
+}: GeneralSectionProps) {
   return (
     <div className="smallTablet:max-w-max tablet:max-w-full tablet:w-full smallTablet:mx-auto tablet:mx-0">
       <FormControl mobileColumn={true}>
@@ -68,7 +73,11 @@ export default function GeneralSection({ info, setInfo }: GeneralSectionProps) {
             return temp;
           })
         }
+        error={generalError !== ""}
       />
+      {generalError !== "" && (
+        <p className="text-2xl text-iCAN-error mt-4">{generalError}</p>
+      )}
     </div>
   );
 }

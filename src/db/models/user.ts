@@ -5,6 +5,7 @@ export interface User {
   email: string;
   password?: string;
   provider: string;
+  isOnboarded?: boolean;
 }
 
 export interface UserDocument extends User, Document {
@@ -17,6 +18,7 @@ const userSchema = new Schema<UserDocument>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: false },
     provider: { type: String, required: true },
+    isOnboarded: { type: Boolean, required: false, default: false },
   },
   { timestamps: true },
 );

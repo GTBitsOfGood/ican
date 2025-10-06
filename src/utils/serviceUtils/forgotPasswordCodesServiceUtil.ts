@@ -5,9 +5,14 @@ import {
   passwordSchema,
 } from "./commonSchemaUtil";
 
-export const sendPasswordCodeSchema = z.object({
-  email: emailSchema,
-});
+export const sendPasswordCodeSchema = z
+  .object({
+    email: emailSchema.optional(),
+    userId: objectIdSchema("UserId").optional(),
+  })
+  .refine((data) => data.email || data.userId, {
+    message: "Either email or userId must be provided",
+  });
 
 export const verifyForgotPasswordCodeSchema = z.object({
   userId: z.string().trim().nonempty(),

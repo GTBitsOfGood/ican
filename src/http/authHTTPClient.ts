@@ -29,7 +29,8 @@ export interface RegistrationRequestBody {
 }
 
 export interface ForgotPasswordRequestBody {
-  email: string;
+  email?: string;
+  userId?: string;
 }
 
 export interface VerificationRequestBody {
@@ -117,10 +118,17 @@ export default class AuthHTTPClient {
     });
   }
 
-  static async forgotPassword(
-    email: string,
-  ): Promise<ForgotPasswordResponseBody> {
-    const forgotPasswordRequestBody: ForgotPasswordRequestBody = { email };
+  static async forgotPassword({
+    email,
+    userId,
+  }: {
+    email?: string;
+    userId?: string;
+  }): Promise<ForgotPasswordResponseBody> {
+    const forgotPasswordRequestBody: ForgotPasswordRequestBody = {
+      email,
+      userId,
+    };
     return await fetchHTTPClient<ForgotPasswordResponseBody>(
       `/auth/forgot-password`,
       {

@@ -1,6 +1,7 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
+import Link from "next/link";
 import { useState } from "react";
 import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
@@ -12,6 +13,9 @@ import {
   useDeleteMedication,
   useUserMedications,
 } from "@/components/hooks/useMedication";
+import { useUser } from "@/components/UserContext";
+import { useOnboardingStatus } from "@/components/hooks/useAuth";
+import { OnboardingStep } from "@/types/onboarding";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -26,9 +30,19 @@ export default function MedicationsPage({
   const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
   const [clickedIndex, setClickedIndex] = useState<number>();
+  const { userId } = useUser();
+  const { data: isOnboarded = true } = useOnboardingStatus(userId);
   const medicationIds = new Set(
     medications.map((med) => med.customMedicationId),
   );
+
+  const handleBackClick = () => {
+    if (!isOnboarded) {
+      window.location.href = `/onboarding/?step=${OnboardingStep.ChoosePet}`;
+    } else {
+      window.location.href = "/settings";
+    }
+  };
 
   const handleMedicationDelete = async (index: number) => {
     const medicationId = medications[index]._id;
@@ -66,27 +80,39 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <BackButton link="/settings" />
+          <BackButton onClick={handleBackClick} />
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
             <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white underline">
               Medications
             </h1>
-            <AddMedicationButton />
+            {medications.length !== 0 && <AddMedicationButton />}
           </div>
           <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
-            {medications.map((medication, index) => {
-              return (
-                <MedicationCard
-                  key={index}
-                  index={index}
-                  medication={medication}
-                  setDeleteModalVisible={setDeleteModalVisible}
-                  setClickedIndex={setClickedIndex}
-                />
-              );
-            })}
+            {medications.length === 0 ? (
+              <Link
+                href="/medications/add"
+                className="bg-white bg-opacity-10 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow"
+                style={{ minHeight: "400px" }}
+              >
+                <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white">
+                  + ADD NEW
+                </h2>
+              </Link>
+            ) : (
+              medications.map((medication, index) => {
+                return (
+                  <MedicationCard
+                    key={index}
+                    index={index}
+                    medication={medication}
+                    setDeleteModalVisible={setDeleteModalVisible}
+                    setClickedIndex={setClickedIndex}
+                  />
+                );
+              })
+            )}
           </div>
         </div>
       </div>

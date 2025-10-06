@@ -35,8 +35,8 @@ export default function DosageNotificationSection({
               })
             }
           >
-            <Option value="Once / Day Of Dose" />
-            <Option value="Every Dose" />
+            <Option value="Day Of Dose">Once / Day Of Dose</Option>
+            <Option value="Every Dose">Every Dose</Option>
           </DropDown>
         </FormControl>
       </div>
