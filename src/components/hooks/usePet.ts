@@ -4,6 +4,7 @@ import { useUser } from "../UserContext";
 import { Pet, PetType } from "@/types/pet";
 import { WithId } from "@/types/models";
 import { Appearance } from "@/db/models/pet";
+import { HTTPError } from "@/http/fetchHTTPClient";
 
 export const PET_QUERY_KEYS = {
   pet: (userId: string) => ["pet", userId] as const,
@@ -23,12 +24,7 @@ export const usePet = () => {
         return petData || null;
       } catch (error: unknown) {
         // If pet doesn't exist (404), return null instead of throwing
-        if (
-          error &&
-          typeof error === "object" &&
-          "status" in error &&
-          (error as { status: number }).status === 404
-        ) {
+        if (error instanceof HTTPError && error.status === 404) {
           return null;
         }
         // Re-throw other errors
@@ -37,19 +33,7 @@ export const usePet = () => {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
-    retry: (failureCount, error: unknown) => {
-      // Don't retry on 404 errors (pet doesn't exist)
-      if (
-        error &&
-        typeof error === "object" &&
-        "status" in error &&
-        (error as { status: number }).status === 404
-      ) {
-        return false;
-      }
-      // Default retry logic for other errors
-      return failureCount < 3;
-    },
+    retry: 3,
   });
 };
 

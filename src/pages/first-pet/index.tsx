@@ -5,7 +5,7 @@ import PetGrid from "@/components/petSelection/PetGrid";
 import PetDetailPanel from "@/components/petSelection/PetDetailPanel";
 import { useCreatePet } from "@/components/hooks/usePet";
 import { useUser } from "@/components/UserContext";
-import PetSelectionRoute from "@/components/PetSelectionRoute";
+import AuthorizedRoute from "@/components/AuthorizedRoute";
 
 export default function FirstPetPage() {
   // Start with Paws selected (index 0), show other 4 in grid
@@ -62,7 +62,7 @@ export default function FirstPetPage() {
   };
 
   return (
-    <PetSelectionRoute>
+    <AuthorizedRoute>
       <div className="min-h-screen flex" style={{ backgroundColor: "#4C539B" }}>
         {/* Left Side - Pet Grid with Header */}
         <div className="flex-1 flex flex-col justify-center px-8">
@@ -90,7 +90,7 @@ export default function FirstPetPage() {
           <PetDetailPanel
             character={selectedCharacter}
             onSelect={handleSelectPet}
-            isCreating={createPetMutation.isPending}
+            isLoading={createPetMutation.isPending}
           />
         </div>
 
@@ -101,6 +101,6 @@ export default function FirstPetPage() {
           </div>
         )}
       </div>
-    </PetSelectionRoute>
+    </AuthorizedRoute>
   );
 }

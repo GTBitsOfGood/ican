@@ -34,7 +34,6 @@ export default function PetCharacterCard({
         alt={character.name}
         width={200}
         height={200}
-        className="pixelated"
       />
     </div>
   );
