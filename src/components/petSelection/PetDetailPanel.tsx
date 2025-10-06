@@ -14,11 +14,7 @@ export default function PetDetailPanel({
   isLoading,
 }: PetDetailPanelProps) {
   if (!character) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full text-white text-center">
-        <p className="text-lg mb-4">Select a character to see details</p>
-      </div>
-    );
+    throw new Error("Character should never be null in PetDetailPanel");
   }
 
   return (

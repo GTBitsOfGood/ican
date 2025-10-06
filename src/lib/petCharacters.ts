@@ -45,8 +45,6 @@ export const PET_CHARACTERS: PetCharacter[] = [
   },
 ];
 
-export const getPetCharacterByType = (
-  type: PetType,
-): PetCharacter | undefined => {
+export const getPetCharacterByType = (type: PetType) => {
   return PET_CHARACTERS.find((character) => character.type === type);
 };
