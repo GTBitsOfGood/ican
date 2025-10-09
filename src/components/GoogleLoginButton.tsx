@@ -26,7 +26,7 @@ const GoogleLoginButton = ({
         // If this is a new user, redirect to pet selection
         // If existing user, redirect to home
         if (response.isNewUser) {
-          router.push("/first-pet");
+          router.push("/onboarding");
         } else {
           router.push("/");
         }

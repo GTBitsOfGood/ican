@@ -61,20 +61,21 @@ function PetDetailPanel({
   }
 
   return (
-    <div className="flex flex-col items-center text-center text-black w-full px-12 py-16">
-      <h2 className="text-6xl font-bold mb-4 font-quantico text-icanBlue-200">
-        {character.name}
-      </h2>
+    <div className="flex flex-col items-center text-center text-black w-full px-12 py-16 bg-[#E6E8F9] h-full justify-between">
+      <div className="flex flex-col gap-y-2">
+        <h2 className="text-6xl font-bold font-quantico text-icanBlue-200">
+          {character.name}
+        </h2>
+        <p className="text-base text-gray-600 font-quantico">
+          *This name can be changed.
+        </p>
+      </div>
 
-      <p className="text-base text-gray-600 mb-10 font-quantico">
-        *This name can be changed.
-      </p>
-
-      <p className="text-xl font-bold mb-12 leading-relaxed font-quantico px-12 max-w-md text-icanBlue-200">
+      <p className="text-2xl font-bold leading-relaxed font-quantico px-12 max-w-md text-icanBlue-200">
         {character.description}
       </p>
 
-      <div className="mb-12">
+      <div className="">
         <Image
           src={character.image}
           alt={character.name}
