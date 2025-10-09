@@ -21,8 +21,15 @@ const GoogleLoginButton = ({
           tokenResponse.access_token,
         );
 
-        await AuthHTTPClient.loginWithGoogle(userInfo);
-        router.push("/");
+        const response = await AuthHTTPClient.loginWithGoogle(userInfo);
+
+        // If this is a new user, redirect to pet selection
+        // If existing user, redirect to home
+        if (response.isNewUser) {
+          router.push("/onboarding");
+        } else {
+          router.push("/");
+        }
       } catch (error) {
         if (setError) {
           setError((error as Error).message);
