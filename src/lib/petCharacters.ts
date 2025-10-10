@@ -17,21 +17,21 @@ export const PET_CHARACTERS: PetCharacter[] = [
   },
   {
     type: PetType.DINO,
-    name: "Dino!",
+    name: "Roary!",
     description:
       "Roary is the friendliest dinosaur around. He stomps with joy and gives the biggest high-fives!",
     image: "/characters/dino.svg",
   },
   {
     type: PetType.CAT,
-    name: "Cat!",
+    name: "Whiskers!",
     description:
       "Whiskers is curious and loves adventures. Pick Cat if you enjoy exploring and trying new things!",
     image: "/characters/cat.svg",
   },
   {
     type: PetType.PENGUIN,
-    name: "Penguin!",
+    name: "Waddles!",
     description:
       "Waddles loves sliding on ice and dancing to music. Choose Penguin if you like to groove and play!",
     image: "/characters/penguin.svg",
