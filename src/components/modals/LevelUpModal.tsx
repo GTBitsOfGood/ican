@@ -39,7 +39,7 @@ export default function FoodModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden",
+        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden max-h-[500px]",
         header:
           "mobile:text-3xl tablet:text-4xl largeDesktop:text-5xl tiny:text-2xl minimized:text-3xl small:text-4xl items-center",
         closeButton: "top-[2.5rem]",
@@ -51,7 +51,6 @@ export default function FoodModal({
       radius="lg"
       placement="center"
       closeButton={<ModalCloseButton onClose={handleClose} />}
-      isDismissable={false}
     >
       <ModalContent>
         <ModalHeader>Level Up!</ModalHeader>
@@ -64,9 +63,9 @@ export default function FoodModal({
                 height={0}
                 sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
                 alt="Banner"
-                className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto h-[20vh] tablet:h-[15vh] tiny:h-[18vh]"
+                className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto"
               />
-              <div className="absolute desktop:top-16 tablet:top-16 mobile:top-24 tiny:top-12 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
+              <div className="absolute desktop:top-16 tablet:top-16 mobile:top-16 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
                 Level {level ? level : 0}
               </div>
               <Image
@@ -75,7 +74,7 @@ export default function FoodModal({
                 height={0}
                 sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
                 alt="Shine"
-                className="mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
+                className="mx-auto mb-4 w-auto"
               />
               <div className="flex">
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
@@ -89,7 +88,7 @@ export default function FoodModal({
                       height={0}
                       sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 50px"
                       alt="Coin"
-                      className="w-auto h-[10vh] tablet:h-[8vh] tiny:h-[9vh]"
+                      className="w-auto"
                     />
                   </div>
                 </div>

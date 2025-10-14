@@ -77,6 +77,12 @@ export default function Home({
           levelChanged={true}
         />
       )}
+      <LevelUpModal
+        setVisible={setShowLevelUpModalVisible}
+        level={pet?.xpLevel}
+        xp={pet?.xpGained}
+        levelChanged={true}
+      />
       {showSuccessModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
