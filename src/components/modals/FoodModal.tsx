@@ -44,11 +44,13 @@ export default function FoodModal({ foods }: { foods: string[] }) {
       }}
       className="w-[80%] mobile:h-[70%] tablet:h-[65%] tiny:h-[80%] minimized:h-[75%] short:h-[70%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        router.push("/");
+      }}
       radius="lg"
       placement="center"
       closeButton={<ModalCloseButton onClose={onClose} />}
-      isDismissable={false}
     >
       <ModalContent>
         <ModalHeader>Foods</ModalHeader>
