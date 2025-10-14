@@ -63,7 +63,6 @@ export default function Home({
     });
   };
 
-  console.log("food", pet?.food);
   return (
     <AuthorizedRoute>
       {activeModal === "settings" && <SettingsModal />}
