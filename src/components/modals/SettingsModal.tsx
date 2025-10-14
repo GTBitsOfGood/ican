@@ -75,7 +75,7 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[960px]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[1080px]",
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
