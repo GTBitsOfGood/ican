@@ -11,7 +11,7 @@ export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
     <AnimatePresence mode="wait">
       <div
         onClick={() => setState(!state)}
-        className="flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[17%] desktop:w-[14%] largeDesktop:w-[26%] h-12 py-2 px-[0.75rem] border-2 border-black"
+        className="flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[26%] desktop:w-[26%] largeDesktop:w-[26%] h-12 py-2 px-[0.75rem] border-2 border-black"
       >
         {state ? (
           <>

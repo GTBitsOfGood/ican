@@ -73,16 +73,17 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] w-[960px] max-w-[960px]",
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="w-[80%] h-[60%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+        className="font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
         onClose={onClose}
         radius="lg"
         placement="center"
         closeButton={<ModalCloseButton onClose={onClose} />}
+        size={"full"}
       >
         <ModalContent>
           <ModalHeader>Settings</ModalHeader>
