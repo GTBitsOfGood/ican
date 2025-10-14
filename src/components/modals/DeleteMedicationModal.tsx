@@ -40,12 +40,12 @@ export default function DeleteMedicationModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3]",
+        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[500px] max-h-[600px]",
         header:
           "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl justify-center items-center",
         body: "items-center justify-between",
       }}
-      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[55%] mobile:h-[40%] tablet:h-[35%] tiny:h-[75%] minimized:h-[67.5%] short:h-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[55%] desktop:h-[40%] mobile:h-[40%] tablet:h-[35%] tiny:h-[75%] minimized:h-[67.5%] short:h-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
