@@ -9,7 +9,7 @@ const FeedButton = ({ active }: { active: boolean }) => {
 
   return (
     <button
-      className={`relative aspect-feed-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer ${!active && "grayscale"}`}
+      className="relative aspect-feed-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer disabled:cursor-default disabled:grayscale"
       type="button"
       onClick={redirect}
       disabled={!active}
