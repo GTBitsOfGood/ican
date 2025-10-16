@@ -109,7 +109,7 @@ export default function Home({
             <NavButton buttonType="store" />
             <NavButton buttonType="bag" />
             <NavButton buttonType="log" />
-            {pet.food > 0 && <FeedButton />}
+            <FeedButton active={pet.food > 0} />
           </Navbar>
 
           {/* Character, speech bubble and food image is made relative to the image */}
