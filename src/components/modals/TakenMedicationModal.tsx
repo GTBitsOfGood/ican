@@ -39,7 +39,7 @@ export default function MedicationTakenModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3]",
+        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[600px]",
         header:
           "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl justify-center items-center",
         body: "items-center justify-between",
