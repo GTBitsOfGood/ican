@@ -18,6 +18,9 @@ export default function FoodModal({ foods }: { foods: string[] }) {
   const { setSelectedFood } = useFood();
 
   const [clickedFood, setClickedFood] = useState<string>("");
+  console.log("FoodModal - foods prop:", foods);
+  console.log("FoodModal - foods length:", foods?.length);
+  console.log("FoodModal - foods is array?", Array.isArray(foods));
 
   const baseImageUrl = "/foods";
 
@@ -69,6 +72,9 @@ export default function FoodModal({ foods }: { foods: string[] }) {
                   className="h-full w-auto object-contain"
                   priority
                 />
+                <p className="text-black text-lg font-bold text-center capitalize mt-2">
+                  {food}
+                </p>
               </div>
             );
           })}

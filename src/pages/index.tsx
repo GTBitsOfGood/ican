@@ -16,7 +16,7 @@ import { PetType } from "@/types/pet";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 
@@ -40,10 +40,32 @@ export default function Home({
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const feeding = feedPetMutation.isPending;
+  const [bubbleText, setBubbleText] = useState<string>(
+    "Pick some food to feed me!",
+  );
+
+  const getDistanceMessage = (distance: number | null) => {
+    if (distance === null || distance > 150) {
+      return "Drag the food into my mouth to feed me!";
+    }
+    return "Yummy! Thank you for feeding me, Michelle!";
+  };
+
+  useEffect(() => {
+    if (selectedFood && distance != null) {
+      setBubbleText(getDistanceMessage(distance));
+    } else if (selectedFood) {
+      setBubbleText("Drag the food into my mouth to feed me!");
+    } else {
+      setBubbleText("Pick some food to feed me!");
+    }
+  }, [distance, selectedFood]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
-    if (distance == null || distance > 150) return;
+    if (distance == null || distance > 150) {
+      return;
+    }
     if (feeding) return;
 
     const previousLevel = pet.xpLevel;
@@ -109,7 +131,7 @@ export default function Home({
             <NavButton buttonType="store" />
             <NavButton buttonType="bag" />
             <NavButton buttonType="log" />
-            {pet.food > 0 && <FeedButton />}
+            {pet.food >= 0 && <FeedButton />}
           </Navbar>
 
           {/* Character, speech bubble and food image is made relative to the image */}
@@ -122,7 +144,7 @@ export default function Home({
                 className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
               />
               <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
-                <Bubble />
+                <Bubble text={bubbleText} />
               </div>
               <div
                 ref={constraintsRef}

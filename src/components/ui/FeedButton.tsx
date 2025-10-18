@@ -4,6 +4,7 @@ const FeedButton = ({}) => {
   const router = useRouter();
 
   const redirect = () => {
+    console.log("Feed button clicked! Navigating to /food");
     router.push(`/food`);
   };
 
