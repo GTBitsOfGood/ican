@@ -12,15 +12,18 @@ if (!process.env.JWT_SECRET) {
   throw new Error('Invalid/Missing environment variable: "JWT_SECRET"');
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET as jwt.Secret;
 
 export default class JWTService {
-  static generateToken(payload: JWTPayload, expiresIn: number): string {
+  static generateToken(
+    payload: JWTPayload,
+    expiresIn: jwt.SignOptions["expiresIn"],
+  ): string {
     validateGenerateToken({ payload, expiresIn });
     return jwt.sign(payload, JWT_SECRET, { expiresIn });
   }
 
-  static verifyToken(token: string): JWTPayload {
+  static verifyToken(token: string) {
     try {
       validateVerifyToken({ token });
       const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;

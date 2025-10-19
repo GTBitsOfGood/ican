@@ -6,7 +6,6 @@ import { verifyMedication } from "@/utils/auth";
 import { verifyParentalMode } from "@/utils/parentalControl";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
-import ERRORS from "@/utils/errorMessages";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -42,12 +41,7 @@ export async function PATCH(
   try {
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
-
-    if (!authToken) {
-      throw new Error(ERRORS.TOKEN.REQUIRED);
-    }
-
-    const tokenPayload = JWTService.verifyToken(authToken);
+    const tokenPayload = JWTService.verifyToken(authToken ?? "");
     verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;
@@ -70,11 +64,7 @@ export async function DELETE(
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
 
-    if (!authToken) {
-      throw new Error(ERRORS.TOKEN.REQUIRED);
-    }
-
-    const tokenPayload = JWTService.verifyToken(authToken);
+    const tokenPayload = JWTService.verifyToken(authToken ?? "");
     verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;

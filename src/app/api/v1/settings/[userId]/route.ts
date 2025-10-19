@@ -69,7 +69,7 @@ export async function PATCH(
           parentalModeExpiresAt: 0,
           origin: "login",
         },
-        7776000000,
+        "90d",
       );
 
       await generateAPIAuthCookie(response, newToken);

@@ -3,8 +3,12 @@ import { tokenSchema } from "./commonSchemaUtil";
 
 export const generateTokenSchema = z.object({
   payload: z.record(z.string(), z.unknown()),
-
-  expiresIn: z.number().int().positive(),
+  expiresIn: z.union([
+    z.number().int().positive(),
+    z.string().regex(/^\d+\s*(ms|s|m|h|d|w|y)$/, {
+      message: "String should be a valid time ('60s', '2h', '7d')",
+    }),
+  ]),
 });
 export const verifyTokenSchema = z.object({ token: tokenSchema });
 

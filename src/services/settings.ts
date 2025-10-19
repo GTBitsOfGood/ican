@@ -57,7 +57,7 @@ export default class SettingsService {
   static async updateSettings(
     userIdString: string,
     updatedSettings: UpdateSettingsRequestBody,
-  ): Promise<{ tokenReissue: boolean }> {
+  ) {
     updatedSettings = removeUndefinedKeys(updatedSettings);
     const validatedSettings = validateUpdateSettings({
       userId: userIdString,
