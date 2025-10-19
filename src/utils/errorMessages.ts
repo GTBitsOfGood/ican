@@ -129,6 +129,7 @@ const ERRORS = Object.freeze({
   },
   TOKEN: {
     UNAUTHORIZED: "Authentication token is missing or malformed",
+    REQUIRED: "Authentication is required to access this resource.",
   },
 });
 

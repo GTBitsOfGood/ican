@@ -80,7 +80,7 @@ export default class AuthService {
         parentalControls: settings.parentalControl,
         origin: "login",
       },
-      7776000, // ts 90 days
+      7776000000, // ts 90 days
     );
 
     return { token, userId: _id };
@@ -127,7 +127,7 @@ export default class AuthService {
         parentalControls: settings.parentalControl,
         origin: "login",
       },
-      7776000,
+      7776000000,
     );
 
     return { token, userId: existingUser._id.toString() };
@@ -171,7 +171,7 @@ export default class AuthService {
         parentalControls: settings.parentalControl,
         origin: "login",
       },
-      7776000,
+      7776000000,
     );
 
     return { token, userId, isNewUser };
@@ -200,7 +200,7 @@ export default class AuthService {
         parentalModeExpiresAt: fiveMinutes,
         origin: "login",
       },
-      7776000,
+      7776000000,
     );
 
     return token;
@@ -216,7 +216,7 @@ export default class AuthService {
         parentalModeExpiresAt: 0,
         origin: "login",
       },
-      7776000,
+      7776000000,
     );
 
     return token;

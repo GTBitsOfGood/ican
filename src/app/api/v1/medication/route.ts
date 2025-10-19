@@ -17,10 +17,8 @@ export async function POST(req: NextRequest) {
       authToken,
     );
 
-    if (authToken) {
-      const tokenPayload = JWTService.verifyToken(authToken);
-      verifyParentalMode(tokenPayload);
-    }
+    const tokenPayload = JWTService.verifyToken(authToken ?? "");
+    verifyParentalMode(tokenPayload);
 
     const body = await req.json();
     const id: string = await MedicationService.createMedication(body);

@@ -22,10 +22,12 @@ export async function PATCH(
     const userId = (await params).userId;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
-    if (authToken) {
-      const tokenPayload = JWTService.verifyToken(authToken);
-      verifyParentalMode(tokenPayload);
+    if (!authToken) {
+      throw new Error(ERRORS.TOKEN.REQUIRED);
     }
+
+    const tokenPayload = JWTService.verifyToken(authToken);
+    verifyParentalMode(tokenPayload);
 
     const { pin } = await req.json();
     await SettingsService.updatePin(userId, pin);

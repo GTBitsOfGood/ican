@@ -125,7 +125,7 @@ export default class ForgotPasswordService {
         parentalControls: settings.parentalControl,
         origin: "forgot-password",
       },
-      7776000,
+      7776000000,
     );
   }
 

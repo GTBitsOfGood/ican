@@ -7,9 +7,9 @@ export function verifyParentalMode(tokenPayload: JWTPayload): void {
     return;
   }
 
-  const expiresAt = tokenPayload.parentalModeExpiresAt || 0;
+  const expiresAt = tokenPayload.parentalModeExpiresAt;
 
-  if (expiresAt === 0 || Date.now() > expiresAt) {
+  if (expiresAt === undefined || expiresAt === 0 || Date.now() > expiresAt) {
     throw new UnauthorizedError(ERRORS.SETTINGS.UNAUTHORIZED.PARENTAL_MODE);
   }
 }

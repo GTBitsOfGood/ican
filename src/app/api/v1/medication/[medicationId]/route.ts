@@ -6,6 +6,7 @@ import { verifyMedication } from "@/utils/auth";
 import { verifyParentalMode } from "@/utils/parentalControl";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
+import ERRORS from "@/utils/errorMessages";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -42,11 +43,12 @@ export async function PATCH(
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
 
-    // Check parental control access
-    if (authToken) {
-      const tokenPayload = JWTService.verifyToken(authToken);
-      verifyParentalMode(tokenPayload);
+    if (!authToken) {
+      throw new Error(ERRORS.TOKEN.REQUIRED);
     }
+
+    const tokenPayload = JWTService.verifyToken(authToken);
+    verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
@@ -68,10 +70,12 @@ export async function DELETE(
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
 
-    if (authToken) {
-      const tokenPayload = JWTService.verifyToken(authToken);
-      verifyParentalMode(tokenPayload);
+    if (!authToken) {
+      throw new Error(ERRORS.TOKEN.REQUIRED);
     }
+
+    const tokenPayload = JWTService.verifyToken(authToken);
+    verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
