@@ -57,7 +57,7 @@ export default class SettingsService {
   static async updateSettings(
     userIdString: string,
     updatedSettings: UpdateSettingsRequestBody,
-  ): Promise<void> {
+  ): Promise<{ tokenReissue: boolean }> {
     updatedSettings = removeUndefinedKeys(updatedSettings);
     const validatedSettings = validateUpdateSettings({
       userId: userIdString,
@@ -71,6 +71,12 @@ export default class SettingsService {
     await SettingsDAO.updateSettingsByUserId(userIdString, {
       ...validatedSettings,
     });
+
+    return {
+      tokenReissue:
+        validatedSettings.parentalControl !== undefined &&
+        validatedSettings.parentalControl !== settings.parentalControl,
+    };
   }
 
   /** throws on invalid pin */

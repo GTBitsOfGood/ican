@@ -6,6 +6,7 @@ import {
 import settingsService from "./settings";
 import { Provider } from "@/types/user";
 import JWTService from "./jwt";
+import { JWTPayload } from "@/types/jwt";
 import UserDAO from "@/db/actions/user";
 import {
   validateLogin,
@@ -70,12 +71,16 @@ export default class AuthService {
     }
 
     // create settings
-    await settingsService.createSettings(_id.toString());
+    const settings = await settingsService.createSettings(_id.toString());
 
-    // Create j:wt once user is successfully created
+    // Create jwt once user is successfully created
     const token = JWTService.generateToken(
-      { userId: _id.toString() },
-      10800000,
+      {
+        userId: _id.toString(),
+        parentalControls: settings.parentalControl,
+        origin: "login",
+      },
+      7776000, // ts 90 days
     );
 
     return { token, userId: _id };
@@ -112,10 +117,17 @@ export default class AuthService {
       throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
     }
 
-    // Create and return jwt
+    const settings = await settingsService.getSettings(
+      existingUser._id.toString(),
+    );
+
     const token = JWTService.generateToken(
-      { userId: existingUser._id.toString() },
-      10800000,
+      {
+        userId: existingUser._id.toString(),
+        parentalControls: settings.parentalControl,
+        origin: "login",
+      },
+      7776000,
     );
 
     return { token, userId: existingUser._id.toString() };
@@ -151,13 +163,22 @@ export default class AuthService {
       throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.PASSWORD);
     }
 
-    const token = JWTService.generateToken({ userId }, 10800000);
+    const settings = await settingsService.getSettings(userId);
+
+    const token = JWTService.generateToken(
+      {
+        userId,
+        parentalControls: settings.parentalControl,
+        origin: "login",
+      },
+      7776000,
+    );
 
     return { token, userId, isNewUser };
   }
 
   // Validate JWT token and ensure user exists
-  static async validateToken(token: string): Promise<{ userId: string }> {
+  static async validateToken(token: string): Promise<JWTPayload> {
     validateTokenInput({ token });
     const decodedToken = JWTService.verifyToken(token);
     const user = await UserDAO.getUserFromId(decodedToken.userId);
@@ -165,5 +186,39 @@ export default class AuthService {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
     return decodedToken;
+  }
+
+  static async enableParentalMode(userId: string): Promise<string> {
+    const settings = await settingsService.getSettings(userId);
+
+    const fiveMinutes = Date.now() + 5 * 60 * 1000;
+
+    const token = JWTService.generateToken(
+      {
+        userId,
+        parentalControls: settings.parentalControl,
+        parentalModeExpiresAt: fiveMinutes,
+        origin: "login",
+      },
+      7776000,
+    );
+
+    return token;
+  }
+
+  static async disableParentalMode(userId: string): Promise<string> {
+    const settings = await settingsService.getSettings(userId);
+
+    const token = JWTService.generateToken(
+      {
+        userId,
+        parentalControls: settings.parentalControl,
+        parentalModeExpiresAt: 0,
+        origin: "login",
+      },
+      7776000,
+    );
+
+    return token;
   }
 }
