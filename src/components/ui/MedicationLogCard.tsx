@@ -7,8 +7,8 @@ import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useDisclosure } from "@heroui/react";
+import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 
 export default function MedicationLogCard({
   id,
@@ -31,6 +31,9 @@ export default function MedicationLogCard({
   } = useDisclosure(); //for managing pin modal
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+
+  const medicationCheckInMutation = useMedicationCheckIn();
+  const medicationLogMutation = useMedicationLog();
 
   const lastTakenTime = () => {
     if (!lastTaken) {
@@ -55,20 +58,38 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = async () => {
-    await MedicationHTTPClient.medicationLog({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    setShowConfirmModal(false);
-    setShowSuccessModal(true);
+    medicationLogMutation.mutate(
+      {
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      },
+      {
+        onSuccess: () => {
+          setShowConfirmModal(false);
+          setShowSuccessModal(true);
+        },
+        onError: (error) => {
+          console.error("Error logging medication:", error);
+        },
+      },
+    );
   };
 
   const handleMedicationCheckIn = async () => {
-    await MedicationHTTPClient.medicationCheckIn({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    openPasswordModal();
+    medicationCheckInMutation.mutate(
+      {
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      },
+      {
+        onSuccess: () => {
+          openPasswordModal();
+        },
+        onError: (error) => {
+          console.error("Error checking in medication:", error);
+        },
+      },
+    );
   };
 
   const toggleMissedDoseModal = () => {
