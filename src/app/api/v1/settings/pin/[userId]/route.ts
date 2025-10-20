@@ -22,8 +22,12 @@ export async function PATCH(
     const userId = (await params).userId;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
-    const tokenPayload = JWTService.verifyToken(authToken!);
-    verifyParentalMode(tokenPayload);
+    const settings = await SettingsService.getSettings(userId);
+    // need this check for onboarding to work as expected
+    if (settings.pin !== null) {
+      const tokenPayload = JWTService.verifyToken(authToken!);
+      verifyParentalMode(tokenPayload);
+    }
 
     const { pin } = await req.json();
     await SettingsService.updatePin(userId, pin);
