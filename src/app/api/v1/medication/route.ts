@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       authToken,
     );
 
-    const tokenPayload = JWTService.verifyToken(authToken ?? "");
+    const tokenPayload = JWTService.verifyToken(authToken!);
     verifyParentalMode(tokenPayload);
 
     const body = await req.json();

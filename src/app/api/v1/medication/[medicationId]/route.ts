@@ -41,7 +41,7 @@ export async function PATCH(
   try {
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
-    const tokenPayload = JWTService.verifyToken(authToken ?? "");
+    const tokenPayload = JWTService.verifyToken(authToken!);
     verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;
@@ -64,7 +64,7 @@ export async function DELETE(
     const authToken = (await cookies()).get("auth_token")?.value;
     const tokenUser = await validateRoutes(req, req.method, route, authToken);
 
-    const tokenPayload = JWTService.verifyToken(authToken ?? "");
+    const tokenPayload = JWTService.verifyToken(authToken!);
     verifyParentalMode(tokenPayload);
 
     const medicationId = (await params).medicationId;

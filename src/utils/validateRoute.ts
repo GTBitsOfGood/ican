@@ -17,7 +17,7 @@ export const validateRoutes = async (
   }
 
   if (authRequired) {
-    const tokenUserId: string = JWTService.verifyToken(authToken ?? "").userId;
+    const tokenUserId: string = JWTService.verifyToken(authToken!).userId;
     const user = await UserDAO.getUserFromId(tokenUserId);
 
     return user ? user.toObject() : null;
