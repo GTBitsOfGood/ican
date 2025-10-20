@@ -35,7 +35,7 @@ body {
   }
 
   .scrollbar-custom::-webkit-scrollbar {
-    width: 8px;
+    width: 12px;
   }
 
   .scrollbar-custom::-webkit-scrollbar-track {
@@ -44,16 +44,16 @@ body {
   }
 
   .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: #accc6e;
+    background: #98d03b;
     border-radius: 0px;
   }
 
   .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-    background: #98d03b;
+    background: #7bb82f;
   }
 
   .log-scrollbar::-webkit-scrollbar {
-    width: 28px;
+    width: 12px;
   }
 
   .log-scrollbar::-webkit-scrollbar-track {
@@ -62,26 +62,30 @@ body {
   }
 
   .log-scrollbar::-webkit-scrollbar-thumb {
-    background: #accc6e;
+    background: #98d03b;
     border-radius: 0px;
   }
 
   .log-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #98d03b;
+    background: #7bb82f;
   }
 
   .list-scrollbar::-webkit-scrollbar {
-    width: 1.5rem;
+    width: 12px;
   }
 
   .list-scrollbar::-webkit-scrollbar-track {
-    background: #a1a1a1;
+    background: #cee0a05f;
     border-radius: 0px;
   }
 
   .list-scrollbar::-webkit-scrollbar-thumb {
-    background: #f4f4f4;
+    background: #98d03b;
     border-radius: 0px;
+  }
+
+  .list-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #7bb82f;
   }
 }
 
