@@ -45,7 +45,7 @@ export default function FoodModal({
         closeButton: "top-[2.5rem]",
         footer: "items-center justify-center",
       }}
-      className="w-[60%] mobile:h-[70%] tablet:h-[65%] tiny:h-[75%] minimized:h-[67.5%] short:h-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="w-[60%] mobile:h-[70%] tablet:h-[65%] tiny:h-[75%] minimized:h-[67.5%] short:h-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
       isOpen={isOpen}
       onClose={handleClose}
       radius="lg"

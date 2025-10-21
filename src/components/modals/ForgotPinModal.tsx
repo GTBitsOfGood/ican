@@ -66,7 +66,7 @@ export default function ForgotPinModal() {
         base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px] max-h-[550px]",
         header: "text-5xl",
       }}
-      className="w-[55%] mobile:h-[52.5%] tablet:h-[55%] desktop:h-[55.5%] largeDesktop:h-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="w-[45%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
