@@ -13,6 +13,7 @@ import { useUser } from "../UserContext";
 import { useSettings, useUpdateSettings } from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function SettingsModal() {
   const { userId } = useUser();
@@ -26,6 +27,7 @@ export default function SettingsModal() {
   const updateSettingsMutation = useUpdateSettings();
   const logoutMutation = useLogout();
   const deleteAccountMutation = useDeleteAccount();
+  const router = useRouter();
 
   useEffect(() => {
     onOpen();
@@ -73,13 +75,16 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[1080px]",
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="w-[80%] h-[60%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+        className="w-[80%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+          router.push("/");
+        }}
         radius="lg"
         placement="center"
         closeButton={<ModalCloseButton onClose={onClose} />}
@@ -88,8 +93,8 @@ export default function SettingsModal() {
           <ModalHeader>Settings</ModalHeader>
           <ModalBody>
             <div className="flex flex-col items-center w-[95%] text-[#1E2353] gap-10">
-              <div className="flex w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6">
-                <div className="flex flex-col w-1/2 gap-7">
+              <div className="flex flex-col items-center desktop:flex-row w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6 overflow-y-auto max-h-[50vh]">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <h5 className="text-3xl">Parental Control</h5>
                     <ModalSwitch
@@ -124,7 +129,7 @@ export default function SettingsModal() {
                     />
                   </div>
                 </div>
-                <div className="flex flex-col w-1/2 gap-7">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
                       {settings.parentalControl && (
@@ -192,9 +197,9 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[500px] max-h-[600px]",
         }}
-        className="w-[50%] h-[30%] font-quantico z-[60] text-white p-6 rounded-none outline-none"
+        className="w-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
         radius="lg"
