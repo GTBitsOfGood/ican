@@ -197,9 +197,9 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[500px] max-h-[600px]",
         }}
-        className="w-[50%] h-[30%] font-quantico z-[60] text-white p-6 rounded-none outline-none"
+        className="w-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
         radius="lg"
