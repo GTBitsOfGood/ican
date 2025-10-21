@@ -40,23 +40,11 @@ export default function EditMedicationModal({
     }
     const { _id, ...info } = medicationInfo;
     if (_id) {
-      return new Promise<void>((resolve, reject) => {
-        updateMedicationMutation.mutate(
-          {
-            medicationId: _id,
-            medicationInfo: info,
-          },
-          {
-            onSuccess: () => {
-              router.push("/medications");
-              resolve();
-            },
-            onError: (error) => {
-              reject(error);
-            },
-          },
-        );
+      await updateMedicationMutation.mutateAsync({
+        medicationId: _id,
+        medicationInfo: info,
       });
+      router.push("/medications");
     } else {
       throw new ValidationError("The Medication ID is missing.");
     }

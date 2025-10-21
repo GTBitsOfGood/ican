@@ -43,17 +43,8 @@ export default function AddMedicationModal({
       );
     }
 
-    return new Promise<void>((resolve, reject) => {
-      createMedicationMutation.mutate(addMedicationInfo, {
-        onSuccess: () => {
-          router.push("/medications");
-          resolve();
-        },
-        onError: (error) => {
-          reject(error);
-        },
-      });
-    });
+    await createMedicationMutation.mutateAsync(addMedicationInfo);
+    router.push("/medications");
   };
 
   return (

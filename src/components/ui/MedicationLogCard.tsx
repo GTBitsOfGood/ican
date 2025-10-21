@@ -57,7 +57,7 @@ export default function MedicationLogCard({
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
-  const handleTakeMedicationAction = async () => {
+  const handleTakeMedicationAction = () => {
     medicationLogMutation.mutate(
       {
         medicationId: id,
@@ -68,14 +68,11 @@ export default function MedicationLogCard({
           setShowConfirmModal(false);
           setShowSuccessModal(true);
         },
-        onError: (error) => {
-          console.error("Error logging medication:", error);
-        },
       },
     );
   };
 
-  const handleMedicationCheckIn = async () => {
+  const handleMedicationCheckIn = () => {
     medicationCheckInMutation.mutate(
       {
         medicationId: id,
@@ -84,9 +81,6 @@ export default function MedicationLogCard({
       {
         onSuccess: () => {
           openPasswordModal();
-        },
-        onError: (error) => {
-          console.error("Error checking in medication:", error);
         },
       },
     );

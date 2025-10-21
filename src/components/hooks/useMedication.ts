@@ -128,7 +128,7 @@ export const useMedicationCheckIn = () => {
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
-          queryKey: ["medicationSchedule", userId],
+          queryKey: MEDICATION_QUERY_KEYS.allSchedules(userId),
         });
       }
     },
@@ -144,7 +144,7 @@ export const useMedicationLog = () => {
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
-          queryKey: ["medicationSchedule", userId],
+          queryKey: MEDICATION_QUERY_KEYS.allSchedules(userId),
         });
         queryClient.invalidateQueries({
           queryKey: MEDICATION_QUERY_KEYS.allMedications(userId),
