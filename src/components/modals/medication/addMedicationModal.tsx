@@ -1,9 +1,9 @@
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useUser } from "@/components/UserContext";
 import { UnauthorizedError } from "@/types/exceptions";
 import MedicationBaseModal from "./baseModal";
 import { useRouter } from "next/navigation";
 import { MedicationInfo } from "@/types/medication";
+import { useCreateMedication } from "@/components/hooks/useMedication";
 
 interface AddMedicationModalProps {
   medicationIds?: Set<string>;
@@ -34,6 +34,7 @@ export default function AddMedicationModal({
 }: AddMedicationModalProps) {
   const router = useRouter();
   const { userId } = useUser();
+  const createMedicationMutation = useCreateMedication();
 
   const onSubmit = async (addMedicationInfo: MedicationInfo) => {
     if (!userId) {
@@ -41,10 +42,8 @@ export default function AddMedicationModal({
         "User ID is missing. Please make sure you're logged in.",
       );
     }
-    await MedicationHTTPClient.createMedication(
-      userId as string,
-      addMedicationInfo,
-    );
+
+    await createMedicationMutation.mutateAsync(addMedicationInfo);
     router.push("/medications");
   };
 
