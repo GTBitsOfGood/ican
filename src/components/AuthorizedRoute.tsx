@@ -19,6 +19,9 @@ export default function AuthorizedRoute({
       if (isError || !token?.isValid) {
         setUserId(null);
         router.push("/login");
+      } else if (token?.decodedToken?.origin === "forgot-password") {
+        setUserId(null);
+        router.push("/forgot-password");
       } else if (token?.decodedToken?.userId) {
         setUserId(token.decodedToken.userId);
       }
@@ -40,7 +43,11 @@ export default function AuthorizedRoute({
     );
   }
 
-  if (isError || !token?.isValid) {
+  if (
+    isError ||
+    !token?.isValid ||
+    token?.decodedToken?.origin === "forgot-password"
+  ) {
     return null;
   }
 
