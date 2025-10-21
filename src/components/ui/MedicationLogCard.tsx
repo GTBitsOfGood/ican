@@ -9,6 +9,8 @@ import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useDisclosure } from "@heroui/react";
+import { useTutorial } from "@/components/TutorialContext";
+import { PRACTICE_DOSE_ID, TUTORIAL_PORTIONS } from "@/constants/tutorial";
 
 export default function MedicationLogCard({
   id,
@@ -22,6 +24,9 @@ export default function MedicationLogCard({
   lastTaken,
   // setMedication,
 }: LogType) {
+  const tutorial = useTutorial();
+  const isPracticeDose = id === PRACTICE_DOSE_ID;
+
   const [showMissedDoseModal, setShowMissedDoseModal] =
     useState<boolean>(false);
   const {
@@ -55,20 +60,32 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = async () => {
-    await MedicationHTTPClient.medicationLog({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    setShowConfirmModal(false);
-    setShowSuccessModal(true);
+    if (isPracticeDose) {
+      setShowConfirmModal(false);
+      tutorial.handlePracticeDoseLog();
+      setShowSuccessModal(true);
+    } else {
+      await MedicationHTTPClient.medicationLog({
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      });
+      setShowConfirmModal(false);
+      setShowSuccessModal(true);
+    }
   };
 
   const handleMedicationCheckIn = async () => {
-    await MedicationHTTPClient.medicationCheckIn({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    openPasswordModal();
+    if (isPracticeDose) {
+      tutorial.handlePracticeDoseCheckIn(() => {
+        openPasswordModal();
+      });
+    } else {
+      await MedicationHTTPClient.medicationCheckIn({
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      });
+      openPasswordModal();
+    }
   };
 
   const toggleMissedDoseModal = () => {
@@ -130,7 +147,18 @@ export default function MedicationLogCard({
           handleTakenAction={handleTakeMedicationAction}
         />
       )}
-      {showSuccessModal && <SuccessMedicationModal />}
+      {showSuccessModal && (
+        <SuccessMedicationModal
+          onModalClose={
+            isPracticeDose
+              ? () => {
+                  tutorial.completePracticeDoseLog();
+                  tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+                }
+              : undefined
+          }
+        />
+      )}
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">
           <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />

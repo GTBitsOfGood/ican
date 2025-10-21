@@ -84,6 +84,16 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/user/[userId]/tutorial-status": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+      PUT: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/pets": {
     allowedMethods: {
       POST: {

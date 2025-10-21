@@ -25,4 +25,15 @@ export default class UserService {
   ): Promise<void> {
     await UserDAO.updateOnboardingStatus(userId, isOnboarded);
   }
+
+  static async getTutorialStatus(userId: string): Promise<boolean> {
+    return await UserDAO.getTutorialStatus(userId);
+  }
+
+  static async updateTutorialStatus(
+    userId: string,
+    tutorial_completed: boolean,
+  ): Promise<void> {
+    await UserDAO.updateTutorialStatus(userId, tutorial_completed);
+  }
 }

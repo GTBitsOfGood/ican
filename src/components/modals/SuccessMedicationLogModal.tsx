@@ -9,12 +9,25 @@ import { useEffect } from "react";
 import ModalCloseButton from "./ModalCloseButton";
 import Image from "next/image";
 
-export default function SuccessMedicationModal() {
+interface SuccessMedicationModalProps {
+  onModalClose?: () => void;
+}
+
+export default function SuccessMedicationModal({
+  onModalClose,
+}: SuccessMedicationModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     onOpen();
   }, [onOpen]);
+
+  const handleClose = () => {
+    onClose();
+    if (onModalClose) {
+      onModalClose();
+    }
+  };
 
   return (
     <Modal
@@ -28,11 +41,11 @@ export default function SuccessMedicationModal() {
       }}
       className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[50%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
       isDismissable={false}
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader>Medication Logged Successfully</ModalHeader>

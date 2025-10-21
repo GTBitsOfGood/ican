@@ -57,30 +57,57 @@ export default class UserDAO {
     }
   }
 
+  static async updateUserField<K extends keyof User>(
+    id: string | Types.ObjectId,
+    field: K,
+    value: User[K],
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await UserModel.updateOne({ _id: _id }, { [field]: value });
+    if (result.modifiedCount === 0) {
+      throw new Error(`Failed to update ${String(field)}`);
+    }
+  }
+
   static async updateOnboardingStatus(
     id: string | Types.ObjectId,
     isOnboarded: boolean,
   ): Promise<void> {
+    await this.updateUserField(id, "isOnboarded", isOnboarded);
+  }
+
+  static async updateTutorialStatus(
+    id: string | Types.ObjectId,
+    tutorial_completed: boolean,
+  ): Promise<void> {
+    await this.updateUserField(id, "tutorial_completed", tutorial_completed);
+  }
+
+  static async getUserField<K extends keyof User>(
+    id: string | Types.ObjectId,
+    field: K,
+  ): Promise<User[K]> {
     const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
-    const result = await UserModel.updateOne(
-      { _id: _id },
-      { isOnboarded: isOnboarded },
-    );
-    if (result.modifiedCount === 0) {
-      throw new Error("Failed to update onboarding status");
+    const user = await UserModel.findById(_id).select(field);
+    if (!user) {
+      throw new Error(ERRORS.USER.NOT_FOUND);
     }
+    return user[field];
   }
 
   static async getOnboardingStatus(
     id: string | Types.ObjectId,
   ): Promise<boolean> {
-    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
-    await dbConnect();
-    const user = await UserModel.findById(_id).select("isOnboarded");
-    if (!user) {
-      throw new Error(ERRORS.USER.NOT_FOUND);
-    }
-    return user.isOnboarded ?? false;
+    const result = await this.getUserField(id, "isOnboarded");
+    return result ?? false;
+  }
+
+  static async getTutorialStatus(
+    id: string | Types.ObjectId,
+  ): Promise<boolean> {
+    const result = await this.getUserField(id, "tutorial_completed");
+    return result ?? false;
   }
 }

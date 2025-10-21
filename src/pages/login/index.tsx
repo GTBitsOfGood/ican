@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
+import { TUTORIAL_STORAGE_KEYS } from "@/constants/tutorial";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -43,6 +44,7 @@ export default function Home() {
     setLoggingIn(true);
     try {
       await AuthHTTPClient.login(email.trim(), password.trim());
+      localStorage.removeItem(TUTORIAL_STORAGE_KEYS.CURRENT_PORTION);
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
