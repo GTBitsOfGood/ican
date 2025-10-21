@@ -79,7 +79,7 @@ export default function SettingsModal() {
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+        className="w-[80%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
         onClose={() => {
           onClose();
@@ -93,8 +93,8 @@ export default function SettingsModal() {
           <ModalHeader>Settings</ModalHeader>
           <ModalBody>
             <div className="flex flex-col items-center w-[95%] text-[#1E2353] gap-10">
-              <div className="flex w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6">
-                <div className="flex flex-col w-1/2 gap-7">
+              <div className="flex flex-col items-center desktop:flex-row w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6 overflow-y-auto max-h-[50vh]">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <h5 className="text-3xl">Parental Control</h5>
                     <ModalSwitch
@@ -129,7 +129,7 @@ export default function SettingsModal() {
                     />
                   </div>
                 </div>
-                <div className="flex flex-col w-1/2 gap-7">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
                       {settings.parentalControl && (
