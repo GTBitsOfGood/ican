@@ -186,6 +186,13 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/settings/parental-mode/[userId]": {
+    allowedMethods: {
+      DELETE: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/pet/[petId]/equip-item": {
     allowedMethods: {
       PATCH: {
