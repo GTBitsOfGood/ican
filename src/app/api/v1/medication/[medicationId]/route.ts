@@ -1,7 +1,9 @@
 import { Medication } from "@/db/models/medication";
 import { cacheControlMiddleware } from "@/middleware/cache-control";
 import MedicationService from "@/services/medication";
+import JWTService from "@/services/jwt";
 import { verifyMedication } from "@/utils/auth";
+import { verifyParentalMode } from "@/utils/parentalControl";
 import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
@@ -37,12 +39,11 @@ export async function PATCH(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    const tokenUser = await validateRoutes(
-      req,
-      req.method,
-      route,
-      (await cookies()).get("auth_token")?.value,
-    );
+    const authToken = (await cookies()).get("auth_token")?.value;
+    const tokenUser = await validateRoutes(req, req.method, route, authToken);
+    const tokenPayload = JWTService.verifyToken(authToken!);
+    verifyParentalMode(tokenPayload);
+
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
 
@@ -60,12 +61,12 @@ export async function DELETE(
   { params }: { params: Promise<{ medicationId: string }> },
 ) {
   try {
-    const tokenUser = await validateRoutes(
-      req,
-      req.method,
-      route,
-      (await cookies()).get("auth_token")?.value,
-    );
+    const authToken = (await cookies()).get("auth_token")?.value;
+    const tokenUser = await validateRoutes(req, req.method, route, authToken);
+
+    const tokenPayload = JWTService.verifyToken(authToken!);
+    verifyParentalMode(tokenPayload);
+
     const medicationId = (await params).medicationId;
     await verifyMedication(tokenUser, medicationId);
     await MedicationService.deleteMedication(medicationId);
