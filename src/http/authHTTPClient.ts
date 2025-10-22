@@ -1,4 +1,5 @@
 import fetchHTTPClient from "./fetchHTTPClient";
+import { JWTPayload } from "@/types/jwt";
 
 export interface LoginRequestBody {
   email: string;
@@ -58,7 +59,7 @@ export interface ForgotPasswordResponseBody {
 
 export interface ValidateTokenResponseBody {
   isValid: boolean;
-  decodedToken: { userId: string };
+  decodedToken: JWTPayload;
 }
 
 export default class AuthHTTPClient {

@@ -5,6 +5,7 @@ import { UserProvider } from "@/components/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { FoodProvider } from "@/components/FoodContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
 const clientId =
@@ -25,6 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </FoodProvider>
           </UserProvider>
         </GoogleOAuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </main>
   );

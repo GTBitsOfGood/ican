@@ -7,8 +7,8 @@ import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useDisclosure } from "@heroui/react";
+import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 
 export default function MedicationLogCard({
   id,
@@ -32,6 +32,9 @@ export default function MedicationLogCard({
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
+  const medicationCheckInMutation = useMedicationCheckIn();
+  const medicationLogMutation = useMedicationLog();
+
   const lastTakenTime = () => {
     if (!lastTaken) {
       return "N/A";
@@ -54,21 +57,33 @@ export default function MedicationLogCard({
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
-  const handleTakeMedicationAction = async () => {
-    await MedicationHTTPClient.medicationLog({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    setShowConfirmModal(false);
-    setShowSuccessModal(true);
+  const handleTakeMedicationAction = () => {
+    medicationLogMutation.mutate(
+      {
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      },
+      {
+        onSuccess: () => {
+          setShowConfirmModal(false);
+          setShowSuccessModal(true);
+        },
+      },
+    );
   };
 
-  const handleMedicationCheckIn = async () => {
-    await MedicationHTTPClient.medicationCheckIn({
-      medicationId: id,
-      localTime: new Date().toLocaleString("en-us"),
-    });
-    openPasswordModal();
+  const handleMedicationCheckIn = () => {
+    medicationCheckInMutation.mutate(
+      {
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      },
+      {
+        onSuccess: () => {
+          openPasswordModal();
+        },
+      },
+    );
   };
 
   const toggleMissedDoseModal = () => {

@@ -22,6 +22,7 @@ import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
 import { Provider } from "@/types/user";
+import SettingsService from "./settings";
 
 export default class ForgotPasswordService {
   static async sendPasswordCode(
@@ -117,8 +118,15 @@ export default class ForgotPasswordService {
       forgotPasswordCode._id,
     );
 
-    // generate auth_token after verifying identity
-    return JWTService.generateToken({ userId }, 900000);
+    const settings = await SettingsService.getSettings(userId);
+    return JWTService.generateToken(
+      {
+        userId,
+        parentalControls: settings.parentalControl,
+        origin: "forgot-password",
+      },
+      "90d",
+    );
   }
 
   static async changePassword(

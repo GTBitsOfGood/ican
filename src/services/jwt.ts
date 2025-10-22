@@ -6,26 +6,27 @@ import {
 } from "@/utils/serviceUtils/jwtUtil";
 import ERRORS from "@/utils/errorMessages";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import { JWTPayload } from "@/types/jwt";
 
 if (!process.env.JWT_SECRET) {
   throw new Error('Invalid/Missing environment variable: "JWT_SECRET"');
 }
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET as jwt.Secret;
 
 export default class JWTService {
   static generateToken(
-    payload: Record<string, unknown>,
-    expiresIn: number,
+    payload: JWTPayload,
+    expiresIn: jwt.SignOptions["expiresIn"],
   ): string {
     validateGenerateToken({ payload, expiresIn });
     return jwt.sign(payload, JWT_SECRET, { expiresIn });
   }
 
-  static verifyToken(token: string): { userId: string } {
+  static verifyToken(token: string) {
     try {
       validateVerifyToken({ token });
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+      const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
       return decoded;
     } catch (error) {
       if (error instanceof JsonWebTokenError) {

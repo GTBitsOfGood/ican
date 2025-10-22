@@ -1,11 +1,13 @@
 import { cacheControlMiddleware } from "@/middleware/cache-control";
 import SettingsService from "@/services/settings";
 import { verifyUser } from "@/utils/auth";
+import { generateAPIAuthCookie } from "@/utils/cookie";
 import { handleError } from "@/utils/errorHandler";
 import ERRORS from "@/utils/errorMessages";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import JWTService from "@/services/jwt";
 
 const route = "/api/v1/settings/[userId]";
 export async function GET(
@@ -48,14 +50,32 @@ export async function PATCH(
     const { helpfulTips, largeFontSize, notifications, parentalControl } =
       await req.json();
 
-    await SettingsService.updateSettings(userId, {
+    const { tokenReissue } = await SettingsService.updateSettings(userId, {
       helpfulTips,
       largeFontSize,
       notifications,
       parentalControl,
     });
 
-    return new NextResponse(null, { status: 204 });
+    const response = new NextResponse(null, { status: 204 });
+
+    if (tokenReissue) {
+      const settings = await SettingsService.getSettings(userId);
+
+      const newToken = JWTService.generateToken(
+        {
+          userId,
+          parentalControls: settings.parentalControl,
+          parentalModeExpiresAt: 0,
+          origin: "login",
+        },
+        "90d",
+      );
+
+      await generateAPIAuthCookie(response, newToken);
+    }
+
+    return response;
   } catch (err) {
     return handleError(err);
   }

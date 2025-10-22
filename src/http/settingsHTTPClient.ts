@@ -55,4 +55,11 @@ export default class SettingsHTTPClient {
       credentials: "include",
     });
   }
+
+  static async exitParentalMode(userId: string) {
+    return fetchHTTPClient<void>(`/settings/parental-mode/${userId}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+  }
 }

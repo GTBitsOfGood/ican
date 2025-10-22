@@ -1,11 +1,11 @@
 import { MedicationInfo } from "@/types/medication";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useUser } from "@/components/UserContext";
 import { UnauthorizedError, ValidationError } from "@/types/exceptions";
 import MedicationBaseModal from "./baseModal";
 import { Medication } from "@/db/models/medication";
 import { WithId, WithOptionalId } from "@/types/models";
 import { useRouter } from "next/navigation";
+import { useUpdateMedication } from "@/components/hooks/useMedication";
 
 interface EditMedicationModalProps {
   initialInfo?: WithId<Medication>;
@@ -18,6 +18,7 @@ export default function EditMedicationModal({
 }: EditMedicationModalProps) {
   const router = useRouter();
   const { userId } = useUser();
+  const updateMedicationMutation = useUpdateMedication();
   const filteredMedicationIds = medicationIds
     ? new Set(
         [...medicationIds].filter(
@@ -39,7 +40,7 @@ export default function EditMedicationModal({
     }
     const { _id, ...info } = medicationInfo;
     if (_id) {
-      await MedicationHTTPClient.updateMedication({
+      await updateMedicationMutation.mutateAsync({
         medicationId: _id,
         medicationInfo: info,
       });
