@@ -46,15 +46,12 @@ export async function PATCH(
     );
     const userId = (await params).userId;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
-
-    const { helpfulTips, largeFontSize, notifications, parentalControl } =
-      await req.json();
+    const { helpfulTips, largeFontSize, notifications } = await req.json();
 
     const { tokenReissue } = await SettingsService.updateSettings(userId, {
       helpfulTips,
       largeFontSize,
       notifications,
-      parentalControl,
     });
 
     const response = new NextResponse(null, { status: 204 });

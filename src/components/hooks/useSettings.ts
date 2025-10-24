@@ -31,12 +31,10 @@ export const useUpdateSettings = () => {
 
   return useMutation({
     mutationFn: ({
-      parentalControl,
       notifications,
       helpfulTips,
       largeFontSize,
     }: {
-      parentalControl?: boolean;
       notifications?: boolean;
       helpfulTips?: boolean;
       largeFontSize?: boolean;
@@ -45,20 +43,13 @@ export const useUpdateSettings = () => {
 
       return SettingsHTTPClient.updateSettings(
         userId,
-        parentalControl,
         notifications,
         helpfulTips,
         largeFontSize,
       );
     },
 
-    // Optimistic
-    onMutate: async ({
-      parentalControl,
-      notifications,
-      helpfulTips,
-      largeFontSize,
-    }) => {
+    onMutate: async ({ notifications, helpfulTips, largeFontSize }) => {
       if (!userId) return;
 
       await queryClient.cancelQueries({
@@ -69,14 +60,12 @@ export const useUpdateSettings = () => {
         SETTINGS_QUERY_KEYS.settings(userId),
       );
 
-      // Optimistic
       queryClient.setQueryData<SettingQueryData>(
         SETTINGS_QUERY_KEYS.settings(userId),
         (old) =>
           old
             ? {
                 ...old,
-                ...(parentalControl !== undefined && { parentalControl }),
                 ...(notifications !== undefined && { notifications }),
                 ...(helpfulTips !== undefined && { helpfulTips }),
                 ...(largeFontSize !== undefined && { largeFontSize }),
@@ -111,7 +100,7 @@ export const useUpdatePin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (pin: string) => {
+    mutationFn: (pin: string | null) => {
       if (!userId) throw new Error("User ID required");
       return SettingsHTTPClient.updatePin(userId, pin);
     },

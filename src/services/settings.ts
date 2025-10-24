@@ -93,7 +93,7 @@ export default class SettingsService {
     }
   }
 
-  static async updatePin(userId: string, pin: string) {
+  static async updatePin(userId: string, pin: string | null) {
     validateUpdatePin({ userId, pin });
     const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
@@ -108,6 +108,10 @@ export default class SettingsService {
       const encryptedPin = await HashingService.hash(pin);
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
+      });
+    } else {
+      await SettingsDAO.updateSettingsByUserId(userId, {
+        pin: null,
       });
     }
   }
