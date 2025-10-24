@@ -103,12 +103,11 @@ export default class SettingsService {
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
       });
-      return { tokenReissue: true };
     } else {
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: null,
       });
-      return { tokenReissue: false };
     }
+    return { tokenReissue: true };
   }
 }
