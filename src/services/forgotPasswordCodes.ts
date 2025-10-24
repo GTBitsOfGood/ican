@@ -122,7 +122,7 @@ export default class ForgotPasswordService {
     return JWTService.generateToken(
       {
         userId,
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         origin: "forgot-password",
       },
       "90d",

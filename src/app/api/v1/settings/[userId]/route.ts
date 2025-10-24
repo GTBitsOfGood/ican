@@ -65,7 +65,7 @@ export async function PATCH(
       const newToken = JWTService.generateToken(
         {
           userId,
-          parentalControls: settings.parentalControl,
+          parentalControls: !!settings.pin,
           parentalModeExpiresAt: 0,
           origin: "login",
         },

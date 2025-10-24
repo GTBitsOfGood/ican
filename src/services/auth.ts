@@ -77,7 +77,7 @@ export default class AuthService {
     const token = JWTService.generateToken(
       {
         userId: _id.toString(),
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         origin: "login",
       },
       "90d",
@@ -124,7 +124,7 @@ export default class AuthService {
     const token = JWTService.generateToken(
       {
         userId: existingUser._id.toString(),
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         origin: "login",
       },
       "90d",
@@ -168,7 +168,7 @@ export default class AuthService {
     const token = JWTService.generateToken(
       {
         userId,
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         origin: "login",
       },
       "90d",
@@ -196,7 +196,7 @@ export default class AuthService {
     const token = JWTService.generateToken(
       {
         userId,
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         parentalModeExpiresAt: fiveMinutes,
         origin: "login",
       },
@@ -212,7 +212,7 @@ export default class AuthService {
     const token = JWTService.generateToken(
       {
         userId,
-        parentalControls: settings.parentalControl,
+        parentalControls: !!settings.pin,
         parentalModeExpiresAt: 0,
         origin: "login",
       },

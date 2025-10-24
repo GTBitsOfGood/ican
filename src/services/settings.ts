@@ -33,7 +33,6 @@ export default class SettingsService {
       helpfulTips: true,
       largeFontSize: true,
       notifications: true,
-      parentalControl: true,
       pin: null,
     };
     const settings = await SettingsDAO.createNewSettings(newSettings);
@@ -74,8 +73,8 @@ export default class SettingsService {
 
     return {
       tokenReissue:
-        validatedSettings.parentalControl !== undefined &&
-        validatedSettings.parentalControl !== settings.parentalControl,
+        validatedSettings.pin !== undefined &&
+        validatedSettings.pin !== settings.pin,
     };
   }
 
@@ -95,7 +94,7 @@ export default class SettingsService {
   }
 
   static async updatePin(userId: string, pin: string) {
-    await validateUpdatePin({ userId, pin });
+    validateUpdatePin({ userId, pin });
     const settings = await SettingsDAO.getSettingsByUserId(userId);
     if (!settings) {
       throw new NotFoundError(ERRORS.SETTINGS.NOT_FOUND);
