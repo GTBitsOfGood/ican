@@ -30,9 +30,26 @@ export async function PATCH(
     }
 
     const { pin } = await req.json();
-    await SettingsService.updatePin(userId, pin);
+    const { tokenReissue } = await SettingsService.updatePin(userId, pin);
+    const response = new NextResponse(null, { status: 204 });
 
-    return new NextResponse(null, { status: 204 });
+    if (tokenReissue) {
+      const settings = await SettingsService.getSettings(userId);
+
+      const newToken = JWTService.generateToken(
+        {
+          userId,
+          parentalControls: !!settings.pin,
+          parentalModeExpiresAt: 0,
+          origin: "login",
+        },
+        "90d",
+      );
+
+      await generateAPIAuthCookie(response, newToken);
+    }
+
+    return response;
   } catch (err) {
     return handleError(err);
   }

@@ -16,7 +16,6 @@ export const updateSettingsSchema = z.object({
 
 export const updatePinSchema = z.object({
   userId: objectIdSchema("UserId"),
-
   pin: z
     .string()
     .length(4, "Pin can only be of length 4")

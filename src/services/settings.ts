@@ -70,12 +70,6 @@ export default class SettingsService {
     await SettingsDAO.updateSettingsByUserId(userIdString, {
       ...validatedSettings,
     });
-
-    return {
-      tokenReissue:
-        validatedSettings.pin !== undefined &&
-        validatedSettings.pin !== settings.pin,
-    };
   }
 
   /** throws on invalid pin */
@@ -109,10 +103,12 @@ export default class SettingsService {
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,
       });
+      return { tokenReissue: true };
     } else {
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: null,
       });
+      return { tokenReissue: false };
     }
   }
 }
