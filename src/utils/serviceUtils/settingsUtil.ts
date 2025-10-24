@@ -9,23 +9,18 @@ export const getSettingsSchema = z.object({ userId: objectIdSchema("UserId") });
 
 export const updateSettingsSchema = z.object({
   userId: objectIdSchema("UserId"),
-
-  parentalControl: z.boolean().optional(),
-
   notifications: z.boolean().optional(),
-
   helpfulTips: z.boolean().optional(),
-
   largeFontSize: z.boolean().optional(),
 });
 
 export const updatePinSchema = z.object({
   userId: objectIdSchema("UserId"),
-
   pin: z
     .string()
     .length(4, "Pin can only be of length 4")
-    .regex(/^\d+$/, "Pin must be only numerical"),
+    .regex(/^\d+$/, "Pin must be only numerical")
+    .nullable(),
 });
 
 export type CreateSettingsInput = z.infer<typeof createSettingsSchema>;
