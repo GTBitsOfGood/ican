@@ -36,11 +36,13 @@ export async function PATCH(
     if (tokenReissue) {
       const settings = await SettingsService.getSettings(userId);
 
+      const fiveMinutes = Date.now() + 5 * 60 * 1000;
+
       const newToken = JWTService.generateToken(
         {
           userId,
           parentalControls: !!settings.pin,
-          parentalModeExpiresAt: 0,
+          parentalModeExpiresAt: fiveMinutes,
           origin: "login",
         },
         "90d",
