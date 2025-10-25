@@ -46,17 +46,21 @@ export default function MedicationLogCard({
   });
 
   // Create a Date object for today at the last taken time
-  const lastTakenDate = new Date(lastTaken);
-  const localizedLastTaken = lastTakenDate.toLocaleTimeString("en-us", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const localizedLastTakenDate = lastTakenDate.toLocaleString("en-us", {
-    hour: "numeric",
-    minute: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const lastTakenDate = lastTaken ? new Date(lastTaken) : null;
+  const localizedLastTaken = !lastTakenDate
+    ? "N/A"
+    : lastTakenDate.toLocaleTimeString("en-us", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+  const localizedLastTakenDate = !lastTakenDate
+    ? "N/A"
+    : lastTakenDate.toLocaleString("en-us", {
+        hour: "numeric",
+        minute: "numeric",
+        month: "short",
+        day: "numeric",
+      });
 
   // must update medication once taken
   // this deals with that logic
