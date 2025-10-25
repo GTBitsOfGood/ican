@@ -51,7 +51,7 @@ export default function MedicationLogCard({
     hour: "2-digit",
     minute: "2-digit",
   });
-  const localizedLastTakenDate = lastTakenDate.toLocaleString("en-US", {
+  const localizedLastTakenDate = lastTakenDate.toLocaleString("en-us", {
     hour: "numeric",
     minute: "numeric",
     month: "short",
