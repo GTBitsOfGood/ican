@@ -45,7 +45,7 @@ export default function SuccessMedicationModal() {
               height={200}
             />
           </div>
-          <div className="flex justify-center text-center text-3xl font-medium font-pixelify">
+          <div className="flex justify-center text-center text-3xl font-medium font-quantico">
             Congratulations! You have earned food to feed your pet!
           </div>
         </ModalBody>

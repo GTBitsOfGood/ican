@@ -28,6 +28,18 @@ const Item: React.FC<ItemProps> = ({
         setSelectedItem(item);
       }}
     >
+      <div className="mt-[10px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
+        {item.displayName}
+      </div>
+      <Image
+        src={item.image}
+        alt={item.name}
+        draggable="false"
+        className="largeDesktop:w-[121px] largeDesktop:h-[121px] desktop:w-[105px] desktop:h-[105px] tablet:w-[90px] tablet:h-[90px] object-contain"
+        height={0}
+        width={0}
+        sizes="100vw"
+      />
       {type === "Bag" && isWearing ? (
         <div className="absolute -right-[65px] top-8 rotate-45 flex justify-center bg-icanGreen-100 px-14 mx-auto mb-[30px] text-center text-black largeDesktop:text-3xl desktop:text-[30px] tablet:text-[24px] font-bold font-quantico">
           Wearing
@@ -47,18 +59,6 @@ const Item: React.FC<ItemProps> = ({
           </div>
         )
       )}
-      <Image
-        src={item.image}
-        alt={item.name}
-        draggable="false"
-        className="largeDesktop:w-[121px] largeDesktop:h-[121px] desktop:w-[105px] desktop:h-[105px] tablet:w-[90px] tablet:h-[90px] object-contain"
-        height={0}
-        width={0}
-        sizes="100vw"
-      />
-      <div className="mt-[10px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
-        {item.displayName}
-      </div>
     </div>
   );
 };
