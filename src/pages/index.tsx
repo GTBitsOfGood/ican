@@ -41,7 +41,7 @@ export default function Home({
   const [distance, setDistance] = useState<number | null>(null);
   const feeding = feedPetMutation.isPending;
   const [bubbleText, setBubbleText] = useState<string>(
-    "Pick some food to feed me!",
+    "I’m hungry, can you feed me some food, please?",
   );
 
   const getDistanceMessage = (distance: number | null) => {
@@ -57,7 +57,7 @@ export default function Home({
     } else if (selectedFood) {
       setBubbleText("Drag the food into my mouth to feed me!");
     } else {
-      setBubbleText("Pick some food to feed me!");
+      setBubbleText("I’m hungry, can you feed me some food, please?");
     }
   }, [distance, selectedFood]);
 
@@ -101,7 +101,7 @@ export default function Home({
       )}
       {showSuccessModalVisible && (
         <LevelUpModal
-          setVisible={setShowLevelUpModalVisible}
+          setVisible={setShowSuccessModalVisible}
           level={pet?.xpLevel}
           xp={pet?.xpGained}
           levelChanged={false}

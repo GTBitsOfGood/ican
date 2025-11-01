@@ -13,11 +13,7 @@ const Bubble: React.FC<BubbleProps> = ({
         {text}
       </div>
       <div className="h-10 w-10 ml-12 relative">
-        <Image
-          src="/misc/chatBubbleCorner.svg"
-          alt="Chat Bubble Decoration"
-          fill
-        />
+        <Image src="/misc/BubbleCorner.svg" alt="Chat Bubble Decoration" fill />
       </div>
     </div>
   );
