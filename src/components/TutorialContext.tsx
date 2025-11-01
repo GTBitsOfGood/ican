@@ -257,7 +257,27 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
           step: savedProgress.step,
         },
       });
-      ensurePrerequisites(savedProgress.portion);
+      if (savedProgress.pet) {
+        dispatch({ type: "SET_PET", payload: savedProgress.pet });
+      }
+
+      if (savedProgress.bag) {
+        dispatch({ type: "SET_BAG", payload: savedProgress.bag });
+      }
+
+      dispatch({
+        type: "SET_PRACTICE_DOSE",
+        payload: savedProgress.practiceDose,
+      });
+
+      dispatch({
+        type: "SET_PRACTICE_DOSE_TAKEN",
+        payload: savedProgress.isPracticeDoseTaken,
+      });
+
+      if (!savedProgress.pet || !savedProgress.bag) {
+        ensurePrerequisites(savedProgress.portion);
+      }
     } else {
       ensurePrerequisites(TUTORIAL_PORTIONS.FOOD_TUTORIAL);
     }
@@ -270,8 +290,24 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     if (!pet || !bag) return;
     if (!hasHydratedProgress.current) return;
 
-    writeTutorialProgress(userId ?? null, portion, step);
-  }, [bag, isTutorial, pet, portion, step, userId]);
+    writeTutorialProgress(userId ?? null, {
+      portion,
+      step,
+      pet,
+      bag,
+      practiceDose,
+      isPracticeDoseTaken,
+    });
+  }, [
+    bag,
+    isTutorial,
+    isPracticeDoseTaken,
+    pet,
+    portion,
+    practiceDose,
+    step,
+    userId,
+  ]);
 
   useEffect(() => {
     if (!isTutorial) return;

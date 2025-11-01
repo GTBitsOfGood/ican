@@ -1,12 +1,51 @@
+import { Bag } from "@/types/inventory";
+import { LogType } from "@/types/log";
+import { WithId } from "@/types/models";
+import { Pet } from "@/types/pet";
+
 export const TUTORIAL_STORAGE_KEYS = {
   CURRENT_PROGRESS: "tutorialCurrentPortion",
 } as const;
 
-interface TutorialProgressPayload {
+export const PRACTICE_DOSE_ID = "practice-dose" as const;
+
+export const getPracticeDose = () => {
+  const now = new Date();
+  const scheduledTime = new Date(now.getTime() + 10 * 60 * 1000);
+
+  return {
+    id: PRACTICE_DOSE_ID,
+    name: "Practice Dose",
+    dosage: "1 pill",
+    notes: "",
+    scheduledDoseTime: scheduledTime.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }),
+    canCheckIn: true,
+    status: "pending" as const,
+    lastTaken: "",
+    repeatUnit: "days" as const,
+    repeatInterval: 1,
+  };
+};
+
+export interface TutorialProgressPayload {
   userId: string | null;
   portion: number;
   step: number;
+  pet: WithId<Pet> | null;
+  bag: Bag | null;
+  practiceDose: LogType;
+  isPracticeDoseTaken: boolean;
 }
+
+type StoredTutorialProgressPayload = Partial<TutorialProgressPayload> & {
+  userId: string | null;
+  portion: number;
+  step: number;
+};
 
 const isBrowser = () => typeof window !== "undefined";
 
@@ -19,9 +58,17 @@ export const readTutorialProgress = (
   if (!raw) return null;
 
   try {
-    const parsed = JSON.parse(raw) as TutorialProgressPayload;
+    const parsed = JSON.parse(raw) as StoredTutorialProgressPayload;
     if (parsed?.userId === userId) {
-      return parsed;
+      return {
+        userId: parsed.userId,
+        portion: parsed.portion,
+        step: parsed.step,
+        pet: parsed.pet ?? null,
+        bag: parsed.bag ?? null,
+        practiceDose: parsed.practiceDose ?? getPracticeDose(),
+        isPracticeDoseTaken: parsed.isPracticeDoseTaken ?? false,
+      };
     }
   } catch (error) {
     console.warn("Unable to parse tutorial progress", error);
@@ -32,20 +79,23 @@ export const readTutorialProgress = (
 
 export const writeTutorialProgress = (
   userId: string | null,
-  portion: number,
-  step: number,
+  payload: Omit<TutorialProgressPayload, "userId">,
 ): void => {
   if (!isBrowser()) return;
 
-  const payload: TutorialProgressPayload = {
+  const toPersist: TutorialProgressPayload = {
     userId,
-    portion,
-    step,
+    portion: payload.portion,
+    step: payload.step,
+    pet: payload.pet,
+    bag: payload.bag,
+    practiceDose: payload.practiceDose,
+    isPracticeDoseTaken: payload.isPracticeDoseTaken,
   };
 
   localStorage.setItem(
     TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS,
-    JSON.stringify(payload),
+    JSON.stringify(toPersist),
   );
 };
 
@@ -61,7 +111,7 @@ export const clearTutorialProgress = (userId?: string | null): void => {
   }
 
   try {
-    const parsed = JSON.parse(raw) as TutorialProgressPayload;
+    const parsed = JSON.parse(raw) as StoredTutorialProgressPayload;
     if (parsed?.userId === userId) {
       localStorage.removeItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
     }
@@ -77,8 +127,6 @@ export const TUTORIAL_PORTIONS = {
   FEED_TUTORIAL: 2,
   END_TUTORIAL: 3,
 } as const;
-
-export const PRACTICE_DOSE_ID = "practice-dose" as const;
 
 export const TUTORIAL_DIALOGUES: Record<number, readonly string[]> = {
   [TUTORIAL_PORTIONS.FOOD_TUTORIAL]: [
@@ -101,26 +149,4 @@ export const TUTORIAL_DIALOGUES: Record<number, readonly string[]> = {
     "You can access this tutorial again in HELP.",
     "See you soon, {userName}!",
   ],
-};
-
-export const getPracticeDose = () => {
-  const now = new Date();
-  const scheduledTime = new Date(now.getTime() + 10 * 60 * 1000);
-
-  return {
-    id: PRACTICE_DOSE_ID,
-    name: "Practice Dose",
-    dosage: "1 pill",
-    notes: "",
-    scheduledDoseTime: scheduledTime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    canCheckIn: true,
-    status: "pending" as const,
-    lastTaken: "",
-    repeatUnit: "days" as const,
-    repeatInterval: 1,
-  };
 };
