@@ -1,4 +1,3 @@
-import { humanizeLastTakenTime } from "@/utils/date";
 import Image from "next/image";
 import { useState } from "react";
 import MissedDoseModal from "../modals/MissedDoseModal";
@@ -35,25 +34,34 @@ export default function MedicationLogCard({
   const medicationCheckInMutation = useMedicationCheckIn();
   const medicationLogMutation = useMedicationLog();
 
-  const lastTakenTime = () => {
-    if (!lastTaken) {
-      return "N/A";
-    }
+  const now = new Date();
 
-    const date = new Date(lastTaken);
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
+  // Create a Date object for today at the scheduled time
+  const scheduled = new Date();
+  const { hours, minutes } = standardizeTime(scheduledDoseTime);
+  scheduled.setHours(hours, minutes, 0, 0);
+  const localizedScheduledTime = scheduled.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-    let time = `${hours}:${minutes}`;
+  // Create a Date object for today at the last taken time
+  const lastTakenDate = lastTaken ? new Date(lastTaken) : null;
+  const localizedLastTaken = !lastTakenDate
+    ? "N/A"
+    : lastTakenDate.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+  const localizedLastTakenDate = !lastTakenDate
+    ? "N/A"
+    : lastTakenDate.toLocaleString(undefined, {
+        hour: "numeric",
+        minute: "numeric",
+        month: "short",
+        day: "numeric",
+      });
 
-    if (Number(hours) >= 0 && Number(hours) < 12) {
-      time += " A.M.";
-    } else {
-      time += " P.M.";
-    }
-
-    return time;
-  };
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
@@ -61,7 +69,7 @@ export default function MedicationLogCard({
     medicationLogMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toLocaleString(undefined),
       },
       {
         onSuccess: () => {
@@ -76,7 +84,7 @@ export default function MedicationLogCard({
     medicationCheckInMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toLocaleString(undefined),
       },
       {
         onSuccess: () => {
@@ -95,15 +103,7 @@ export default function MedicationLogCard({
   };
 
   const generateTimeLeftFormat = (): string => {
-    const { hours, minutes, seconds } = standardizeTime(scheduledDoseTime);
-    const now = new Date();
-
-    // Create a Date object for today at the scheduled time
-    const scheduled = new Date(now);
-    scheduled.setHours(hours, minutes, seconds, 0);
-
     const timeDiffMs = scheduled.getTime() - now.getTime();
-
     const totalSeconds = Math.floor(timeDiffMs / 1000);
     // 15 because timeout is 15 minutes before dose time and 15 miiutes after
     const leftMinutes = Math.floor(totalSeconds / 60) + 15;
@@ -128,7 +128,7 @@ export default function MedicationLogCard({
         <MissedDoseModal
           setMissedDoseVisible={toggleMissedDoseModal}
           name={name}
-          time={scheduledDoseTime}
+          time={localizedScheduledTime}
         />
       )}
       {showPasswordModal && (
@@ -153,7 +153,8 @@ export default function MedicationLogCard({
         </div>
         <div className="flex flex-col gap-y-[16px] font-quantico">
           <h2 className="font-semibold text-black text-3xl">
-            Scheduled: <span className="font-normal">{scheduledDoseTime}</span>
+            Scheduled:{" "}
+            <span className="font-normal">{localizedScheduledTime}</span>
           </h2>
           <h2 className="font-semibold text-black text-3xl">
             Dosage: <span className="font-normal">{dosage}</span>
@@ -163,7 +164,7 @@ export default function MedicationLogCard({
           </h2>
           {status !== "taken" && (
             <h2 className="text-icanBlue-200 text-3xl">
-              Last Taken: {humanizeLastTakenTime(lastTaken)}
+              Last Taken: {localizedLastTakenDate}
             </h2>
           )}
         </div>
@@ -202,7 +203,7 @@ export default function MedicationLogCard({
               Thanks for taking your medication!
             </h3>
             <h1 className="text-4xl font-quantico font-bold text-icanBlue-300 text-center">
-              Taken at {lastTakenTime()}
+              Taken at {localizedLastTaken}
             </h1>
           </>
         )}
