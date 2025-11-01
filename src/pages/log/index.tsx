@@ -6,12 +6,14 @@ import { humanizeDate, humanizeDateComparison } from "@/utils/date";
 import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { useTutorial } from "@/components/TutorialContext";
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
   const tutorial = useTutorial();
   const shouldShowPracticeDose = tutorial.shouldShowPracticeDose();
+  const router = useRouter();
 
   const getDateString = (date: Date, offset: number) => {
     const newDate = new Date(date);
@@ -99,7 +101,7 @@ export default function Log() {
   };
 
   const handleCloseIcon = () => {
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
