@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
     }
 
     if (page == 3) {
-      window.location.href = "change-pin";
+      window.location.href = "login";
       return;
     }
 
