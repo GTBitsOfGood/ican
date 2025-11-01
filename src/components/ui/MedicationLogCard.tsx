@@ -7,10 +7,13 @@ import MedicationTakenModal from "../modals/TakenMedicationModal";
 import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
-import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useDisclosure } from "@heroui/react";
 import { useTutorial } from "@/components/TutorialContext";
 import { PRACTICE_DOSE_ID, TUTORIAL_PORTIONS } from "@/constants/tutorial";
+import {
+  useMedicationCheckIn,
+  useMedicationLog,
+} from "@/components/hooks/useMedication";
 
 export default function MedicationLogCard({
   id,
@@ -37,6 +40,9 @@ export default function MedicationLogCard({
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
+  const medicationCheckInMutation = useMedicationCheckIn();
+  const medicationLogMutation = useMedicationLog();
+
   const lastTakenTime = () => {
     if (!lastTaken) {
       return "N/A";
@@ -59,32 +65,44 @@ export default function MedicationLogCard({
   // must update medication once taken
   // this deals with that logic
   // it should use a backend service to do this though
-  const handleTakeMedicationAction = async () => {
+  const handleTakeMedicationAction = () => {
     if (isPracticeDose) {
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
       setShowSuccessModal(true);
     } else {
-      await MedicationHTTPClient.medicationLog({
-        medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
-      });
-      setShowConfirmModal(false);
-      setShowSuccessModal(true);
+      medicationLogMutation.mutate(
+        {
+          medicationId: id,
+          localTime: new Date().toLocaleString("en-us"),
+        },
+        {
+          onSuccess: () => {
+            setShowConfirmModal(false);
+            setShowSuccessModal(true);
+          },
+        },
+      );
     }
   };
 
-  const handleMedicationCheckIn = async () => {
+  const handleMedicationCheckIn = () => {
     if (isPracticeDose) {
       tutorial.handlePracticeDoseCheckIn(() => {
         openPasswordModal();
       });
     } else {
-      await MedicationHTTPClient.medicationCheckIn({
-        medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
-      });
-      openPasswordModal();
+      medicationCheckInMutation.mutate(
+        {
+          medicationId: id,
+          localTime: new Date().toLocaleString("en-us"),
+        },
+        {
+          onSuccess: () => {
+            openPasswordModal();
+          },
+        },
+      );
     }
   };
 
