@@ -80,11 +80,23 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <BackButton onClick={handleBackClick} />
+          <div className="mobile:block desktop:hidden">
+            <div className="mobile:[&>a]:w-16 mobile:[&>a]:h-16 mobile:[&>a>button]:w-full mobile:[&>a>button]:h-full">
+              <BackButton onClick={handleBackClick} />
+            </div>
+          </div>
+          <div className="mobile:hidden desktop:block">
+            <BackButton onClick={handleBackClick} />
+          </div>
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <h1 className="font-quantico mobile:text-5xl desktop:text-6xl font-bold text-white underline">
+            <div className="flex items-center gap-2 mobile:flex desktop:hidden">
+              <h1 className="font-quantico mobile:text-5xl font-bold text-white underline">
+                Medications
+              </h1>
+            </div>
+            <h1 className="mobile:hidden desktop:block font-quantico desktop:text-6xl font-bold text-white underline">
               Medications
             </h1>
             {medications.length !== 0 && <AddMedicationButton />}
@@ -93,8 +105,7 @@ export default function MedicationsPage({
             {medications.length === 0 ? (
               <Link
                 href="/medications/add"
-                className="mobile:w-full mobile:mx-auto desktop:col-span-1 tablet:col-span-1 largeDesktop:col-span-1 bg-icanBlue-200 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow"
-                style={{ minHeight: "400px" }}
+                className="mobile:w-full mobile:mx-auto desktop:col-span-1 tablet:col-span-1 largeDesktop:col-span-1 bg-icanBlue-200 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow mobile:!min-h-[200px] desktop:!min-h-[400px]"
               >
                 <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white">
                   + ADD NEW
