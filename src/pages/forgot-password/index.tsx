@@ -108,6 +108,11 @@ export default function ForgotPasswordPage() {
       }
     }
 
+    if (page == 3) {
+      window.location.href = "login";
+      return;
+    }
+
     setPage((prev) => prev + 1);
   };
 
