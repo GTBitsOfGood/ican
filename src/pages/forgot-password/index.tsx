@@ -13,7 +13,6 @@ import {
 } from "@/utils/validation";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRef, useState } from "react";
-import { useRouter } from "next/router";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import Link from "next/link";
 
@@ -55,7 +54,6 @@ export default function ForgotPasswordPage() {
   const [otp, setOTP] = useState<string>("");
   const [error, setError] = useState<Record<string, string>>({});
   const [time, setTime] = useState<number>(59);
-  const router = useRouter();
 
   const resetPasswordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
@@ -104,7 +102,6 @@ export default function ForgotPasswordPage() {
           resetPasswordRef.current?.value as string,
           confirmPasswordRef.current?.value as string,
         );
-        router.push("/");
       } catch (error) {
         setError({ password: `Error! ${(error as Error).message}` });
         return;
