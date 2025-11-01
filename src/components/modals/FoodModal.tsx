@@ -11,34 +11,18 @@ import ModalCloseButton from "./ModalCloseButton";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
-// import { usePet } from "../hooks/usePet";
+import { usePet } from "../hooks/usePet";
 
 export default function FoodModal({ foods }: { foods: string[] }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { setSelectedFood } = useFood();
-  // const { data: pet } = usePet();
+  const { data: pet } = usePet();
 
   const [clickedFood, setClickedFood] = useState<string>("");
 
   const baseImageUrl = "/foods";
-
-  // useEffect(() => {
-  //   const fetchFoodInventory = async () => {
-  //     try {
-  //       const response = await fetch("/api/v1/bag/[petId]/foods");
-  //       const data = await response.json();
-
-  //       setFoodInventory(data);
-  //     } catch (error) {
-  //       console.error("Error fetching food inventory:", error);
-  //     }
-  //   };
-
-  //   if (isOpen) {
-  //     fetchFoodInventory();
-  //   }
-  // }, [isOpen, setFoodInventory]);
+  const totalFood = pet?.food ?? 0;
 
   const handleSelectFood = () => {
     setSelectedFood(clickedFood);
@@ -52,6 +36,7 @@ export default function FoodModal({ foods }: { foods: string[] }) {
   return (
     <Modal
       backdrop="opaque"
+      size="lg"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden",
@@ -61,7 +46,7 @@ export default function FoodModal({ foods }: { foods: string[] }) {
         closeButton: "top-[2.75rem]",
         footer: "items-center justify-center",
       }}
-      className="w-[2000px] mobile:h-[70%] tablet:h-[65%] tiny:h-[80%] minimized:h-[75%] short:h-[70%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="mobile:h-[70%] tablet:h-[65%] tiny:h-[80%] minimized:h-[75%] short:h-[70%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -72,27 +57,25 @@ export default function FoodModal({ foods }: { foods: string[] }) {
       <ModalContent>
         <ModalHeader className="flex items-center gap-4">
           <span>Foods</span>
-          {clickedFood && (
-            <div className="flex items-center gap-3 bg-white px-4 py-2 border-4 border-black">
-              <Image
-                src={`${baseImageUrl}/${clickedFood}.svg`}
-                alt={clickedFood}
-                width={40}
-                height={40}
-                className="object-contain"
-              />
-              {/* <span className="text-black text-xl font-bold">
-                Food: {getFoodCount(clickedFood)} Left
-              </span> */}
-            </div>
-          )}
+          <div className="flex items-center gap-3 bg-white px-4 py-2 border-4 border-black">
+            <Image
+              src={`${baseImageUrl}/Pizza.svg`}
+              alt={"food"}
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+            <span className="text-black text-xl font-bold">
+              Food: {totalFood} Left
+            </span>
+          </div>
         </ModalHeader>
         <ModalBody>
           {foods.map((food) => {
             return (
               <div
                 key={food}
-                className={`flex flex-col items-center justify-center gap-6 px-6 py-6 justify-self-center h-full
+                className={`flex flex-col items-center justify-center gap-2 px-6 py-6 justify-self-center h-full
                             ${food === clickedFood ? "cursor-pointer bg-icanGreen-300 border-[5px] border-solid border-black" : "hover:cursor-pointer hover:bg-icanGreen-300 hover:border-[5px] hover:border-solid hover:border-black"}`}
                 onClick={() => setClickedFood(food)}
               >

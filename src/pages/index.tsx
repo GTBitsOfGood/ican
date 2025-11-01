@@ -19,6 +19,7 @@ import LevelUpModal from "@/components/modals/LevelUpModal";
 import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
+// import { useUserProfile } from "@/components/hooks/useAuth";
 
 interface HomeProps {
   activeModal: string;
@@ -43,12 +44,15 @@ export default function Home({
   const [bubbleText, setBubbleText] = useState<string>(
     "I’m hungry, can you feed me some food, please?",
   );
+  // const { data: userProfile } = useUserProfile();
 
   const getDistanceMessage = (distance: number | null) => {
+    // const userName = userProfile?.name?.trim() || "Friend";
+
     if (distance === null || distance > 150) {
       return "Drag the food into my mouth to feed me!";
     }
-    return "Yummy! Thank you for feeding me, Michelle!";
+    return `Yummy! Thank you for feeding me!`;
   };
 
   useEffect(() => {
@@ -131,7 +135,7 @@ export default function Home({
             <NavButton buttonType="store" />
             <NavButton buttonType="bag" />
             <NavButton buttonType="log" />
-            {pet.food >= 0 && <FeedButton />}
+            <FeedButton />
           </Navbar>
 
           {/* Character, speech bubble and food image is made relative to the image */}
