@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { Pet } from "@/types/pet";
 import { WithId } from "@/types/models";
-import { Bag } from "@/types/inventory";
+import { Bag, InventoryItem } from "@/types/inventory";
 import { usePet } from "./hooks/usePet";
 import { usePetBag } from "./hooks/useInventory";
 import {
@@ -159,7 +159,7 @@ const createEmptyBag = (): Bag => ({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const cloneBagStructure = (_bag: Bag): Bag => ({
+const cloneBagStructure = (_bag: Record<string, InventoryItem[]>): Bag => ({
   clothing: [],
   shoes: [],
   hat: [],
