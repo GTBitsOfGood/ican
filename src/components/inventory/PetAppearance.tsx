@@ -16,6 +16,7 @@ interface PetAppearanceProps {
   appearance: Appearance;
   className: string;
   outfitOnly?: boolean;
+  showBackground?: boolean;
   onDragOver?: (e: React.DragEvent<HTMLImageElement>) => void;
   onDrop?: (e: React.DragEvent<HTMLImageElement>) => void;
 }
@@ -26,11 +27,19 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
   appearance,
   className,
   outfitOnly = false,
+  showBackground = true,
   onDragOver,
   onDrop,
 }) => {
+  const equippedBackground =
+    appearance?.background && storeItems.background[appearance.background]
+      ? storeItems.background[appearance.background]
+      : undefined;
+
   return (
-    <div className={`${className} flex items-center justify-center w-full`}>
+    <div
+      className={`relative ${className} flex items-center justify-center w-full`}
+    >
       {!outfitOnly && petType && (
         <Image
           src={characterImages[petType]}
@@ -68,15 +77,14 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
           />
         )
       )}
-      {selectedItem?.type === ItemType.BACKGROUND ? (
-        <BackgroundItem selectedItem={selectedItem} />
-      ) : (
-        appearance?.background && (
-          <BackgroundItem
-            selectedItem={storeItems.background[appearance.background]}
-          />
-        )
-      )}
+      {showBackground &&
+        (selectedItem?.type === ItemType.BACKGROUND ? (
+          <BackgroundItem selectedItem={selectedItem} />
+        ) : (
+          equippedBackground && (
+            <BackgroundItem selectedItem={equippedBackground} />
+          )
+        ))}
       {selectedItem?.type === ItemType.SHOES ? (
         <ShoeItem selectedItem={selectedItem} />
       ) : (
