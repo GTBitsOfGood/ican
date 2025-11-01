@@ -49,7 +49,7 @@ export default function ForgotPinModal() {
     }
 
     try {
-      await AuthHTTPClient.verifyForgotPassword(userId, otp);
+      await AuthHTTPClient.verifyForgotPassword(userId, otp, true);
     } catch (error) {
       setDisplayError((error as Error).message);
       return;
