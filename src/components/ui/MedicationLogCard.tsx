@@ -40,7 +40,7 @@ export default function MedicationLogCard({
   const scheduled = new Date();
   const { hours, minutes } = standardizeTime(scheduledDoseTime);
   scheduled.setHours(hours, minutes, 0, 0);
-  const localizedScheduledTime = scheduled.toLocaleTimeString("en-us", {
+  const localizedScheduledTime = scheduled.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -49,13 +49,13 @@ export default function MedicationLogCard({
   const lastTakenDate = lastTaken ? new Date(lastTaken) : null;
   const localizedLastTaken = !lastTakenDate
     ? "N/A"
-    : lastTakenDate.toLocaleTimeString("en-us", {
+    : lastTakenDate.toLocaleTimeString(undefined, {
         hour: "2-digit",
         minute: "2-digit",
       });
   const localizedLastTakenDate = !lastTakenDate
     ? "N/A"
-    : lastTakenDate.toLocaleString("en-us", {
+    : lastTakenDate.toLocaleString(undefined, {
         hour: "numeric",
         minute: "numeric",
         month: "short",
@@ -69,7 +69,7 @@ export default function MedicationLogCard({
     medicationLogMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toLocaleString(undefined),
       },
       {
         onSuccess: () => {
@@ -84,7 +84,7 @@ export default function MedicationLogCard({
     medicationCheckInMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toLocaleString(undefined),
       },
       {
         onSuccess: () => {
