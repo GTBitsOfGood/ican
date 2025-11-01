@@ -231,6 +231,7 @@ export default function Onboard() {
       case OnboardingStep.ChooseMedication:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChooseMedication}
             onBack={handleBack}
             onComplete={handleChooseMedication}
@@ -240,6 +241,7 @@ export default function Onboard() {
       case OnboardingStep.ChoosePet:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChoosePet}
             onBack={handleBack}
             onComplete={handleChoosePet}
