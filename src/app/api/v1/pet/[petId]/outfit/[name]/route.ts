@@ -18,11 +18,10 @@ export async function POST(
       route,
       (await cookies()).get("auth_token")?.value,
     );
-    const resolvedParams = await params;
-    const petId = resolvedParams.petId;
-    const name = resolvedParams.name;
+    const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
 
+    const name = (await params).name;
     const appearance = await req.json();
 
     await PetService.saveOutfit(petId, name, appearance);
@@ -44,10 +43,10 @@ export async function DELETE(
       route,
       (await cookies()).get("auth_token")?.value,
     );
-    const resolvedParams = await params;
-    const petId = resolvedParams.petId;
-    const name = resolvedParams.name;
+    const petId = (await params).petId;
     await verifyPet(tokenUser, petId);
+
+    const name = (await params).name;
     await PetService.deleteOutfit(petId, name);
 
     return new NextResponse(null, { status: 204 });
