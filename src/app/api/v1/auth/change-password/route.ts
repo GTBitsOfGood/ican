@@ -25,6 +25,8 @@ export async function PATCH(req: NextRequest) {
       password,
       confirmPassword,
     );
+
+    (await cookies()).delete("auth_token");
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleError(error);
