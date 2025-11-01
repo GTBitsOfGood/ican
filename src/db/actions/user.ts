@@ -110,4 +110,20 @@ export default class UserDAO {
     const result = await this.getUserField(id, "tutorial_completed");
     return result ?? false;
   }
+
+  static async getUserProfile(
+    id: string | Types.ObjectId,
+  ): Promise<Pick<User, "name" | "email">> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const user = await UserModel.findById(_id).select("name email");
+    if (!user) {
+      throw new Error(ERRORS.USER.NOT_FOUND);
+    }
+
+    return {
+      name: user.name,
+      email: user.email,
+    };
+  }
 }

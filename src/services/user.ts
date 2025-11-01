@@ -36,4 +36,11 @@ export default class UserService {
   ): Promise<void> {
     await UserDAO.updateTutorialStatus(userId, tutorial_completed);
   }
+
+  static async getUserProfile(userId: string): Promise<{
+    name: string;
+    email: string;
+  }> {
+    return await UserDAO.getUserProfile(userId);
+  }
 }

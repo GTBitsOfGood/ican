@@ -1,6 +1,75 @@
 export const TUTORIAL_STORAGE_KEYS = {
-  CURRENT_PORTION: "tutorialCurrentPortion",
+  CURRENT_PROGRESS: "tutorialCurrentPortion",
 } as const;
+
+interface TutorialProgressPayload {
+  userId: string | null;
+  portion: number;
+  step: number;
+}
+
+const isBrowser = () => typeof window !== "undefined";
+
+export const readTutorialProgress = (
+  userId: string | null,
+): TutorialProgressPayload | null => {
+  if (!isBrowser()) return null;
+
+  const raw = localStorage.getItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as TutorialProgressPayload;
+    if (parsed?.userId === userId) {
+      return parsed;
+    }
+  } catch (error) {
+    console.warn("Unable to parse tutorial progress", error);
+  }
+
+  return null;
+};
+
+export const writeTutorialProgress = (
+  userId: string | null,
+  portion: number,
+  step: number,
+): void => {
+  if (!isBrowser()) return;
+
+  const payload: TutorialProgressPayload = {
+    userId,
+    portion,
+    step,
+  };
+
+  localStorage.setItem(
+    TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS,
+    JSON.stringify(payload),
+  );
+};
+
+export const clearTutorialProgress = (userId?: string | null): void => {
+  if (!isBrowser()) return;
+
+  const raw = localStorage.getItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
+  if (!raw) return;
+
+  if (userId === undefined) {
+    localStorage.removeItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as TutorialProgressPayload;
+    if (parsed?.userId === userId) {
+      localStorage.removeItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
+    }
+  } catch (error) {
+    console.warn("Unable to parse tutorial progress for clearing", error);
+    localStorage.removeItem(TUTORIAL_STORAGE_KEYS.CURRENT_PROGRESS);
+  }
+};
 
 export const TUTORIAL_PORTIONS = {
   FOOD_TUTORIAL: 0,

@@ -22,7 +22,7 @@ import {
   useUpdateTutorialStatus,
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
-import { TUTORIAL_PORTIONS, TUTORIAL_STORAGE_KEYS } from "@/constants/tutorial";
+import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
 
 interface HomeProps {
   activeModal: string;
@@ -141,9 +141,7 @@ export default function Home({
                 redirect=""
                 onClick={() => {
                   if (userId) {
-                    localStorage.removeItem(
-                      TUTORIAL_STORAGE_KEYS.CURRENT_PORTION,
-                    );
+                    clearTutorialProgress(userId);
                     updateTutorialStatus.mutate(
                       {
                         userId,

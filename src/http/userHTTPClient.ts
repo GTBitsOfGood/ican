@@ -53,4 +53,14 @@ export default class UserHTTPClient {
       body: JSON.stringify({ tutorial_completed }),
     });
   }
+
+  static async getProfile(userId: string): Promise<{
+    name: string;
+    email: string;
+  }> {
+    return await fetchHTTPClient(`/user/${userId}/profile`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
 }

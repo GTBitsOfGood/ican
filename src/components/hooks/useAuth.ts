@@ -48,6 +48,7 @@ export const USER_QUERY_KEYS = {
     ["user", "onboarding-status", userId] as const,
   tutorialStatus: (userId: string) =>
     ["user", "tutorial-status", userId] as const,
+  profile: (userId: string) => ["user", "profile", userId] as const,
 } as const;
 
 export const useOnboardingStatus = (userId: string | null) => {
@@ -124,6 +125,19 @@ export const useTutorialStatus = (userId: string | null) => {
     },
     enabled: !!userId,
     staleTime: 1 * 60 * 1000,
+  });
+};
+
+export const useUserProfile = (userId: string | null) => {
+  return useQuery<{ name: string; email: string }>({
+    queryKey: USER_QUERY_KEYS.profile(userId || ""),
+    queryFn: async () => {
+      if (!userId) throw new Error("User ID required");
+
+      return await UserHTTPClient.getProfile(userId);
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
