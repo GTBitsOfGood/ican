@@ -89,11 +89,11 @@ export default function MedicationsPage({
             </h1>
             {medications.length !== 0 && <AddMedicationButton />}
           </div>
-          <div className="grid mobile:grid-cols-2 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
+          <div className="grid mobile:grid-cols-1 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
             {medications.length === 0 ? (
               <Link
                 href="/medications/add"
-                className="bg-white bg-opacity-10 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow"
+                className="mobile:w-full mobile:mx-auto desktop:col-span-1 tablet:col-span-1 largeDesktop:col-span-1 bg-icanBlue-200 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow"
                 style={{ minHeight: "400px" }}
               >
                 <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white">
