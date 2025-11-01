@@ -8,6 +8,7 @@ import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
+import { useSettings } from "../hooks/useSettings";
 
 export default function MedicationLogCard({
   id,
@@ -33,6 +34,9 @@ export default function MedicationLogCard({
 
   const medicationCheckInMutation = useMedicationCheckIn();
   const medicationLogMutation = useMedicationLog();
+  const { data: settings } = useSettings();
+
+  const hasParentalControls = !!settings?.pin;
 
   const now = new Date();
 
@@ -88,7 +92,11 @@ export default function MedicationLogCard({
       },
       {
         onSuccess: () => {
-          openPasswordModal();
+          if (hasParentalControls) {
+            openPasswordModal();
+          } else {
+            setShowConfirmModal(true);
+          }
         },
       },
     );
