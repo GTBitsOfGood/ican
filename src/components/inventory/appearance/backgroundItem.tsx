@@ -7,14 +7,13 @@ export default function BackgroundItem({
   selectedItem: InventoryItem;
 }) {
   return (
-    <div className="absolute largeDesktop:w-[390px] desktop:w-[300px] tablet:w-[250px] flex items-center justify-center z-0">
+    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Background Item"}
-        width={413}
         draggable="false"
-        className="object-contain pointer-events-none select-none"
-        height={0}
+        fill
+        className="object-cover"
         sizes="100vw"
       />
     </div>
