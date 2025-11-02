@@ -4,6 +4,8 @@ import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
 import { convertTo12Hour } from "@/utils/time";
 import { DAYS_OF_WEEK } from "@/lib/consts";
+import Link from "next/link";
+
 import {
   PillIcon,
   LiquidIcon,
@@ -180,16 +182,16 @@ export default function MedicationCard({
       ? "Every Dose"
       : "Day Of Dose";
 
-  const getMedicationIcon = () => {
+  const getMedicationIcon = (className: string) => {
     switch (medication.formOfMedication) {
       case "Pill":
-        return <PillIcon className="w-[16px] h-[16px]" />;
+        return <PillIcon className={className} />;
       case "Syrup":
-        return <LiquidIcon className="w-[16px] h-[16px]" />;
+        return <LiquidIcon className={className} />;
       case "Shot":
-        return <InjectionIcon className="w-[16px] h-[16px]" />;
+        return <InjectionIcon className={className} />;
       default:
-        return <PillIcon className="w-[16px] h-[16px]" />;
+        return <PillIcon className={className} />;
     }
   };
 
@@ -206,7 +208,7 @@ export default function MedicationCard({
           <p className="font-quantico text-base font-bold text-black">
             {nextDosePhrase}
           </p>
-          <a
+          <Link
             href={`/medications/edit/${medication._id}`}
             className="hover:cursor-pointer"
           >
@@ -215,10 +217,10 @@ export default function MedicationCard({
               weight="light"
               color="#000000"
             />
-          </a>
+          </Link>
         </div>
         <div className="flex items-center gap-2 self-start mb-2">
-          {getMedicationIcon()}
+          {getMedicationIcon("w-[16px] h-[16px]")}
           <h1 className="text-lg font-quantico underline font-bold">
             {medication.customMedicationId}
           </h1>
@@ -246,31 +248,12 @@ export default function MedicationCard({
       </div>
 
       {/* Desktop Layout */}
-      <a
+      <Link
         className="hidden tablet:flex w-full flex-col gap-4 items-center"
         href={`/medications/edit/${medication._id}`}
       >
         <div className="flex items-center gap-2 self-start mb-4">
-          {(() => {
-            switch (medication.formOfMedication) {
-              case "Pill":
-                return (
-                  <PillIcon className="tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]" />
-                );
-              case "Syrup":
-                return (
-                  <LiquidIcon className="tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]" />
-                );
-              case "Shot":
-                return (
-                  <InjectionIcon className="tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]" />
-                );
-              default:
-                return (
-                  <PillIcon className="tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]" />
-                );
-            }
-          })()}
+          {getMedicationIcon("tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]")}
           <h1 className="tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-quantico underline">
             {medication.customMedicationId}
           </h1>
@@ -301,7 +284,7 @@ export default function MedicationCard({
             {notificationFrequency}
           </p>
         </div>
-      </a>
+      </Link>
       <div className="hidden tablet:flex justify-between items-center w-full">
         <Trash
           className="hover:cursor-pointer tablet:w-[38px] tablet:h-[38px] desktop:w-[42px] desktop:h-[42px] largeDesktop:w-[46px] largeDesktop:h-[46px]"
@@ -309,7 +292,7 @@ export default function MedicationCard({
           color="#FF0000"
           weight="light"
         />
-        <a
+        <Link
           href={`/medications/edit/${medication._id}`}
           className="hover:cursor-pointer"
         >
@@ -317,7 +300,7 @@ export default function MedicationCard({
             className="hover:cursor-pointer tablet:w-[38px] tablet:h-[38px] desktop:w-[42px] desktop:h-[42px] largeDesktop:w-[46px] largeDesktop:h-[46px]"
             weight="light"
           />
-        </a>
+        </Link>
       </div>
     </div>
   );

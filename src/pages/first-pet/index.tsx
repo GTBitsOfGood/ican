@@ -6,6 +6,7 @@ import { useCreatePet } from "@/components/hooks/usePet";
 import { useUser } from "@/components/UserContext";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import NavigationArrow from "@/components/ui/NavigationArrow";
+import BackButton from "@/components/ui/BackButton";
 import { cn } from "@/lib/utils";
 
 interface PetCharacterCardProps {
@@ -200,22 +201,9 @@ export default function FirstPetPage() {
         </div>
 
         <div className="desktop:hidden w-full min-h-screen bg-icanBlue-200 flex flex-col px-4 pt-4 pb-6">
-          <button
-            onClick={() => router.back()}
-            className="self-start mb-4 z-10"
-            aria-label="Go back"
-          >
-            <svg
-              className="fill-loginGreen"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width={32}
-              height={32}
-            >
-              <path d="M20 11v2H8v2H6v-2H4v-2h2V9h2v2h12zM10 7H8v2h2V7zm0 0h2V5h-2v2zm0 10H8v-2h2v2zm0 0h2v2h-2v-2z" />
-            </svg>
-          </button>
-
+          <div className="[&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+            <BackButton onClick={() => router.back()} />
+          </div>
           <div className="w-full max-w-md mx-auto">
             <h1 className="text-white font-quantico font-bold mobile:text-4xl desktop:text-6xl mb-2 text-left">
               Select a Character

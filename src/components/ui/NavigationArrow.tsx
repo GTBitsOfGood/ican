@@ -29,7 +29,7 @@ export default function NavigationArrow({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d={path} fill="#ACCC6E" />
+        <path d={path} className="fill-loginGreen" />
       </svg>
     </button>
   );
