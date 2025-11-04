@@ -86,7 +86,9 @@ export default function MedicationsPage({
             </div>
           </div>
           <div className="mobile:hidden desktop:block">
-            <BackButton onClick={handleBackClick} />
+            <div className="desktop:[&>a]:w-16 desktop:[&>a]:h-16 desktop:[&>a>button]:w-full desktop:[&>a>button]:h-full">
+              <BackButton onClick={handleBackClick} />
+            </div>
           </div>
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">

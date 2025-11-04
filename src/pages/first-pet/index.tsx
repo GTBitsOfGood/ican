@@ -269,14 +269,13 @@ export default function FirstPetPage() {
               </button>
             </div>
           </div>
-
-          {createPetMutation.error && (
-            <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg mobile:text-sm desktop:text-base">
-              Unable to create your pet companion. Please try selecting again.
-            </div>
-          )}
         </div>
       </div>
+      {createPetMutation.error && (
+        <div className="fixed bottom-4 left-1/2 z-50 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg mobile:text-sm desktop:text-base">
+          Unable to create your pet companion. Please try selecting again.
+        </div>
+      )}
     </AuthorizedRoute>
   );
 }
