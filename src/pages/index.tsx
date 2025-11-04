@@ -19,6 +19,7 @@ import LevelUpModal from "@/components/modals/LevelUpModal";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
+import storeItems from "@/lib/storeItems";
 
 interface HomeProps {
   activeModal: string;
@@ -40,6 +41,15 @@ export default function Home({
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const feeding = feedPetMutation.isPending;
+  const equippedBackgroundKey = pet?.appearance?.background;
+  const equippedBackgroundFromStore =
+    equippedBackgroundKey &&
+    storeItems.background[equippedBackgroundKey]?.image;
+  const equippedBackgroundImage =
+    equippedBackgroundFromStore ||
+    (equippedBackgroundKey && equippedBackgroundKey.startsWith("/")
+      ? equippedBackgroundKey
+      : "/bg-home.svg");
 
   const handleFoodDrop = async () => {
     if (!pet) return;
@@ -87,9 +97,16 @@ export default function Home({
       )}
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
-          <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
+          <div
+            className="flex-1 bg-no-repeat"
+            style={{
+              backgroundImage: `url("${equippedBackgroundImage}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center bottom",
+            }}
+          >
             {/* Profile */}
-            <div className="flex h-52 w-fit py-8 bg-[#2c3694] justify-start items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
+            <div className="flex h-52 w-fit py-8 justify-start items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
               <ProfilePicture character={pet.petType} />
               <ProfileInfo
                 // name={pet.name}
@@ -120,6 +137,7 @@ export default function Home({
                 petType={pet.petType as PetType}
                 selectedItem={null}
                 className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
+                showBackground={false}
               />
               <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
                 <Bubble />

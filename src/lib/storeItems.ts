@@ -275,7 +275,7 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
       name: "APPLE_TREE",
       displayName: "Apple Tree",
       type: ItemType.BACKGROUND,
-      image: "/store/backgrounds/Apple_Tree.svg",
+      image: "/store/backgrounds/Apple_Tree.png",
       cost: 100,
       level: 0,
       description: "Enjoy a sunny day with yummy apples!",
