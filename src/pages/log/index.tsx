@@ -19,7 +19,7 @@ export default function Log() {
     return `${year}-${month}-${day}`;
   };
 
-  const localTime = new Date().toLocaleString();
+  const localTime = new Date().toISOString();
 
   const { data: yesterdayData } = useMedicationSchedule(
     getDateString(currDate, -1),

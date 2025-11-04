@@ -67,7 +67,9 @@ export const standardizeTime = (
 
   if (time.endsWith("PM")) {
     time = time.replace("PM", "").trim();
-    hours = Number(time.split(":")[0]) + 12;
+    const hourValue = Number(time.split(":")[0]);
+    // Handle 12 PM (which should stay 12, not become 24)
+    hours = hourValue === 12 ? 12 : hourValue + 12;
     minutes = Number(time.split(":")[1]);
   } else if (time.endsWith("AM") && time.startsWith("12")) {
     // Handle special case of 12 AM, which is 00:00 in 24-hour format

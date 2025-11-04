@@ -73,7 +73,7 @@ export default function MedicationLogCard({
     medicationLogMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString(undefined),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {
@@ -88,7 +88,7 @@ export default function MedicationLogCard({
     medicationCheckInMutation.mutate(
       {
         medicationId: id,
-        localTime: new Date().toLocaleString(undefined),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {
@@ -113,16 +113,16 @@ export default function MedicationLogCard({
   const generateTimeLeftFormat = (): string => {
     const timeDiffMs = scheduled.getTime() - now.getTime();
     const totalSeconds = Math.floor(timeDiffMs / 1000);
-    // 15 because timeout is 15 minutes before dose time and 15 miiutes after
-    const leftMinutes = Math.floor(totalSeconds / 60) + 15;
+    // Calculate minutes left (positive means future, negative means past)
+    const leftMinutes = Math.floor(totalSeconds / 60);
     const leftSeconds = Math.abs(totalSeconds) % 60;
 
-    if (leftMinutes < 0) {
+    if (leftMinutes < -15) {
       status = "missed";
     }
 
     return (
-      String(leftMinutes).padStart(2, "0") +
+      String(Math.abs(leftMinutes)).padStart(2, "0") +
       ":" +
       String(leftSeconds).padStart(2, "0")
     );

@@ -140,7 +140,7 @@ export default class MedicationService {
       return;
     }
 
-    MedicationDAO.createMedicationCheckIn(medicationId);
+    await MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
   static async createMedicationLog(medicationId: string, localTime: string) {
