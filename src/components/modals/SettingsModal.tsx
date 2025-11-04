@@ -9,6 +9,7 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
+import LogPasswordModal from "./LogPasswordModal";
 import { useUser } from "../UserContext";
 import {
   useSettings,
@@ -27,6 +28,11 @@ export default function SettingsModal() {
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isPinModalOpen,
+    onOpen: onPinModalOpen,
+    onClose: onPinModalClose,
+  } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
   const updateSettingsMutation = useUpdateSettings();
   const updatePinMutation = useUpdatePin();
@@ -42,8 +48,13 @@ export default function SettingsModal() {
     if (value) {
       router.push("/change-pin");
     } else {
-      updatePinMutation.mutate(null);
+      onPinModalOpen();
     }
+  };
+
+  const handleDisableParentalControls = async () => {
+    updatePinMutation.mutate(null);
+    onPinModalClose();
   };
 
   const handleNotificationsChange = (value: boolean) => {
@@ -245,6 +256,14 @@ export default function SettingsModal() {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {isPinModalOpen && (
+        <LogPasswordModal
+          isOpen={isPinModalOpen}
+          onClose={onPinModalClose}
+          handleNext={handleDisableParentalControls}
+        />
+      )}
     </>
   );
 }

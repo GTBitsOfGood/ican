@@ -15,11 +15,12 @@ export async function POST(req: NextRequest) {
       req.nextUrl.pathname.toString(),
       (await cookies()).get("auth_token")?.value,
     );
-    const { userId, code } = await req.json();
+    const { userId, code, pin } = await req.json();
 
     const token: string = await ForgotPasswordService.verifyForgotPasswordCode(
       userId,
       code,
+      pin,
     );
 
     const nextResponse = NextResponse.json({ userId }, { status: 200 });
