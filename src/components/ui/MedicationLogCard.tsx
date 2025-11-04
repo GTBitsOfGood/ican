@@ -110,16 +110,24 @@ export default function MedicationLogCard({
     setShowConfirmModal(!showConfirmModal);
   };
 
+  // Compute the display status without mutating props
+  const getDisplayStatus = (): "pending" | "taken" | "missed" => {
+    if (status !== "pending") return status;
+
+    const timeDiffMs = scheduled.getTime() - now.getTime();
+    const leftMinutes = Math.floor(timeDiffMs / 60000);
+
+    return leftMinutes < -15 ? "missed" : "pending";
+  };
+
+  const displayStatus = getDisplayStatus();
+
   const generateTimeLeftFormat = (): string => {
     const timeDiffMs = scheduled.getTime() - now.getTime();
     const totalSeconds = Math.floor(timeDiffMs / 1000);
     // Calculate minutes left (positive means future, negative means past)
     const leftMinutes = Math.floor(totalSeconds / 60);
     const leftSeconds = Math.abs(totalSeconds) % 60;
-
-    if (leftMinutes < -15) {
-      status = "missed";
-    }
 
     return (
       String(Math.abs(leftMinutes)).padStart(2, "0") +
@@ -130,7 +138,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col justify-between gap-y-4 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
+      className={`p-5 flex flex-col justify-between gap-y-4 ${displayStatus === "pending" ? "bg-white" : displayStatus === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -170,7 +178,7 @@ export default function MedicationLogCard({
           <h2 className="font-semibold text-black text-3xl">
             Notes: <span className="font-normal">{notes}</span>
           </h2>
-          {status !== "taken" && (
+          {displayStatus !== "taken" && (
             <h2 className="text-icanBlue-200 text-3xl">
               Last Taken: {localizedLastTakenDate}
             </h2>
@@ -178,12 +186,12 @@ export default function MedicationLogCard({
         </div>
       </div>
       <div className="flex flex-col gap-y-2">
-        {status === "pending" && !canCheckIn && (
+        {displayStatus === "pending" && !canCheckIn && (
           <div className="flex justify-center items-center font-quantico font-bold text-center text-5xl text-icanBlue-300">
             Upcoming
           </div>
         )}
-        {status === "pending" && canCheckIn && (
+        {displayStatus === "pending" && canCheckIn && (
           <>
             <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
               <span className="underline ">{generateTimeLeftFormat()}</span>{" "}
@@ -197,7 +205,7 @@ export default function MedicationLogCard({
             </button>
           </>
         )}
-        {status === "missed" && (
+        {displayStatus === "missed" && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
             onClick={toggleMissedDoseModal}
@@ -205,7 +213,7 @@ export default function MedicationLogCard({
             Missed Dose
           </button>
         )}
-        {status === "taken" && (
+        {displayStatus === "taken" && (
           <>
             <h3 className="text-[26px] font-quantico text-icanBlue-200 text-center">
               Thanks for taking your medication!
@@ -216,7 +224,7 @@ export default function MedicationLogCard({
           </>
         )}
       </div>
-      {status === "taken" && (
+      {displayStatus === "taken" && (
         <Image
           src={"/misc/CheckMark.svg"}
           alt=""
@@ -225,7 +233,7 @@ export default function MedicationLogCard({
           className="absolute right-5 top-12"
         />
       )}
-      {status === "missed" && (
+      {displayStatus === "missed" && (
         <Image
           src={"/misc/CrossMark.svg"}
           alt=""
