@@ -197,7 +197,6 @@ export default function Home({
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />
-          =======
         </div>
       ) : (
         <LoadingScreen />

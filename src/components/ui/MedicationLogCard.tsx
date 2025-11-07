@@ -98,7 +98,11 @@ export default function MedicationLogCard({
   const handleMedicationCheckIn = () => {
     if (isPracticeDose) {
       tutorial.handlePracticeDoseCheckIn(() => {
-        openPasswordModal();
+        if (hasParentalControls) {
+          openPasswordModal();
+        } else {
+          setShowConfirmModal(true);
+        }
       });
     } else {
       medicationCheckInMutation.mutate(
