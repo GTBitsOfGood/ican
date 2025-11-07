@@ -1,9 +1,7 @@
 import UserDAO from "@/db/actions/user";
 import { UserDocument } from "@/db/models/user";
 import { routesMap } from "@/lib/routesMap";
-import { UnauthorizedError } from "@/types/exceptions";
 import { NextRequest } from "next/server";
-import ERRORS from "./errorMessages";
 import JWTService from "@/services/jwt";
 
 export const validateRoutes = async (
@@ -19,10 +17,7 @@ export const validateRoutes = async (
   }
 
   if (authRequired) {
-    if (!authToken) {
-      throw new UnauthorizedError(ERRORS.TOKEN.UNAUTHORIZED);
-    }
-    const tokenUserId: string = JWTService.verifyToken(authToken).userId;
+    const tokenUserId: string = JWTService.verifyToken(authToken!).userId;
     const user = await UserDAO.getUserFromId(tokenUserId);
 
     return user ? user.toObject() : null;

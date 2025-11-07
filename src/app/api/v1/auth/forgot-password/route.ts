@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       userId,
     );
 
-    return NextResponse.json({ validatedUserId }, { status: 200 });
+    return NextResponse.json({ userId: validatedUserId }, { status: 200 });
   } catch (error) {
     return handleError(error);
   }

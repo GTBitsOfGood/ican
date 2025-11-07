@@ -2,7 +2,6 @@ import { Document, model, models, Schema, Types } from "mongoose";
 
 export interface Settings {
   userId: Types.ObjectId;
-  parentalControl: boolean;
   notifications: boolean;
   helpfulTips: boolean;
   largeFontSize: boolean;
@@ -22,7 +21,6 @@ const settingsSchema = new Schema<SettingsDocument>(
       ref: "User",
       immutable: true,
     },
-    parentalControl: { type: Boolean, required: true },
     notifications: { type: Boolean, required: true },
     helpfulTips: { type: Boolean, required: true },
     largeFontSize: { type: Boolean, required: true },

@@ -26,7 +26,7 @@ export default function ModalContainer({
         </div>
         {typeof back === "string" ? (
           <Link
-            className="font-pixelify text-icanGreen-100 -mt-4 tablet:-mt-6 text-[3.25rem] tablet:text-7xl leading-none cursor-pointer"
+            className="font-pixelify text-iCAN-Green -mt-4 tablet:-mt-6 text-[3.25rem] tablet:text-7xl leading-none cursor-pointer"
             href={back}
           >
             x
@@ -34,7 +34,7 @@ export default function ModalContainer({
         ) : (
           back && (
             <div
-              className="font-pixelify text-icanGreen-100 -mt-4 tablet:-mt-6 text-[3.25rem] tablet:text-7xl leading-none cursor-pointer"
+              className="font-pixelify text-iCAN-Green -mt-4 tablet:-mt-6 text-[3.25rem] tablet:text-7xl leading-none cursor-pointer"
               onClick={back}
             >
               x

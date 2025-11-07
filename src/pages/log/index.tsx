@@ -24,7 +24,7 @@ export default function Log() {
     return `${year}-${month}-${day}`;
   };
 
-  const localTime = new Date().toLocaleString("en-us");
+  const localTime = new Date().toLocaleString();
 
   const { data: yesterdayData } = useMedicationSchedule(
     getDateString(currDate, -1),
@@ -106,7 +106,7 @@ export default function Log() {
 
   return (
     <AuthorizedRoute>
-      <div className="bg-icanBlue-200 w-screen min-h-screen p-16">
+      <div className="bg-icanBlue-200 p-16 min-h-screen">
         <div className="mb-[72px]">
           <div className="flex justify-between">
             <div className="flex justify-center items-center w-full">
@@ -144,7 +144,7 @@ export default function Log() {
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar h-screen">
+          <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">
             {isSameDay(currDate) ? (
               <>
                 <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">

@@ -9,10 +9,16 @@ import {
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
+import LogPasswordModal from "./LogPasswordModal";
 import { useUser } from "../UserContext";
-import { useSettings, useUpdateSettings } from "../hooks/useSettings";
+import {
+  useSettings,
+  useUpdatePin,
+  useUpdateSettings,
+} from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function SettingsModal() {
   const { userId } = useUser();
@@ -22,19 +28,33 @@ export default function SettingsModal() {
     onOpen: onDeleteModalOpen,
     onClose: onDeleteModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isPinModalOpen,
+    onOpen: onPinModalOpen,
+    onClose: onPinModalClose,
+  } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
   const updateSettingsMutation = useUpdateSettings();
+  const updatePinMutation = useUpdatePin();
   const logoutMutation = useLogout();
   const deleteAccountMutation = useDeleteAccount();
+  const router = useRouter();
 
   useEffect(() => {
     onOpen();
   }, [onOpen]);
 
-  // Ensures we only PATCH when user makes the change, not the initial load
-  // We should eventually add debounce to this to prevent abuse
   const handleParentalControlsChange = (value: boolean) => {
-    updateSettingsMutation.mutate({ parentalControl: value });
+    if (value) {
+      router.push("/change-pin");
+    } else {
+      onPinModalOpen();
+    }
+  };
+
+  const handleDisableParentalControls = async () => {
+    updatePinMutation.mutate(null);
+    onPinModalClose();
   };
 
   const handleNotificationsChange = (value: boolean) => {
@@ -73,13 +93,16 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[1080px]",
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="w-[80%] h-[60%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+        className="w-[80%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+          router.push("/");
+        }}
         radius="lg"
         placement="center"
         closeButton={<ModalCloseButton onClose={onClose} />}
@@ -88,12 +111,12 @@ export default function SettingsModal() {
           <ModalHeader>Settings</ModalHeader>
           <ModalBody>
             <div className="flex flex-col items-center w-[95%] text-[#1E2353] gap-10">
-              <div className="flex w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6">
-                <div className="flex flex-col w-1/2 gap-7">
+              <div className="flex flex-col items-center desktop:flex-row w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6 overflow-y-auto max-h-[50vh]">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <h5 className="text-3xl">Parental Control</h5>
                     <ModalSwitch
-                      state={settings.parentalControl}
+                      state={!!settings.pin}
                       setState={handleParentalControlsChange}
                     />
                   </div>
@@ -106,7 +129,7 @@ export default function SettingsModal() {
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
-                      {settings.parentalControl && (
+                      {!!settings.pin && (
                         <Image
                           src="/store/Lock.svg"
                           alt="Locked"
@@ -120,14 +143,14 @@ export default function SettingsModal() {
                     <ModalNextButton
                       link="settings"
                       onClick={handleLogout}
-                      requirePin={settings.parentalControl}
+                      requirePin={!!settings.pin}
                     />
                   </div>
                 </div>
-                <div className="flex flex-col w-1/2 gap-7">
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
-                      {settings.parentalControl && (
+                      {!!settings.pin && (
                         <Image
                           src="/store/Lock.svg"
                           alt="Locked"
@@ -140,12 +163,12 @@ export default function SettingsModal() {
                     </div>
                     <ModalNextButton
                       link="medications"
-                      requirePin={settings.parentalControl}
+                      requirePin={!!settings.pin}
                     />
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
-                      {settings.parentalControl && (
+                      {!!settings.pin && (
                         <Image
                           src="/store/Lock.svg"
                           alt="Locked"
@@ -158,12 +181,13 @@ export default function SettingsModal() {
                     </div>
                     <ModalNextButton
                       link="change-pin"
-                      requirePin={settings.parentalControl}
+                      requirePin={!!settings.pin}
+                      disabled={!settings.pin}
                     />
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
-                      {settings.parentalControl && (
+                      {!!settings.pin && (
                         <Image
                           src="/store/Lock.svg"
                           alt="Locked"
@@ -178,7 +202,7 @@ export default function SettingsModal() {
                       link="settings"
                       onClick={handleDeleteAccount}
                       preventNavigation={true}
-                      requirePin={settings.parentalControl}
+                      requirePin={!!settings.pin}
                     />
                   </div>
                 </div>
@@ -192,9 +216,9 @@ export default function SettingsModal() {
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "bg-icanBlue-200 text-[#a8b0d3]",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[500px] max-h-[600px]",
         }}
-        className="w-[50%] h-[30%] font-quantico z-[60] text-white p-6 rounded-none outline-none"
+        className="w-[50%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
         isOpen={isDeleteModalOpen}
         onClose={onDeleteModalClose}
         radius="lg"
@@ -232,6 +256,14 @@ export default function SettingsModal() {
           </ModalBody>
         </ModalContent>
       </Modal>
+
+      {isPinModalOpen && (
+        <LogPasswordModal
+          isOpen={isPinModalOpen}
+          onClose={onPinModalClose}
+          handleNext={handleDisableParentalControls}
+        />
+      )}
     </>
   );
 }

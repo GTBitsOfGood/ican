@@ -16,13 +16,11 @@ export default class SettingsHTTPClient {
 
   static async updateSettings(
     userId: string,
-    parentalControl?: boolean,
     notifications?: boolean,
     helpfulTips?: boolean,
     largeFontSize?: boolean,
   ) {
     const updateSettingsRequestBody: UpdateSettingsRequestBody = {
-      parentalControl,
       notifications,
       helpfulTips,
       largeFontSize,
@@ -45,13 +43,20 @@ export default class SettingsHTTPClient {
     });
   }
 
-  static async updatePin(userId: string, pin: string) {
+  static async updatePin(userId: string, pin: string | null) {
     const updatePinRequestBody: UpdateSettingsPinRequestBody = {
       pin,
     };
     return fetchHTTPClient<void>(`/settings/pin/${userId}`, {
       method: "PATCH",
       body: JSON.stringify(updatePinRequestBody),
+      credentials: "include",
+    });
+  }
+
+  static async exitParentalMode(userId: string) {
+    return fetchHTTPClient<void>(`/settings/parental-mode/${userId}`, {
+      method: "DELETE",
       credentials: "include",
     });
   }

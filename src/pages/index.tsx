@@ -23,6 +23,7 @@ import {
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
+import storeItems from "@/lib/storeItems";
 
 interface HomeProps {
   activeModal: string;
@@ -63,6 +64,15 @@ export default function Home({
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const feeding = feedPetMutation.isPending;
+  const equippedBackgroundKey = pet?.appearance?.background;
+  const equippedBackgroundFromStore =
+    equippedBackgroundKey &&
+    storeItems.background[equippedBackgroundKey]?.image;
+  const equippedBackgroundImage =
+    equippedBackgroundFromStore ||
+    (equippedBackgroundKey && equippedBackgroundKey.startsWith("/")
+      ? equippedBackgroundKey
+      : "/bg-home.svg");
 
   useEffect(() => {
     if (!isTutorial) return;
@@ -124,7 +134,14 @@ export default function Home({
       )}
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
-          <div className="flex-1 bg-[url('/bg-home.svg')] bg-cover bg-center bg-no-repeat">
+          <div
+            className="flex-1 bg-no-repeat"
+            style={{
+              backgroundImage: `url("${equippedBackgroundImage}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center bottom",
+            }}
+          >
             {/* Profile */}
             <ProfileHeader
               petType={pet.petType}
@@ -169,9 +186,8 @@ export default function Home({
               buttonType="log"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
             />
-            {pet.food > 0 && <FeedButton />}
+            <FeedButton active={pet.food > 0} />
           </Navbar>
-
           {/* Character, speech bubble and food image is made relative to the image */}
           <PetDisplay
             petType={pet.petType}
@@ -181,6 +197,7 @@ export default function Home({
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />
+          =======
         </div>
       ) : (
         <LoadingScreen />

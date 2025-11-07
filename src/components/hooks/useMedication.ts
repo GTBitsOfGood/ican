@@ -2,6 +2,7 @@ import MedicationHTTPClient from "@/http/medicationHTTPClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/components/UserContext";
 import { MedicationInfo } from "@/types/medication";
+import { PET_QUERY_KEYS } from "./usePet";
 
 export const MEDICATION_QUERY_KEYS = {
   allMedications: (userId: string) => ["medications", userId] as const,
@@ -147,6 +148,10 @@ export const useMedicationLog = () => {
         });
         queryClient.invalidateQueries({
           queryKey: MEDICATION_QUERY_KEYS.allMedications(userId),
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: PET_QUERY_KEYS.pet(userId),
         });
       }
     },
