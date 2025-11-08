@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={redirect}
-      className="z-10 relative aspect-nav-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent p-0"
+      className="z-10 relative mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent px-10"
       type="button"
     >
       <div className="w-full h-full">
@@ -36,8 +36,8 @@ const Button: React.FC<ButtonProps> = ({
           />
         )}
 
-        <div className="w-full h-full flex flex-col items-center mobile:justify-center tablet:justify-end mobile:pb-0 tablet:pb-1 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
-          <div className="relative mobile:h-[60%] tablet:h-[75%] w-auto aspect-square">
+        <div className="w-full h-full flex items-center mobile:justify-center tablet:justify-end mobile:pb-0 tablet:pb-1 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
+          <div className="relative mobile:h-[60%] tablet:h-[75%] w-auto aspect-square ">
             <Image
               src={iconURL}
               alt={buttonType}
@@ -46,8 +46,8 @@ const Button: React.FC<ButtonProps> = ({
               className="object-contain pointer-events-none"
             />
           </div>
-          <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center">
-            <span className="font-quantico text-center text-white mobile:text-lg largeDesktop:text-3xl 4xl:text-4xl font-bold leading-9 text-stroke-4 text-stroke-[#353859] text-shadow-[#7D83B2] paint-stroke letter-spacing-ui">
+          <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center mt-1 ml-3">
+            <span className="font-quantico text-center text-white mobile:text-2xl largeDesktop:text-3xl 4xl:text-4xl font-bold leading-9 text-stroke-4 text-stroke-[#353859] text-shadow-[#4C539B] paint-stroke letter-spacing-ui">
               {buttonType.toUpperCase()}
             </span>
           </div>
