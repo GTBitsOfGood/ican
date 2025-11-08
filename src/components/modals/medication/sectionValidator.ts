@@ -40,11 +40,12 @@ export default function SectionValidator({
         return { error: "Select a Form Of Medication." };
       }
       if (info.customMedicationId == "") {
-        return { error: "Medication ID is required." };
+        return { error: "Medication Nickname is required." };
       }
       if (medicationIds?.has(info.customMedicationId)) {
         return {
-          error: "This Medication ID is already in use. Please choose another.",
+          error:
+            "This Medication Nickname is already in use. Please choose another.",
           errorType: "withinModal",
         };
       }
