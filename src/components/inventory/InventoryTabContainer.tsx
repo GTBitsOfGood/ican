@@ -14,6 +14,7 @@ export interface TabsProps {
   exclude: InventoryItem[][];
   selectedItem: InventoryItem | SavedOutfit | null;
   setSelectedItem: Dispatch<SetStateAction<InventoryItem | SavedOutfit | null>>;
+  disabledTabs?: number[];
 }
 
 const InventoryTabContainer: React.FC<TabsProps> = ({
@@ -24,8 +25,18 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
   exclude,
   selectedItem,
   setSelectedItem,
+  disabledTabs = [],
 }) => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    if (disabledTabs.includes(0)) {
+      for (let i = 0; i < 4; i++) {
+        if (!disabledTabs.includes(i)) {
+          return i;
+        }
+      }
+    }
+    return 0;
+  });
 
   return (
     <Tabs
@@ -43,6 +54,7 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
             title={title}
             image={`/store/categories/${title}.svg`}
             selected={selectedIndex === index}
+            disabled={disabledTabs.includes(index)}
           />
         ))}
         {type == "Store" ? (
@@ -50,12 +62,14 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
             title="Food"
             image={"/store/categories/Food.svg"}
             selected={selectedIndex === 3}
+            disabled={disabledTabs.includes(3)}
           />
         ) : (
           <InventoryTab
             title="Outfits"
             image={"/store/categories/Outfits.svg"}
             selected={selectedIndex === 3}
+            disabled={disabledTabs.includes(3)}
           />
         )}
       </TabList>

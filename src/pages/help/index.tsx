@@ -61,7 +61,7 @@ export default function HelpPage() {
     },
   ];
 
-  const toggleAccordion = (index) => {
+  const toggleAccordion = (index: number) => {
     setOpenIndices((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
