@@ -63,7 +63,7 @@ export default function FoodModal({ foods }: { foods: string[] }) {
                 onClick={() => setClickedFood(food)}
               >
                 <Image
-                  src={`${baseImageUrl}/${food}.svg`}
+                  src={`${baseImageUrl}/${food.toLowerCase()}.svg`}
                   alt={food}
                   width={200}
                   height={200}

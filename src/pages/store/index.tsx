@@ -12,11 +12,42 @@ import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
 import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
+import { useTutorial } from "@/components/TutorialContext";
+import { useTutorialStatus } from "@/components/hooks/useAuth";
+import { useUser } from "@/components/UserContext";
 
 export default function Store() {
-  const { data: pet } = usePet();
-  const { data: petBag } = usePetBag(pet?._id);
-  const purchaseItemMutation = usePurchaseItem();
+  const { userId } = useUser();
+  const { data: tutorialCompleted } = useTutorialStatus(userId);
+  const isTutorial = !tutorialCompleted;
+
+  const { data: realPet } = usePet();
+  const tutorial = useTutorial();
+
+  const pet = isTutorial ? tutorial.pet : realPet;
+
+  const { data: realBag } = usePetBag(pet?._id);
+  const petBag = isTutorial ? tutorial.bag : realBag;
+
+  const realPurchase = usePurchaseItem();
+  const purchaseItemMutation = isTutorial
+    ? {
+        mutate: (
+          itemData: { petId: string; name: string; type: string; cost: number },
+          options?: {
+            onSuccess?: () => void;
+            onError?: (error: Error) => void;
+          },
+        ) =>
+          tutorial.purchaseItem(
+            itemData.name,
+            itemData.type,
+            itemData.cost,
+            options?.onSuccess,
+          ),
+        isPending: false,
+      }
+    : realPurchase;
 
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<
@@ -26,22 +57,22 @@ export default function Store() {
   const purchaseItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
-    purchaseItemMutation.mutate(
-      {
-        petId: pet._id,
-        name: selectedItem.name,
-        type: (selectedItem as InventoryItem).type,
+    const item = selectedItem as InventoryItem;
+    const itemData = {
+      petId: pet._id,
+      name: item.name,
+      type: item.type,
+      cost: item.cost,
+    };
+
+    purchaseItemMutation.mutate(itemData, {
+      onSuccess: () => {
+        setShowPurchasedScreen(true);
       },
-      {
-        onSuccess: () => {
-          setShowPurchasedScreen(true);
-          console.log("Item successfully purchased");
-        },
-        onError: (error) => {
-          console.error("Error purchasing item", error);
-        },
+      onError: (error) => {
+        console.error("Error purchasing item", error);
       },
-    );
+    });
   };
 
   const isPurchasing = purchaseItemMutation.isPending;
@@ -135,6 +166,7 @@ export default function Store() {
               onSelectTab={() => setSelectedItem(null)}
               selectedItem={selectedItem as InventoryItem}
               setSelectedItem={setSelectedItem}
+              disabledTabs={isTutorial ? [0, 1, 2] : []}
             />
           }
         />

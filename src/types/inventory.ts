@@ -17,3 +17,12 @@ export interface InventoryItem {
   level: number;
   description: string;
 }
+
+export interface Bag {
+  clothing: InventoryItem[];
+  shoes: InventoryItem[];
+  hat: InventoryItem[];
+  occupation: InventoryItem[];
+  background: InventoryItem[];
+  food: InventoryItem[];
+}
