@@ -53,7 +53,7 @@ const ProfileName: React.FC = () => {
     <div className="relative inline-flex flex-row flex-1 h-full items-center">
       <input
         className={`
-          text-2xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          text-4xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
           w-auto min-w-[4rem] max-w-full
           ${
             !isEditing

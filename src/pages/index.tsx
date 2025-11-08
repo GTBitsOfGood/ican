@@ -3,7 +3,7 @@ import FeedButton from "@/components/ui/FeedButton";
 import Navbar from "@/components/ui/Navbar";
 import NavButton from "@/components/ui/NavButton";
 import ProfileInfo from "@/components/ui/ProfileInfo";
-import ProfilePicture from "@/components/ui/ProfilePicture";
+//import ProfilePicture from "@/components/ui/ProfilePicture";
 
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
@@ -98,7 +98,7 @@ export default function Home({
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
           <div
-            className="flex-1 bg-no-repeat"
+            className="flex-1 flex flex-row justify-between bg-no-repeat"
             style={{
               backgroundImage: `url("${equippedBackgroundImage}")`,
               backgroundSize: "cover",
@@ -106,8 +106,8 @@ export default function Home({
             }}
           >
             {/* Profile */}
-            <div className="flex h-52 w-fit py-8 justify-start items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
-              <ProfilePicture character={pet.petType} />
+            <div className="flex h-52 w-fit p-8 items-center gap-10 mobile:px-2 tablet:px-4 desktop:px-8 largeDesktop:px-10 4xl:h-56 4xl:gap-12 4xl:px-16">
+              {/* <ProfilePicture character={pet.petType} /> */}
               <ProfileInfo
                 // name={pet.name}
                 level={pet.xpLevel}
@@ -116,7 +116,7 @@ export default function Home({
               />
             </div>
             {/* Side Bar */}
-            <div className="flex flex-col gap-9 w-fit 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
+            <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
               <NavButton buttonType="settings" drawButton={false} />
               <NavButton buttonType="help" drawButton={false} />
             </div>
@@ -130,7 +130,7 @@ export default function Home({
           </Navbar>
 
           {/* Character, speech bubble and food image is made relative to the image */}
-          <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
+          <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/3 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
             <div className="relative w-full">
               <PetAppearance
                 appearance={pet.appearance}

@@ -4,7 +4,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ children }) => {
   return (
-    <div className="w-full h-16 pb-4 box-border mobile:gap-8 desktop:gap-16 bg-[#2c326a] border-t-4 border-[#222540] justify-center items-end 4xl:h-24 4xl:pb-6 4xl:gap-24 flex">
+    <div className="w-full h-16 pb-4 box-border mobile:gap-2 desktop:gap-4 bg-[#2c326a] border-t-4 border-[#222540] justify-center items-end 4xl:h-24 4xl:pb-6 4xl:gap-24 flex">
       {children}
     </div>
   );
