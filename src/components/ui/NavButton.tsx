@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={redirect}
-      className={`z-10 relative mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent ${buttonClasses}`}
+      className={`z-10 relative mobile:h-[3rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent ${buttonClasses}`}
       type="button"
     >
       <div className="w-full h-full">

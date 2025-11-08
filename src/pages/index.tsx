@@ -117,8 +117,8 @@ export default function Home({
             </div>
             {/* Side Bar */}
             <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
-              <NavButton buttonType="settings" drawButton={false} />
               <NavButton buttonType="help" drawButton={false} />
+              <NavButton buttonType="settings" drawButton={false} />
             </div>
           </div>
           {/* Navbar - VH Scaling */}
