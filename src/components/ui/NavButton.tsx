@@ -28,18 +28,12 @@ const Button: React.FC<ButtonProps> = ({
     >
       <div className="w-full h-full">
         {drawButton && (
-          <>
-            <div
-              className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
-              from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
-              border-4 border-[#13173c]/40 flex justify-center items-center"
-            >
-              <div
-                className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#7d83b2] to-[#535677] 
-                shadow-button-inner border-4 border-t-0 border-[#7d83b2]/40"
-              />
-            </div>
-          </>
+          <Image
+            src={"/misc/NavButton.svg"}
+            alt={buttonType}
+            fill
+            className="absolute inset-0 object-fill pointer-events-none"
+          />
         )}
 
         <div className="w-full h-full flex flex-col items-center mobile:justify-center tablet:justify-end mobile:pb-0 tablet:pb-1 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
