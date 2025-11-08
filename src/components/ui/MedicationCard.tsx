@@ -253,7 +253,9 @@ export default function MedicationCard({
         href={`/medications/edit/${medication._id}`}
       >
         <div className="flex items-center gap-2 self-start mb-4">
-          {getMedicationIcon("tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]")}
+          {getMedicationIcon(
+            "tablet:w-[28px] tablet:h-[28px] desktop:w-[32px] desktop:h-[32px] largeDesktop:w-[36px] largeDesktop:h-[36px]",
+          )}
           <h1 className="tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-quantico underline">
             {medication.customMedicationId}
           </h1>

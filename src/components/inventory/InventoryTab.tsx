@@ -9,12 +9,15 @@ interface InventoryTabProps extends TabProps {
 const InventoryTab: ReactTabsFunctionComponent<InventoryTabProps> = ({
   title,
   image,
+  disabled,
   ...props
 }) => (
   <Tab
     {...props}
-    className="flex-1 text-center py-4 border-x-2 border-t-2 border-white largeDesktop:h-[154px] desktop:h-[130px] tablet:h-[100px] bg-icanBlue-300 text-white outline-none cursor-pointer"
+    disabled={disabled}
+    className={`flex-1 text-center py-4 border-x-2 border-t-2 border-white largeDesktop:h-[154px] desktop:h-[130px] tablet:h-[100px] bg-icanBlue-300 text-white outline-none ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
     selectedClassName="translate-y-[.075px] !text-black !underline !bg-icanBlue-100 !border-b-icanBlue-100"
+    disabledClassName="opacity-50 cursor-not-allowed"
   >
     <Image
       src={image}
