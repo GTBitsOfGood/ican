@@ -80,25 +80,13 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <div className="mobile:block desktop:hidden">
-            <div className="mobile:[&>a]:w-16 mobile:[&>a]:h-16 mobile:[&>a>button]:w-full mobile:[&>a>button]:h-full">
-              <BackButton onClick={handleBackClick} />
-            </div>
-          </div>
-          <div className="mobile:hidden desktop:block">
-            <div className="desktop:[&>a]:w-16 desktop:[&>a]:h-16 desktop:[&>a>button]:w-full desktop:[&>a>button]:h-full">
-              <BackButton onClick={handleBackClick} />
-            </div>
+          <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+            <BackButton onClick={handleBackClick} />
           </div>
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <div className="flex items-center gap-2 mobile:flex desktop:hidden">
-              <h1 className="font-quantico mobile:text-5xl font-bold text-white underline">
-                Medications
-              </h1>
-            </div>
-            <h1 className="mobile:hidden desktop:block font-quantico desktop:text-6xl font-bold text-white underline">
+            <h1 className="font-quantico font-bold text-white underline text-5xl desktop:text-6xl">
               Medications
             </h1>
             {medications.length !== 0 && <AddMedicationButton />}
