@@ -99,9 +99,20 @@ export default function MedicationsPage({
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <h1 className="font-quantico font-bold text-white underline text-5xl desktop:text-6xl">
-              Medications
-            </h1>
+            {isOnboarded ? (
+              <h1 className="font-quantico font-bold text-white underline text-5xl desktop:text-6xl">
+                Medications
+              </h1>
+            ) : (
+              <div>
+                <h1 className="font-quantico font-bold text-white text-5xl desktop:text-6xl">
+                  Enter Medications
+                </h1>
+                <h2 className="font-quantico font-bold text-white text-3xl desktop:text-4xl mt-5">
+                  Click to add Medications to your list.
+                </h2>
+              </div>
+            )}
             {medications.length !== 0 && <AddMedicationButton />}
           </div>
           <div className="grid mobile:grid-cols-1 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
