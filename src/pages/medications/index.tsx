@@ -16,6 +16,7 @@ import {
 import { useUser } from "@/components/UserContext";
 import { useOnboardingStatus } from "@/components/hooks/useAuth";
 import { OnboardingStep } from "@/types/onboarding";
+import ModalButton from "@/components/ui/modals/modalButton";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -80,9 +81,21 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
-            <BackButton onClick={handleBackClick} />
-          </div>
+          {isOnboarded ? (
+            <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+              <BackButton onClick={handleBackClick} />
+            </div>
+          ) : (
+            <div className="flex w-full justify-end p-5">
+              <ModalButton
+                className="max-w-max font-quantico"
+                action={handleBackClick}
+                type="success"
+              >
+                Next
+              </ModalButton>
+            </div>
+          )}
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
