@@ -35,7 +35,7 @@ export default function ReviewSection({
         </div>
         <div className="flex-wrap tablet:flex-nowrap flex justify-start items-center gap-4">
           <div className="basis-full tablet:basis-[130px] desktop:basis-[190px] text-xl desktop:text-3xl font-bold">
-            ID<span className="text-iCAN-error">*</span>
+            Nickname<span className="text-iCAN-error">*</span>
           </div>
           <div className="flex justify-start basis-[calc(100%-36px)] smallTablet:basis-[calc(100%-41px)] tablet:basis-[calc(100%-191px)] desktop:basis-[calc(100%-251px)] gap-2">
             {info.customMedicationId
