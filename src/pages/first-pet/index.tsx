@@ -40,8 +40,9 @@ function PetCharacterCard({
       <Image
         src={character.image}
         alt={character.name}
-        width={200}
-        height={200}
+        width={175}
+        height={175}
+        className="object-contain"
       />
     </div>
   );

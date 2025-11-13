@@ -44,12 +44,12 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
         <Image
           src={characterImages[petType]}
           alt={`${petType}`}
-          width={characterImages[petType].width}
-          height={characterImages[petType].height}
+          width={275}
+          height={275}
           draggable="false"
           onDragOver={onDragOver}
           onDrop={onDrop}
-          className="object-contain pointer-events-none select-none relative z-10"
+          className="object-contain pointer-events-none select-none relative z-10 max-w-full max-h-full"
         />
       )}
       {selectedItem?.type === ItemType.CLOTHING ? (
