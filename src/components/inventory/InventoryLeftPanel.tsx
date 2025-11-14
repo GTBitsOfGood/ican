@@ -61,6 +61,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
           petType={petData.petType as PetType}
           selectedItem={isSavedOutfit ? null : (selectedItem as InventoryItem)}
           className=""
+          characterImageSize={180}
         />
       </div>
 

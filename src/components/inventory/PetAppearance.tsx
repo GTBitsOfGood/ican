@@ -19,6 +19,7 @@ interface PetAppearanceProps {
   showBackground?: boolean;
   onDragOver?: (e: React.DragEvent<HTMLImageElement>) => void;
   onDrop?: (e: React.DragEvent<HTMLImageElement>) => void;
+  characterImageSize?: number;
 }
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
@@ -30,6 +31,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
   showBackground = true,
   onDragOver,
   onDrop,
+  characterImageSize,
 }) => {
   const equippedBackground =
     appearance?.background && storeItems.background[appearance.background]
@@ -44,8 +46,8 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
         <Image
           src={characterImages[petType]}
           alt={`${petType}`}
-          width={275}
-          height={275}
+          width={characterImageSize || 275}
+          height={characterImageSize || 275}
           draggable="false"
           onDragOver={onDragOver}
           onDrop={onDrop}
