@@ -10,8 +10,8 @@ export default function ClothingItem({
   const isWings =
     selectedItem.name?.includes("WING") || selectedItem.name?.includes("WINGS");
   const widthClass = isWings ? "w-[110%]" : "w-[65%]";
-  const leftPosition = isWings ? "left-[-2%]" : "left-[35%]";
-  const topPosition = isWings ? "top-[40%]" : "top-[70%]";
+  const leftPosition = isWings ? "left-[-3%]" : "left-[19%]";
+  const topPosition = isWings ? "top-[40%]" : "top-[64%]";
   const zIndex = isWings ? "z-0" : "z-20";
 
   return (
