@@ -79,8 +79,6 @@ export default function MedicationLogCard({
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
       tutorial.completePracticeDoseLog();
-      // Navigate to home screen where medication drag will appear
-      // The congratulations modal will show AFTER dragging the medication
       if (typeof window !== "undefined") {
         window.location.href = "/";
       }

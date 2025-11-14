@@ -173,7 +173,6 @@ const createEmptyBag = (): Bag => ({
   food: [],
 });
 
-// Extract medication type from dosage string (e.g., "1 pill" -> "Pill", "2 shots" -> "Shot")
 const extractMedicationType = (dosage: string): "Pill" | "Syrup" | "Shot" => {
   const lowerDosage = dosage.toLowerCase();
   if (lowerDosage.includes("shot") || lowerDosage.includes("injection")) {
@@ -182,7 +181,6 @@ const extractMedicationType = (dosage: string): "Pill" | "Syrup" | "Shot" => {
   if (lowerDosage.includes("syrup") || lowerDosage.includes("liquid")) {
     return "Syrup";
   }
-  // Default to Pill
   return "Pill";
 };
 
@@ -590,7 +588,6 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   }, [realPet, realBag, userId]);
 
   const getTutorialText = useCallback(() => {
-    // Show medication drag message when medication should be dragged
     if (shouldShowMedicationDrag) {
       return "Feed me the medicine!";
     }

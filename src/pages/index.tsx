@@ -106,9 +106,6 @@ export default function Home({
         }
         setSelectedFood("");
       },
-      onError: (error) => {
-        console.error("Error handling food drop:", error);
-      },
     });
   };
 
@@ -125,10 +122,8 @@ export default function Home({
     if (!pet) return;
     if (medicationDistance == null || medicationDistance > 150) return;
 
-    // Show congratulations modal
     setShowMedicationSuccessModal(true);
     tutorial.clearMedicationDrag();
-    // After medication drag, advance to feed tutorial
     tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
   };
 
