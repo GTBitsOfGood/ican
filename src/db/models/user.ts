@@ -6,6 +6,7 @@ export interface User {
   password?: string;
   provider: string;
   isOnboarded?: boolean;
+  tutorial_completed?: boolean;
 }
 
 export interface UserDocument extends User, Document {
@@ -19,6 +20,7 @@ const userSchema = new Schema<UserDocument>(
     password: { type: String, required: false },
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
+    tutorial_completed: { type: Boolean, required: false, default: false },
   },
   { timestamps: true },
 );

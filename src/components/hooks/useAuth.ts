@@ -22,9 +22,7 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: () => AuthHTTPClient.logout(),
     onSuccess: () => {
-      // Clear ALL cached data, since they are not needed anymore, and is cleaner
       queryClient.clear();
-
       window.location.href = "/login";
     },
     onError: (error) => {
@@ -40,7 +38,6 @@ export const useDeleteAccount = () => {
     mutationFn: (userId: string) => UserHTTPClient.deleteAccount(userId),
     onSuccess: () => {
       queryClient.clear();
-
       window.location.href = "/login";
     },
   });
@@ -49,6 +46,9 @@ export const useDeleteAccount = () => {
 export const USER_QUERY_KEYS = {
   onboardingStatus: (userId: string) =>
     ["user", "onboarding-status", userId] as const,
+  tutorialStatus: (userId: string) =>
+    ["user", "tutorial-status", userId] as const,
+  profile: (userId: string) => ["user", "profile", userId] as const,
 } as const;
 
 export const useOnboardingStatus = (userId: string | null) => {
@@ -109,6 +109,55 @@ export const useUpdateOnboardingStatus = () => {
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({
         queryKey: USER_QUERY_KEYS.onboardingStatus(variables.userId),
+      });
+    },
+  });
+};
+
+export const useTutorialStatus = (userId: string | null) => {
+  return useQuery<boolean>({
+    queryKey: USER_QUERY_KEYS.tutorialStatus(userId || ""),
+    queryFn: async () => {
+      if (!userId) throw new Error("User ID required");
+
+      const response = await UserHTTPClient.getTutorialStatus(userId);
+      return response.tutorial_completed;
+    },
+    enabled: !!userId,
+    staleTime: 1 * 60 * 1000,
+  });
+};
+
+export const useUserProfile = (userId: string | null) => {
+  return useQuery<{ name: string; email: string }>({
+    queryKey: USER_QUERY_KEYS.profile(userId || ""),
+    queryFn: async () => {
+      if (!userId) throw new Error("User ID required");
+
+      return await UserHTTPClient.getProfile(userId);
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateTutorialStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      tutorial_completed,
+    }: {
+      userId: string;
+      tutorial_completed: boolean;
+    }) => {
+      return UserHTTPClient.updateTutorialStatus(userId, tutorial_completed);
+    },
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.tutorialStatus(variables.userId),
       });
     },
   });
