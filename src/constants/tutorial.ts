@@ -39,6 +39,8 @@ export interface TutorialProgressPayload {
   bag: Bag | null;
   practiceDose: LogType;
   isPracticeDoseTaken: boolean;
+  medicationType?: "Pill" | "Syrup" | "Shot" | null;
+  shouldShowMedicationDrag?: boolean;
 }
 
 type StoredTutorialProgressPayload = Partial<TutorialProgressPayload> & {
@@ -68,6 +70,8 @@ export const readTutorialProgress = (
         bag: parsed.bag ?? null,
         practiceDose: parsed.practiceDose ?? getPracticeDose(),
         isPracticeDoseTaken: parsed.isPracticeDoseTaken ?? false,
+        medicationType: parsed.medicationType ?? null,
+        shouldShowMedicationDrag: parsed.shouldShowMedicationDrag ?? false,
       };
     }
   } catch (error) {
@@ -91,6 +95,8 @@ export const writeTutorialProgress = (
     bag: payload.bag,
     practiceDose: payload.practiceDose,
     isPracticeDoseTaken: payload.isPracticeDoseTaken,
+    medicationType: payload.medicationType ?? null,
+    shouldShowMedicationDrag: payload.shouldShowMedicationDrag ?? false,
   };
 
   localStorage.setItem(
