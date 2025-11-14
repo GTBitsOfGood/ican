@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
@@ -24,6 +25,7 @@ export default function MedicationLogCard({
   lastTaken,
   // setMedication,
 }: LogType) {
+  const router = useRouter();
   const tutorial = useTutorial();
   const isPracticeDose = id === PRACTICE_DOSE_ID;
 
@@ -79,9 +81,7 @@ export default function MedicationLogCard({
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
       tutorial.completePracticeDoseLog();
-      if (typeof window !== "undefined") {
-        window.location.href = "/";
-      }
+      router.push("/");
     } else {
       medicationLogMutation.mutate(
         {
