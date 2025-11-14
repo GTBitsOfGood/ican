@@ -156,11 +156,7 @@ export default function FirstPetPage() {
       {
         onSuccess: () => {
           router.push("/");
-        },
-        onError: (error) => {
-          console.error("Error creating pet:", error);
-          // The user can retry by clicking Select again
-        },
+        }
       },
     );
   };
