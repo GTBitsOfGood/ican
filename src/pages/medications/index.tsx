@@ -3,6 +3,7 @@ import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
@@ -26,6 +27,7 @@ export default function MedicationsPage({
   activeModal = "",
   editMedicationInfo = undefined,
 }: MedicationPageProps) {
+  const router = useRouter();
   const { data: medications = [] } = useUserMedications();
   const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
@@ -38,9 +40,12 @@ export default function MedicationsPage({
 
   const handleBackClick = () => {
     if (!isOnboarded) {
-      window.location.href = `/onboarding/?step=${OnboardingStep.ChoosePet}`;
+      const userType = router.query.userType || "parent";
+      router.push(
+        `/onboarding/?step=${OnboardingStep.ChoosePet}&userType=${userType}`,
+      );
     } else {
-      window.location.href = "/settings";
+      router.push("/settings");
     }
   };
 
