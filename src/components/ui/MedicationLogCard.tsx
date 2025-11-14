@@ -78,7 +78,12 @@ export default function MedicationLogCard({
     if (isPracticeDose) {
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
-      setShowSuccessModal(true);
+      tutorial.completePracticeDoseLog();
+      // Navigate to home screen where medication drag will appear
+      // The congratulations modal will show AFTER dragging the medication
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
     } else {
       medicationLogMutation.mutate(
         {
@@ -174,17 +179,8 @@ export default function MedicationLogCard({
           handleTakenAction={handleTakeMedicationAction}
         />
       )}
-      {showSuccessModal && (
-        <SuccessMedicationModal
-          onModalClose={
-            isPracticeDose
-              ? () => {
-                  tutorial.completePracticeDoseLog();
-                  tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-                }
-              : undefined
-          }
-        />
+      {showSuccessModal && !isPracticeDose && (
+        <SuccessMedicationModal onModalClose={undefined} />
       )}
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">

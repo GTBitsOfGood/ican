@@ -42,6 +42,8 @@ interface TutorialContextType {
   isPracticeDoseTaken: boolean;
   tutorialPortion: number;
   tutorialStep: number;
+  medicationType: "Pill" | "Syrup" | "Shot" | null;
+  shouldShowMedicationDrag: boolean;
   feedPet: (
     onSuccess?: (updatedPet: WithId<Pet>) => void,
     onError?: (error: Error) => void,
@@ -56,6 +58,7 @@ interface TutorialContextType {
   handlePracticeDoseCheckIn: (onSuccess?: () => void) => void;
   handlePracticeDoseLog: (onSuccess?: () => void) => void;
   completePracticeDoseLog: () => void;
+  clearMedicationDrag: () => void;
   resetTutorial: () => void;
   getTutorialText: () => string | undefined;
   advanceToPortion: (portion: number) => void;
@@ -70,6 +73,8 @@ interface TutorialState {
   bag: Bag | null;
   practiceDose: LogType;
   isPracticeDoseTaken: boolean;
+  medicationType: "Pill" | "Syrup" | "Shot" | null;
+  shouldShowMedicationDrag: boolean;
 }
 
 type TutorialAction =
@@ -81,6 +86,8 @@ type TutorialAction =
   | { type: "SET_STEP"; payload: number }
   | { type: "SET_PRACTICE_DOSE"; payload: LogType }
   | { type: "SET_PRACTICE_DOSE_TAKEN"; payload: boolean }
+  | { type: "SET_MEDICATION_TYPE"; payload: "Pill" | "Syrup" | "Shot" | null }
+  | { type: "SET_SHOULD_SHOW_MEDICATION_DRAG"; payload: boolean }
   | {
       type: "RESET";
       payload: {
@@ -96,6 +103,8 @@ const createInitialState = (): TutorialState => ({
   bag: null,
   practiceDose: getPracticeDose(),
   isPracticeDoseTaken: false,
+  medicationType: null,
+  shouldShowMedicationDrag: false,
 });
 
 const tutorialReducer = (
@@ -127,6 +136,10 @@ const tutorialReducer = (
       return { ...state, practiceDose: action.payload };
     case "SET_PRACTICE_DOSE_TAKEN":
       return { ...state, isPracticeDoseTaken: action.payload };
+    case "SET_MEDICATION_TYPE":
+      return { ...state, medicationType: action.payload };
+    case "SET_SHOULD_SHOW_MEDICATION_DRAG":
+      return { ...state, shouldShowMedicationDrag: action.payload };
     case "RESET":
       return {
         portion: TUTORIAL_PORTIONS.FOOD_TUTORIAL,
@@ -135,6 +148,8 @@ const tutorialReducer = (
         bag: action.payload.bag,
         practiceDose: getPracticeDose(),
         isPracticeDoseTaken: false,
+        medicationType: null,
+        shouldShowMedicationDrag: false,
       };
     default:
       return state;
@@ -157,6 +172,19 @@ const createEmptyBag = (): Bag => ({
   background: [],
   food: [],
 });
+
+// Extract medication type from dosage string (e.g., "1 pill" -> "Pill", "2 shots" -> "Shot")
+const extractMedicationType = (dosage: string): "Pill" | "Syrup" | "Shot" => {
+  const lowerDosage = dosage.toLowerCase();
+  if (lowerDosage.includes("shot") || lowerDosage.includes("injection")) {
+    return "Shot";
+  }
+  if (lowerDosage.includes("syrup") || lowerDosage.includes("liquid")) {
+    return "Syrup";
+  }
+  // Default to Pill
+  return "Pill";
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cloneBagStructure = (_bag: Record<string, InventoryItem[]>): Bag => ({
@@ -190,7 +218,16 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   const completionTriggeredRef = useRef(false);
   const hasHydratedProgress = useRef(false);
 
-  const { portion, step, pet, bag, practiceDose, isPracticeDoseTaken } = state;
+  const {
+    portion,
+    step,
+    pet,
+    bag,
+    practiceDose,
+    isPracticeDoseTaken,
+    medicationType,
+    shouldShowMedicationDrag,
+  } = state;
 
   useEffect(() => {
     if (!isTutorial) {
@@ -275,6 +312,20 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
         payload: savedProgress.isPracticeDoseTaken,
       });
 
+      if (savedProgress.medicationType) {
+        dispatch({
+          type: "SET_MEDICATION_TYPE",
+          payload: savedProgress.medicationType,
+        });
+      }
+
+      if (savedProgress.shouldShowMedicationDrag !== undefined) {
+        dispatch({
+          type: "SET_SHOULD_SHOW_MEDICATION_DRAG",
+          payload: savedProgress.shouldShowMedicationDrag,
+        });
+      }
+
       if (!savedProgress.pet || !savedProgress.bag) {
         ensurePrerequisites(savedProgress.portion);
       }
@@ -297,14 +348,18 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
       bag,
       practiceDose,
       isPracticeDoseTaken,
+      medicationType,
+      shouldShowMedicationDrag,
     });
   }, [
     bag,
     isTutorial,
     isPracticeDoseTaken,
+    medicationType,
     pet,
     portion,
     practiceDose,
+    shouldShowMedicationDrag,
     step,
     userId,
   ]);
@@ -495,6 +550,9 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   const completePracticeDoseLog = useCallback(() => {
     if (!isTutorial) return;
 
+    const extractedType = extractMedicationType(practiceDose.dosage);
+    dispatch({ type: "SET_MEDICATION_TYPE", payload: extractedType });
+    dispatch({ type: "SET_SHOULD_SHOW_MEDICATION_DRAG", payload: true });
     dispatch({ type: "SET_PRACTICE_DOSE_TAKEN", payload: true });
     dispatch({
       type: "SET_PRACTICE_DOSE",
@@ -505,6 +563,12 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
       },
     });
   }, [isTutorial, practiceDose]);
+
+  const clearMedicationDrag = useCallback(() => {
+    if (!isTutorial) return;
+    dispatch({ type: "SET_SHOULD_SHOW_MEDICATION_DRAG", payload: false });
+    dispatch({ type: "SET_MEDICATION_TYPE", payload: null });
+  }, [isTutorial]);
 
   const resetTutorial = useCallback(() => {
     if (!realPet || !realBag) return;
@@ -526,6 +590,11 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   }, [realPet, realBag, userId]);
 
   const getTutorialText = useCallback(() => {
+    // Show medication drag message when medication should be dragged
+    if (shouldShowMedicationDrag) {
+      return "Feed me the medicine!";
+    }
+
     const dialogues = TUTORIAL_DIALOGUES[portion];
     if (!dialogues) return undefined;
     if (step >= dialogues.length) return undefined;
@@ -536,7 +605,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     return dialogues[step]
       .replace("{userName}", userName)
       .replace("{petName}", petName);
-  }, [portion, step, userProfile?.name, pet?.name]);
+  }, [portion, step, userProfile?.name, pet?.name, shouldShowMedicationDrag]);
 
   const contextValue = useMemo<TutorialContextType>(
     () => ({
@@ -546,12 +615,15 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
       isPracticeDoseTaken,
       tutorialPortion: portion,
       tutorialStep: step,
+      medicationType,
+      shouldShowMedicationDrag,
       feedPet,
       updatePet,
       purchaseItem,
       handlePracticeDoseCheckIn,
       handlePracticeDoseLog,
       completePracticeDoseLog,
+      clearMedicationDrag,
       resetTutorial,
       getTutorialText,
       advanceToPortion,
@@ -561,17 +633,20 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     [
       advanceToPortion,
       bag,
+      clearMedicationDrag,
       completePracticeDoseLog,
       feedPet,
       getTutorialText,
       handlePracticeDoseCheckIn,
       handlePracticeDoseLog,
       isPracticeDoseTaken,
+      medicationType,
       pet,
       practiceDose,
       purchaseItem,
       resetTutorial,
       shouldEnlargeButton,
+      shouldShowMedicationDrag,
       shouldShowPracticeDose,
       step,
       updatePet,
