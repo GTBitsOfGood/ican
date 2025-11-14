@@ -10,8 +10,6 @@ import ForgotPinModal from "@/components/modals/ForgotPinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import { useFeedPet, usePet } from "@/components/hooks/usePet";
-import { Pet } from "@/types/pet";
-import { WithId } from "@/types/models";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
@@ -43,19 +41,8 @@ export default function Home({
   const realFeedPet = useFeedPet();
   const tutorial = useTutorial();
 
-  const pet = isTutorial ? tutorial.pet : realPetData.data;
-  const feedPetMutation = isTutorial
-    ? {
-        mutate: (
-          _petId: string,
-          options?: {
-            onSuccess?: (updatedPet: WithId<Pet>) => void;
-            onError?: (error: Error) => void;
-          },
-        ) => tutorial.feedPet(options?.onSuccess, options?.onError),
-        isPending: false,
-      }
-    : realFeedPet;
+  const pet = realPetData.data;
+  const feedPetMutation = realFeedPet;
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
@@ -99,6 +86,9 @@ export default function Home({
           setShowSuccessModalVisible(true);
         }
         setSelectedFood("");
+        if (isTutorial) {
+          tutorial.advanceToPortion(TUTORIAL_PORTIONS.END_TUTORIAL);
+        }
       },
       onError: (error) => {
         console.error("Error handling food drop:", error);

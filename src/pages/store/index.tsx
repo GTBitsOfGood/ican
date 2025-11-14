@@ -12,42 +12,25 @@ import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
 import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
-import { useTutorial } from "@/components/TutorialContext";
 import { useTutorialStatus } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
+import { useTutorial } from "@/components/TutorialContext";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 
 export default function Store() {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
   const isTutorial = !tutorialCompleted;
 
-  const { data: realPet } = usePet();
   const tutorial = useTutorial();
-
-  const pet = isTutorial ? tutorial.pet : realPet;
+  const { data: realPet } = usePet();
+  const pet = realPet;
 
   const { data: realBag } = usePetBag(pet?._id);
-  const petBag = isTutorial ? tutorial.bag : realBag;
+  const petBag = realBag;
 
   const realPurchase = usePurchaseItem();
-  const purchaseItemMutation = isTutorial
-    ? {
-        mutate: (
-          itemData: { petId: string; name: string; type: string; cost: number },
-          options?: {
-            onSuccess?: () => void;
-            onError?: (error: Error) => void;
-          },
-        ) =>
-          tutorial.purchaseItem(
-            itemData.name,
-            itemData.type,
-            itemData.cost,
-            options?.onSuccess,
-          ),
-        isPending: false,
-      }
-    : realPurchase;
+  const purchaseItemMutation = realPurchase;
 
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<
@@ -68,6 +51,9 @@ export default function Store() {
     purchaseItemMutation.mutate(itemData, {
       onSuccess: () => {
         setShowPurchasedScreen(true);
+        if (isTutorial && item.type === "food") {
+          tutorial.advanceToPortion(TUTORIAL_PORTIONS.LOG_TUTORIAL);
+        }
       },
       onError: (error) => {
         console.error("Error purchasing item", error);

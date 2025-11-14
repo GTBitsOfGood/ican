@@ -1,7 +1,4 @@
-import { Bag } from "@/types/inventory";
 import { LogType } from "@/types/log";
-import { WithId } from "@/types/models";
-import { Pet } from "@/types/pet";
 
 export const TUTORIAL_STORAGE_KEYS = {
   CURRENT_PROGRESS: "tutorialCurrentPortion",
@@ -35,17 +32,11 @@ export interface TutorialProgressPayload {
   userId: string | null;
   portion: number;
   step: number;
-  pet: WithId<Pet> | null;
-  bag: Bag | null;
   practiceDose: LogType;
   isPracticeDoseTaken: boolean;
 }
 
-type StoredTutorialProgressPayload = Partial<TutorialProgressPayload> & {
-  userId: string | null;
-  portion: number;
-  step: number;
-};
+type StoredTutorialProgressPayload = TutorialProgressPayload;
 
 const isBrowser = () => typeof window !== "undefined";
 
@@ -64,8 +55,6 @@ export const readTutorialProgress = (
         userId: parsed.userId,
         portion: parsed.portion,
         step: parsed.step,
-        pet: parsed.pet ?? null,
-        bag: parsed.bag ?? null,
         practiceDose: parsed.practiceDose ?? getPracticeDose(),
         isPracticeDoseTaken: parsed.isPracticeDoseTaken ?? false,
       };
@@ -87,8 +76,6 @@ export const writeTutorialProgress = (
     userId,
     portion: payload.portion,
     step: payload.step,
-    pet: payload.pet,
-    bag: payload.bag,
     practiceDose: payload.practiceDose,
     isPracticeDoseTaken: payload.isPracticeDoseTaken,
   };
