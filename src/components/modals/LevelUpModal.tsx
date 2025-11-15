@@ -39,10 +39,10 @@ export default function FoodModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden max-w-[400px]",
+        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden",
         header:
           "mobile:text-3xl tablet:text-4xl largeDesktop:text-5xl tiny:text-2xl minimized:text-3xl small:text-4xl items-center",
-        closeButton: "top-[2.5rem]",
+        closeButton: "top-[0.5rem]",
         footer: "items-center justify-center",
       }}
       className="w-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
@@ -53,17 +53,17 @@ export default function FoodModal({
       closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
-        <ModalHeader>
-          {levelChanged ? "Level Up!" : "Congratulations!"}
-        </ModalHeader>
-        <ModalBody>
+        <ModalHeader>{levelChanged ? "Level Up!" : ""}</ModalHeader>
+        <ModalBody
+          className={`relative flex flex-col items-center justify-center ${levelChanged ? "py-8" : "py-12 px-0"}`}
+        >
           {levelChanged ? (
             <div className="relative">
               <Image
                 src="/misc/Banner.svg"
                 width={0}
                 height={0}
-                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 50px"
                 alt="Banner"
                 className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto"
               />
@@ -74,9 +74,9 @@ export default function FoodModal({
                 src="/misc/Shine.svg"
                 width={0}
                 height={0}
-                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 600px"
                 alt="Shine"
-                className="mx-auto mb-4 w-auto"
+                className="mx-auto mb-4 w-auto h-auto"
               />
               <div className="flex">
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 text-center">
@@ -102,11 +102,11 @@ export default function FoodModal({
                 src="/assets/CongratulationsBackdrop.svg"
                 width={0}
                 height={0}
-                sizes="(max-width: 768px) 60vw, (max-width: 1200px) 50vw, 450px"
+                sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 600px"
                 alt="Shine"
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-[100%] h-auto"
               />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-cente h-10">
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center h-10">
                 <ExpBar level={level ?? 0} currentExp={xp ?? 0} />
               </div>
             </>
