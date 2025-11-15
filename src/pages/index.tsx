@@ -3,6 +3,8 @@ import Navbar from "@/components/ui/Navbar";
 import NavButton from "@/components/ui/NavButton";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import PetDisplay from "@/components/home/PetDisplay";
+import Hearts from "@/components/ui/Heart";
+
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
 import ForgotPinModal from "@/components/modals/ForgotPinModal";
@@ -54,6 +56,7 @@ export default function Home({
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
+  const [showHearts, setHearts] = useState<boolean>(false);
   const feeding = feedPetMutation.isPending;
   const {
     medication: upcomingMed,
@@ -94,11 +97,22 @@ export default function Home({
     feedPetMutation.mutate(pet._id, {
       onSuccess: (updatedPetData) => {
         const newLevel = updatedPetData?.xpLevel ?? 0;
+
+        setHearts(true);
+
         if (updatedPetData && newLevel > previousLevel) {
-          setShowLevelUpModalVisible(true);
+          setTimeout(() => {
+            setHearts(false);
+            setShowLevelUpModalVisible(true);
+          }, 2000);
         } else {
-          setShowSuccessModalVisible(true);
+          // Hearts will trigger success modal after animation
+          setTimeout(() => {
+            setHearts(false);
+            setShowSuccessModalVisible(true);
+          }, 2000);
         }
+
         setSelectedFood("");
         if (isTutorial) {
           tutorial.advanceToPortion(TUTORIAL_PORTIONS.END_TUTORIAL);
@@ -223,6 +237,8 @@ export default function Home({
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />
+
+          {showHearts && <Hearts />}
         </div>
       ) : (
         <LoadingScreen />
