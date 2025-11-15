@@ -24,7 +24,6 @@ export default function Heart({ onComplete }: HeartProps) {
 
   return (
     <div className="absolute inset-0 pointer-events-none z-40">
-      \
       <div
         className="absolute bottom-[35%] left-[45%] animate-float-heart-left"
         style={{
@@ -46,7 +45,7 @@ export default function Heart({ onComplete }: HeartProps) {
         }}
       >
         <Image
-          src="/assets/Heart.svg"
+          src="/misc/heart.svg"
           alt="Heart"
           width={60}
           height={60}
