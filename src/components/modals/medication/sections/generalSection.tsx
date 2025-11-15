@@ -54,11 +54,11 @@ export default function GeneralSection({
         </DropDown>
       </FormControl>
       <FormLabel type="required" className="mt-8">
-        Medication ID
+        Medication Nickname
       </FormLabel>
       <FormSubtitle>
-        Choose up to 5 characters to create an ID to help you remember which
-        medication to take.
+        Choose up to 5 characters to create a nickname to help you remember
+        which medication to take.
       </FormSubtitle>
       <IDInput
         values={

@@ -23,16 +23,20 @@ export default function Onboard() {
   const updateOnboardingStatus = useUpdateOnboardingStatus();
   const updatePin = useUpdatePin();
 
-  // Handle URL step parameter
+  // Handle URL step and userType parameters
   useEffect(() => {
     if (router.isReady) {
-      const { step } = router.query;
+      const { step, userType: urlUserType } = router.query;
 
       if (
         typeof step === "string" &&
         Object.values(OnboardingStep).includes(step as OnboardingStep)
       ) {
         setCurrentStep(step as OnboardingStep);
+      }
+
+      if (urlUserType === "parent" || urlUserType === "child") {
+        setUserType(urlUserType);
       }
     }
   }, [router.isReady, router.query]);
@@ -106,7 +110,7 @@ export default function Onboard() {
   };
 
   const handleChooseMedication = () => {
-    window.location.href = "/medications/";
+    router.push(`/medications/?userType=${userType}`);
   };
 
   const handleChoosePet = () => {
@@ -115,7 +119,7 @@ export default function Onboard() {
         { userId, isOnboarded: true },
         {
           onSuccess: () => {
-            window.location.href = "/first-pet";
+            router.push("/first-pet");
           },
           onError: (error) => {
             console.error("Error updating onboarding status:", error);
@@ -231,6 +235,7 @@ export default function Onboard() {
       case OnboardingStep.ChooseMedication:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChooseMedication}
             onBack={handleBack}
             onComplete={handleChooseMedication}
@@ -240,6 +245,7 @@ export default function Onboard() {
       case OnboardingStep.ChoosePet:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChoosePet}
             onBack={handleBack}
             onComplete={handleChoosePet}

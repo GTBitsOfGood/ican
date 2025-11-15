@@ -7,7 +7,7 @@ export default function HatItem({
   selectedItem: InventoryItem;
 }) {
   return (
-    <div className="absolute w-[80%] left-[8%] top-[-10%] flex items-center justify-center z-20">
+    <div className="absolute w-[80%] left-[8%] top-[8%] flex items-center justify-center z-20">
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Hat Item"}

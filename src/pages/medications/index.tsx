@@ -3,6 +3,7 @@ import BackButton from "@/components/ui/BackButton";
 import AddMedicationButton from "@/components/ui/AddMedicationButton";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import AddMedicationModal from "@/components/modals/medication/addMedicationModal";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
@@ -16,6 +17,7 @@ import {
 import { useUser } from "@/components/UserContext";
 import { useOnboardingStatus } from "@/components/hooks/useAuth";
 import { OnboardingStep } from "@/types/onboarding";
+import ModalButton from "@/components/ui/modals/modalButton";
 
 interface MedicationPageProps {
   activeModal: string;
@@ -26,6 +28,7 @@ export default function MedicationsPage({
   activeModal = "",
   editMedicationInfo = undefined,
 }: MedicationPageProps) {
+  const router = useRouter();
   const { data: medications = [] } = useUserMedications();
   const deleteMedicationMutation = useDeleteMedication();
   const [deleteModalVisible, setDeleteModalVisible] = useState<boolean>(false);
@@ -38,9 +41,12 @@ export default function MedicationsPage({
 
   const handleBackClick = () => {
     if (!isOnboarded) {
-      window.location.href = `/onboarding/?step=${OnboardingStep.ChoosePet}`;
+      const userType = router.query.userType || "parent";
+      router.push(
+        `/onboarding/?step=${OnboardingStep.ChoosePet}&userType=${userType}`,
+      );
     } else {
-      window.location.href = "/settings";
+      router.push("/settings");
     }
   };
 
@@ -80,27 +86,38 @@ export default function MedicationsPage({
             />
           )}
         <div className="flex w-full justify-between items-center">
-          <div className="mobile:block desktop:hidden">
-            <div className="mobile:[&>a]:w-16 mobile:[&>a]:h-16 mobile:[&>a>button]:w-full mobile:[&>a>button]:h-full">
+          {isOnboarded ? (
+            <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
               <BackButton onClick={handleBackClick} />
             </div>
-          </div>
-          <div className="mobile:hidden desktop:block">
-            <div className="desktop:[&>a]:w-16 desktop:[&>a]:h-16 desktop:[&>a>button]:w-full desktop:[&>a>button]:h-full">
-              <BackButton onClick={handleBackClick} />
+          ) : (
+            <div className="flex w-full justify-end p-5">
+              <ModalButton
+                className="max-w-max font-quantico"
+                action={handleBackClick}
+                type="success"
+              >
+                Next
+              </ModalButton>
             </div>
-          </div>
+          )}
         </div>
         <div className="flex flex-col w-[95%] h-full gap-4">
           <div className="flex w-full justify-between items-center">
-            <div className="flex items-center gap-2 mobile:flex desktop:hidden">
-              <h1 className="font-quantico mobile:text-5xl font-bold text-white underline">
+            {isOnboarded ? (
+              <h1 className="font-quantico font-bold text-white underline text-5xl desktop:text-6xl">
                 Medications
               </h1>
-            </div>
-            <h1 className="mobile:hidden desktop:block font-quantico desktop:text-6xl font-bold text-white underline">
-              Medications
-            </h1>
+            ) : (
+              <div>
+                <h1 className="font-quantico font-bold text-white text-5xl desktop:text-6xl">
+                  Enter Medications
+                </h1>
+                <h2 className="font-quantico font-bold text-white text-3xl desktop:text-4xl mt-5">
+                  Click to add Medications to your list.
+                </h2>
+              </div>
+            )}
             {medications.length !== 0 && <AddMedicationButton />}
           </div>
           <div className="grid mobile:grid-cols-1 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
