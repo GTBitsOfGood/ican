@@ -47,6 +47,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
           petType={petType}
           selectedItem={null}
           className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
+          showBackground={false}
         />
         <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
           <Bubble text={bubbleText} />
