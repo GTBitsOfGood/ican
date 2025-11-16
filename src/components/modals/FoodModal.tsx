@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
 import { usePet } from "../hooks/usePet";
+import { cn } from "@/lib/utils";
 
 export default function FoodModal({ foods }: { foods: string[] }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -55,8 +56,8 @@ export default function FoodModal({ foods }: { foods: string[] }) {
       isDismissable={false}
     >
       <ModalContent>
-        <ModalHeader className="flex items-center gap-4">
-          <span>Foods</span>
+        <ModalHeader className="flex items-center gap-4 px-0">
+          <h3 className="underline underline-offset-4 text-4xl">Foods</h3>
           <div className="flex items-center gap-3 bg-white px-4 py-2 border-4 border-black">
             <Image
               src={`${baseImageUrl}/Pizza.svg`}
@@ -75,15 +76,18 @@ export default function FoodModal({ foods }: { foods: string[] }) {
             return (
               <div
                 key={food}
-                className={`flex flex-col items-center justify-center gap-2 px-6 py-6 justify-self-center h-full
-                            ${food === clickedFood ? "cursor-pointer bg-icanGreen-300 border-[5px] border-solid border-black" : "hover:cursor-pointer hover:bg-icanGreen-300 hover:border-[5px] hover:border-solid hover:border-black"}`}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-2 px-6 py-6 justify-self-center h-full border-4 border-icanBlue-100 hover:cursor-pointer hover:bg-icanGreen-300 hover:border-solid hover:border-black",
+                  food === clickedFood &&
+                    "cursor-pointer bg-icanGreen-300 border-4 border-solid border-black",
+                )}
                 onClick={() => setClickedFood(food)}
               >
                 <Image
                   src={`${baseImageUrl}/${food}.svg`}
                   alt={food}
-                  width={400}
-                  height={150}
+                  width={200}
+                  height={200}
                   className="h-full w-auto object-contain"
                   priority
                 />

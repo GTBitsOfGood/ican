@@ -70,7 +70,7 @@ const petSchema = new Schema<PetDocument>(
     food: {
       type: Number,
       required: true,
-      default: 1,
+      default: 0,
     },
     appearance: {
       type: appearanceSchema,

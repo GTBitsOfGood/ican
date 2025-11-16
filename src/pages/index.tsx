@@ -16,10 +16,9 @@ import { PetType } from "@/types/pet";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-// import { useUserProfile } from "@/components/hooks/useAuth";
 
 interface HomeProps {
   activeModal: string;
@@ -41,35 +40,10 @@ export default function Home({
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const feeding = feedPetMutation.isPending;
-  const [bubbleText, setBubbleText] = useState<string>(
-    "I’m hungry, can you feed me some food, please?",
-  );
-  // const { data: userProfile } = useUserProfile();
-
-  const getDistanceMessage = (distance: number | null) => {
-    // const userName = userProfile?.name?.trim() || "Friend";
-
-    if (distance === null || distance > 150) {
-      return "Drag the food into my mouth to feed me!";
-    }
-    return `Yummy! Thank you for feeding me!`;
-  };
-
-  useEffect(() => {
-    if (selectedFood && distance != null) {
-      setBubbleText(getDistanceMessage(distance));
-    } else if (selectedFood) {
-      setBubbleText("Drag the food into my mouth to feed me!");
-    } else {
-      setBubbleText("I’m hungry, can you feed me some food, please?");
-    }
-  }, [distance, selectedFood]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
-    if (distance == null || distance > 150) {
-      return;
-    }
+    if (distance == null || distance > 150) return;
     if (feeding) return;
 
     const previousLevel = pet.xpLevel;
@@ -105,7 +79,7 @@ export default function Home({
       )}
       {showSuccessModalVisible && (
         <LevelUpModal
-          setVisible={setShowSuccessModalVisible}
+          setVisible={setShowLevelUpModalVisible}
           level={pet?.xpLevel}
           xp={pet?.xpGained}
           levelChanged={false}
@@ -135,7 +109,7 @@ export default function Home({
             <NavButton buttonType="store" />
             <NavButton buttonType="bag" />
             <NavButton buttonType="log" />
-            <FeedButton />
+            {pet.food > 0 && <FeedButton />}
           </Navbar>
 
           {/* Character, speech bubble and food image is made relative to the image */}
@@ -148,7 +122,7 @@ export default function Home({
                 className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
               />
               <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
-                <Bubble text={bubbleText} />
+                <Bubble />
               </div>
               <div
                 ref={constraintsRef}
