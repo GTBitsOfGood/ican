@@ -31,12 +31,4 @@ export default class TutorialHTTPClient {
       body: JSON.stringify({}),
     });
   }
-
-  static async grantPracticeDoseReward(): Promise<WithId<Pet>> {
-    return fetchHTTPClient<WithId<Pet>>("/tutorial/practice-dose", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({}),
-    });
-  }
 }

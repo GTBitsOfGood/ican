@@ -20,7 +20,7 @@ import {
   useUpdateTutorialStatus,
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
-import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 
@@ -77,15 +77,6 @@ export default function Home({
     tutorial.tutorialStep,
     ensureStarterKitMutation,
   ]);
-
-  useEffect(() => {
-    if (!isTutorial) return;
-    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FEED_TUTORIAL) return;
-    if (tutorial.tutorialStep !== 0) return;
-    if (!selectedFood) return;
-
-    tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-  }, [isTutorial, tutorial, selectedFood]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
@@ -165,7 +156,6 @@ export default function Home({
                 redirect=""
                 onClick={() => {
                   if (userId) {
-                    clearTutorialProgress(userId);
                     updateTutorialStatus.mutate(
                       {
                         userId,

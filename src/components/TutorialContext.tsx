@@ -15,13 +15,7 @@ import {
   useUserProfile,
 } from "./hooks/useAuth";
 import { useUser } from "./UserContext";
-import {
-  clearTutorialProgress,
-  readTutorialProgress,
-  writeTutorialProgress,
-  TUTORIAL_DIALOGUES,
-  TUTORIAL_PORTIONS,
-} from "@/constants/tutorial";
+import { TUTORIAL_DIALOGUES, TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import {
   useSetupTutorialMedication,
   useTutorialProgress,
@@ -30,7 +24,6 @@ import {
 interface TutorialContextType {
   tutorialPortion: number;
   tutorialStep: number;
-  resetTutorial: () => void;
   getTutorialText: () => string | undefined;
   advanceToPortion: (portion: number) => void;
   shouldEnlargeButton: (buttonType: "store" | "log") => boolean;
@@ -43,8 +36,7 @@ interface TutorialState {
 
 type TutorialAction =
   | { type: "SET_PORTION_AND_STEP"; payload: { portion: number; step: number } }
-  | { type: "SET_STEP"; payload: number }
-  | { type: "RESET" };
+  | { type: "SET_STEP"; payload: number };
 
 const createInitialState = (): TutorialState => ({
   portion: TUTORIAL_PORTIONS.FOOD_TUTORIAL,
@@ -64,8 +56,6 @@ const tutorialReducer = (
       };
     case "SET_STEP":
       return { ...state, step: action.payload };
-    case "RESET":
-      return createInitialState();
     default:
       return state;
   }
@@ -79,57 +69,40 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const { userId } = useUser();
-  const { data: tutorialCompleted } = useTutorialStatus(userId);
+  const { data: tutorialCompleted, isSuccess: tutorialStatusLoaded } =
+    useTutorialStatus(userId);
   const { data: userProfile } = useUserProfile(userId);
   const updateTutorialStatus = useUpdateTutorialStatus();
-  const isTutorial = !tutorialCompleted;
+  const isTutorial = tutorialStatusLoaded && !tutorialCompleted;
 
   const { data: realPet } = usePet();
-  const { data: tutorialProgress } = useTutorialProgress();
+  const { data: tutorialProgress } = useTutorialProgress(isTutorial);
   const setupTutorialMedication = useSetupTutorialMedication();
   const [state, dispatch] = useReducer(tutorialReducer, undefined, () =>
     createInitialState(),
   );
 
   const completionTriggeredRef = useRef(false);
-  const hasHydratedProgress = useRef(false);
 
   const { portion, step } = state;
 
   useEffect(() => {
     if (!isTutorial) {
-      hasHydratedProgress.current = false;
       completionTriggeredRef.current = false;
     }
   }, [isTutorial]);
 
   useEffect(() => {
     if (!isTutorial) return;
-    if (hasHydratedProgress.current) return;
+    if (portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL) return;
+    if (setupTutorialMedication.isPending) return;
 
-    const savedProgress = readTutorialProgress(userId ?? null);
-    if (savedProgress) {
-      dispatch({
-        type: "SET_PORTION_AND_STEP",
-        payload: {
-          portion: savedProgress.portion,
-          step: savedProgress.step,
-        },
-      });
-    }
-
-    hasHydratedProgress.current = true;
-  }, [isTutorial, userId]);
-
-  useEffect(() => {
-    if (!isTutorial) return;
-    if (!hasHydratedProgress.current) return;
-
-    writeTutorialProgress(userId ?? null, {
-      portion,
-      step,
+    setupTutorialMedication.mutate(undefined, {
+      onError: (error) => {
+        console.error("Unable to setup tutorial medication", error);
+      },
     });
-  }, [isTutorial, portion, step, userId]);
+  }, [isTutorial, portion, setupTutorialMedication]);
 
   useEffect(() => {
     if (!isTutorial) return;
@@ -154,9 +127,6 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
                 tutorial_completed: true,
               },
               {
-                onSuccess: () => {
-                  clearTutorialProgress(userId);
-                },
                 onError: () => {
                   completionTriggeredRef.current = false;
                 },
@@ -181,7 +151,6 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (!isTutorial) return;
     if (!tutorialProgress) return;
-    if (!hasHydratedProgress.current) return;
 
     let targetPortion: number = TUTORIAL_PORTIONS.FOOD_TUTORIAL;
     if (tutorialProgress.hasFedPet) {
@@ -204,20 +173,12 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     (targetPortion: number) => {
       if (!isTutorial) return;
 
-      if (targetPortion === TUTORIAL_PORTIONS.LOG_TUTORIAL) {
-        setupTutorialMedication.mutate(undefined, {
-          onError: (error) => {
-            console.error("Unable to setup tutorial medication", error);
-          },
-        });
-      }
-
       dispatch({
         type: "SET_PORTION_AND_STEP",
         payload: { portion: targetPortion, step: 0 },
       });
     },
-    [isTutorial, setupTutorialMedication],
+    [isTutorial],
   );
 
   const shouldEnlargeButton = useCallback(
@@ -244,13 +205,6 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     [isTutorial, portion, step],
   );
 
-  const resetTutorial = useCallback(() => {
-    dispatch({ type: "RESET" });
-    clearTutorialProgress(userId ?? null);
-    hasHydratedProgress.current = false;
-    completionTriggeredRef.current = false;
-  }, [userId]);
-
   const getTutorialText = useCallback(() => {
     const dialogues = TUTORIAL_DIALOGUES[portion];
     if (!dialogues) return undefined;
@@ -268,19 +222,11 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
     () => ({
       tutorialPortion: portion,
       tutorialStep: step,
-      resetTutorial,
       getTutorialText,
       advanceToPortion,
       shouldEnlargeButton,
     }),
-    [
-      advanceToPortion,
-      getTutorialText,
-      resetTutorial,
-      shouldEnlargeButton,
-      step,
-      portion,
-    ],
+    [getTutorialText, advanceToPortion, shouldEnlargeButton, step, portion],
   );
 
   return (

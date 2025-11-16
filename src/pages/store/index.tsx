@@ -14,15 +14,12 @@ import Image from "next/image";
 import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
 import { useTutorialStatus } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
-import { useTutorial } from "@/components/TutorialContext";
-import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 
 export default function Store() {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
   const isTutorial = !tutorialCompleted;
 
-  const tutorial = useTutorial();
   const { data: realPet } = usePet();
   const pet = realPet;
 
@@ -51,9 +48,6 @@ export default function Store() {
     purchaseItemMutation.mutate(itemData, {
       onSuccess: () => {
         setShowPurchasedScreen(true);
-        if (isTutorial && item.type === "food") {
-          tutorial.advanceToPortion(TUTORIAL_PORTIONS.LOG_TUTORIAL);
-        }
       },
       onError: (error) => {
         console.error("Error purchasing item", error);

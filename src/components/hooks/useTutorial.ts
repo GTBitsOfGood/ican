@@ -10,11 +10,14 @@ export const TUTORIAL_QUERY_KEYS = {
   progress: () => ["tutorialProgress"] as const,
 } as const;
 
-export const useTutorialProgress = () => {
+export const useTutorialProgress = (isTutorial: boolean = true) => {
+  const { userId } = useUser();
+
   return useQuery<TutorialProgress>({
     queryKey: TUTORIAL_QUERY_KEYS.progress(),
     queryFn: TutorialHTTPClient.getTutorialProgress,
     staleTime: 30 * 1000,
+    enabled: !!userId && isTutorial,
   });
 };
 
