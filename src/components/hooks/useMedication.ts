@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/components/UserContext";
 import { MedicationInfo } from "@/types/medication";
 import { PET_QUERY_KEYS } from "./usePet";
+import { TUTORIAL_QUERY_KEYS } from "./useTutorial";
 
 export const MEDICATION_QUERY_KEYS = {
   allMedications: (userId: string) => ["medications", userId] as const,
@@ -154,6 +155,9 @@ export const useMedicationLog = () => {
           queryKey: PET_QUERY_KEYS.pet(userId),
         });
       }
+      queryClient.invalidateQueries({
+        queryKey: TUTORIAL_QUERY_KEYS.progress(),
+      });
     },
   });
 };

@@ -1,39 +1,11 @@
-import { LogType } from "@/types/log";
-
 export const TUTORIAL_STORAGE_KEYS = {
   CURRENT_PROGRESS: "tutorialCurrentPortion",
 } as const;
-
-export const PRACTICE_DOSE_ID = "practice-dose" as const;
-
-export const getPracticeDose = () => {
-  const now = new Date();
-  const scheduledTime = new Date(now.getTime() + 10 * 60 * 1000);
-
-  return {
-    id: PRACTICE_DOSE_ID,
-    name: "Practice Dose",
-    dosage: "1 pill",
-    notes: "",
-    scheduledDoseTime: scheduledTime.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }),
-    canCheckIn: true,
-    status: "pending" as const,
-    lastTaken: "",
-    repeatUnit: "days" as const,
-    repeatInterval: 1,
-  };
-};
 
 export interface TutorialProgressPayload {
   userId: string | null;
   portion: number;
   step: number;
-  practiceDose: LogType;
-  isPracticeDoseTaken: boolean;
 }
 
 type StoredTutorialProgressPayload = TutorialProgressPayload;
@@ -55,8 +27,6 @@ export const readTutorialProgress = (
         userId: parsed.userId,
         portion: parsed.portion,
         step: parsed.step,
-        practiceDose: parsed.practiceDose ?? getPracticeDose(),
-        isPracticeDoseTaken: parsed.isPracticeDoseTaken ?? false,
       };
     }
   } catch (error) {
@@ -76,8 +46,6 @@ export const writeTutorialProgress = (
     userId,
     portion: payload.portion,
     step: payload.step,
-    practiceDose: payload.practiceDose,
-    isPracticeDoseTaken: payload.isPracticeDoseTaken,
   };
 
   localStorage.setItem(

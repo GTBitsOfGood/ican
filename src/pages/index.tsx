@@ -13,7 +13,7 @@ import { useFeedPet, usePet } from "@/components/hooks/usePet";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
 import {
   useTutorialStatus,
@@ -22,6 +22,7 @@ import {
 import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
+import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 
 interface HomeProps {
   activeModal: string;
@@ -40,6 +41,7 @@ export default function Home({
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
   const tutorial = useTutorial();
+  const ensureStarterKitMutation = useEnsureStarterKit();
 
   const pet = realPetData.data;
   const feedPetMutation = realFeedPet;
@@ -50,6 +52,7 @@ export default function Home({
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
+  const hasEnsuredStarterKit = useRef(false);
   const feeding = feedPetMutation.isPending;
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
@@ -60,6 +63,20 @@ export default function Home({
     (equippedBackgroundKey && equippedBackgroundKey.startsWith("/")
       ? equippedBackgroundKey
       : "/bg-home.svg");
+
+  useEffect(() => {
+    if (!isTutorial) return;
+    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FOOD_TUTORIAL) return;
+    if (tutorial.tutorialStep !== 3) return;
+    if (hasEnsuredStarterKit.current) return;
+    hasEnsuredStarterKit.current = true;
+    ensureStarterKitMutation.mutate();
+  }, [
+    isTutorial,
+    tutorial.tutorialPortion,
+    tutorial.tutorialStep,
+    ensureStarterKitMutation,
+  ]);
 
   useEffect(() => {
     if (!isTutorial) return;

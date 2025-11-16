@@ -7,12 +7,12 @@ import ERRORS from "@/utils/errorMessages";
 import { IllegalOperationError, NotFoundError } from "@/types/exceptions";
 import MedicationDAO from "@/db/actions/medication";
 import { Types } from "mongoose";
-import MedicationService from "./medication";
+import BagDAO from "@/db/actions/bag";
 
 const STARTER_COIN_MINIMUM = 100;
 const PRACTICE_DOSE_XP = 50;
 const PRACTICE_DOSE_COINS = 10;
-// const PRACTICE_DOSE_FOOD = 1;
+const PRACTICE_DOSE_FOOD = 1;
 const LEVEL_UP_COIN_REWARD = 100;
 const TUTORIAL_MEDICATION_ID = "TUTORIAL";
 
@@ -65,6 +65,8 @@ export default class TutorialService {
       notificationFrequency: "Every Dose" as const,
       notes: "Practice medication for tutorial",
       includeTimes: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     const newMedication =
@@ -83,11 +85,17 @@ export default class TutorialService {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);
     }
 
+    const petId = petDocument._id.toString();
+    const foodItems = await BagDAO.getBagItemsByPetIdAndType(petId, "food");
+    if (foodItems.length > 0) {
+      return toWithIdPet(petDocument.toObject());
+    }
+
     if (petDocument.coins >= STARTER_COIN_MINIMUM) {
       return toWithIdPet(petDocument.toObject());
     }
 
-    await PetDAO.updatePetByPetId(petDocument._id.toString(), {
+    await PetDAO.updatePetByPetId(petId, {
       coins: STARTER_COIN_MINIMUM,
     });
 
@@ -102,22 +110,6 @@ export default class TutorialService {
     if (tutorialCompleted) {
       throw new IllegalOperationError("Tutorial already completed");
     }
-
-    const tutorialMedication =
-      await MedicationDAO.getUserMedicationByCustomMedicationId(
-        TUTORIAL_MEDICATION_ID,
-        userId,
-      );
-
-    if (!tutorialMedication) {
-      throw new NotFoundError("Tutorial medication not found");
-    }
-
-    const medicationId = tutorialMedication._id.toString();
-    const localTime = new Date().toISOString();
-
-    await MedicationService.createMedicationCheckIn(medicationId, localTime);
-    await MedicationService.createMedicationLog(medicationId, localTime);
 
     const petDocument = await PetDAO.getPetByUserId(userId);
     if (!petDocument) {
@@ -138,6 +130,7 @@ export default class TutorialService {
       xpGained,
       xpLevel,
       coins: petDocument.coins + bonusCoins,
+      food: petDocument.food + PRACTICE_DOSE_FOOD,
     } as const;
 
     await PetDAO.updatePetByPetId(petDocument._id.toString(), updatedFields);
@@ -146,5 +139,54 @@ export default class TutorialService {
       ...petDocument.toObject(),
       ...updatedFields,
     });
+  }
+
+  static async getTutorialProgress(userId: string): Promise<{
+    hasPurchasedFood: boolean;
+    hasTakenTutorialMedication: boolean;
+    hasFedPet: boolean;
+  }> {
+    const tutorialCompleted = await UserDAO.getTutorialStatus(userId);
+    if (tutorialCompleted) {
+      return {
+        hasPurchasedFood: true,
+        hasTakenTutorialMedication: true,
+        hasFedPet: true,
+      };
+    }
+
+    const petDocument = await PetDAO.getPetByUserId(userId);
+    if (!petDocument) {
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
+    }
+
+    const petId = petDocument._id.toString();
+
+    // Check if user has purchased food
+    const foodItems = await BagDAO.getBagItemsByPetIdAndType(petId, "food");
+    const hasPurchasedFood = foodItems.length > 0;
+
+    // Check if tutorial medication has been logged
+    let hasTakenTutorialMedication = false;
+    const tutorialMedication =
+      await MedicationDAO.getUserMedicationByCustomMedicationId(
+        TUTORIAL_MEDICATION_ID,
+        userId,
+      );
+    if (tutorialMedication) {
+      const logs = await MedicationDAO.getMedicationLogs(
+        tutorialMedication._id.toString(),
+      );
+      hasTakenTutorialMedication = logs.length > 0;
+    }
+
+    // Check if pet has been fed (XP gained > 0, since feeding is the only way to gain XP)
+    const hasFedPet = petDocument.xpGained > 0;
+
+    return {
+      hasPurchasedFood,
+      hasTakenTutorialMedication,
+      hasFedPet,
+    };
   }
 }
