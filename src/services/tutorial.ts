@@ -9,7 +9,7 @@ import { Types } from "mongoose";
 import BagDAO from "@/db/actions/bag";
 
 const STARTER_COIN_MINIMUM = 100;
-const TUTORIAL_MEDICATION_ID = "TUTORIAL";
+const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
 
 const toWithIdPet = (
   pet: Pet & { _id: { toString(): string } },
@@ -51,7 +51,7 @@ export default class TutorialService {
       userId: new Types.ObjectId(userId),
       customMedicationId: TUTORIAL_MEDICATION_ID,
       formOfMedication: "Pill" as const,
-      dosageAmount: "1 pill",
+      dosageAmount: "0 pills",
       doseTimes: [doseTime],
       repeatUnit: "Day" as const,
       repeatInterval: 1,

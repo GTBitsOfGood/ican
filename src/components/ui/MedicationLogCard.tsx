@@ -12,7 +12,7 @@ import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 import { useSettings } from "../hooks/useSettings";
 
-const TUTORIAL_MEDICATION_NAME = "TUTORIAL";
+const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
 
 export default function MedicationLogCard({
   id,
