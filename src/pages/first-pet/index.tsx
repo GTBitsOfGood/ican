@@ -156,7 +156,7 @@ export default function FirstPetPage() {
       {
         onSuccess: () => {
           router.push("/");
-        }
+        },
       },
     );
   };
