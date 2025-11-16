@@ -4,7 +4,7 @@ import ERRORS from "@/utils/errorMessages";
 import { validateDeleteUser } from "@/utils/serviceUtils/authServiceUtil";
 import MedicationDAO from "@/db/actions/medication";
 
-const TUTORIAL_MEDICATION_ID = "TUTORIAL";
+const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
 
 export default class UserService {
   static async deleteUser(userId: string) {

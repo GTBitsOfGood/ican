@@ -183,13 +183,6 @@ export const routesMap: RoutesMap = {
       },
     },
   },
-  "/api/v1/tutorial/practice-dose": {
-    allowedMethods: {
-      POST: {
-        isAuthorized: true,
-      },
-    },
-  },
   "/api/v1/tutorial/medication": {
     allowedMethods: {
       PUT: {
