@@ -4,14 +4,9 @@ import {
   addMonths,
   differenceInDays,
   format,
-  isToday,
-  isTomorrow,
-  startOfDay,
+  isSameDay,
   setDate,
   getDay,
-  startOfWeek,
-  endOfWeek,
-  isWithinInterval,
 } from "date-fns";
 
 const DAYS_OF_WEEK = [
@@ -57,10 +52,13 @@ export function getNextDosePhrase(
   currentTime: Date = new Date(),
 ): DosePhrase {
   const now = currentTime;
-  const today = startOfDay(now);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const referenceDate = startOfDay(
-    new Date(medication.updatedAt || medication.createdAt),
+  const ref = new Date(medication.updatedAt || medication.createdAt);
+  const referenceDate = new Date(
+    ref.getFullYear(),
+    ref.getMonth(),
+    ref.getDate(),
   );
 
   const hasUpcomingDoseTimeToday = (): boolean => {
@@ -80,24 +78,45 @@ export function getNextDosePhrase(
     });
   };
 
-  const formatDatePhrase = (date: Date): string => {
-    if (isToday(date)) {
+  const sameDate = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+  const formatDatePhrase = (
+    date: Date,
+    med?: MedicationForDoseCalculation,
+  ): string => {
+    if (sameDate(date, today)) {
+      if (med && med.repeatUnit === "Day" && (med.repeatInterval || 1) >= 7) {
+        return `This ${DAYS_OF_WEEK[date.getDay()]}`;
+      }
       return "Today";
     }
-    if (isTomorrow(date)) {
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (sameDate(date, tomorrow)) {
       return "Tomorrow";
     }
 
-    const thisWeekStart = startOfWeek(today, { weekStartsOn: 0 });
-    const thisWeekEnd = endOfWeek(today, { weekStartsOn: 0 });
-    const nextWeekStart = addWeeks(thisWeekStart, 1);
-    const nextWeekEnd = endOfWeek(nextWeekStart, { weekStartsOn: 0 });
+    const thisWeekStart = new Date(today);
+    thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
+    const thisWeekEnd = new Date(thisWeekStart);
+    thisWeekEnd.setDate(thisWeekStart.getDate() + 6);
 
-    if (isWithinInterval(date, { start: thisWeekStart, end: thisWeekEnd })) {
-      return `This ${DAYS_OF_WEEK[getDay(date)]}`;
+    const nextWeekStart = new Date(thisWeekStart);
+    nextWeekStart.setDate(thisWeekStart.getDate() + 7);
+    const nextWeekEnd = new Date(nextWeekStart);
+    nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
+
+    const inInterval = (d: Date, start: Date, end: Date) =>
+      d.getTime() >= start.getTime() && d.getTime() <= end.getTime();
+
+    if (inInterval(date, thisWeekStart, thisWeekEnd)) {
+      return `This ${DAYS_OF_WEEK[date.getDay()]}`;
     }
-    if (isWithinInterval(date, { start: nextWeekStart, end: nextWeekEnd })) {
-      return `Next ${DAYS_OF_WEEK[getDay(date)]}`;
+    if (inInterval(date, nextWeekStart, nextWeekEnd)) {
+      return `Next ${DAYS_OF_WEEK[date.getDay()]}`;
     }
 
     return format(date, "MMMM do");
@@ -107,9 +126,7 @@ export function getNextDosePhrase(
 
   if (!medication.repeatUnit) {
     nextDoseDate = addDays(today, 1);
-  }
-
-  if (medication.repeatUnit === "Day") {
+  } else if (medication.repeatUnit === "Day") {
     const interval = medication.repeatInterval || 1;
     const daysSinceReference = differenceInDays(today, referenceDate);
     const intervalsPassed = Math.floor(daysSinceReference / interval);
@@ -227,7 +244,7 @@ export function getNextDosePhrase(
       const thisMonthDose = calculateNthWeekdayOfMonth(today);
       if (
         thisMonthDose > today ||
-        (isToday(thisMonthDose) &&
+        (isSameDay(thisMonthDose, today) &&
           (hasUpcomingDoseTimeToday() || !medication.includeTimes))
       ) {
         nextDoseDate = thisMonthDose;
@@ -239,10 +256,21 @@ export function getNextDosePhrase(
       const dayOfMonth =
         medication.repeatMonthlyDay || medication.repeatMonthlyOnDay || 1;
 
-      const thisMonthDose = setDate(today, dayOfMonth);
+      const getLastDayOfMonth = (date: Date): number => {
+        const nextMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        return nextMonth.getDate();
+      };
+
+      const getSafeDayOfMonth = (date: Date, targetDay: number): Date => {
+        const lastDay = getLastDayOfMonth(date);
+        const safeDay = Math.min(targetDay, lastDay);
+        return setDate(date, safeDay);
+      };
+
+      const thisMonthDose = getSafeDayOfMonth(today, dayOfMonth);
       if (
         thisMonthDose > today ||
-        (isToday(thisMonthDose) &&
+        (isSameDay(thisMonthDose, today) &&
           (hasUpcomingDoseTimeToday() || !medication.includeTimes))
       ) {
         nextDoseDate = thisMonthDose;
@@ -253,10 +281,11 @@ export function getNextDosePhrase(
         );
         const nextIntervalNumber =
           Math.floor(monthsSinceReference / interval) + 1;
-        nextDoseDate = setDate(
-          addMonths(referenceDate, nextIntervalNumber * interval),
-          dayOfMonth,
+        const nextMonth = addMonths(
+          referenceDate,
+          nextIntervalNumber * interval,
         );
+        nextDoseDate = getSafeDayOfMonth(nextMonth, dayOfMonth);
       }
     } else {
       nextDoseDate = addMonths(today, interval);
@@ -264,7 +293,7 @@ export function getNextDosePhrase(
   }
 
   const dateString = format(nextDoseDate, "yyyy-MM-dd");
-  const phrase = formatDatePhrase(nextDoseDate);
+  const phrase = formatDatePhrase(nextDoseDate, medication);
 
   return { date: dateString, phrase };
 }
