@@ -58,7 +58,6 @@ export default class TutorialService {
       repeatWeeklyOn: [],
       dosesUnit: "Doses" as const,
       notificationFrequency: "Every Dose" as const,
-      notes: "",
       includeTimes: true,
       createdAt: new Date(),
       updatedAt: new Date(),
