@@ -1,12 +1,14 @@
 import React from "react";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import { useDisclosure } from "@heroui/react";
+import { cn } from "@/lib/utils";
 
 interface ModalNextButtonProps {
   link: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   requirePin?: boolean;
   preventNavigation?: boolean;
+  disabled?: boolean;
 }
 
 export default function ModalNextButton({
@@ -14,11 +16,14 @@ export default function ModalNextButton({
   onClick,
   requirePin,
   preventNavigation,
+  disabled,
 }: ModalNextButtonProps) {
-  //for managing pin modal
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (disabled) {
+      return;
+    }
     if (requirePin == true) {
       onOpen();
     } else {
@@ -42,10 +47,16 @@ export default function ModalNextButton({
           link={link}
         />
       )}
-      <div className="flex bg-white w-[26%] p-2 justify-center items-stretch">
+      <div
+        className={cn(
+          "flex bg-white w-[26%] p-2 justify-center items-stretch",
+          disabled && "opacity-50 cursor-not-allowed",
+        )}
+      >
         <button
           className="w-full h-full flex justify-center items-center"
           onClick={handleClick}
+          disabled={disabled}
         >
           <svg
             fill="black"

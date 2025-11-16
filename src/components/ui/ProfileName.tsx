@@ -69,6 +69,8 @@ const ProfileName: React.FC = () => {
         maxLength={20}
         style={{ width: `${Math.max(displayName.length || 3, 3)}ch` }}
       />
+
+      {/* Start Edit Name/ Confirm Edit Name */}
       <button
         className={`relative h-3/5 w-fit ml-1 inline-block ${
           updatePetNameMutation.isPending ? "opacity-50 cursor-not-allowed" : ""
@@ -77,7 +79,7 @@ const ProfileName: React.FC = () => {
         disabled={updatePetNameMutation.isPending}
       >
         <Image
-          src="/icons/Edit.svg"
+          src={isEditing ? "/misc/CheckMark.svg" : "/icons/Edit.svg"}
           alt="Edit"
           width={40}
           height={40}
@@ -85,6 +87,23 @@ const ProfileName: React.FC = () => {
           className="h-full aspect-square object-contain select-none"
         />
       </button>
+
+      {/* Exit Edit Name */}
+      {isEditing && (
+        <button
+          className="relative h-3/5 w-fit inline-block"
+          onClick={() => setEditing((prev) => !prev)}
+        >
+          <Image
+            src="/misc/CrossMark.svg"
+            alt="Edit"
+            width={40}
+            height={40}
+            draggable={false}
+            className="h-full aspect-square object-contain select-none"
+          />
+        </button>
+      )}
     </div>
   );
 };

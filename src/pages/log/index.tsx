@@ -6,9 +6,14 @@ import { humanizeDate, humanizeDateComparison } from "@/utils/date";
 import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/router";
+import { useTutorial } from "@/components/TutorialContext";
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
+  const tutorial = useTutorial();
+  const shouldShowPracticeDose = tutorial.shouldShowPracticeDose();
+  const router = useRouter();
 
   const getDateString = (date: Date, offset: number) => {
     const newDate = new Date(date);
@@ -19,7 +24,7 @@ export default function Log() {
     return `${year}-${month}-${day}`;
   };
 
-  const localTime = new Date().toLocaleString("en-us");
+  const localTime = new Date().toLocaleString();
 
   const { data: yesterdayData } = useMedicationSchedule(
     getDateString(currDate, -1),
@@ -96,12 +101,12 @@ export default function Log() {
   };
 
   const handleCloseIcon = () => {
-    window.location.href = "/";
+    router.push("/");
   };
 
   return (
     <AuthorizedRoute>
-      <div className="bg-icanBlue-200 w-screen min-h-screen p-16">
+      <div className="bg-icanBlue-200 p-16 min-h-screen">
         <div className="mb-[72px]">
           <div className="flex justify-between">
             <div className="flex justify-center items-center w-full">
@@ -139,10 +144,17 @@ export default function Log() {
               </button>
             </div>
           </div>
-          <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar h-screen">
+          <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">
             {isSameDay(currDate) ? (
               <>
                 <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
+                  {shouldShowPracticeDose &&
+                    tutorial.practiceDose.status === "pending" && (
+                      <MedicationLogCard
+                        {...tutorial.practiceDose}
+                        key="practice-dose"
+                      />
+                    )}
                   {filterFutureDoses("today")?.map(
                     (log: LogType, idx: number) => {
                       return <MedicationLogCard {...log} key={idx} />;
@@ -154,6 +166,13 @@ export default function Log() {
                     Previous Doses
                   </h1>
                   <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
+                    {shouldShowPracticeDose &&
+                      tutorial.practiceDose.status === "taken" && (
+                        <MedicationLogCard
+                          {...tutorial.practiceDose}
+                          key="practice-dose"
+                        />
+                      )}
                     {filterPastDoses("today")?.map(
                       (log: LogType, idx: number) => {
                         return <MedicationLogCard {...log} key={idx} />;

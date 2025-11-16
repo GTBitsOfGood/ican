@@ -34,60 +34,39 @@ body {
     outline: none !important;
   }
 
-  .scrollbar-custom::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-track {
-    background: #cee0a05f;
-    border-radius: 0px;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: #accc6e;
-    border-radius: 0px;
-  }
-
-  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-    background: #98d03b;
-  }
-
-  .log-scrollbar::-webkit-scrollbar {
-    width: 28px;
-  }
-
-  .log-scrollbar::-webkit-scrollbar-track {
-    background: #cee0a05f;
-    border-radius: 0px;
-  }
-
-  .log-scrollbar::-webkit-scrollbar-thumb {
-    background: #accc6e;
-    border-radius: 0px;
-  }
-
-  .log-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #98d03b;
-  }
-
+  .scrollbar-custom::-webkit-scrollbar,
+  .log-scrollbar::-webkit-scrollbar,
   .list-scrollbar::-webkit-scrollbar {
-    width: 1.5rem;
+    width: 12px;
   }
 
+  .scrollbar-custom::-webkit-scrollbar-track,
+  .log-scrollbar::-webkit-scrollbar-track,
   .list-scrollbar::-webkit-scrollbar-track {
-    background: #a1a1a1;
+    background: var(--scrollbar-track);
     border-radius: 0px;
   }
 
+  .scrollbar-custom::-webkit-scrollbar-thumb,
+  .log-scrollbar::-webkit-scrollbar-thumb,
   .list-scrollbar::-webkit-scrollbar-thumb {
-    background: #f4f4f4;
+    background: var(--scrollbar-thumb);
     border-radius: 0px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover,
+  .log-scrollbar::-webkit-scrollbar-thumb:hover,
+  .list-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 }
 
 @layer base {
   :root {
     --background: 0 0% 100%;
+    --scrollbar-thumb: #98d03b;
+    --scrollbar-thumb-hover: #7bb82f;
+    --scrollbar-track: #cee0a05f;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;

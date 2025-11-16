@@ -1,4 +1,5 @@
 import fetchHTTPClient from "./fetchHTTPClient";
+import { JWTPayload } from "@/types/jwt";
 
 export interface LoginRequestBody {
   email: string;
@@ -36,6 +37,7 @@ export interface ForgotPasswordRequestBody {
 export interface VerificationRequestBody {
   userId: string;
   code: string;
+  pin?: boolean;
 }
 
 export interface ChangePasswordRequestBody {
@@ -58,7 +60,7 @@ export interface ForgotPasswordResponseBody {
 
 export interface ValidateTokenResponseBody {
   isValid: boolean;
-  decodedToken: { userId: string };
+  decodedToken: JWTPayload;
 }
 
 export default class AuthHTTPClient {
@@ -142,8 +144,13 @@ export default class AuthHTTPClient {
   static async verifyForgotPassword(
     userId: string,
     code: string,
+    pin?: boolean,
   ): Promise<AuthResponseBody> {
-    const verificationRequestBody: VerificationRequestBody = { userId, code };
+    const verificationRequestBody: VerificationRequestBody = {
+      userId,
+      code,
+      pin,
+    };
     return await fetchHTTPClient<AuthResponseBody>(
       `/auth/forgot-password/verify`,
       {

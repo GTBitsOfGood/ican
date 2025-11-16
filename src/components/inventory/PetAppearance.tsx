@@ -16,8 +16,10 @@ interface PetAppearanceProps {
   appearance: Appearance;
   className: string;
   outfitOnly?: boolean;
+  showBackground?: boolean;
   onDragOver?: (e: React.DragEvent<HTMLImageElement>) => void;
   onDrop?: (e: React.DragEvent<HTMLImageElement>) => void;
+  characterImageSize?: number;
 }
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
@@ -26,21 +28,30 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
   appearance,
   className,
   outfitOnly = false,
+  showBackground = true,
   onDragOver,
   onDrop,
+  characterImageSize,
 }) => {
+  const equippedBackground =
+    appearance?.background && storeItems.background[appearance.background]
+      ? storeItems.background[appearance.background]
+      : undefined;
+
   return (
-    <div className={`${className} flex items-center justify-center w-full`}>
+    <div
+      className={`relative ${className} flex items-center justify-center w-full`}
+    >
       {!outfitOnly && petType && (
         <Image
           src={characterImages[petType]}
           alt={`${petType}`}
-          width={characterImages[petType].width}
-          height={characterImages[petType].height}
+          width={characterImageSize || 275}
+          height={characterImageSize || 275}
           draggable="false"
           onDragOver={onDragOver}
           onDrop={onDrop}
-          className="object-contain pointer-events-none select-none relative z-10"
+          className="object-contain pointer-events-none select-none relative z-10 max-w-full max-h-full"
         />
       )}
       {selectedItem?.type === ItemType.CLOTHING ? (
@@ -68,15 +79,14 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
           />
         )
       )}
-      {selectedItem?.type === ItemType.BACKGROUND ? (
-        <BackgroundItem selectedItem={selectedItem} />
-      ) : (
-        appearance?.background && (
-          <BackgroundItem
-            selectedItem={storeItems.background[appearance.background]}
-          />
-        )
-      )}
+      {showBackground &&
+        (selectedItem?.type === ItemType.BACKGROUND ? (
+          <BackgroundItem selectedItem={selectedItem} />
+        ) : (
+          equippedBackground && (
+            <BackgroundItem selectedItem={equippedBackground} />
+          )
+        ))}
       {selectedItem?.type === ItemType.SHOES ? (
         <ShoeItem selectedItem={selectedItem} />
       ) : (

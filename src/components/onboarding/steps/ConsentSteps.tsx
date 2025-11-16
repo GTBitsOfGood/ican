@@ -34,7 +34,9 @@ export default function ConsentSteps({
         </div>
 
         <OnboardingHeader
-          subtitle={isParent ? "Hey parents, don't forget your" : "Hey Kids"}
+          subtitle={
+            isParent ? "Hey parents, don't forget your" : "Hey Youth Members,"
+          }
           title={isParent ? "Medical Responsibility" : "Before You Begin..."}
           description={
             isParent

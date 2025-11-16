@@ -84,6 +84,23 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/user/[userId]/tutorial-status": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+      PUT: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/user/[userId]/profile": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/pets": {
     allowedMethods: {
       POST: {
@@ -182,6 +199,13 @@ export const routesMap: RoutesMap = {
         isAuthorized: true,
       },
       POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/settings/parental-mode/[userId]": {
+    allowedMethods: {
+      DELETE: {
         isAuthorized: true,
       },
     },

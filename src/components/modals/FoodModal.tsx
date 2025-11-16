@@ -40,20 +40,21 @@ export default function FoodModal({ foods }: { foods: string[] }) {
       size="lg"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden",
-        header:
-          "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl items-start",
-        body: "bg-icanBlue-100 grid gap-4 mobile:grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4 largeDesktop:grid-cols-4 minimized:auto-rows-[90%] short:auto-rows-[60%] overflow-y-auto list-scrollbar",
+        base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden w-[70%] h-[70%] max-w-[960px] max-h-[720px]",
+        header: "text-5xl underline mb-4",
+        body: "bg-icanBlue-100 grid gap-8 mobile:grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 largeDesktop:grid-cols-4 tiny:auto-rows-[90%] minimized:auto-rows-[90%] short:auto-rows-[60%] overflow-y-auto list-scrollbar",
         closeButton: "top-[2.75rem]",
         footer: "items-center justify-center",
       }}
-      className="mobile:h-[70%] tablet:h-[65%] tiny:h-[80%] minimized:h-[75%] short:h-[70%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        onClose();
+        router.push("/");
+      }}
       radius="lg"
       placement="center"
       closeButton={<ModalCloseButton onClose={onClose} />}
-      isDismissable={false}
     >
       <ModalContent>
         <ModalHeader className="flex items-center gap-4 px-0">
@@ -84,7 +85,7 @@ export default function FoodModal({ foods }: { foods: string[] }) {
                 onClick={() => setClickedFood(food)}
               >
                 <Image
-                  src={`${baseImageUrl}/${food}.svg`}
+                  src={`${baseImageUrl}/${food.toLowerCase()}.svg`}
                   alt={food}
                   width={200}
                   height={200}

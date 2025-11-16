@@ -22,6 +22,7 @@ import { ForgotPasswordCode } from "@/db/models/forgotPasswordCode";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
 import { Provider } from "@/types/user";
+import SettingsService from "./settings";
 
 export default class ForgotPasswordService {
   static async sendPasswordCode(
@@ -33,8 +34,10 @@ export default class ForgotPasswordService {
 
     let user;
     if (email) {
+      //if email was passed in, we are attempting to do OTP for password
       user = await UserDAO.getUserFromEmail(email);
     } else if (userId) {
+      //if userId was passed in, we are attempted to do OTP for parental PIN
       user = await UserDAO.getUserFromId(userId);
     }
 
@@ -93,6 +96,7 @@ export default class ForgotPasswordService {
   static async verifyForgotPasswordCode(
     userId: string,
     code: string,
+    pin?: boolean,
   ): Promise<string> {
     validateVerifyForgotPasswordCode({ userId, code });
 
@@ -117,8 +121,27 @@ export default class ForgotPasswordService {
       forgotPasswordCode._id,
     );
 
-    // generate auth_token after verifying identity
-    return JWTService.generateToken({ userId }, 900000);
+    const settings = await SettingsService.getSettings(userId);
+    const fiveMinutes = Date.now() + 5 * 60 * 1000;
+
+    return pin
+      ? JWTService.generateToken(
+          {
+            userId,
+            parentalControls: true,
+            parentalModeExpiresAt: fiveMinutes,
+            origin: "login",
+          },
+          "90d",
+        )
+      : JWTService.generateToken(
+          {
+            userId,
+            parentalControls: !!settings.pin,
+            origin: "forgot-password",
+          },
+          "90d",
+        );
   }
 
   static async changePassword(

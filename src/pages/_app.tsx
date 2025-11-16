@@ -4,7 +4,9 @@ import { belanosima, pixelifySans, quantico } from "@/styles/font";
 import { UserProvider } from "@/components/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { FoodProvider } from "@/components/FoodContext";
+import { TutorialProvider } from "@/components/TutorialContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState } from "react";
 
 const clientId =
@@ -20,11 +22,14 @@ export default function App({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={clientId}>
           <UserProvider>
-            <FoodProvider>
-              <Component {...pageProps} />
-            </FoodProvider>
+            <TutorialProvider>
+              <FoodProvider>
+                <Component {...pageProps} />
+              </FoodProvider>
+            </TutorialProvider>
           </UserProvider>
         </GoogleOAuthProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </main>
   );

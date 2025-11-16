@@ -7,8 +7,17 @@ export default function ClothingItem({
 }: {
   selectedItem: InventoryItem;
 }) {
+  const isWings =
+    selectedItem.name?.includes("WING") || selectedItem.name?.includes("WINGS");
+  const widthClass = isWings ? "w-[110%]" : "w-[65%]";
+  const leftPosition = isWings ? "left-[-3%]" : "left-[19%]";
+  const topPosition = isWings ? "top-[40%]" : "top-[64%]";
+  const zIndex = isWings ? "z-0" : "z-20";
+
   return (
-    <div className="absolute w-[65%] left-[19%] top-[58.5%] flex items-center justify-center z-20">
+    <div
+      className={`absolute ${widthClass} ${leftPosition} ${topPosition} flex items-center justify-center ${zIndex}`}
+    >
       <Image
         src={selectedItem.image}
         alt={selectedItem.name || "Clothing Item"}

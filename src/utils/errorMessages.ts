@@ -95,6 +95,8 @@ const ERRORS = Object.freeze({
     UNAUTHORIZED: {
       USER_ID: "User is not permitted to get or modify another user's settings",
       VERIFY_PIN: "Invalid pin was provided.",
+      PARENTAL_MODE:
+        "Parental mode required. Please enter your parental PIN to access this feature.",
     },
   },
   FORGOTPASSWORDCODE: {
@@ -127,6 +129,7 @@ const ERRORS = Object.freeze({
   },
   TOKEN: {
     UNAUTHORIZED: "Authentication token is missing or malformed",
+    REQUIRED: "Authentication is required to access this resource.",
   },
 });
 
