@@ -48,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({
           </div>
           {drawButton && (
             <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center mt-1 ml-3">
-              <span className="font-quantico text-center text-white mobile:text-3xl largeDesktop:text-4xl 4xl:text-5xl font-bold leading-9 text-stroke-4 text-stroke-[#353859] text-shadow-[#4C539B] paint-stroke letter-spacing-ui">
+              <span className="font-quantico text-center text-white mobile:text-3xl largeDesktop:text-4xl 4xl:text-5xl font-bold leading-9 text-stroke-4 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui">
                 {buttonType.toUpperCase()}
               </span>
             </div>
