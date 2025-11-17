@@ -1,54 +1,9 @@
-<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_13912_198)">
-<path d="M15.1333 17.3334C10.8254 17.3334 7.33325 20.8256 7.33325 25.1334V35V68.3C7.33325 69.7912 8.54208 71 10.0333 71H69.9666C71.4578 71 72.6666 69.7912 72.6666 68.3V35V25.1334C72.6666 20.8256 69.1744 17.3334 64.8666 17.3334H15.1333Z" fill="#CA693F" stroke="#5B3303" stroke-width="2" stroke-linejoin="round"/>
-<rect x="8.33325" y="38.3334" width="63.3333" height="3.33333" fill="#9A4A28"/>
-<circle cx="64.5833" cy="67.9167" r="1.25" fill="#AE5129"/>
-<circle cx="68.3334" cy="59.1667" r="1.66667" fill="#AE5129"/>
-<circle cx="67.5001" cy="63.3333" r="0.833333" fill="#AE5129"/>
-<circle cx="63.75" cy="58.75" r="1.25" fill="#AE5129"/>
-<circle cx="57.9167" cy="58.75" r="1.25" fill="#AE5129"/>
-<circle cx="65.0001" cy="53.3333" r="0.833333" fill="#AE5129"/>
-<circle cx="68.3333" cy="55.0001" r="0.833333" fill="#AE5129"/>
-<circle cx="70.0001" cy="49.1667" r="0.833333" fill="#AE5129"/>
-<circle cx="69.1666" cy="66.6667" r="0.833333" fill="#AE5129"/>
-<circle cx="58.3333" cy="54.1667" r="0.833333" fill="#AE5129"/>
-<circle cx="57.9167" cy="67.0834" r="1.25" fill="#AE5129"/>
-<circle cx="55.8333" cy="64.1667" r="0.833333" fill="#AE5129"/>
-<circle cx="52.5001" cy="66.6667" r="0.833333" fill="#AE5129"/>
-<circle cx="55.8333" cy="62.5001" r="0.833333" fill="#AE5129"/>
-<circle cx="52.5001" cy="60.8333" r="0.833333" fill="#AE5129"/>
-<circle cx="48.3333" cy="68.3333" r="0.833333" fill="#AE5129"/>
-<circle cx="65.0001" cy="61.6667" r="0.833333" fill="#AE5129"/>
-<path d="M13.8381 25H66.1614" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.0352 30.8334H68.9645" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.1665 44.1666H70.8332" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.1665 50.8334H70.8332" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.1665 57.5H70.8332" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.1665 64.1666H70.8332" stroke="#AE5129" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9.1665 63.3334V39.5834" stroke="#FF8754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M63.3332 19.1667H15.4165C11.2498 19.1667 9.1665 21.2501 9.1665 25.4167V35.8334H69.9998" stroke="#FF8754" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M15.4165 19.1667C11.2498 19.1667 9.1665 21.2501 9.1665 25.4167" stroke="#FFBDA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7.5 37.5H72.5" stroke="#5B3303" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M47.2666 44.1334C47.5184 43.9446 47.6666 43.6482 47.6666 43.3334V32.5167C47.6666 31.495 46.8383 30.6667 45.8166 30.6667H34.1833C33.1615 30.6667 32.3333 31.495 32.3333 32.5167V43.3334C32.3333 43.6482 32.4814 43.9446 32.7333 44.1334L39.3999 49.1334C39.7555 49.4001 40.2444 49.4001 40.5999 49.1334L47.2666 44.1334Z" fill="#DF8D12" stroke="#652A11" stroke-width="2" stroke-linejoin="round"/>
-<circle cx="40" cy="38.3334" r="3.5" fill="#FFB341" stroke="#944320" stroke-width="2"/>
-<path d="M34.1665 41.6668V32.5001H44.1665" stroke="#FFB341" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="39.1666" cy="37.5001" r="0.833333" fill="#FFEACA"/>
-<path d="M58.3335 38.3334H63.3335V70H58.3335V38.3334Z" fill="#DF9422"/>
-<path d="M63.3335 35H60.8335H58.3335V18.3334H63.3335V35Z" fill="#FBB750"/>
-<path d="M16.6667 35H19.1667H21.6667V18.3334H16.6667V35Z" fill="#FBB750"/>
-<path d="M17.5 19.1667V27.9167" stroke="#FFDCA7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M59.1667 19.1667V27.9167" stroke="#FFDCA7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16.6667 38.3334H19.1667H21.6667V70H16.6667V38.3334Z" fill="#DF9422"/>
-</g>
+<svg width="74" height="65" viewBox="0 0 74 65" fill="none" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="74" height="65" fill="url(#pattern0_16793_2816)"/>
 <defs>
-<filter id="filter0_d_13912_198" x="6.33325" y="16.3334" width="67.3333" height="59.6666" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="4"/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.545098 0 0 0 0 0.568627 0 0 0 0 0.729412 0 0 0 1 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_13912_198"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_13912_198" result="shape"/>
-</filter>
+<pattern id="pattern0_16793_2816" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_16793_2816" transform="scale(0.0151515 0.0172494)"/>
+</pattern>
+<image id="image0_16793_2816" width="66" height="58" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAAA6CAYAAAAEJY9EAAAAAXNSR0IArs4c6QAAAhFJREFUaIHtmqtOA0EUhv+SCkwD6RuQUAwCtZ4EgdrUVJBQUd4ChUDxDBgQCASCTVUFCX4VAlNIeIMGgqkgAcHZZrvd2Z2dmb1A/s813TN75uuZa9qCJbt7R9+2bbjg+em2ZRPf1nkofPlSfjcaDG3e74ysHL1efje1LKa9ZDQYLlWCtz7Waco54dxf+nx9d7PSJx0Ra+5S+tsUroimVEKSrMrQqQitOaIoyaRcU4Z8YxFNqYSIKB/TH4FzhEARQhvIXoMB4H32AQDY7G4YvWRr+8Bqs/P2+mC0aYvyzuuf12uzIiJaplvkrMmyzlXD9N3GIv4bi+XzvP+pFXAWdFZ+kXDua8e7xjafs6ADgKvGAooQStlixxlPHp204x/uO2lHRekiAODy/tgobhZMAQCnV6HLdFKpRESSqINNohYR3f5O7jNVy6pFBNC8qliI0J/U0nduefGzYLpUCapxf3HiAfitmrgsdftm+STjK6+IeOeS2+E67zhqGxrA6m52PKkpEdQswtUewwULEbYnRlV8vNzjwyKaC2zbd/V8JRWRtkLoLKFVYnT6TEMVrxr3RZdPVftF81HF89AlVDI0qjgr2FK6CFfXdj7Kvfjh0BBKr4i6rvCKwooQKEKgCIEiBIoQKEKgCIEiBIoQKEKgCIEiBIoQKEKgCIEiBIoQKEKgCIH/sxRYEQJFCBQhUIRAEcIP5sKjgR/SmsgAAAAASUVORK5CYII="/>
 </defs>
 </svg>
