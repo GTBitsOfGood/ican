@@ -10,7 +10,7 @@ const FeedButton = ({ active }: { active: boolean }) => {
 
   return (
     <button
-      className="z-10 relative mobile:h-[3rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent disabled:cursor-default disabled:grayscale px-10"
+      className="z-10 relative mobile:h-[3.1rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent disabled:cursor-default disabled:grayscale px-10"
       type="button"
       onClick={redirect}
       disabled={!active}
