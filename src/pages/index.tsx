@@ -17,11 +17,14 @@ import { useTutorial } from "@/components/TutorialContext";
 import {
   useTutorialStatus,
   useUpdateTutorialStatus,
+  useUserProfile,
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
+import { useUpcomingMedication } from "@/components/hooks/useMedication";
+import { getMedicationReminderText } from "@/utils/medicationDisplay";
 
 interface HomeProps {
   activeModal: string;
@@ -34,6 +37,7 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
+  const { data: userProfile } = useUserProfile(userId);
   const updateTutorialStatus = useUpdateTutorialStatus();
   const isTutorial = !tutorialCompleted;
 
@@ -53,6 +57,11 @@ export default function Home({
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
   const feeding = feedPetMutation.isPending;
+  const {
+    medication: upcomingMed,
+    hasMedication,
+    recentlyTaken,
+  } = useUpcomingMedication();
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
     equippedBackgroundKey &&
@@ -105,6 +114,21 @@ export default function Home({
 
   const handleDrag = (dist: number | null) => {
     setDistance(dist);
+  };
+
+  const getReminderText = () => {
+    if (isTutorial) {
+      return tutorial.getTutorialText();
+    }
+
+    const userName = userProfile?.name || "there";
+
+    return getMedicationReminderText(
+      userName,
+      upcomingMed?.name || recentlyTaken?.name,
+      upcomingMed?.scheduledDoseTime,
+      !!recentlyTaken,
+    );
   };
 
   return (
@@ -189,7 +213,8 @@ export default function Home({
             petType={pet.petType}
             appearance={pet.appearance}
             selectedFood={selectedFood}
-            bubbleText={isTutorial ? tutorial.getTutorialText() : undefined}
+            bubbleText={getReminderText()}
+            shouldAnimate={!isTutorial && hasMedication && !recentlyTaken}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />

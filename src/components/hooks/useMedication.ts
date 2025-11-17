@@ -161,3 +161,28 @@ export const useMedicationLog = () => {
     },
   });
 };
+
+export const useUpcomingMedication = () => {
+  const now = new Date();
+  const dateStr = now.toISOString().split("T")[0];
+  const localTimeStr = now.toISOString();
+
+  const { data: schedule } = useMedicationSchedule(dateStr, localTimeStr);
+
+  const upcomingMedication = schedule?.medications?.find(
+    (med) => med.status === "pending" && med.canCheckIn,
+  );
+
+  const recentlyTakenMedication = schedule?.medications?.find((med) => {
+    if (med.status !== "taken" || !med.lastTaken) return false;
+    const takenTime = new Date(med.lastTaken).getTime();
+    const timeThreshold = Date.now() - 2 * 60 * 1000; // show ts for 2 minutes
+    return takenTime > timeThreshold;
+  });
+
+  return {
+    medication: upcomingMedication,
+    hasMedication: !!upcomingMedication,
+    recentlyTaken: recentlyTakenMedication,
+  };
+};
