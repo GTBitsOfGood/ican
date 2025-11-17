@@ -44,7 +44,9 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
         {items.map((item, index) =>
           "level" in item ? (
             type === "Store" ? (
-              petData.xpLevel >= item.level ? (
+              petData.xpLevel >= item.level &&
+              (!item.isStreakLocked ||
+                petData.currentStreak >= (item.streakRequirement || 3)) ? (
                 <Item
                   key={index}
                   type={type}
@@ -56,7 +58,11 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
                   setSelectedItem={setSelectedItem}
                 />
               ) : (
-                <LockedItem key={index} item={item} />
+                <LockedItem
+                  key={index}
+                  item={item}
+                  currentStreak={petData.currentStreak}
+                />
               )
             ) : (
               <Item

@@ -23,6 +23,10 @@ export interface Pet {
   food: number;
   appearance: Appearance;
   outfits: SavedOutfit[];
+  currentStreak: number;
+  longestStreak: number;
+  perfectWeeksCount: number;
+  lastDoseDate: Date | null;
 }
 
 const appearanceSchema = new Schema<Appearance>(
@@ -79,6 +83,26 @@ const petSchema = new Schema<PetDocument>(
     outfits: {
       type: [savedOutfitSchema],
       default: [],
+    },
+    currentStreak: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    longestStreak: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    perfectWeeksCount: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    lastDoseDate: {
+      type: Date,
+      required: false,
+      default: null,
     },
   },
   { timestamps: true },

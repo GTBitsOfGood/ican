@@ -19,4 +19,8 @@ export interface Pet {
   food: number;
   appearance: Appearance;
   outfits: SavedOutfit[];
+  currentStreak: number;
+  longestStreak: number;
+  perfectWeeksCount: number;
+  lastDoseDate: Date | null;
 }

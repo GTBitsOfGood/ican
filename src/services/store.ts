@@ -30,6 +30,15 @@ export default class StoreService {
       throw new InvalidArgumentsError("This pet already owns this item.");
     }
 
+    if (item.isStreakLocked) {
+      const requiredStreak = item.streakRequirement || 3;
+      if (pet.currentStreak < requiredStreak) {
+        throw new InvalidArgumentsError(
+          `You need an active streak of at least ${requiredStreak} days to purchase this item! Current streak: ${pet.currentStreak} days.`,
+        );
+      }
+    }
+
     if (pet.coins < item.cost) {
       throw new InvalidArgumentsError("This pet does not have enough coins.");
     }

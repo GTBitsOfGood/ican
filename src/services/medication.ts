@@ -22,6 +22,7 @@ import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
 import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
+import { calculateStreakUpdate } from "@/services/streak";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -201,13 +202,28 @@ export default class MedicationService {
       throw new NotFoundError("No pet found for the user");
     }
 
-    // add food to pet
+    const petWithId = existingPet as WithId<Pet>;
+    const streakUpdate = calculateStreakUpdate(petWithId, now);
+
     await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
+      coins: existingPet.coins + streakUpdate.coinsAwarded,
+      currentStreak: streakUpdate.currentStreak,
+      longestStreak: streakUpdate.longestStreak,
+      perfectWeeksCount: streakUpdate.perfectWeeksCount,
+      lastDoseDate: streakUpdate.lastDoseDate,
     });
 
     // create medication log in
     await MedicationDAO.createMedicationLog(medicationId, new Date());
+
+    return {
+      isPerfectWeek: streakUpdate.isPerfectWeek,
+      isNewMilestone: streakUpdate.isNewMilestone,
+      milestoneReached: streakUpdate.milestoneReached,
+      coinsAwarded: streakUpdate.coinsAwarded,
+      currentStreak: streakUpdate.currentStreak,
+    };
   }
 
   static async getMedicationsSchedule(

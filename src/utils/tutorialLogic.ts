@@ -1,7 +1,7 @@
 import { Pet } from "@/types/pet";
 import { WithId } from "@/types/models";
 import { Bag, InventoryItem } from "@/types/inventory";
-import { LEVEL_THRESHOLD } from "@/utils/constants";
+import { calculateXPForLevel } from "@/utils/constants";
 import storeItems from "@/lib/storeItems";
 
 interface XPUpdateResult {
@@ -17,9 +17,10 @@ function calculateXPUpdate(
   let newXp = currentXP + xpToAdd;
   let newLevel = currentLevel;
 
-  if (newXp >= LEVEL_THRESHOLD) {
+  const levelThreshold = calculateXPForLevel(currentLevel);
+  if (newXp >= levelThreshold) {
     newLevel += 1;
-    newXp = newXp - LEVEL_THRESHOLD;
+    newXp = newXp - levelThreshold;
   }
 
   return { xpGained: newXp, xpLevel: newLevel };
