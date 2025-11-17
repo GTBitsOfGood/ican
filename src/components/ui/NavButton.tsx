@@ -36,14 +36,14 @@ const Button: React.FC<ButtonProps> = ({
           className="absolute inset-0 object-fill pointer-events-none"
         />
 
-        <div className="w-full h-full flex items-center mobile:justify-center mobile:pb-1 tablet:pb-3 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
-          <div className="relative mobile:h-[60%] tablet:h-[75%] w-auto aspect-square">
+        <div className="w-full h-full flex items-center mobile:justify-center mobile:pb-3 tablet:pb-3 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
+          <div className="relative mobile:h-[75%] tablet:h-[67%] w-auto aspect-square object-contain">
             <Image
               src={iconURL}
               alt={buttonType}
-              width={80}
-              height={80}
-              className="object-contain pointer-events-none"
+              width={74}
+              height={65}
+              className="object-contain pointer-events-none w-full h-full"
             />
           </div>
           {drawButton && (
