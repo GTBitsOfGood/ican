@@ -23,7 +23,7 @@ const FeedButton = ({ active }: { active: boolean }) => {
           className="absolute inset-0 object-fill pointer-events-none"
         />
 
-        <div className="w-full h-full flex items-center mobile:justify-center tablet:justify-end mobile:pb-0 tablet:pb-1 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
+        <div className="w-full h-full flex items-center mobile:justify-center tablet:justify-end mobile:pb-2 tablet:pb-3 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
           <span className="w-full z-10 font-quantico text-center text-white mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-5xl 4xl:text-6xl font-bold leading-9 text-stroke-4 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui pl-1">
             FEED
           </span>
