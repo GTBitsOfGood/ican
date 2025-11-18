@@ -14,6 +14,7 @@ import { WithId } from "@/types/models";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
+import SuccessMedicationLogModal from "@/components/modals/SuccessMedicationLogModal";
 import { useState, useEffect } from "react";
 import { useTutorial } from "@/components/TutorialContext";
 import {
@@ -60,8 +61,13 @@ export default function Home({
     useState<boolean>(false);
   const [showSuccessModalVisible, setShowSuccessModalVisible] =
     useState<boolean>(false);
+  const [showMedicationSuccessModal, setShowMedicationSuccessModal] =
+    useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
+  const [medicationDistance, setMedicationDistance] = useState<number | null>(
+    null,
+  );
   const feeding = feedPetMutation.isPending;
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
@@ -99,14 +105,25 @@ export default function Home({
         }
         setSelectedFood("");
       },
-      onError: (error) => {
-        console.error("Error handling food drop:", error);
-      },
     });
   };
 
   const handleDrag = (dist: number | null) => {
     setDistance(dist);
+  };
+
+  const handleMedicationDrag = (dist: number | null) => {
+    setMedicationDistance(dist);
+  };
+
+  const handleMedicationDrop = async () => {
+    if (!isTutorial) return;
+    if (!pet) return;
+    if (medicationDistance == null || medicationDistance > 150) return;
+
+    setShowMedicationSuccessModal(true);
+    tutorial.clearMedicationDrag();
+    tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
   };
 
   return (
@@ -129,6 +146,13 @@ export default function Home({
           level={pet?.xpLevel}
           xp={pet?.xpGained}
           levelChanged={false}
+        />
+      )}
+      {showMedicationSuccessModal && (
+        <SuccessMedicationLogModal
+          onModalClose={() => {
+            setShowMedicationSuccessModal(false);
+          }}
         />
       )}
       {pet ? (
@@ -195,6 +219,12 @@ export default function Home({
             bubbleText={isTutorial ? tutorial.getTutorialText() : undefined}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
+            medicationType={isTutorial ? tutorial.medicationType : null}
+            shouldShowMedicationDrag={
+              isTutorial ? tutorial.shouldShowMedicationDrag : false
+            }
+            onMedicationDrop={handleMedicationDrop}
+            onMedicationDrag={handleMedicationDrag}
           />
         </div>
       ) : (

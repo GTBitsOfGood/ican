@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/router";
 import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
@@ -24,6 +25,7 @@ export default function MedicationLogCard({
   lastTaken,
   // setMedication,
 }: LogType) {
+  const router = useRouter();
   const tutorial = useTutorial();
   const isPracticeDose = id === PRACTICE_DOSE_ID;
 
@@ -78,7 +80,8 @@ export default function MedicationLogCard({
     if (isPracticeDose) {
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
-      setShowSuccessModal(true);
+      tutorial.completePracticeDoseLog();
+      router.push("/");
     } else {
       medicationLogMutation.mutate(
         {
@@ -174,17 +177,8 @@ export default function MedicationLogCard({
           handleTakenAction={handleTakeMedicationAction}
         />
       )}
-      {showSuccessModal && (
-        <SuccessMedicationModal
-          onModalClose={
-            isPracticeDose
-              ? () => {
-                  tutorial.completePracticeDoseLog();
-                  tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-                }
-              : undefined
-          }
-        />
+      {showSuccessModal && !isPracticeDose && (
+        <SuccessMedicationModal onModalClose={undefined} />
       )}
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">
