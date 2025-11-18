@@ -207,7 +207,7 @@ export default class MedicationService {
 
     await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
-      coins: existingPet.coins + streakUpdate.coinsAwarded,
+      coins: existingPet.coins + streakUpdate.coinsAwarded + 10,
       currentStreak: streakUpdate.currentStreak,
       longestStreak: streakUpdate.longestStreak,
       perfectWeeksCount: streakUpdate.perfectWeeksCount,
