@@ -15,7 +15,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   level,
   coins,
   currentExp,
-  totalExp = 100,
+  totalExp,
 }) => {
   return (
     <div className="flex flex-col h-full w-fit gap-2">
