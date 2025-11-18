@@ -53,7 +53,9 @@ export default function FoodModal({
       closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
-        <ModalHeader>Level Up!</ModalHeader>
+        <ModalHeader>
+          {levelChanged ? "Level Up!" : "Congratulations!"}
+        </ModalHeader>
         <ModalBody>
           {levelChanged ? (
             <div className="relative">
@@ -65,8 +67,8 @@ export default function FoodModal({
                 alt="Banner"
                 className="absolute top-10 left-1/2 transform -translate-x-1/2 z-10 w-auto"
               />
-              <div className="absolute desktop:top-16 tablet:top-16 mobile:top-16 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
-                Level {level ? level : 0}
+              <div className="absolute desktop:top-16 tablet:top-16 mobile:top-24 tiny:top-12 short:top-14 left-1/2 transform -translate-x-1/2 z-10 text-white desktop:text-4xl tablet:text-3xl mobile:text-2xl tiny:text-2xl font-bold text-stroke-2 text-stroke-[#7B4200] text-shadow-[#A0632C] paint-stroke">
+                Level {level ?? 0}
               </div>
               <Image
                 src="/misc/Shine.svg"
@@ -105,7 +107,7 @@ export default function FoodModal({
                 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mx-auto mb-4 w-auto h-[60vh] tablet:h-[50vh] tiny:h-[55vh]"
               />
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-cente h-10">
-                <ExpBar level={level ? level : 1} currentExp={xp ? xp : 0} />
+                <ExpBar level={level ?? 0} currentExp={xp ?? 0} />
               </div>
             </>
           )}
