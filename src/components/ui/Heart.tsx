@@ -25,7 +25,7 @@ export default function Heart({ onComplete }: HeartProps) {
   return (
     <div className="absolute inset-0 pointer-events-none z-40">
       <div
-        className="absolute bottom-[35%] left-[45%] animate-float-heart-left"
+        className="absolute mobile:bottom-[20%] tablet:bottom-[35%] mobile:left-[18%] tablet:left-[26%] animate-float-heart-left"
         style={{
           animationDelay: "0s",
         }}
@@ -39,7 +39,7 @@ export default function Heart({ onComplete }: HeartProps) {
         />
       </div>
       <div
-        className="absolute bottom-[35%] left-[50%] animate-float-heart-right"
+        className="absolute mobile:bottom-[20%] tablet:bottom-[35%] mobile:left-[23%] tablet:left-[31%] animate-float-heart-right"
         style={{
           animationDelay: "0.3s",
         }}
