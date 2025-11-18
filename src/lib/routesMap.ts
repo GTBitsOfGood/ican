@@ -176,6 +176,27 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/tutorial/starter-kit": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/tutorial/medication": {
+    allowedMethods: {
+      PUT: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/tutorial/progress": {
+    allowedMethods: {
+      GET: {
+        isAuthorized: true,
+      },
+    },
+  },
   "/api/v1/store/purchase-item": {
     allowedMethods: {
       POST: {

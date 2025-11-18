@@ -7,12 +7,9 @@ import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useTutorial } from "@/components/TutorialContext";
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
-  const tutorial = useTutorial();
-  const shouldShowPracticeDose = tutorial.shouldShowPracticeDose();
   const router = useRouter();
 
   const getDateString = (date: Date, offset: number) => {
@@ -148,13 +145,6 @@ export default function Log() {
             {isSameDay(currDate) ? (
               <>
                 <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                  {shouldShowPracticeDose &&
-                    tutorial.practiceDose.status === "pending" && (
-                      <MedicationLogCard
-                        {...tutorial.practiceDose}
-                        key="practice-dose"
-                      />
-                    )}
                   {filterFutureDoses("today")?.map(
                     (log: LogType, idx: number) => {
                       return <MedicationLogCard {...log} key={idx} />;
@@ -166,13 +156,6 @@ export default function Log() {
                     Previous Doses
                   </h1>
                   <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                    {shouldShowPracticeDose &&
-                      tutorial.practiceDose.status === "taken" && (
-                        <MedicationLogCard
-                          {...tutorial.practiceDose}
-                          key="practice-dose"
-                        />
-                      )}
                     {filterPastDoses("today")?.map(
                       (log: LogType, idx: number) => {
                         return <MedicationLogCard {...log} key={idx} />;

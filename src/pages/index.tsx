@@ -9,20 +9,19 @@ import ForgotPinModal from "@/components/modals/ForgotPinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import { useFeedPet, usePet } from "@/components/hooks/usePet";
-import { Pet } from "@/types/pet";
-import { WithId } from "@/types/models";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
 import {
   useTutorialStatus,
   useUpdateTutorialStatus,
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
-import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
+import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 
 interface HomeProps {
   activeModal: string;
@@ -41,20 +40,10 @@ export default function Home({
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
   const tutorial = useTutorial();
+  const ensureStarterKitMutation = useEnsureStarterKit();
 
-  const pet = isTutorial ? tutorial.pet : realPetData.data;
-  const feedPetMutation = isTutorial
-    ? {
-        mutate: (
-          _petId: string,
-          options?: {
-            onSuccess?: (updatedPet: WithId<Pet>) => void;
-            onError?: (error: Error) => void;
-          },
-        ) => tutorial.feedPet(options?.onSuccess, options?.onError),
-        isPending: false,
-      }
-    : realFeedPet;
+  const pet = realPetData.data;
+  const feedPetMutation = realFeedPet;
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
@@ -62,6 +51,7 @@ export default function Home({
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
+  const hasEnsuredStarterKit = useRef(false);
   const feeding = feedPetMutation.isPending;
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
@@ -75,12 +65,17 @@ export default function Home({
 
   useEffect(() => {
     if (!isTutorial) return;
-    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FEED_TUTORIAL) return;
-    if (tutorial.tutorialStep !== 0) return;
-    if (!selectedFood) return;
-
-    tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-  }, [isTutorial, tutorial, selectedFood]);
+    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FOOD_TUTORIAL) return;
+    if (tutorial.tutorialStep !== 3) return;
+    if (hasEnsuredStarterKit.current) return;
+    hasEnsuredStarterKit.current = true;
+    ensureStarterKitMutation.mutate();
+  }, [
+    isTutorial,
+    tutorial.tutorialPortion,
+    tutorial.tutorialStep,
+    ensureStarterKitMutation,
+  ]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
@@ -98,6 +93,9 @@ export default function Home({
           setShowSuccessModalVisible(true);
         }
         setSelectedFood("");
+        if (isTutorial) {
+          tutorial.advanceToPortion(TUTORIAL_PORTIONS.END_TUTORIAL);
+        }
       },
       onError: (error) => {
         console.error("Error handling food drop:", error);
@@ -156,7 +154,6 @@ export default function Home({
                 redirect=""
                 onClick={() => {
                   if (userId) {
-                    clearTutorialProgress(userId);
                     updateTutorialStatus.mutate(
                       {
                         userId,
