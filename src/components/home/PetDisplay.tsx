@@ -40,7 +40,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
   };
 
   return (
-    <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/2 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
+    <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/3 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
       <div className="relative w-full">
         <PetAppearance
           appearance={appearance}

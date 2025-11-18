@@ -85,7 +85,7 @@ export default function FoodModal({
                       +100
                     </span>
                     <Image
-                      src="/icons/Coin-b.svg"
+                      src="/icons/Coin.svg"
                       width={0}
                       height={0}
                       sizes="(max-width: 768px) 10vw, (max-width: 1200px) 8vw, 50px"

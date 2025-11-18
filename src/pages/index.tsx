@@ -3,7 +3,6 @@ import Navbar from "@/components/ui/Navbar";
 import NavButton from "@/components/ui/NavButton";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import PetDisplay from "@/components/home/PetDisplay";
-
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
 import ForgotPinModal from "@/components/modals/ForgotPinModal";
@@ -133,7 +132,7 @@ export default function Home({
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
           <div
-            className="flex-1 bg-no-repeat"
+            className="flex-1 flex flex-row justify-between bg-no-repeat"
             style={{
               backgroundImage: `url("${equippedBackgroundImage}")`,
               backgroundSize: "cover",
@@ -148,8 +147,7 @@ export default function Home({
               currentExp={pet.xpGained}
             />
             {/* Side Bar */}
-            <div className="flex flex-col gap-9 w-fit 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
-              <NavButton buttonType="settings" drawButton={false} />
+            <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
               <NavButton
                 buttonType="help"
                 drawButton={false}
@@ -170,6 +168,7 @@ export default function Home({
                   }
                 }}
               />
+              <NavButton buttonType="settings" drawButton={false} />
             </div>
           </div>
           {/* Navbar - VH Scaling */}
