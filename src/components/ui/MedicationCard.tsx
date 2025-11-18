@@ -3,9 +3,8 @@ import { Trash, PencilSimple } from "@phosphor-icons/react";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
 import { convertTo12Hour } from "@/utils/time";
-import { DAYS_OF_WEEK } from "@/lib/consts";
+import { getNextDosePhrase as calculateNextDosePhrase } from "@/lib/medicationDoseCalculator";
 import Link from "next/link";
-
 import {
   PillIcon,
   LiquidIcon,
@@ -25,157 +24,16 @@ export default function MedicationCard({
   setDeleteModalVisible,
   setClickedIndex,
 }: MedicationCardProps) {
-  const getNextDosePhrase = (medication: WithId<Medication>): string => {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+  const nextDosePhrase = useMemo(() => {
+    const result = calculateNextDosePhrase(medication);
 
-    const getOrdinal = (day: number): string => {
-      if (day > 3 && day < 21) return `${day}th`;
-      switch (day % 10) {
-        case 1:
-          return `${day}st`;
-        case 2:
-          return `${day}nd`;
-        case 3:
-          return `${day}rd`;
-        default:
-          return `${day}th`;
-      }
-    };
-
-    const formatDateWithMonth = (date: Date): string => {
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-      return `${months[date.getMonth()]} ${getOrdinal(date.getDate())}`;
-    };
-
-    let nextDoseDate: Date;
-
-    if (medication.repeatUnit === "Day") {
-      nextDoseDate = new Date(today);
-      nextDoseDate.setDate(today.getDate() + (medication.repeatInterval || 1));
-    } else if (medication.repeatUnit === "Week") {
-      const targetDay = medication.repeatWeeklyOn[0];
-      const targetDayIndex = DAYS_OF_WEEK.indexOf(targetDay);
-
-      nextDoseDate = new Date(today);
-      const daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
-      const repeatInterval = medication.repeatInterval || 1;
-
-      if (daysUntilTarget === 0 && repeatInterval === 1) {
-        nextDoseDate.setDate(today.getDate() + 7);
-      } else if (daysUntilTarget === 0) {
-        nextDoseDate = new Date(today);
-      } else {
-        nextDoseDate.setDate(
-          today.getDate() + daysUntilTarget + (repeatInterval - 1) * 7,
-        );
-      }
-    } else {
-      nextDoseDate = new Date(today);
-      nextDoseDate.setMonth(
-        today.getMonth() + (medication.repeatInterval || 1),
-      );
-
-      if (
-        medication.repeatMonthlyType === "Day" &&
-        medication.repeatMonthlyOnDay
-      ) {
-        nextDoseDate.setDate(medication.repeatMonthlyOnDay);
-      } else if (
-        medication.repeatMonthlyType === "Week" &&
-        medication.repeatMonthlyOnWeek &&
-        medication.repeatMonthlyOnWeekDay
-      ) {
-        const targetDayIndex = DAYS_OF_WEEK.indexOf(
-          medication.repeatMonthlyOnWeekDay,
-        );
-        const weekNumber = medication.repeatMonthlyOnWeek;
-
-        nextDoseDate.setDate(1);
-
-        const firstDayOfMonth = nextDoseDate.getDay();
-        const daysToFirstOccurrence =
-          (targetDayIndex - firstDayOfMonth + 7) % 7;
-
-        const targetDate = 1 + daysToFirstOccurrence + (weekNumber - 1) * 7;
-        nextDoseDate.setDate(targetDate);
-
-        if (nextDoseDate <= today) {
-          nextDoseDate.setMonth(
-            nextDoseDate.getMonth() + (medication.repeatInterval || 1),
-          );
-          nextDoseDate.setDate(1);
-          const firstDayOfNextMonth = nextDoseDate.getDay();
-          const daysToFirstOccurrenceNext =
-            (targetDayIndex - firstDayOfNextMonth + 7) % 7;
-          const targetDateNext =
-            1 + daysToFirstOccurrenceNext + (weekNumber - 1) * 7;
-          nextDoseDate.setDate(targetDateNext);
-        }
-      }
-    }
-
-    let dayPhrase: string;
-    const diffDays = Math.ceil(
-      (nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    const startOfThisWeek = new Date(today);
-    startOfThisWeek.setDate(today.getDate() - today.getDay());
-    startOfThisWeek.setHours(0, 0, 0, 0);
-
-    const startOfNextWeek = new Date(startOfThisWeek);
-    startOfNextWeek.setDate(startOfThisWeek.getDate() + 7);
-
-    const endOfNextWeek = new Date(startOfNextWeek);
-    endOfNextWeek.setDate(startOfNextWeek.getDate() + 6);
-    endOfNextWeek.setHours(23, 59, 59, 999);
-
-    if (diffDays === 1) {
-      dayPhrase = "Tomorrow";
-    } else if (
-      nextDoseDate >= startOfThisWeek &&
-      nextDoseDate < startOfNextWeek
-    ) {
-      dayPhrase = `This ${DAYS_OF_WEEK[nextDoseDate.getDay()]}`;
-    } else if (
-      nextDoseDate >= startOfNextWeek &&
-      nextDoseDate <= endOfNextWeek
-    ) {
-      dayPhrase = `Next ${DAYS_OF_WEEK[nextDoseDate.getDay()]}`;
-    } else {
-      dayPhrase = formatDateWithMonth(nextDoseDate);
-    }
-
-    if (
-      medication.doseTimes &&
-      medication.doseTimes.length &&
-      medication.includeTimes
-    ) {
+    if (medication.doseTimes?.length && medication.includeTimes) {
       const timeInfo = convertTo12Hour(medication.doseTimes)[0];
-      return `${dayPhrase}, ${timeInfo.time} ${timeInfo.period}`;
+      return `${result.phrase}, ${timeInfo.time} ${timeInfo.period}`;
     }
 
-    return dayPhrase;
-  };
-  const nextDosePhrase = useMemo(
-    () => getNextDosePhrase(medication),
-    [medication],
-  );
+    return result.phrase;
+  }, [medication]);
 
   const notificationFrequency =
     medication.notificationFrequency === "Every Dose"
