@@ -63,14 +63,11 @@ export function calculateStreakUpdate(
       }
 
       if (currentStreak >= STREAK_START_DAYS) {
-        const previousMilestone = STREAK_MILESTONES.find(
-          (m) => m === currentStreak - 1,
-        );
         const currentMilestone = STREAK_MILESTONES.find(
           (m) => m === currentStreak,
         );
 
-        if (currentMilestone && !previousMilestone) {
+        if (currentMilestone) {
           isNewMilestone = true;
           milestoneReached = currentMilestone;
         }
