@@ -16,7 +16,7 @@ const Bubble: React.FC<BubbleProps> = ({
         height={65}
         className="object-cover pointer-events-none w-full tall:h-[38px] mobile:h-[18px] tiny:h-[18px] tablet:h-[38px] short:h-[38px] desktop:h-[50px] lg:h-[50px] xl:h-[60px] 2xl:h-[60px] 4xl:h-[60px]"
       />
-      <div className="relative inline-block -mt-[2px] px-4">
+      <div className="relative inline-block -mt-[2px] px-4 w-full">
         <div className="w-full mobile:p-4 desktop:p-8 tiny:text-xl short:text-2xl mobile:text-xl tablet:text-xl desktop:text-3xl largeDesktop:text-4xl font-bold text-[#343859] text-center font-quantico">
           {text}
         </div>
