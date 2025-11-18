@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
@@ -7,56 +8,72 @@ type ButtonType = "bag" | "help" | "log" | "settings" | "store" | "feed";
 interface ButtonProps {
   buttonType?: ButtonType;
   drawButton?: boolean;
+  redirect?: string;
+  onClick?: () => void;
+  enlarged?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
   buttonType = "store",
   drawButton = true,
+  redirect,
+  onClick,
+  enlarged = false,
 }) => {
   const router = useRouter();
-  const iconURL = `/icons/${buttonType}.svg`;
+  const capitalizedType =
+    buttonType.charAt(0).toUpperCase() + buttonType.slice(1);
+  const iconURL = `/icons/${capitalizedType}.svg`;
 
-  const redirect = () => {
-    router.push(`/${buttonType}`);
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+
+    if (redirect === undefined) {
+      router.push(`/${buttonType}`);
+    } else if (redirect !== "") {
+      router.push(redirect);
+    }
   };
+
+  const buttonClasses = drawButton ? "px-10" : "aspect-square";
 
   return (
     <button
-      onClick={redirect}
-      className="z-10 relative aspect-nav-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent p-0"
+      onClick={handleClick}
+      className={cn(
+        "z-10 relative mobile:h-[3.1rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent",
+        buttonClasses,
+        enlarged && "scale-110",
+      )}
       type="button"
     >
       <div className="w-full h-full">
-        {drawButton && (
-          <>
-            <div
-              className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
-              from-[#9ca1c9] via-[#676ca0] to-[#2f324d] 
-              border-4 border-[#13173c]/40 flex justify-center items-center"
-            >
-              <div
-                className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#7d83b2] to-[#535677] 
-                shadow-button-inner border-4 border-t-0 border-[#7d83b2]/40"
-              />
-            </div>
-          </>
-        )}
+        <Image
+          src={"/misc/NavButton.svg"}
+          alt={buttonType}
+          fill
+          className="absolute inset-0 object-fill pointer-events-none"
+        />
 
-        <div className="w-full h-full flex flex-col items-center mobile:justify-center tablet:justify-end mobile:pb-0 tablet:pb-1 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
-          <div className="relative mobile:h-[60%] tablet:h-[75%] w-auto aspect-square">
+        <div className="w-full h-full flex items-center mobile:justify-center mobile:pb-3 tablet:pb-3 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
+          <div className="relative mobile:h-[75%] tablet:h-[67%] w-auto aspect-square object-contain">
             <Image
               src={iconURL}
               alt={buttonType}
-              width={80}
-              height={80}
-              className="object-contain pointer-events-none"
+              width={74}
+              height={65}
+              className="object-contain pointer-events-none w-full h-full"
             />
           </div>
-          <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center">
-            <span className="font-quantico text-center text-white mobile:text-lg largeDesktop:text-3xl 4xl:text-4xl font-bold leading-9 text-stroke-4 text-stroke-[#353859] text-shadow-[#7D83B2] paint-stroke letter-spacing-ui">
-              {buttonType.toUpperCase()}
-            </span>
-          </div>
+          {drawButton && (
+            <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center mt-1 ml-3">
+              <span className="font-quantico text-center text-white mobile:text-3xl largeDesktop:text-4xl 4xl:text-5xl font-bold leading-9 text-stroke-4 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui">
+                {buttonType.toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </button>

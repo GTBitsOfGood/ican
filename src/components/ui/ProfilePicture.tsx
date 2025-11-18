@@ -7,7 +7,7 @@ interface ProfilePictureProps {
 }
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({ character }) => {
-  const imagePath = `/characters/${character}.svg`;
+  const imagePath = `/characters/${character}.png`;
 
   return (
     <div className="relative aspect-profile-picture mobile:w-[5rem] tablet:w-[6rem] desktop:w-[7rem] largeDesktop:w-[8rem] 4xl:w-[9.0625rem]">

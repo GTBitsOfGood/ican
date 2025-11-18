@@ -30,4 +30,37 @@ export default class UserHTTPClient {
       body: JSON.stringify({ isOnboarded }),
     });
   }
+
+  static async getTutorialStatus(
+    userId: string,
+  ): Promise<{ tutorial_completed: boolean }> {
+    return await fetchHTTPClient(`/user/${userId}/tutorial-status`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
+
+  static async updateTutorialStatus(
+    userId: string,
+    tutorial_completed: boolean,
+  ): Promise<{ success: boolean }> {
+    return await fetchHTTPClient(`/user/${userId}/tutorial-status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ tutorial_completed }),
+    });
+  }
+
+  static async getProfile(userId: string): Promise<{
+    name: string;
+    email: string;
+  }> {
+    return await fetchHTTPClient(`/user/${userId}/profile`, {
+      method: "GET",
+      credentials: "include",
+    });
+  }
 }
