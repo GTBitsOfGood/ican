@@ -62,7 +62,6 @@ export default function Log() {
     return [...data[day].medications].sort((a, b) => {
       const aTime = standardizeTime(a.scheduledDoseTime);
       const bTime = standardizeTime(b.scheduledDoseTime);
-      console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
 
       const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
       const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
