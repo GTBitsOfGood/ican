@@ -1,32 +1,43 @@
 import Image from "next/image";
 import { motion } from "motion/react";
+import { useUserProfile } from "@/components/hooks/useAuth";
+import { useUser } from "@/components/UserContext";
 
 interface BubbleProps {
   text?: string;
-  wiggle?: boolean;
+  animation?: "jump" | "none";
 }
 
 const Bubble: React.FC<BubbleProps> = ({
   text = "Hi There!",
-  wiggle = false,
+  animation = "none",
 }) => {
-  const wiggleAnimation = wiggle
-    ? {
-        rotate: [0, -5, 5, -5, 5, 0],
-        transition: {
-          duration: 0.5,
-          repeat: Infinity,
-          repeatDelay: 2,
-        },
-      }
-    : {};
+  const { userId } = useUser();
+  const { data: userProfile } = useUserProfile(userId);
+  const userName = userProfile?.name || "there";
 
-  const renderTextWithImage = () => {
-    if (!text.includes("[LOG_BUTTON]")) {
-      return text;
+  const wiggleAnimation =
+    animation === "jump"
+      ? {
+          rotate: [0, -5, 5, -5, 5, 0],
+          transition: {
+            duration: 0.5,
+            repeat: Infinity,
+            repeatDelay: 2,
+          },
+        }
+      : {};
+
+  const processText = () => {
+    let processedText = text;
+    if (processedText.includes("{userName}")) {
+      processedText = processedText.replace("{userName}", userName);
+    }
+    if (!processedText.includes("{logButton}")) {
+      return processedText;
     }
 
-    const parts = text.split("[LOG_BUTTON]");
+    const parts = processedText.split("{logButton}");
     return (
       <>
         {parts[0]}
@@ -56,7 +67,7 @@ const Bubble: React.FC<BubbleProps> = ({
       />
       <div className="relative inline-block -mt-[2px] px-4 w-full">
         <div className="w-full mobile:p-4 desktop:p-8 tiny:text-xl short:text-2xl mobile:text-xl tablet:text-xl desktop:text-3xl largeDesktop:text-4xl font-bold text-[#343859] text-center font-quantico whitespace-pre-line">
-          {renderTextWithImage()}
+          {processText()}
         </div>
         <Image
           src={"/misc/ChatBubbleMid.svg"}

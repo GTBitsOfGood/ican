@@ -18,21 +18,3 @@ export function formatMedicationTime(timeString: string): string {
   const minutesStr = minutes.toString().padStart(2, "0");
   return `${hours}:${minutesStr} ${period}`;
 }
-
-export function getMedicationReminderText(
-  userName: string,
-  medicationName?: string,
-  time?: string,
-  isTaken?: boolean,
-): string {
-  if (isTaken && medicationName) {
-    return `Great job taking your medication ${userName}!`;
-  }
-
-  if (!medicationName || !time) {
-    return `Hi There!`;
-  }
-
-  const formattedTime = formatMedicationTime(time);
-  return `Hi, ${userName}!\nIt's time to take your ${formattedTime} medication.\nClick [LOG_BUTTON] to check-in!`;
-}

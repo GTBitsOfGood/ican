@@ -17,14 +17,13 @@ import { useTutorial } from "@/components/TutorialContext";
 import {
   useTutorialStatus,
   useUpdateTutorialStatus,
-  useUserProfile,
 } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 import { useUpcomingMedication } from "@/components/hooks/useMedication";
-import { getMedicationReminderText } from "@/utils/medicationDisplay";
+import { formatMedicationTime } from "@/utils/medicationDisplay";
 
 interface HomeProps {
   activeModal: string;
@@ -37,7 +36,6 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const { data: userProfile } = useUserProfile(userId);
   const updateTutorialStatus = useUpdateTutorialStatus();
   const isTutorial = !tutorialCompleted;
 
@@ -116,19 +114,26 @@ export default function Home({
     setDistance(dist);
   };
 
-  const getReminderText = () => {
+  const getBubbleText = () => {
     if (isTutorial) {
       return tutorial.getTutorialText();
     }
+    if (recentlyTaken) {
+      return "Great job taking your medication {userName}!";
+    }
 
-    const userName = userProfile?.name || "there";
+    if (upcomingMed) {
+      const formattedTime = formatMedicationTime(upcomingMed.scheduledDoseTime);
+      return `Hi, {userName}!\nIt's time to take your ${formattedTime} medication.\nClick {logButton} to check-in!`;
+    }
 
-    return getMedicationReminderText(
-      userName,
-      upcomingMed?.name || recentlyTaken?.name,
-      upcomingMed?.scheduledDoseTime,
-      !!recentlyTaken,
-    );
+    return "Hi {userName}!";
+  };
+
+  const getBubbleAnimation = () => {
+    if (isTutorial) return "none" as const;
+    if (hasMedication && !recentlyTaken) return "jump" as const;
+    return "none" as const;
   };
 
   return (
@@ -213,8 +218,8 @@ export default function Home({
             petType={pet.petType}
             appearance={pet.appearance}
             selectedFood={selectedFood}
-            bubbleText={getReminderText()}
-            shouldAnimate={!isTutorial && hasMedication && !recentlyTaken}
+            bubbleText={getBubbleText()}
+            bubbleAnimation={getBubbleAnimation()}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />
