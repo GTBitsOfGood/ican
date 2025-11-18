@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,mdx}\"",
     "prepare": "husky install",
     "secrets:linux": "echo Enter Bitwarden Password: && read BW_PASSWORD && (bw logout || exit 0) && export BW_SESSION=`bw login product@bitsofgood.org $BW_PASSWORD --raw` && npm run secrets:get",
@@ -50,10 +48,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
     "@types/bcrypt": "^6.0.0",
-    "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.17",
@@ -62,12 +57,10 @@
     "eslint-config-prettier": "^10.0.1",
     "fx": "^35.0.0",
     "husky": "^9.1.7",
-    "jest": "^30.2.0",
     "lint-staged": "^15.3.0",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.1",
-    "ts-jest": "^29.4.5",
     "typescript": "^5"
   },
   "lint-staged": {
