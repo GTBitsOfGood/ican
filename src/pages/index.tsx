@@ -22,6 +22,8 @@ import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
+import { useUpcomingMedication } from "@/components/hooks/useMedication";
+import { formatMedicationTime } from "@/utils/medicationDisplay";
 
 interface HomeProps {
   activeModal: string;
@@ -53,6 +55,11 @@ export default function Home({
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
   const feeding = feedPetMutation.isPending;
+  const {
+    medication: upcomingMed,
+    hasMedication,
+    recentlyTaken,
+  } = useUpcomingMedication();
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
     equippedBackgroundKey &&
@@ -105,6 +112,28 @@ export default function Home({
 
   const handleDrag = (dist: number | null) => {
     setDistance(dist);
+  };
+
+  const getBubbleText = () => {
+    if (isTutorial) {
+      return tutorial.getTutorialText();
+    }
+    if (recentlyTaken) {
+      return "Great job taking your medication {userName}!";
+    }
+
+    if (upcomingMed) {
+      const formattedTime = formatMedicationTime(upcomingMed.scheduledDoseTime);
+      return `Hi, {userName}!\nIt's time to take your ${formattedTime} medication.\nClick {logButton} to check-in!`;
+    }
+
+    return "Hi {userName}!";
+  };
+
+  const getBubbleAnimation = () => {
+    if (isTutorial) return "none" as const;
+    if (hasMedication && !recentlyTaken) return "jump" as const;
+    return "none" as const;
   };
 
   return (
@@ -189,7 +218,8 @@ export default function Home({
             petType={pet.petType}
             appearance={pet.appearance}
             selectedFood={selectedFood}
-            bubbleText={isTutorial ? tutorial.getTutorialText() : undefined}
+            bubbleText={getBubbleText()}
+            bubbleAnimation={getBubbleAnimation()}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />

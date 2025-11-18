@@ -11,6 +11,7 @@ interface PetDisplayProps {
   appearance: Appearance;
   selectedFood: string | null;
   bubbleText?: string;
+  bubbleAnimation?: "jump" | "none";
   onFoodDrop?: () => void;
   onDrag?: (distance: number | null) => void;
 }
@@ -20,6 +21,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
   appearance,
   selectedFood,
   bubbleText,
+  bubbleAnimation = "none",
   onFoodDrop,
   onDrag,
 }) => {
@@ -39,18 +41,32 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
     }
   };
 
+  const jumpAnimation =
+    bubbleAnimation === "jump"
+      ? {
+          y: [0, -20, 0],
+          transition: {
+            duration: 0.6,
+            repeat: Infinity,
+            repeatDelay: 1.5,
+          },
+        }
+      : {};
+
   return (
     <div className="fixed mobile:left-[25%] mobile:top-[75%] tablet:left-1/3 tablet:top-[60%] transform -translate-x-1/2 -translate-y-1/2 h-[45%] max-h-[40rem] w-fit">
       <div className="relative w-full">
-        <PetAppearance
-          appearance={appearance}
-          petType={petType}
-          selectedItem={null}
-          className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
-          showBackground={false}
-        />
+        <motion.div animate={jumpAnimation}>
+          <PetAppearance
+            appearance={appearance}
+            petType={petType}
+            selectedItem={null}
+            className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
+            showBackground={false}
+          />
+        </motion.div>
         <div className="absolute bottom-[90%] left-[90%] tablet:bottom-[75%]">
-          <Bubble text={bubbleText} />
+          <Bubble text={bubbleText} animation={bubbleAnimation} />
         </div>
         <div
           ref={constraintsRef}
