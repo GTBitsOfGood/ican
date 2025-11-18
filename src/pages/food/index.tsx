@@ -5,15 +5,10 @@ import LoadingScreen from "@/components/loadingScreen";
 import { usePetFoods } from "@/components/hooks/useInventory";
 
 export default function Food() {
-  const { data: realPet, isLoading: petLoading } = usePet();
-  const pet = realPet;
-
-  const { data: realFoods, isLoading: foodsLoading } = usePetFoods(
+  const { data: pet, isLoading: petLoading } = usePet();
+  const { data: foods, isLoading: foodsLoading } = usePetFoods(
     pet && pet.food > 0 ? pet._id : undefined,
   );
-
-  const foods = realFoods;
-
   const router = useRouter();
 
   if (foodsLoading || petLoading) {

@@ -4,10 +4,8 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useReducer,
-  useRef,
-  ReactNode,
 } from "react";
+import { create } from "zustand";
 import { usePet } from "./hooks/usePet";
 import {
   useTutorialStatus,
@@ -20,6 +18,7 @@ import {
   useSetupTutorialMedication,
   useTutorialProgress,
 } from "./hooks/useTutorial";
+import { TutorialProgress } from "@/http/tutorialHTTPClient";
 
 interface TutorialContextType {
   tutorialPortion: number;
@@ -29,162 +28,186 @@ interface TutorialContextType {
   shouldEnlargeButton: (buttonType: "store" | "log") => boolean;
 }
 
-interface TutorialState {
+interface TutorialStore {
   portion: number;
   step: number;
+  completionTriggered: boolean;
+  advanceStep: () => void;
+  advanceToPortion: (portion: number) => void;
+  resetCompletion: () => void;
+  setupMedicationForLogTutorial: (
+    mutate: () => void,
+    isPending: boolean,
+  ) => void;
+  completeEntireTutorial: (
+    mutate: (data: { userId: string; tutorial_completed: boolean }) => void,
+    userId: string,
+    isPending: boolean,
+  ) => void;
+  syncWithProgress: (
+    progress: TutorialProgress | undefined,
+    currentPortion: number,
+  ) => void;
 }
 
-type TutorialAction =
-  | { type: "SET_PORTION_AND_STEP"; payload: { portion: number; step: number } }
-  | { type: "SET_STEP"; payload: number };
-
-const createInitialState = (): TutorialState => ({
+const useTutorialStore = create<TutorialStore>((set, get) => ({
   portion: TUTORIAL_PORTIONS.FOOD_TUTORIAL,
   step: 0,
-});
+  completionTriggered: false,
 
-const tutorialReducer = (
-  state: TutorialState,
-  action: TutorialAction,
-): TutorialState => {
-  switch (action.type) {
-    case "SET_PORTION_AND_STEP":
-      return {
-        ...state,
-        portion: action.payload.portion,
-        step: action.payload.step,
-      };
-    case "SET_STEP":
-      return { ...state, step: action.payload };
-    default:
-      return state;
-  }
-};
+  advanceStep: () => {
+    const { step, portion } = get();
+    const dialogues = TUTORIAL_DIALOGUES[portion];
+    if (!dialogues?.length) return;
+
+    const nextStep = step + 1;
+    if (
+      portion === TUTORIAL_PORTIONS.END_TUTORIAL &&
+      nextStep >= dialogues.length
+    )
+      return;
+
+    set({ step: Math.min(nextStep, dialogues.length - 1) });
+  },
+
+  advanceToPortion: (targetPortion) => set({ portion: targetPortion, step: 0 }),
+  resetCompletion: () => set({ completionTriggered: false }),
+
+  setupMedicationForLogTutorial: (mutate, isPending) => {
+    if (get().portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL || isPending) return;
+    mutate();
+  },
+
+  completeEntireTutorial: (mutate, userId, isPending) => {
+    const { completionTriggered, portion, step } = get();
+    const dialogues = TUTORIAL_DIALOGUES[portion];
+
+    if (
+      portion !== TUTORIAL_PORTIONS.END_TUTORIAL ||
+      step + 1 < dialogues.length ||
+      completionTriggered ||
+      isPending ||
+      !userId
+    )
+      return;
+
+    set({ completionTriggered: true });
+    mutate({ userId, tutorial_completed: true });
+  },
+
+  syncWithProgress: (progress, currentPortion) => {
+    if (!progress) return;
+
+    let targetPortion: number = TUTORIAL_PORTIONS.FOOD_TUTORIAL;
+    if (progress.hasFedPet) targetPortion = TUTORIAL_PORTIONS.END_TUTORIAL;
+    else if (progress.hasTakenTutorialMedication)
+      targetPortion = TUTORIAL_PORTIONS.FEED_TUTORIAL;
+    else if (progress.hasPurchasedFood)
+      targetPortion = TUTORIAL_PORTIONS.LOG_TUTORIAL;
+
+    if (currentPortion < targetPortion)
+      set({ portion: targetPortion, step: 0 });
+  },
+}));
 
 const TutorialContext = createContext<TutorialContextType | undefined>(
   undefined,
 );
 
-export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
+export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { userId } = useUser();
   const { data: tutorialCompleted, isSuccess: tutorialStatusLoaded } =
     useTutorialStatus(userId);
   const { data: userProfile } = useUserProfile(userId);
-  const updateTutorialStatus = useUpdateTutorialStatus();
-  const isTutorial = tutorialStatusLoaded && !tutorialCompleted;
-
   const { data: realPet } = usePet();
-  const { data: tutorialProgress } = useTutorialProgress(isTutorial);
-  const setupTutorialMedication = useSetupTutorialMedication();
-  const [state, dispatch] = useReducer(tutorialReducer, undefined, () =>
-    createInitialState(),
+  const { data: tutorialProgress } = useTutorialProgress(
+    tutorialStatusLoaded && !tutorialCompleted,
   );
+  const updateTutorialStatus = useUpdateTutorialStatus();
+  const setupTutorialMedication = useSetupTutorialMedication();
 
-  const completionTriggeredRef = useRef(false);
-
-  const { portion, step } = state;
+  const isTutorial = tutorialStatusLoaded && !tutorialCompleted;
+  const {
+    portion,
+    step,
+    advanceStep,
+    advanceToPortion: advanceToPortionAction,
+    resetCompletion,
+    setupMedicationForLogTutorial,
+    completeEntireTutorial,
+    syncWithProgress,
+  } = useTutorialStore();
 
   useEffect(() => {
-    if (!isTutorial) {
-      completionTriggeredRef.current = false;
-    }
-  }, [isTutorial]);
+    if (!isTutorial) resetCompletion();
+  }, [isTutorial, resetCompletion]);
+
+  useEffect(() => {
+    if (isTutorial) syncWithProgress(tutorialProgress, portion);
+  }, [tutorialProgress, isTutorial, portion, syncWithProgress]);
 
   useEffect(() => {
     if (!isTutorial) return;
-    if (portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL) return;
-    if (setupTutorialMedication.isPending) return;
-
-    setupTutorialMedication.mutate(undefined, {
-      onError: (error) => {
-        console.error("Unable to setup tutorial medication", error);
-      },
-    });
-  }, [isTutorial, portion, setupTutorialMedication]);
+    setupMedicationForLogTutorial(
+      () => setupTutorialMedication.mutate(),
+      setupTutorialMedication.isPending,
+    );
+  }, [
+    isTutorial,
+    portion,
+    setupMedicationForLogTutorial,
+    setupTutorialMedication,
+  ]);
 
   useEffect(() => {
     if (!isTutorial) return;
 
     const handleKeyPress = () => {
-      const currentDialogues = TUTORIAL_DIALOGUES[portion];
-      if (!currentDialogues || currentDialogues.length === 0) return;
+      const dialogues = TUTORIAL_DIALOGUES[portion];
+      if (!dialogues?.length) return;
 
       const nextStep = step + 1;
-
-      if (portion === TUTORIAL_PORTIONS.END_TUTORIAL) {
-        if (nextStep >= currentDialogues.length) {
-          if (
-            userId &&
-            !completionTriggeredRef.current &&
-            !updateTutorialStatus.isPending
-          ) {
-            completionTriggeredRef.current = true;
-            updateTutorialStatus.mutate(
-              {
-                userId,
-                tutorial_completed: true,
-              },
-              {
-                onError: () => {
-                  completionTriggeredRef.current = false;
-                },
-              },
-            );
-          }
-          return;
-        }
-
-        dispatch({ type: "SET_STEP", payload: nextStep });
+      if (
+        portion === TUTORIAL_PORTIONS.END_TUTORIAL &&
+        nextStep >= dialogues.length
+      ) {
+        completeEntireTutorial(
+          (data) =>
+            updateTutorialStatus.mutate(data, { onError: resetCompletion }),
+          userId!,
+          updateTutorialStatus.isPending,
+        );
         return;
       }
 
-      const clampedStep = Math.min(nextStep, currentDialogues.length - 1);
-      dispatch({ type: "SET_STEP", payload: clampedStep });
+      advanceStep();
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [isTutorial, portion, step, userId, updateTutorialStatus]);
-
-  useEffect(() => {
-    if (!isTutorial) return;
-    if (!tutorialProgress) return;
-
-    let targetPortion: number = TUTORIAL_PORTIONS.FOOD_TUTORIAL;
-    if (tutorialProgress.hasFedPet) {
-      targetPortion = TUTORIAL_PORTIONS.END_TUTORIAL;
-    } else if (tutorialProgress.hasTakenTutorialMedication) {
-      targetPortion = TUTORIAL_PORTIONS.FEED_TUTORIAL;
-    } else if (tutorialProgress.hasPurchasedFood) {
-      targetPortion = TUTORIAL_PORTIONS.LOG_TUTORIAL;
-    }
-
-    if (portion < targetPortion) {
-      dispatch({
-        type: "SET_PORTION_AND_STEP",
-        payload: { portion: targetPortion, step: 0 },
-      });
-    }
-  }, [tutorialProgress, isTutorial, portion]);
+  }, [
+    isTutorial,
+    portion,
+    step,
+    userId,
+    advanceStep,
+    completeEntireTutorial,
+    resetCompletion,
+    updateTutorialStatus,
+  ]);
 
   const advanceToPortion = useCallback(
     (targetPortion: number) => {
-      if (!isTutorial) return;
-
-      dispatch({
-        type: "SET_PORTION_AND_STEP",
-        payload: { portion: targetPortion, step: 0 },
-      });
+      if (isTutorial) advanceToPortionAction(targetPortion);
     },
-    [isTutorial],
+    [isTutorial, advanceToPortionAction],
   );
 
   const shouldEnlargeButton = useCallback(
     (buttonType: "store" | "log") => {
       if (!isTutorial) return false;
-
       if (buttonType === "store") {
         return (
           portion === TUTORIAL_PORTIONS.FOOD_TUTORIAL &&
@@ -192,14 +215,12 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
             TUTORIAL_DIALOGUES[TUTORIAL_PORTIONS.FOOD_TUTORIAL].length - 1
         );
       }
-
       if (buttonType === "log") {
         return (
           portion === TUTORIAL_PORTIONS.LOG_TUTORIAL &&
           step === TUTORIAL_DIALOGUES[TUTORIAL_PORTIONS.LOG_TUTORIAL].length - 1
         );
       }
-
       return false;
     },
     [isTutorial, portion, step],
@@ -207,8 +228,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
 
   const getTutorialText = useCallback(() => {
     const dialogues = TUTORIAL_DIALOGUES[portion];
-    if (!dialogues) return undefined;
-    if (step >= dialogues.length) return undefined;
+    if (!dialogues || step >= dialogues.length) return undefined;
 
     const userName = userProfile?.name?.trim() || "Friend";
     const petName = realPet?.name?.trim() || "Paws";
@@ -218,7 +238,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
       .replace("{petName}", petName);
   }, [portion, step, userProfile?.name, realPet?.name]);
 
-  const contextValue = useMemo<TutorialContextType>(
+  const value = useMemo(
     () => ({
       tutorialPortion: portion,
       tutorialStep: step,
@@ -230,7 +250,7 @@ export const TutorialProvider: React.FC<{ children: ReactNode }> = ({
   );
 
   return (
-    <TutorialContext.Provider value={contextValue}>
+    <TutorialContext.Provider value={value}>
       {children}
     </TutorialContext.Provider>
   );
