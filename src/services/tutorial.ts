@@ -47,7 +47,7 @@ export default class TutorialService {
       return existingMedication._id.toString();
     }
 
-    const tutorialMedication = {
+    const newMedication = await MedicationDAO.createNewMedication({
       userId: new Types.ObjectId(userId),
       customMedicationId: TUTORIAL_MEDICATION_ID,
       formOfMedication: "Pill" as const,
@@ -61,10 +61,8 @@ export default class TutorialService {
       includeTimes: true,
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
-
-    const newMedication =
-      await MedicationDAO.createNewMedication(tutorialMedication);
+      notes: "practice dose",
+    });
     return newMedication._id.toString();
   }
 
