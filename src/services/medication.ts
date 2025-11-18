@@ -112,12 +112,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    console.log(currentDate);
+    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
         time,
-        currentDate.toISOString(),
+        dateString,
         medicationLogs,
         localTime,
       );
@@ -177,10 +177,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
+    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
         time,
-        currentDate.toISOString(),
+        dateString,
         medicationLogs,
         localTime,
       );
@@ -232,7 +234,12 @@ export default class MedicationService {
 
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    const givenDate = new Date(date);
+    const dateParts = date.split("-");
+    const givenDate = new Date(
+      parseInt(dateParts[0]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[2]),
+    );
 
     const allDoses = [];
 
@@ -244,7 +251,6 @@ export default class MedicationService {
       const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
       const lastTaken = lastLog ? lastLog.dateTaken : null;
       const medicationCreated = medication.createdAt;
-      medicationCreated.setUTCHours(0, 0, 0, 0);
 
       const shouldSchedule = shouldScheduleMedication(
         medication,
@@ -256,7 +262,7 @@ export default class MedicationService {
         for (const time of medication.doseTimes) {
           const doseResult = processDoseTime(
             time,
-            currentDate.toISOString(),
+            date,
             medicationLogs,
             localTime,
           );

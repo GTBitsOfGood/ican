@@ -33,15 +33,23 @@ export default class TutorialService {
 
     const now = new Date();
     const futureTime = new Date(now.getTime() + 10 * 60 * 1000);
+
+    const nowDay = now.getDate();
+    const futureDay = futureTime.getDate();
+    const crossesMidnight = futureDay !== nowDay;
+
     const hours = futureTime.getHours().toString().padStart(2, "0");
     const minutes = futureTime.getMinutes().toString().padStart(2, "0");
     const doseTime = `${hours}:${minutes}`;
 
+    // we use createdAt for when the dose will actually occur
+    const createdAt = crossesMidnight ? futureTime : now;
     if (existingMedication) {
       await MedicationDAO.updateMedicationById(
         existingMedication._id.toString(),
         {
           doseTimes: [doseTime],
+          createdAt: createdAt,
         },
       );
       return existingMedication._id.toString();
@@ -59,9 +67,9 @@ export default class TutorialService {
       dosesUnit: "Doses" as const,
       notificationFrequency: "Every Dose" as const,
       includeTimes: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
       notes: "practice dose",
+      createdAt: createdAt,
+      updatedAt: new Date(),
     });
     return newMedication._id.toString();
   }
