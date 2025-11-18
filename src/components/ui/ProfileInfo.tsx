@@ -25,7 +25,7 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
       <div className="flex flex-1 flex-row w-fit items-center gap-3 4xl:gap-4">
         <div className="relative h-full aspect-square">
           <Image
-            src="/icons/Coin-b.svg"
+            src="/icons/Coin.svg"
             alt="Coins"
             fill
             draggable={false}
