@@ -7,7 +7,6 @@ interface ProfileInfoProps {
   level: number;
   coins: number;
   currentExp: number;
-  totalExp?: number;
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
@@ -15,12 +14,11 @@ const ProfileInfo: React.FC<ProfileInfoProps> = ({
   level,
   coins,
   currentExp,
-  totalExp = 100,
 }) => {
   return (
     <div className="flex flex-col h-full w-fit gap-2">
       <ProfileName />
-      <ExpBar level={level} currentExp={currentExp} totalExp={totalExp} />
+      <ExpBar level={level} currentExp={currentExp} />
 
       <div className="flex flex-1 flex-row w-fit items-center gap-3 4xl:gap-4">
         <div className="relative h-full aspect-square">
