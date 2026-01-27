@@ -1,27 +1,21 @@
-## PR Title
+### Description
 
-Issue Number(s): #number_of_issue.
+Resolves #issue_number
 
 What does this PR change and why?
 
 ### Checklist
 
-- [ ] Requirements have been implemented
-- [ ] Acceptance criteria is met
-- [ ] Database schema docs have been updated or are not necessary
-- [ ] Code follows design and style guidelines
-- [ ] Commits follow guidelines (concise, squashed, etc)
-- [ ] Relevant reviewers (Senior Dev/EM/Designers) have been assigned to this PR
+- [ ] The ticket is mentioned above
+- [ ] The changes fulfill the success criteria of the ticket
+- [ ] Relevant developers have been assigned
+- [ ] Relevant reviewers (EM, etc.) have been requested to review
 
 ### Critical Changes
 
 - Database change/migration to run
 - Environment config change
 - Breaking API change
-
-### Related PRs
-
-- #number_of_pr
 
 ### Testing
 
