@@ -6,6 +6,7 @@ What does this PR change and why?
 
 ### Checklist
 
+- [ ] Title is same as the ticket title
 - [ ] The ticket is mentioned above
 - [ ] The changes fulfill the success criteria of the ticket
 - [ ] Relevant developers have been assigned
