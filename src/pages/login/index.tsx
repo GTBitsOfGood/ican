@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <UnauthorizedRoute>
-      <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.png')] py-2">
+      <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
         <div
           className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
         >
