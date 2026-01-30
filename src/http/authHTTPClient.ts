@@ -4,6 +4,7 @@ import { JWTPayload } from "@/types/jwt";
 export interface LoginRequestBody {
   email: string;
   password: string;
+  rememberMe: boolean;
 }
 
 export interface LoginWithGoogleRequestBody {
@@ -67,8 +68,9 @@ export default class AuthHTTPClient {
   static async login(
     email: string,
     password: string,
+    rememberMe: boolean = false,
   ): Promise<AuthResponseBody> {
-    const loginRequestBody: LoginRequestBody = { email, password };
+    const loginRequestBody: LoginRequestBody = { email, password, rememberMe };
     return await fetchHTTPClient<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
