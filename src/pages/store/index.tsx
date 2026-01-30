@@ -1,5 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InventoryLeftPanel from "@/components/inventory/InventoryLeftPanel";
 import InventoryTabContainer from "@/components/inventory/InventoryTabContainer";
 import LoadingScreen from "@/components/loadingScreen";
@@ -34,6 +34,16 @@ export default function Store() {
     InventoryItem | SavedOutfit | null
   >(null);
 
+  useEffect(() => {
+    if (!showPurchasedScreen) return;
+
+    const timeoutId = setTimeout(() => {
+      setShowPurchasedScreen(false);
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
+  }, [showPurchasedScreen]);
+
   const purchaseItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
@@ -62,7 +72,7 @@ export default function Store() {
       {pet && petBag ? (
         <Inventory
           topView={
-            <div className="flex justify-center items-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-2xl tablet:text-3xl desktop:text-4xl bg-[#E6E8F9] border-[3px] border-black">
+            <div className="flex justify-center items-center p-2 mt-[40px] font-quantico text-black font-bold text-center text-2xl tablet:text-3xl desktop:text-4xl bg-[#E6E8F9] border-[3px] border-black">
               Balance:
               <Image
                 src="/icons/Coin.svg"

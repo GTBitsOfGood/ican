@@ -8,6 +8,7 @@ const ProfileName: React.FC = () => {
 
   const [isEditing, setEditing] = useState(false);
   const [editingName, setEditingName] = useState("");
+  const profileRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const currentName = pet?.name || "";
@@ -37,6 +38,11 @@ const ProfileName: React.FC = () => {
     setEditing((prev) => !prev);
   };
 
+  const cancelEditing = () => {
+    setEditingName(currentName);
+    setEditing(false);
+  };
+
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
@@ -49,8 +55,38 @@ const ProfileName: React.FC = () => {
 
   const displayName = isEditing ? editingName : currentName;
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        cancelEditing();
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        cancelEditing();
+      }
+    };
+
+    if (isEditing) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isEditing, currentName]);
+
   return (
-    <div className="relative inline-flex flex-row flex-1 h-full items-center">
+    <div
+      ref={profileRef}
+      className="relative inline-flex flex-row flex-1 h-full items-center"
+    >
       <input
         className={`
           text-4xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
@@ -92,7 +128,7 @@ const ProfileName: React.FC = () => {
       {isEditing && (
         <button
           className="relative h-3/5 w-fit inline-block"
-          onClick={() => setEditing((prev) => !prev)}
+          onClick={cancelEditing}
         >
           <Image
             src="/misc/CrossMark.svg"

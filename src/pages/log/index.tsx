@@ -1,4 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+import BackButton from "@/components/ui/BackButton";
 import { useMedicationSchedule } from "@/components/hooks/useMedication";
 import MedicationLogCard from "@/components/ui/MedicationLogCard";
 import { LogType } from "@/types/log";
@@ -96,16 +97,19 @@ export default function Log() {
     return futureDoses;
   };
 
-  const handleCloseIcon = () => {
+  const handleBackClick = () => {
     router.push("/");
   };
 
   return (
     <AuthorizedRoute>
-      <div className="bg-icanBlue-200 p-16 min-h-screen">
+      <div className="bg-icanBlue-200 p-16 min-h-screen relative">
         <div className="mb-[72px]">
-          <div className="flex justify-between">
-            <div className="flex justify-center items-center w-full">
+          <div className="absolute top-4 left-4 w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+            <BackButton onClick={handleBackClick} />
+          </div>
+          <div className="flex w-full justify-between items-center">
+            <div className="flex justify-center items-center flex-1">
               <button onClick={handlePrev}>
                 <Image
                   src={"/assets/LeftArrowIcon.svg"}
@@ -128,17 +132,7 @@ export default function Log() {
                 />
               </button>
             </div>
-            <div className="py-9">
-              <button>
-                <Image
-                  src={"/assets/CloseIcon.svg"}
-                  alt=""
-                  width={46}
-                  height={46}
-                  onClick={handleCloseIcon}
-                />
-              </button>
-            </div>
+            <div className="w-16 h-16" />
           </div>
           <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">
             {isSameDay(currDate) ? (
