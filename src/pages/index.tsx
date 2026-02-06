@@ -25,6 +25,7 @@ import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 import { useUpcomingMedication } from "@/components/hooks/useMedication";
+import { usePetEmotion } from "@/components/hooks/usePetEmotion";
 import { formatMedicationTime } from "@/utils/medicationDisplay";
 
 interface HomeProps {
@@ -48,6 +49,7 @@ export default function Home({
 
   const pet = realPetData.data;
   const feedPetMutation = realFeedPet;
+  const petEmotion = usePetEmotion(pet?.lastFedAt);
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
@@ -231,6 +233,7 @@ export default function Home({
           <PetDisplay
             petType={pet.petType}
             appearance={pet.appearance}
+            emotion={petEmotion}
             selectedFood={selectedFood}
             bubbleText={getBubbleText()}
             bubbleAnimation={getBubbleAnimation()}
