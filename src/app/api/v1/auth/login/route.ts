@@ -19,13 +19,11 @@ export async function POST(req: NextRequest) {
 
     const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
-    const response = generateAPIAuthCookie(
+    return await generateAPIAuthCookie(
       nextResponse,
       token,
       rememberMe ?? false,
     );
-
-    return response;
   } catch (error) {
     return handleError(error);
   }

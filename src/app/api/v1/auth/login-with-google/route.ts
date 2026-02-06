@@ -26,9 +26,7 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     );
 
-    const response = generateAPIAuthCookie(nextResponse, token);
-
-    return response;
+    return await generateAPIAuthCookie(nextResponse, token);
   } catch (error) {
     return handleError(error);
   }
