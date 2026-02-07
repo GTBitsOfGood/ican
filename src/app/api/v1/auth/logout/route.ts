@@ -1,21 +1,8 @@
-import { handleError } from "@/utils/errorHandler";
-import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import { withAuth } from "@/utils/withAuth";
 
-export async function POST(req: NextRequest) {
-  try {
-    await validateRoutes(
-      req,
-      req.method,
-      req.nextUrl.pathname.toString(),
-      (await cookies()).get("auth_token")?.value,
-    );
-
-    (await cookies()).delete("auth_token");
-
-    return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    return handleError(error);
-  }
-}
+export const POST = withAuth<Record<string, never>>(async () => {
+  (await cookies()).delete("auth_token");
+  return new NextResponse(null, { status: 204 });
+});

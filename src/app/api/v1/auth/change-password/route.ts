@@ -1,25 +1,13 @@
 import ForgotPasswordService from "@/services/forgotPasswordCodes";
-import { handleError } from "@/utils/errorHandler";
-import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "@/utils/withAuth";
+import { UserDocument } from "@/db/models/user";
 
-export async function PATCH(req: NextRequest) {
-  try {
-    const tokenUser = await validateRoutes(
-      req,
-      req.method,
-      req.nextUrl.pathname.toString(),
-      (await cookies()).get("auth_token")?.value,
-    );
+export const PATCH = withAuth<Record<string, never>>(
+  async (req: NextRequest, _context, tokenUser: UserDocument) => {
     const { password, confirmPassword } = await req.json();
 
-    // There is the option of having changePassword take an optional userId, then let the schema check there
-    if (!tokenUser) {
-      throw new Error(
-        "Token was not checked when it was expected, ensure route map defines authorization.",
-      );
-    }
     await ForgotPasswordService.changePassword(
       tokenUser._id.toString(),
       password,
@@ -28,7 +16,5 @@ export async function PATCH(req: NextRequest) {
 
     (await cookies()).delete("auth_token");
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    return handleError(error);
-  }
-}
+  },
+);

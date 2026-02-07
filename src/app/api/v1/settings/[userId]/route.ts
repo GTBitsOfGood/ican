@@ -1,48 +1,34 @@
 import { cacheControlMiddleware } from "@/middleware/cache-control";
 import SettingsService from "@/services/settings";
 import { verifyUser } from "@/utils/auth";
-import { handleError } from "@/utils/errorHandler";
 import ERRORS from "@/utils/errorMessages";
-import { validateRoutes } from "@/utils/validateRoute";
-import { cookies } from "next/headers";
+import { withAuth } from "@/utils/withAuth";
 import { NextRequest, NextResponse } from "next/server";
+import { UserDocument } from "@/db/models/user";
 
-const route = "/api/v1/settings/[userId]";
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
-) {
-  try {
-    const tokenUser = await validateRoutes(
-      req,
-      req.method,
-      route,
-      (await cookies()).get("auth_token")?.value,
-    );
-    const userId = (await params).userId;
+export const GET = withAuth<{ userId: string }>(
+  async (
+    req: NextRequest,
+    { params }: { params: { userId: string } },
+    tokenUser: UserDocument,
+  ) => {
+    const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const settings = await SettingsService.getSettings(userId);
     const headers = cacheControlMiddleware(req);
 
     return NextResponse.json(settings, { status: 200, headers });
-  } catch (err) {
-    return handleError(err);
-  }
-}
+  },
+);
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
-) {
-  try {
-    const tokenUser = await validateRoutes(
-      req,
-      req.method,
-      route,
-      (await cookies()).get("auth_token")?.value,
-    );
-    const userId = (await params).userId;
+export const PATCH = withAuth<{ userId: string }>(
+  async (
+    req: NextRequest,
+    { params }: { params: { userId: string } },
+    tokenUser: UserDocument,
+  ) => {
+    const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
     const { helpfulTips, largeFontSize, notifications } = await req.json();
 
@@ -53,7 +39,5 @@ export async function PATCH(
     });
 
     return new NextResponse(null, { status: 204 });
-  } catch (err) {
-    return handleError(err);
-  }
-}
+  },
+);

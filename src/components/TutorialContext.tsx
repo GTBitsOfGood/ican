@@ -4,8 +4,8 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useState,
 } from "react";
-import { create } from "zustand";
 import { usePet } from "./hooks/usePet";
 import {
   useTutorialStatus,
@@ -18,7 +18,6 @@ import {
   useSetupTutorialMedication,
   useTutorialProgress,
 } from "./hooks/useTutorial";
-import { TutorialProgress } from "@/http/tutorialHTTPClient";
 
 interface TutorialContextType {
   tutorialPortion: number;
@@ -27,88 +26,6 @@ interface TutorialContextType {
   advanceToPortion: (portion: number) => void;
   shouldEnlargeButton: (buttonType: "store" | "log") => boolean;
 }
-
-interface TutorialStore {
-  portion: number;
-  step: number;
-  completionTriggered: boolean;
-  advanceStep: () => void;
-  advanceToPortion: (portion: number) => void;
-  resetCompletion: () => void;
-  setupMedicationForLogTutorial: (
-    mutate: () => void,
-    isPending: boolean,
-  ) => void;
-  completeEntireTutorial: (
-    mutate: (data: { userId: string; tutorial_completed: boolean }) => void,
-    userId: string,
-    isPending: boolean,
-  ) => void;
-  syncWithProgress: (
-    progress: TutorialProgress | undefined,
-    currentPortion: number,
-  ) => void;
-}
-
-const useTutorialStore = create<TutorialStore>((set, get) => ({
-  portion: TUTORIAL_PORTIONS.FOOD_TUTORIAL,
-  step: 0,
-  completionTriggered: false,
-
-  advanceStep: () => {
-    const { step, portion } = get();
-    const dialogues = TUTORIAL_DIALOGUES[portion];
-    if (!dialogues?.length) return;
-
-    const nextStep = step + 1;
-    if (
-      portion === TUTORIAL_PORTIONS.END_TUTORIAL &&
-      nextStep >= dialogues.length
-    )
-      return;
-
-    set({ step: Math.min(nextStep, dialogues.length - 1) });
-  },
-
-  advanceToPortion: (targetPortion) => set({ portion: targetPortion, step: 0 }),
-  resetCompletion: () => set({ completionTriggered: false }),
-
-  setupMedicationForLogTutorial: (mutate, isPending) => {
-    if (get().portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL || isPending) return;
-    mutate();
-  },
-
-  completeEntireTutorial: (mutate, userId, isPending) => {
-    const { completionTriggered, portion, step } = get();
-    const dialogues = TUTORIAL_DIALOGUES[portion];
-
-    if (
-      portion !== TUTORIAL_PORTIONS.END_TUTORIAL ||
-      step + 1 < dialogues.length ||
-      completionTriggered ||
-      isPending ||
-      !userId
-    )
-      return;
-
-    set({ completionTriggered: true });
-    mutate({ userId, tutorial_completed: true });
-  },
-
-  syncWithProgress: (progress, currentPortion) => {
-    if (!progress) return;
-
-    let targetPortion: number = TUTORIAL_PORTIONS.FOOD_TUTORIAL;
-    if (progress.hasFedPet) targetPortion = TUTORIAL_PORTIONS.END_TUTORIAL;
-    else if (progress.hasTakenTutorialMedication)
-      targetPortion = TUTORIAL_PORTIONS.FEED_TUTORIAL;
-    else if (progress.hasPurchasedFood)
-      targetPortion = TUTORIAL_PORTIONS.LOG_TUTORIAL;
-
-    if (currentPortion < targetPortion)
-      set({ portion: targetPortion, step: 0 });
-  },
-}));
 
 const TutorialContext = createContext<TutorialContextType | undefined>(
   undefined,
@@ -129,38 +46,53 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   const setupTutorialMedication = useSetupTutorialMedication();
 
   const isTutorial = tutorialStatusLoaded && !tutorialCompleted;
-  const {
-    portion,
-    step,
-    advanceStep,
-    advanceToPortion: advanceToPortionAction,
-    resetCompletion,
-    setupMedicationForLogTutorial,
-    completeEntireTutorial,
-    syncWithProgress,
-  } = useTutorialStore();
 
+  const [portion, setPortion] = useState<number>(
+    TUTORIAL_PORTIONS.FOOD_TUTORIAL,
+  );
+  const [step, setStep] = useState<number>(0);
+  const [completionTriggered, setCompletionTriggered] =
+    useState<boolean>(false);
+
+  // Reset completion when exiting tutorial
   useEffect(() => {
-    if (!isTutorial) resetCompletion();
-  }, [isTutorial, resetCompletion]);
+    if (!isTutorial) {
+      setCompletionTriggered(false);
+    }
+  }, [isTutorial]);
 
+  // Sync with tutorial progress
   useEffect(() => {
-    if (isTutorial) syncWithProgress(tutorialProgress, portion);
-  }, [tutorialProgress, isTutorial, portion, syncWithProgress]);
+    if (!isTutorial || !tutorialProgress) return;
 
+    let targetPortion: number = TUTORIAL_PORTIONS.FOOD_TUTORIAL;
+    if (tutorialProgress.hasFedPet) {
+      targetPortion = TUTORIAL_PORTIONS.END_TUTORIAL;
+    } else if (tutorialProgress.hasTakenTutorialMedication) {
+      targetPortion = TUTORIAL_PORTIONS.FEED_TUTORIAL;
+    } else if (tutorialProgress.hasPurchasedFood) {
+      targetPortion = TUTORIAL_PORTIONS.LOG_TUTORIAL;
+    }
+
+    if (portion < targetPortion) {
+      setPortion(targetPortion);
+      setStep(0);
+    }
+  }, [tutorialProgress, isTutorial, portion]);
+
+  // Setup medication for log tutorial
   useEffect(() => {
-    if (!isTutorial) return;
-    setupMedicationForLogTutorial(
-      () => setupTutorialMedication.mutate(),
-      setupTutorialMedication.isPending,
-    );
-  }, [
-    isTutorial,
-    portion,
-    setupMedicationForLogTutorial,
-    setupTutorialMedication,
-  ]);
+    if (
+      !isTutorial ||
+      portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL ||
+      setupTutorialMedication.isPending
+    ) {
+      return;
+    }
+    setupTutorialMedication.mutate();
+  }, [isTutorial, portion, setupTutorialMedication]);
 
+  // Handle keypress for tutorial advancement
   useEffect(() => {
     if (!isTutorial) return;
 
@@ -173,16 +105,21 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         portion === TUTORIAL_PORTIONS.END_TUTORIAL &&
         nextStep >= dialogues.length
       ) {
-        completeEntireTutorial(
-          (data) =>
-            updateTutorialStatus.mutate(data, { onError: resetCompletion }),
-          userId!,
-          updateTutorialStatus.isPending,
-        );
+        // Complete tutorial
+        if (!completionTriggered && !updateTutorialStatus.isPending && userId) {
+          setCompletionTriggered(true);
+          updateTutorialStatus.mutate(
+            { userId, tutorial_completed: true },
+            {
+              onError: () => setCompletionTriggered(false),
+            },
+          );
+        }
         return;
       }
 
-      advanceStep();
+      // Advance step
+      setStep(Math.min(nextStep, dialogues.length - 1));
     };
 
     window.addEventListener("keydown", handleKeyPress);
@@ -192,17 +129,18 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     portion,
     step,
     userId,
-    advanceStep,
-    completeEntireTutorial,
-    resetCompletion,
+    completionTriggered,
     updateTutorialStatus,
   ]);
 
   const advanceToPortion = useCallback(
     (targetPortion: number) => {
-      if (isTutorial) advanceToPortionAction(targetPortion);
+      if (isTutorial) {
+        setPortion(targetPortion);
+        setStep(0);
+      }
     },
-    [isTutorial, advanceToPortionAction],
+    [isTutorial],
   );
 
   const shouldEnlargeButton = useCallback(

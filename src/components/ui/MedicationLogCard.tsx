@@ -11,6 +11,7 @@ import { useTutorial } from "@/components/TutorialContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 import { useSettings } from "../hooks/useSettings";
+import { useUser } from "@/components/UserContext";
 
 const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
 
@@ -28,6 +29,7 @@ export default function MedicationLogCard({
 }: LogType) {
   const tutorial = useTutorial();
   const isTutorialMedication = name === TUTORIAL_MEDICATION_NAME;
+  const { userId } = useUser();
 
   const [showMissedDoseModal, setShowMissedDoseModal] =
     useState<boolean>(false);
@@ -79,6 +81,7 @@ export default function MedicationLogCard({
   const handleTakeMedicationAction = () => {
     medicationLogMutation.mutate(
       {
+        userId: userId!,
         medicationId: id,
         localTime: new Date().toLocaleString("en-us"),
       },
@@ -94,6 +97,7 @@ export default function MedicationLogCard({
   const handleMedicationCheckIn = () => {
     medicationCheckInMutation.mutate(
       {
+        userId: userId!,
         medicationId: id,
         localTime: new Date().toLocaleString(undefined),
       },
