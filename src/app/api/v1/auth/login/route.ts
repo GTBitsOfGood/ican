@@ -13,15 +13,17 @@ export async function POST(req: NextRequest) {
       req.nextUrl.pathname.toString(),
       (await cookies()).get("auth_token")?.value,
     );
-    const { email, password } = await req.json();
+    const { email, password, rememberMe } = await req.json();
 
     const { token, userId } = await AuthService.login(email, password);
 
     const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
-    const response = generateAPIAuthCookie(nextResponse, token);
-
-    return response;
+    return await generateAPIAuthCookie(
+      nextResponse,
+      token,
+      rememberMe ?? false,
+    );
   } catch (error) {
     return handleError(error);
   }

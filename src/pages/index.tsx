@@ -16,10 +16,7 @@ import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
 import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
-import {
-  useTutorialStatus,
-  useUpdateTutorialStatus,
-} from "@/components/hooks/useAuth";
+import { useTutorialStatus } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
@@ -39,7 +36,6 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const updateTutorialStatus = useUpdateTutorialStatus();
   const isTutorial = !tutorialCompleted;
 
   const realPetData = usePet();
@@ -196,22 +192,7 @@ export default function Home({
               <NavButton
                 buttonType="help"
                 drawButton={false}
-                redirect=""
-                onClick={() => {
-                  if (userId) {
-                    updateTutorialStatus.mutate(
-                      {
-                        userId,
-                        tutorial_completed: false,
-                      },
-                      {
-                        onSuccess: () => {
-                          window.location.reload();
-                        },
-                      },
-                    );
-                  }
-                }}
+                redirect="/help"
               />
               <NavButton buttonType="settings" drawButton={false} />
             </div>

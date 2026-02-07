@@ -31,7 +31,7 @@ export default function DisclaimerStep({
         <OnboardingHeader
           title="Disclaimer"
           titleColor="red"
-          description="This app is not a substitute for medical advice..."
+          description="This app is not a substitute for medical advice. iCAN is not responsible for any missed doses."
           className="text-5xl"
         />
 
