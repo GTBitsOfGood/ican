@@ -1,6 +1,6 @@
-import { PetType } from "@/types/pet";
+import { PetEmotion, PetType } from "@/types/pet";
 import Image from "next/image";
-import { characterImages } from "@/types/characters";
+import { getCharacterImage } from "@/types/characters";
 import { InventoryItem, ItemType } from "@/types/inventory";
 import ClothingItem from "./appearance/clothingItem";
 import storeItems from "@/lib/storeItems";
@@ -12,6 +12,7 @@ import { Appearance } from "@/db/models/pet";
 
 interface PetAppearanceProps {
   petType?: PetType;
+  emotion?: PetEmotion;
   selectedItem: InventoryItem | null;
   appearance: Appearance;
   className: string;
@@ -24,6 +25,7 @@ interface PetAppearanceProps {
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
   petType,
+  emotion = PetEmotion.NEUTRAL,
   selectedItem,
   appearance,
   className,
@@ -44,7 +46,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
     >
       {!outfitOnly && petType && (
         <Image
-          src={characterImages[petType]}
+          src={getCharacterImage(petType, emotion)}
           alt={`${petType}`}
           width={characterImageSize || 275}
           height={characterImageSize || 275}

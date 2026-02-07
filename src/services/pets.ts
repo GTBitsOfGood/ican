@@ -47,6 +47,7 @@ export default class PetService {
       xpLevel: 0,
       coins: 0,
       food: 0,
+      lastFedAt: null,
       userId: new Types.ObjectId(userId),
       appearance: {},
       outfits: [],
@@ -109,12 +110,15 @@ export default class PetService {
       updatedPet.xpGained += XP_GAIN;
     }
 
+    const now = new Date();
     await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
       food: updatedPet.food,
       coins: updatedPet.coins,
+      lastFedAt: now,
     });
+    updatedPet.lastFedAt = now;
     return updatedPet;
   }
 

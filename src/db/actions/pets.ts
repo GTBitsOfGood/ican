@@ -27,6 +27,7 @@ export default class PetDAO {
       xpLevel?: number;
       coins?: number;
       food?: number;
+      lastFedAt?: Date;
     },
   ): Promise<void> {
     const userId = new Types.ObjectId(_userId);
@@ -107,6 +108,7 @@ export default class PetDAO {
       xpLevel?: number;
       coins?: number;
       food?: number;
+      lastFedAt?: Date;
     },
   ): Promise<void> {
     const petId = new Types.ObjectId(_petId);
