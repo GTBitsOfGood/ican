@@ -4,6 +4,7 @@ import { InventoryItem } from "@/types/inventory";
 import { Pet, PetType } from "@/types/pet";
 import { SavedOutfit } from "@/db/models/pet";
 import { useRouter } from "next/router";
+import BackButton from "../ui/BackButton";
 
 interface PanelProps {
   petData: Pet;
@@ -24,16 +25,15 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
   return (
     <div className="relative desktop:h-screen p-4 bg-[#E6E8F9]">
       <div className="-mt-4 mb-12 w-full desktop:hidden">
-        <div
-          className={`flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
-        >
-          {topView}
+        <div className="flex justify-between items-center">
           <div
-            className="font-pixelify mt-[30px] pr-[30px] text-icanBlue-300 text-7xl leading-none cursor-pointer"
-            onClick={() => router.push("/")}
+            className="w-16 h-16 ml-[15px] mt-[30px]
+            [&>a]:w-16 [&>a]:h-16
+            [&>a>button]:w-full [&>a>button]:h-full"
           >
-            x
+            <BackButton onClick={() => router.push("/")} />
           </div>
+          {topView}
         </div>
       </div>
       <div className="desktop:absolute top-4 desktop:left-1/2 desktop:-translate-x-1/2 text-center text-icanBlue-300 font-quantico leading-none w-full">

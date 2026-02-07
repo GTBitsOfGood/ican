@@ -121,7 +121,7 @@ export default function Bag() {
             }
           }}
           topView={
-            <div className="ml-[31px] mt-[40px] flex justify-center items-center gap-6">
+            <div className="mt-[40px] flex justify-center items-center gap-6">
               {Object.values(
                 pet.appearance ? { ...pet.appearance, _id: undefined } : {},
               ).some((value) => value !== undefined) && (
