@@ -5,9 +5,8 @@ import ERRORS from "@/utils/errorMessages";
 import { withAuth } from "@/utils/withAuth";
 import { UserDocument } from "@/db/models/user";
 import { cacheControlMiddleware } from "@/middleware/cache-control";
-import JWTService from "@/services/jwt";
 import { verifyParentalMode } from "@/utils/parentalControl";
-import { cookies } from "next/headers";
+import { JWTPayload } from "@/types/jwt";
 
 export const GET = withAuth<{ userId: string }>(
   async (
@@ -29,12 +28,10 @@ export const POST = withAuth<{ userId: string }>(
     req: NextRequest,
     { params }: { params: { userId: string } },
     tokenUser: UserDocument,
+    tokenPayload: JWTPayload,
   ) => {
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.MEDICATION.UNAUTHORIZED);
-
-    const authToken = (await cookies()).get("auth_token")?.value;
-    const tokenPayload = JWTService.verifyToken(authToken!);
     verifyParentalMode(tokenPayload);
 
     const body = await req.json();

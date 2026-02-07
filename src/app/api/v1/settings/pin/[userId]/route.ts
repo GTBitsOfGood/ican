@@ -4,26 +4,25 @@ import { verifyUser } from "@/utils/auth";
 import { verifyParentalMode } from "@/utils/parentalControl";
 import ERRORS from "@/utils/errorMessages";
 import { withAuth } from "@/utils/withAuth";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import AuthService from "@/services/auth";
 import { generateAPIAuthCookie } from "@/utils/cookie";
 import { UserDocument } from "@/db/models/user";
+import { JWTPayload } from "@/types/jwt";
 
 export const PATCH = withAuth<{ userId: string }>(
   async (
     req: NextRequest,
     { params }: { params: { userId: string } },
     tokenUser: UserDocument,
+    tokenPayload: JWTPayload,
   ) => {
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
-    const authToken = (await cookies()).get("auth_token")?.value;
     const settings = await SettingsService.getSettings(userId);
     // need this check for onboarding to work as expected
     if (settings.pin !== null) {
-      const tokenPayload = JWTService.verifyToken(authToken!);
       verifyParentalMode(tokenPayload);
     }
 

@@ -4,11 +4,13 @@ import { cookies } from "next/headers";
 import JWTService from "@/services/jwt";
 import UserDAO from "@/db/actions/user";
 import { handleError } from "./errorHandler";
+import { JWTPayload } from "@/types/jwt";
 
 type RouteHandler<T = unknown> = (
   req: NextRequest,
   context: { params: T },
   user: UserDocument,
+  tokenPayload: JWTPayload,
 ) => Promise<NextResponse>;
 
 type UnauthenticatedRouteHandler<T = unknown> = (
@@ -18,7 +20,7 @@ type UnauthenticatedRouteHandler<T = unknown> = (
 
 /**
  * Higher-order function that wraps API routes with authentication logic
- * @param handler - The route handler function that receives the authenticated user
+ * @param handler - The route handler function that receives the authenticated user and token payload
  * @param requireAuth - Whether authentication is required (default: true)
  * @returns Wrapped route handler with authentication
  */
@@ -55,12 +57,17 @@ export function withAuth<T = unknown>(
           );
         }
 
-        return handler(req, { params: resolvedParams }, user.toObject());
+        return handler(
+          req,
+          { params: resolvedParams },
+          user.toObject(),
+          tokenPayload,
+        );
       }
 
       // For unauthenticated routes, we still pass through but without user
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return handler(req, { params: resolvedParams }, null as any);
+      return handler(req, { params: resolvedParams }, null as any, null as any);
     } catch (error) {
       return handleError(error);
     }
