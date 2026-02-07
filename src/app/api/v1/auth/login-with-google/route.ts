@@ -17,8 +17,6 @@ export const POST = withoutAuth<Record<string, never>>(
       { status: 200 },
     );
 
-    const response = generateAPIAuthCookie(nextResponse, token);
-
-    return response;
+    return await generateAPIAuthCookie(nextResponse, token);
   },
 );

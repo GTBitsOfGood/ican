@@ -68,8 +68,7 @@ export const POST = withAuth<{ userId: string }>(
     const newToken = await AuthService.enableParentalMode(userId);
 
     const nextResponse = new NextResponse(null, { status: 204 });
-    const response = generateAPIAuthCookie(nextResponse, newToken);
 
-    return response;
+    return await generateAPIAuthCookie(nextResponse, newToken);
   },
 );

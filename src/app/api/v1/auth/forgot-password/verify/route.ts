@@ -14,7 +14,5 @@ export const POST = withoutAuth(async (req: NextRequest) => {
 
   const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
-  const response = generateAPIAuthCookie(nextResponse, token);
-
-  return response;
+  return await generateAPIAuthCookie(nextResponse, token);
 });
