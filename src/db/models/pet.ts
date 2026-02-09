@@ -21,6 +21,7 @@ export interface Pet {
   coins: number;
   userId: Types.ObjectId;
   food: number;
+  lastFedAt: Date | null;
   appearance: Appearance;
   outfits: SavedOutfit[];
 }
@@ -71,6 +72,10 @@ const petSchema = new Schema<PetDocument>(
       type: Number,
       required: true,
       default: 0,
+    },
+    lastFedAt: {
+      type: Date,
+      default: null,
     },
     appearance: {
       type: appearanceSchema,

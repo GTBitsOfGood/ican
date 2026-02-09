@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import React, { cloneElement, ReactElement } from "react";
+import BackButton from "../ui/BackButton";
 
 interface InventoryProps {
   outsideClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -17,6 +18,11 @@ export default function Inventory({
   topView,
 }: InventoryProps) {
   const router = useRouter();
+
+  const handleBackClick = () => {
+    router.push("/");
+  };
+
   return (
     <div
       className="flex flex-col desktop:flex-row desktop:justify-end relative"
@@ -32,11 +38,8 @@ export default function Inventory({
           className={`hidden desktop:flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
         >
           {topView}
-          <div
-            className="font-pixelify mt-[30px] pr-[60px] text-icanGreen-100 text-7xl leading-none cursor-pointer"
-            onClick={() => router.push("/")}
-          >
-            x
+          <div className="w-16 h-16 mt-[30px] mr-[60px] [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+            <BackButton onClick={handleBackClick} />
           </div>
         </div>
         <div className="mt-5 mx-[31px] flex-grow">{tabContainer}</div>

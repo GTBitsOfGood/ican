@@ -177,8 +177,11 @@ export const useMedicationLog = () => {
 
 export const useUpcomingMedication = () => {
   const now = new Date();
-  const dateStr = now.toISOString().split("T")[0];
-  const localTimeStr = now.toISOString();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const dateStr = `${year}-${month}-${day}`;
+  const localTimeStr = now.toLocaleString();
 
   const { data: schedule } = useMedicationSchedule(dateStr, localTimeStr);
 
