@@ -1,5 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InventoryLeftPanel from "@/components/inventory/InventoryLeftPanel";
 import InventoryTabContainer from "@/components/inventory/InventoryTabContainer";
 import LoadingScreen from "@/components/loadingScreen";
@@ -33,6 +33,16 @@ export default function Store() {
   const [selectedItem, setSelectedItem] = useState<
     InventoryItem | SavedOutfit | null
   >(null);
+
+  useEffect(() => {
+    if (!showPurchasedScreen) return;
+
+    const timeoutId = setTimeout(() => {
+      setShowPurchasedScreen(false);
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
+  }, [showPurchasedScreen]);
 
   const purchaseItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
