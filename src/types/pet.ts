@@ -8,6 +8,12 @@ export enum PetType {
   PENGUIN = "penguin",
 }
 
+export enum PetEmotion {
+  HAPPY = "happy",
+  SAD = "sad",
+  NEUTRAL = "neutral",
+}
+
 export interface Pet {
   _id?: string;
   name: string;
@@ -17,6 +23,7 @@ export interface Pet {
   coins: number;
   userId: string;
   food: number;
+  lastFedAt: string | null;
   appearance: Appearance;
   outfits: SavedOutfit[];
   currentStreak: number;

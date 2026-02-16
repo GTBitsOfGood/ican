@@ -1,4 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+import BackButton from "@/components/ui/BackButton";
 import { useMedicationSchedule } from "@/components/hooks/useMedication";
 import MedicationLogCard from "@/components/ui/MedicationLogCard";
 import { LogType } from "@/types/log";
@@ -7,12 +8,9 @@ import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useTutorial } from "@/components/TutorialContext";
 
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
-  const tutorial = useTutorial();
-  const shouldShowPracticeDose = tutorial.shouldShowPracticeDose();
   const router = useRouter();
 
   const getDateString = (date: Date, offset: number) => {
@@ -65,7 +63,6 @@ export default function Log() {
     return [...data[day].medications].sort((a, b) => {
       const aTime = standardizeTime(a.scheduledDoseTime);
       const bTime = standardizeTime(b.scheduledDoseTime);
-      console.log(a.scheduledDoseTime, aTime, b.scheduledDoseTime, bTime);
 
       const aTotalMinutes = aTime.hours * 60 + aTime.minutes;
       const bTotalMinutes = bTime.hours * 60 + bTime.minutes;
@@ -100,7 +97,7 @@ export default function Log() {
     return futureDoses;
   };
 
-  const handleCloseIcon = () => {
+  const handleBackClick = () => {
     router.push("/");
   };
 
@@ -133,28 +130,15 @@ export default function Log() {
               </button>
             </div>
             <div className="py-9">
-              <button>
-                <Image
-                  src={"/assets/CloseIcon.svg"}
-                  alt=""
-                  width={46}
-                  height={46}
-                  onClick={handleCloseIcon}
-                />
-              </button>
+              <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+                <BackButton onClick={handleBackClick} />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">
             {isSameDay(currDate) ? (
               <>
                 <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                  {shouldShowPracticeDose &&
-                    tutorial.practiceDose.status === "pending" && (
-                      <MedicationLogCard
-                        {...tutorial.practiceDose}
-                        key="practice-dose"
-                      />
-                    )}
                   {filterFutureDoses("today")?.map(
                     (log: LogType, idx: number) => {
                       return <MedicationLogCard {...log} key={idx} />;
@@ -166,13 +150,6 @@ export default function Log() {
                     Previous Doses
                   </h1>
                   <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                    {shouldShowPracticeDose &&
-                      tutorial.practiceDose.status === "taken" && (
-                        <MedicationLogCard
-                          {...tutorial.practiceDose}
-                          key="practice-dose"
-                        />
-                      )}
                     {filterPastDoses("today")?.map(
                       (log: LogType, idx: number) => {
                         return <MedicationLogCard {...log} key={idx} />;

@@ -19,6 +19,7 @@ export default function Onboard() {
   const [confirmPin, setConfirmPin] = useState<string>("");
   const [consentChecked, setConsentChecked] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string>("");
+  const [hasSavedParentPin, setHasSavedParentPin] = useState<boolean>(false);
   const { userId } = useUser();
   const updateOnboardingStatus = useUpdateOnboardingStatus();
   const updatePin = useUpdatePin();
@@ -57,6 +58,20 @@ export default function Onboard() {
 
   // Functions to ensure correct states
   const handleChildSetup = () => {
+    if (hasSavedParentPin) {
+      updatePin.mutate(null, {
+        onSuccess: () => {
+          setHasSavedParentPin(false);
+        },
+        onError: (error) => {
+          console.error("Error removing parental pin:", error);
+        },
+      });
+    }
+    setPin("");
+    setConfirmPin("");
+    setPinError("");
+    setConsentChecked(false);
     setUserType("child");
     goToChildConsent();
   };
@@ -85,6 +100,7 @@ export default function Onboard() {
       updatePin.mutate(confirmPin, {
         onSuccess: () => {
           setPinError("");
+          setHasSavedParentPin(true);
           goToParentConsent();
         },
         onError: (error) => {

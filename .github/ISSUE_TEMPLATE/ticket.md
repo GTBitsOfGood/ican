@@ -1,7 +1,7 @@
 ---
 name: Requirement/Feature
-about: A typical ticket to be picked up by a developer.
-title: "[FE/BE] Issue title"
+about: A typical ticket to be picked up by a developer
+title: "Issue Title"
 labels: ""
 assignees: ""
 ---

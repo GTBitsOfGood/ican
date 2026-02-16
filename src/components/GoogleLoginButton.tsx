@@ -2,7 +2,6 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import AuthHTTPClient from "@/http/authHTTPClient";
-import { clearTutorialProgress } from "@/constants/tutorial";
 
 interface GoogleLoginButtonProps {
   forgotPassword?: boolean;
@@ -23,8 +22,6 @@ const GoogleLoginButton = ({
         );
 
         const response = await AuthHTTPClient.loginWithGoogle(userInfo);
-
-        clearTutorialProgress();
 
         if (response.isNewUser) {
           router.push("/onboarding");

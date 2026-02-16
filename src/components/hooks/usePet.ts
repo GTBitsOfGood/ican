@@ -128,7 +128,7 @@ export const useFeedPet = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (petId: string) => PetHTTPClient.feedPet(petId),
+    mutationFn: (petId: string) => PetHTTPClient.feedPet(userId!, petId),
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({ queryKey: PET_QUERY_KEYS.pet(userId) });
@@ -150,7 +150,7 @@ export const useEquipPetItem = () => {
       petId: string;
       name: string;
       type: string;
-    }) => PetHTTPClient.equipItem(petId, name, type), // TODO Check for empty strings
+    }) => PetHTTPClient.equipItem(userId!, petId, name, type), // TODO Check for empty strings
 
     // Optimistic
     onMutate: async ({ name, type }) => {
@@ -202,7 +202,7 @@ export const useUnequipPetItem = () => {
 
   return useMutation({
     mutationFn: ({ petId, attribute }: { petId: string; attribute: string }) =>
-      PetHTTPClient.unequipItem(petId, attribute),
+      PetHTTPClient.unequipItem(userId!, petId, attribute),
 
     // Optimistic
     onMutate: async ({ attribute }) => {
@@ -259,7 +259,7 @@ export const useEquipPetOutfit = () => {
     }: {
       petId: string;
       appearance: Appearance;
-    }) => PetHTTPClient.equipOutfit(petId, appearance),
+    }) => PetHTTPClient.equipOutfit(userId!, petId, appearance),
 
     // Optimistic
     onMutate: async ({ appearance }) => {
@@ -310,7 +310,7 @@ export const useSavePetOutfit = () => {
         throw new Error("Outfit name cannot be empty.");
       }
 
-      return PetHTTPClient.saveOutfit(petId, name, appearance);
+      return PetHTTPClient.saveOutfit(userId!, petId, name, appearance);
     },
 
     // Optimistic
@@ -380,7 +380,7 @@ export const useDeletePetOutfit = () => {
       if (!outfitName || outfitName.trim() === "") {
         throw new Error("Outfit name cannot be empty.");
       }
-      return PetHTTPClient.deleteOutfit(petId, outfitName);
+      return PetHTTPClient.deleteOutfit(userId!, petId, outfitName);
     },
     onMutate: async ({ outfitName }) => {
       if (!userId) return;

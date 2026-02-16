@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
-import { clearTutorialProgress } from "@/constants/tutorial";
 
 export default function Home() {
   const [email, setEmail] = useState("");
@@ -17,6 +16,7 @@ export default function Home() {
   const [passwordError, setPasswordError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,8 +43,7 @@ export default function Home() {
 
     setLoggingIn(true);
     try {
-      await AuthHTTPClient.login(email.trim(), password.trim());
-      clearTutorialProgress();
+      await AuthHTTPClient.login(email.trim(), password.trim(), rememberMe);
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
@@ -154,6 +153,19 @@ export default function Home() {
                 >
                   Login
                 </button>
+
+                <div className="flex justify-start flex-row">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="rememberMe" className="text-textGrey">
+                    Remember me
+                  </label>
+                </div>
               </form>
               <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
                 <div className="flex items-center justify-center w-full">

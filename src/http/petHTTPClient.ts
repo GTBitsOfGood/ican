@@ -33,7 +33,7 @@ export default class PetHTTPClient {
       userId,
       petType,
     };
-    return fetchHTTPClient<WithId<Pet>>("/pets", {
+    return fetchHTTPClient<WithId<Pet>>(`/users/${userId}/pets`, {
       method: "POST",
       body: JSON.stringify(CreatePetBodyRequestBody),
       credentials: "include",
@@ -41,7 +41,7 @@ export default class PetHTTPClient {
   }
 
   static async getPet(userId: string): Promise<WithId<Pet>> {
-    return fetchHTTPClient<WithId<Pet>>(`/pets/${userId}`, {
+    return fetchHTTPClient<WithId<Pet>>(`/users/${userId}/pets`, {
       method: "GET",
       credentials: "include",
     });
@@ -49,7 +49,7 @@ export default class PetHTTPClient {
 
   static async updatePet(name: string, userId: string): Promise<void> {
     const updatePetRequestBody: UpdatePetBody = { name };
-    return fetchHTTPClient<void>(`/pets/${userId}`, {
+    return fetchHTTPClient<void>(`/users/${userId}/pets`, {
       method: "PATCH",
       body: JSON.stringify(updatePetRequestBody),
       credentials: "include",
@@ -57,14 +57,14 @@ export default class PetHTTPClient {
   }
 
   static async deletePet(userId: string): Promise<void> {
-    return fetchHTTPClient<void>(`/pets/${userId}`, {
+    return fetchHTTPClient<void>(`/users/${userId}/pets`, {
       method: "DELETE",
       credentials: "include",
     });
   }
 
-  static async feedPet(petId: string): Promise<WithId<Pet>> {
-    return fetchHTTPClient<WithId<Pet>>(`/pet/${petId}/feed`, {
+  static async feedPet(userId: string, petId: string): Promise<WithId<Pet>> {
+    return fetchHTTPClient<WithId<Pet>>(`/users/${userId}/pets/${petId}/feed`, {
       method: "PATCH",
       body: JSON.stringify({}),
       credentials: "include",
@@ -72,6 +72,7 @@ export default class PetHTTPClient {
   }
 
   static async equipItem(
+    userId: string,
     petId: string,
     name: string,
     type: string,
@@ -80,51 +81,73 @@ export default class PetHTTPClient {
       name,
       type,
     };
-    return fetchHTTPClient<void>(`/pet/${petId}/equip-item`, {
+    return fetchHTTPClient<void>(`/users/${userId}/pets/${petId}/equip-item`, {
       method: "PATCH",
       body: JSON.stringify(EquipItemRequestBody),
       credentials: "include",
     });
   }
 
-  static async unequipItem(petId: string, attribute: string): Promise<void> {
+  static async unequipItem(
+    userId: string,
+    petId: string,
+    attribute: string,
+  ): Promise<void> {
     const UnequipRequestBody: UnequipBody = {
       attribute,
     };
-    return fetchHTTPClient<void>(`/pet/${petId}/unequip-item`, {
-      method: "PATCH",
-      body: JSON.stringify(UnequipRequestBody),
-      credentials: "include",
-    });
+    return fetchHTTPClient<void>(
+      `/users/${userId}/pets/${petId}/unequip-item`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(UnequipRequestBody),
+        credentials: "include",
+      },
+    );
   }
 
   static async equipOutfit(
+    userId: string,
     petId: string,
     appearance: Appearance,
   ): Promise<void> {
-    return fetchHTTPClient<void>(`/pet/${petId}/equip-outfit`, {
-      method: "PATCH",
-      body: JSON.stringify(appearance),
-      credentials: "include",
-    });
+    return fetchHTTPClient<void>(
+      `/users/${userId}/pets/${petId}/equip-outfit`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(appearance),
+        credentials: "include",
+      },
+    );
   }
 
   static async saveOutfit(
+    userId: string,
     petId: string,
     name: string,
     appearance: Appearance,
   ): Promise<void> {
-    return fetchHTTPClient<void>(`/pet/${petId}/outfit/${name}`, {
-      method: "POST",
-      body: JSON.stringify(appearance),
-      credentials: "include",
-    });
+    return fetchHTTPClient<void>(
+      `/users/${userId}/pets/${petId}/outfit/${name}`,
+      {
+        method: "POST",
+        body: JSON.stringify(appearance),
+        credentials: "include",
+      },
+    );
   }
 
-  static async deleteOutfit(petId: string, name: string): Promise<void> {
-    return fetchHTTPClient<void>(`/pet/${petId}/outfit/${name}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+  static async deleteOutfit(
+    userId: string,
+    petId: string,
+    name: string,
+  ): Promise<void> {
+    return fetchHTTPClient<void>(
+      `/users/${userId}/pets/${petId}/outfit/${name}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
   }
 }

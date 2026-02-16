@@ -3,6 +3,7 @@ import Navbar from "@/components/ui/Navbar";
 import NavButton from "@/components/ui/NavButton";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import PetDisplay from "@/components/home/PetDisplay";
+import Hearts from "@/components/ui/Heart";
 
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
@@ -10,20 +11,19 @@ import ForgotPinModal from "@/components/modals/ForgotPinModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import { useFeedPet, usePet } from "@/components/hooks/usePet";
-import { Pet } from "@/types/pet";
-import { WithId } from "@/types/models";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
-import {
-  useTutorialStatus,
-  useUpdateTutorialStatus,
-} from "@/components/hooks/useAuth";
+import { useTutorialStatus } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
-import { TUTORIAL_PORTIONS, clearTutorialProgress } from "@/constants/tutorial";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
+import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
+import { useUpcomingMedication } from "@/components/hooks/useMedication";
+import { usePetEmotion } from "@/components/hooks/usePetEmotion";
+import { formatMedicationTime } from "@/utils/medicationDisplay";
 
 interface HomeProps {
   activeModal: string;
@@ -36,26 +36,16 @@ export default function Home({
 }: HomeProps) {
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const updateTutorialStatus = useUpdateTutorialStatus();
   const isTutorial = !tutorialCompleted;
 
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
   const tutorial = useTutorial();
+  const ensureStarterKitMutation = useEnsureStarterKit();
 
-  const pet = isTutorial ? tutorial.pet : realPetData.data;
-  const feedPetMutation = isTutorial
-    ? {
-        mutate: (
-          _petId: string,
-          options?: {
-            onSuccess?: (updatedPet: WithId<Pet>) => void;
-            onError?: (error: Error) => void;
-          },
-        ) => tutorial.feedPet(options?.onSuccess, options?.onError),
-        isPending: false,
-      }
-    : realFeedPet;
+  const pet = realPetData.data;
+  const feedPetMutation = realFeedPet;
+  const petEmotion = usePetEmotion(pet?.lastFedAt);
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
     useState<boolean>(false);
@@ -63,7 +53,14 @@ export default function Home({
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
+  const hasEnsuredStarterKit = useRef(false);
+  const [showHearts, setHearts] = useState<boolean>(false);
   const feeding = feedPetMutation.isPending;
+  const {
+    medication: upcomingMed,
+    hasMedication,
+    recentlyTaken,
+  } = useUpcomingMedication();
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
     equippedBackgroundKey &&
@@ -76,12 +73,17 @@ export default function Home({
 
   useEffect(() => {
     if (!isTutorial) return;
-    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FEED_TUTORIAL) return;
-    if (tutorial.tutorialStep !== 0) return;
-    if (!selectedFood) return;
-
-    tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-  }, [isTutorial, tutorial, selectedFood]);
+    if (tutorial.tutorialPortion !== TUTORIAL_PORTIONS.FOOD_TUTORIAL) return;
+    if (tutorial.tutorialStep !== 3) return;
+    if (hasEnsuredStarterKit.current) return;
+    hasEnsuredStarterKit.current = true;
+    ensureStarterKitMutation.mutate();
+  }, [
+    isTutorial,
+    tutorial.tutorialPortion,
+    tutorial.tutorialStep,
+    ensureStarterKitMutation,
+  ]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
@@ -93,12 +95,26 @@ export default function Home({
     feedPetMutation.mutate(pet._id, {
       onSuccess: (updatedPetData) => {
         const newLevel = updatedPetData?.xpLevel ?? 0;
+
+        setHearts(true);
+
         if (updatedPetData && newLevel > previousLevel) {
-          setShowLevelUpModalVisible(true);
+          setTimeout(() => {
+            setHearts(false);
+            setShowLevelUpModalVisible(true);
+          }, 2000);
         } else {
-          setShowSuccessModalVisible(true);
+          // Hearts will trigger success modal after animation
+          setTimeout(() => {
+            setHearts(false);
+            setShowSuccessModalVisible(true);
+          }, 2000);
         }
+
         setSelectedFood("");
+        if (isTutorial) {
+          tutorial.advanceToPortion(TUTORIAL_PORTIONS.END_TUTORIAL);
+        }
       },
       onError: (error) => {
         console.error("Error handling food drop:", error);
@@ -108,6 +124,28 @@ export default function Home({
 
   const handleDrag = (dist: number | null) => {
     setDistance(dist);
+  };
+
+  const getBubbleText = () => {
+    if (isTutorial) {
+      return tutorial.getTutorialText();
+    }
+    if (recentlyTaken) {
+      return "Great job taking your medication {userName}!";
+    }
+
+    if (upcomingMed) {
+      const formattedTime = formatMedicationTime(upcomingMed.scheduledDoseTime);
+      return `Hi, {userName}!\nIt's time to take your ${formattedTime} medication.\nClick {logButton} to check-in!`;
+    }
+
+    return "Hi {userName}!";
+  };
+
+  const getBubbleAnimation = () => {
+    if (isTutorial) return "none" as const;
+    if (hasMedication && !recentlyTaken) return "jump" as const;
+    return "none" as const;
   };
 
   return (
@@ -135,7 +173,7 @@ export default function Home({
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
           <div
-            className="flex-1 bg-no-repeat"
+            className="flex-1 flex flex-row justify-between bg-no-repeat"
             style={{
               backgroundImage: `url("${equippedBackgroundImage}")`,
               backgroundSize: "cover",
@@ -150,29 +188,13 @@ export default function Home({
               currentExp={pet.xpGained}
             />
             {/* Side Bar */}
-            <div className="flex flex-col gap-9 w-fit 4xl:gap-12 justify-center pt-3 px-2 4xl:px-6">
-              <NavButton buttonType="settings" drawButton={false} />
+            <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
               <NavButton
                 buttonType="help"
                 drawButton={false}
-                redirect=""
-                onClick={() => {
-                  if (userId) {
-                    clearTutorialProgress(userId);
-                    updateTutorialStatus.mutate(
-                      {
-                        userId,
-                        tutorial_completed: false,
-                      },
-                      {
-                        onSuccess: () => {
-                          window.location.reload();
-                        },
-                      },
-                    );
-                  }
-                }}
+                redirect="/help"
               />
+              <NavButton buttonType="settings" drawButton={false} />
             </div>
           </div>
           {/* Navbar - VH Scaling */}
@@ -192,11 +214,15 @@ export default function Home({
           <PetDisplay
             petType={pet.petType}
             appearance={pet.appearance}
+            emotion={petEmotion}
             selectedFood={selectedFood}
-            bubbleText={isTutorial ? tutorial.getTutorialText() : undefined}
+            bubbleText={getBubbleText()}
+            bubbleAnimation={getBubbleAnimation()}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
           />
+
+          {showHearts && <Hearts />}
         </div>
       ) : (
         <LoadingScreen />

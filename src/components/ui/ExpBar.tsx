@@ -1,14 +1,13 @@
-import Image from "next/image";
 import { calculateXPForLevel } from "@/utils/constants";
+import Image from "next/image";
 
 interface ExpProps {
   level: number;
   currentExp: number;
-  totalExp?: number;
 }
 
-const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp }) => {
-  const xpNeeded = totalExp ?? calculateXPForLevel(level);
+const ExpBar: React.FC<ExpProps> = ({ level, currentExp }) => {
+  const xpNeeded = calculateXPForLevel(level);
   const progress = xpNeeded > 0 ? (currentExp / xpNeeded) * 100 : 0;
 
   return (

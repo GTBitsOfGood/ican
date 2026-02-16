@@ -289,13 +289,26 @@ export const validateGetMedicationsSchedule = (
   return getMedicationsScheduleSchema.parse(data);
 };
 
+/**
+ * Helper function to normalize a date to local midnight (00:00:00.000)
+ */
+function normalizeToLocalMidnight(date: Date): Date {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0); // Use local timezone, not UTC
+  return normalized;
+}
+
 export function shouldScheduleMedication(
   medication: WithId<Medication>,
   givenDate: Date,
   medicationCreated: Date,
 ): boolean {
-  const givenDateTime = givenDate.getTime();
-  const medicationCreatedDateTime = medicationCreated.getTime();
+  const givenDateNormalized = normalizeToLocalMidnight(givenDate);
+  const medicationCreatedNormalized =
+    normalizeToLocalMidnight(medicationCreated);
+
+  const givenDateTime = givenDateNormalized.getTime();
+  const medicationCreatedDateTime = medicationCreatedNormalized.getTime();
 
   if (givenDateTime < medicationCreatedDateTime) {
     return false;
@@ -307,7 +320,7 @@ export function shouldScheduleMedication(
     );
     return daysApart % (medication.repeatInterval ?? 1) === 0;
   } else if (medication.repeatUnit === "Week") {
-    const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
+    const givenDayOfWeek = DAYS_OF_WEEK[givenDateNormalized.getUTCDay()];
     const isDayScheduled =
       medication.repeatWeeklyOn &&
       medication.repeatWeeklyOn.includes(givenDayOfWeek);
@@ -325,9 +338,9 @@ export function shouldScheduleMedication(
     };
 
     const lastTakenWeekStart = normalizeToStartOfWeek(
-      medicationCreated as Date,
+      medicationCreatedNormalized as Date,
     );
-    const givenDateWeekStart = normalizeToStartOfWeek(givenDate);
+    const givenDateWeekStart = normalizeToStartOfWeek(givenDateNormalized);
     const weeksApart = Math.floor(
       (givenDateWeekStart.getTime() - lastTakenWeekStart.getTime()) /
         (1000 * 60 * 60 * 24 * 7),
@@ -336,17 +349,17 @@ export function shouldScheduleMedication(
   } else if (medication.repeatUnit === "Month") {
     if (medication.repeatMonthlyType === "Day") {
       const scheduledDayOfMonth = medication.repeatMonthlyOnDay;
-      const givenDayOfMonth = givenDate.getUTCDate();
+      const givenDayOfMonth = givenDateNormalized.getUTCDate();
 
       if (givenDayOfMonth === scheduledDayOfMonth) {
-        const lastTakenMonth = medicationCreated
-          ? medicationCreated.getUTCMonth()
+        const lastTakenMonth = medicationCreatedNormalized
+          ? medicationCreatedNormalized.getUTCMonth()
           : 0;
-        const lastTakenYear = medicationCreated
-          ? medicationCreated.getUTCFullYear()
+        const lastTakenYear = medicationCreatedNormalized
+          ? medicationCreatedNormalized.getUTCFullYear()
           : 0;
-        const givenMonth = givenDate.getUTCMonth();
-        const givenYear = givenDate.getUTCFullYear();
+        const givenMonth = givenDateNormalized.getUTCMonth();
+        const givenYear = givenDateNormalized.getUTCFullYear();
 
         const monthsApart =
           (givenYear - lastTakenYear) * 12 + (givenMonth - lastTakenMonth);
@@ -357,15 +370,15 @@ export function shouldScheduleMedication(
       const scheduledWeekOfMonth = medication.repeatMonthlyOnWeek;
       const scheduledDayOfWeek = medication.repeatMonthlyOnWeekDay;
 
-      const givenDayOfWeek = DAYS_OF_WEEK[givenDate.getUTCDay()];
-      const givenDayOfMonth = givenDate.getUTCDate();
+      const givenDayOfWeek = DAYS_OF_WEEK[givenDateNormalized.getUTCDay()];
+      const givenDayOfMonth = givenDateNormalized.getUTCDate();
 
       let weekOfMonth = Math.ceil(givenDayOfMonth / 7);
 
       if (scheduledWeekOfMonth === 5) {
         const lastDayOfMonth = new Date(
-          givenDate.getUTCFullYear(),
-          givenDate.getUTCMonth() + 1,
+          givenDateNormalized.getUTCFullYear(),
+          givenDateNormalized.getUTCMonth() + 1,
           0,
         );
         const daysUntilEndOfMonth =
@@ -380,14 +393,14 @@ export function shouldScheduleMedication(
         givenDayOfWeek === scheduledDayOfWeek &&
         weekOfMonth === scheduledWeekOfMonth
       ) {
-        const lastTakenMonth = medicationCreated
-          ? medicationCreated.getUTCMonth()
+        const lastTakenMonth = medicationCreatedNormalized
+          ? medicationCreatedNormalized.getUTCMonth()
           : 0;
-        const lastTakenYear = medicationCreated
-          ? medicationCreated.getUTCFullYear()
+        const lastTakenYear = medicationCreatedNormalized
+          ? medicationCreatedNormalized.getUTCFullYear()
           : 0;
-        const givenMonth = givenDate.getUTCMonth();
-        const givenYear = givenDate.getUTCFullYear();
+        const givenMonth = givenDateNormalized.getUTCMonth();
+        const givenYear = givenDateNormalized.getUTCFullYear();
 
         const monthsApart =
           (givenYear - lastTakenYear) * 12 + (givenMonth - lastTakenMonth);
@@ -409,13 +422,28 @@ export function processDoseTime(
   let status: "pending" | "taken" | "missed" = "pending";
   let canCheckIn = false;
 
-  const doseTime = new Date(date);
+  // Parse date string as local date (YYYY-MM-DD format)
+  // If date is "2025-11-17", we want Nov 17 at the given time in LOCAL timezone
+  const dateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const doseTime = dateMatch
+    ? new Date(
+        parseInt(dateMatch[1]),
+        parseInt(dateMatch[2]) - 1, // Month is 0-indexed
+        parseInt(dateMatch[3]),
+        hours,
+        minutes,
+        0,
+        0,
+      )
+    : new Date(date); // Fallback to original parsing if not in expected format
 
-  const offsetMinutes = doseTime.getTimezoneOffset();
-  const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
-  const utcMinute = (minutes + offsetMinutes) % 60;
-
-  doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+  // If fallback was used and date was an ISO string, we need to adjust
+  if (!dateMatch) {
+    const offsetMinutes = doseTime.getTimezoneOffset();
+    const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
+    const utcMinute = (minutes + offsetMinutes) % 60;
+    doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
+  }
 
   const matchingLog = medicationLogs.find((log) => {
     const logDate = new Date(log.dateTaken);

@@ -27,6 +27,7 @@ export default class PetDAO {
       xpLevel?: number;
       coins?: number;
       food?: number;
+      lastFedAt?: Date;
       currentStreak?: number;
       longestStreak?: number;
       perfectWeeksCount?: number;
@@ -111,6 +112,7 @@ export default class PetDAO {
       xpLevel?: number;
       coins?: number;
       food?: number;
+      lastFedAt?: Date;
       currentStreak?: number;
       longestStreak?: number;
       perfectWeeksCount?: number;
