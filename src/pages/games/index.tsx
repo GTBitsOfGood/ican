@@ -14,6 +14,11 @@ export default function GamesIndex() {
       icon: "/icons/Star.svg",
       href: "/games/tictactoe",
     },
+    {
+      name: "Trivia",
+      icon: "/icons/Star.svg",
+      href: "/games/trivia",
+    },
   ];
 
   return (
@@ -26,7 +31,7 @@ export default function GamesIndex() {
           backgroundPosition: "center bottom",
         }}
       >
-        <h1 className="mb-8 font-quantico text-4xl text-icanBlue-300">Games</h1>
+        <h1 className="mb-8 font-quantico text-4xl text-white">Games</h1>
         <ul className="flex flex-wrap gap-6">
           {games.map((game) => (
             <li key={game.href}>
