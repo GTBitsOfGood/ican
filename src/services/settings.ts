@@ -34,6 +34,12 @@ export default class SettingsService {
       largeFontSize: true,
       notifications: true,
       pin: null,
+      notificationPreferences: {
+        types: ["early", "on_time", "missed"],
+        earlyWindow: 15,
+        emailEnabled: true,
+        realTimeEnabled: true,
+      },
     };
     const settings = await SettingsDAO.createNewSettings(newSettings);
     if (!settings) {

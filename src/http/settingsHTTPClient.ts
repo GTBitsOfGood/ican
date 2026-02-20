@@ -14,20 +14,10 @@ export default class SettingsHTTPClient {
     });
   }
 
-  static async updateSettings(
-    userId: string,
-    notifications?: boolean,
-    helpfulTips?: boolean,
-    largeFontSize?: boolean,
-  ) {
-    const updateSettingsRequestBody: UpdateSettingsRequestBody = {
-      notifications,
-      helpfulTips,
-      largeFontSize,
-    };
+  static async updateSettings(userId: string, body: UpdateSettingsRequestBody) {
     return fetchHTTPClient<void>(`/settings/${userId}`, {
       method: "PATCH",
-      body: JSON.stringify(updateSettingsRequestBody),
+      body: JSON.stringify(body),
       credentials: "include",
     });
   }

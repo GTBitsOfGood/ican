@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/components/UserContext";
 import { WithId } from "@/types/models";
 import { Settings } from "@/db/models/settings";
+import { UpdateSettingsRequestBody } from "@/types/settings";
 
 export const SETTINGS_QUERY_KEYS = {
   settings: (userId: string) => ["settings", userId] as const,
@@ -30,26 +31,12 @@ export const useUpdateSettings = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      notifications,
-      helpfulTips,
-      largeFontSize,
-    }: {
-      notifications?: boolean;
-      helpfulTips?: boolean;
-      largeFontSize?: boolean;
-    }) => {
+    mutationFn: (body: UpdateSettingsRequestBody) => {
       if (!userId) throw new Error("User ID required");
-
-      return SettingsHTTPClient.updateSettings(
-        userId,
-        notifications,
-        helpfulTips,
-        largeFontSize,
-      );
+      return SettingsHTTPClient.updateSettings(userId, body);
     },
 
-    onMutate: async ({ notifications, helpfulTips, largeFontSize }) => {
+    onMutate: async (body) => {
       if (!userId) return;
 
       await queryClient.cancelQueries({
@@ -62,21 +49,29 @@ export const useUpdateSettings = () => {
 
       queryClient.setQueryData<SettingQueryData>(
         SETTINGS_QUERY_KEYS.settings(userId),
-        (old) =>
-          old
-            ? {
-                ...old,
-                ...(notifications !== undefined && { notifications }),
-                ...(helpfulTips !== undefined && { helpfulTips }),
-                ...(largeFontSize !== undefined && { largeFontSize }),
-              }
-            : old,
+        (old) => {
+          if (!old) return old;
+          const updated = { ...old };
+          if (body.notifications !== undefined)
+            updated.notifications = body.notifications;
+          if (body.helpfulTips !== undefined)
+            updated.helpfulTips = body.helpfulTips;
+          if (body.largeFontSize !== undefined)
+            updated.largeFontSize = body.largeFontSize;
+          if (body.notificationPreferences) {
+            updated.notificationPreferences = {
+              ...updated.notificationPreferences,
+              ...body.notificationPreferences,
+            };
+          }
+          return updated;
+        },
       );
 
       return { previousSettings };
     },
 
-    onError: (err, newSettings, context) => {
+    onError: (_err, _body, context) => {
       if (context?.previousSettings && userId) {
         queryClient.setQueryData(
           SETTINGS_QUERY_KEYS.settings(userId),
