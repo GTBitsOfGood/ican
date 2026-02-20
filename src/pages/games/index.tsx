@@ -9,6 +9,11 @@ export default function GamesIndex() {
       icon: "/icons/Star.svg",
       href: "/games/sample",
     },
+    {
+      name: "Tic Tac Toe",
+      icon: "/icons/Star.svg",
+      href: "/games/tictactoe",
+    },
   ];
 
   return (
