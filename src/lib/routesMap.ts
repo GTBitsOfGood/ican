@@ -25,6 +25,13 @@ export const routesMap: RoutesMap = {
       },
     },
   },
+  "/api/v1/auth/child-login-type": {
+    allowedMethods: {
+      POST: {
+        isAuthorized: false,
+      },
+    },
+  },
   "/api/v1/auth/login-with-google": {
     allowedMethods: {
       POST: {
@@ -227,6 +234,13 @@ export const routesMap: RoutesMap = {
   "/api/v1/settings/parental-mode/[userId]": {
     allowedMethods: {
       DELETE: {
+        isAuthorized: true,
+      },
+    },
+  },
+  "/api/v1/settings/child-login/[userId]": {
+    allowedMethods: {
+      PATCH: {
         isAuthorized: true,
       },
     },

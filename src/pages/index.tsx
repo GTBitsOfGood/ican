@@ -8,6 +8,7 @@ import Hearts from "@/components/ui/Heart";
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
 import ForgotPinModal from "@/components/modals/ForgotPinModal";
+import ChangeChildLoginModal from "@/components/modals/ChangeChildLoginModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import { useFeedPet, usePet } from "@/components/hooks/usePet";
@@ -154,6 +155,7 @@ export default function Home({
     <AuthorizedRoute>
       {activeModal === "settings" && <SettingsModal />}
       {activeModal === "change-pin" && <ChangePinModal />}
+      {activeModal === "change-child-login" && <ChangeChildLoginModal />}
       {activeModal === "forgot-pin" && <ForgotPinModal />}
       {activeModal === "food" && foods && <FoodModal foods={foods} />}
       {showLevelUpModalVisible && (

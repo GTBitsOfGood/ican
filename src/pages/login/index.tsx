@@ -8,15 +8,24 @@ import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
+import { ChildPasswordType, LoginType } from "@/types/user";
+import ChildColorPicker from "@/components/child-login/ChildColorPicker";
 
 export default function Home() {
+  const [loginType, setLoginType] = useState<LoginType>(LoginType.PARENT);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [childPasswordType, setChildPasswordType] =
+    useState<ChildPasswordType | null>(null);
+  const [childColorSequence, setChildColorSequence] = useState<string[]>([]);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
   const router = useRouter();
+  const childPassword = childColorSequence.join("-");
+  const isChildLogin = loginType === LoginType.CHILD;
+  const isChildPasswordStep = isChildLogin && !!childPasswordType;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,9 +40,21 @@ export default function Home() {
       errorDetected = true;
     }
 
-    if (!passwordIsValid(password.trim())) {
-      setPasswordError("Password incorrect, please check again.");
-      errorDetected = true;
+    if (!isChildLogin) {
+      if (!passwordIsValid(password.trim())) {
+        setPasswordError("Password incorrect, please check again.");
+        errorDetected = true;
+      }
+    } else if (isChildPasswordStep) {
+      const candidatePassword =
+        childPasswordType === ChildPasswordType.COLOR
+          ? childPassword
+          : password.trim();
+
+      if (candidatePassword.length < 3) {
+        setPasswordError("Password incorrect, please check again.");
+        errorDetected = true;
+      }
     }
 
     if (errorDetected) {
@@ -42,16 +63,34 @@ export default function Home() {
 
     setLoggingIn(true);
     try {
-      await AuthHTTPClient.login(email.trim(), password.trim());
+      if (isChildLogin && !isChildPasswordStep) {
+        const { childPasswordType } = await AuthHTTPClient.getChildPasswordType(
+          email.trim(),
+        );
+        setChildPasswordType(childPasswordType);
+        setPassword("");
+        setChildColorSequence([]);
+        return false;
+      }
+
+      const candidatePassword =
+        childPasswordType === ChildPasswordType.COLOR
+          ? childPassword
+          : password.trim();
+      await AuthHTTPClient.login(email.trim(), candidatePassword, loginType);
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
         const statusCode = getStatusCode(error);
 
         if (statusCode === 404) {
-          setGeneralError(
-            "We couldn't find an account with this email. Try again or Sign Up.",
-          );
+          if (isChildLogin && !isChildPasswordStep) {
+            setGeneralError("No child login found for this account.");
+          } else {
+            setGeneralError(
+              "We couldn't find an account with this email. Try again or Sign Up.",
+            );
+          }
         } else if (statusCode === 401 || statusCode === 400) {
           setPasswordError("Password incorrect, please check again.");
         } else {
@@ -68,6 +107,8 @@ export default function Home() {
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setEmailError("");
+    setChildPasswordType(null);
+    setChildColorSequence([]);
     setGeneralError("");
   };
 
@@ -75,6 +116,15 @@ export default function Home() {
     setPassword(e.target.value);
     setPasswordError("");
     setGeneralError("");
+  };
+
+  const handleLoginTypeChange = (newLoginType: LoginType) => {
+    setLoginType(newLoginType);
+    setPassword("");
+    setPasswordError("");
+    setGeneralError("");
+    setChildPasswordType(null);
+    setChildColorSequence([]);
   };
 
   return (
@@ -120,6 +170,22 @@ export default function Home() {
                     <ErrorBox message={generalError} />
                   </div>
                 )}
+                <div className="w-full mb-2 flex border-2 border-borderGrey">
+                  <button
+                    type="button"
+                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.PARENT ? "bg-loginGreen text-black" : "bg-white text-textGrey"}`}
+                    onClick={() => handleLoginTypeChange(LoginType.PARENT)}
+                  >
+                    Parent Login
+                  </button>
+                  <button
+                    type="button"
+                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.CHILD ? "bg-loginGreen text-black" : "bg-white text-textGrey"}`}
+                    onClick={() => handleLoginTypeChange(LoginType.CHILD)}
+                  >
+                    Child Login
+                  </button>
+                </div>
                 <input
                   className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
@@ -129,38 +195,78 @@ export default function Home() {
                   onChange={handleEmailChange}
                 />
                 <ErrorBox message={emailError} />
-                <input
-                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
+                {!isChildLogin || isChildPasswordStep ? (
+                  <>
+                    {childPasswordType === ChildPasswordType.COLOR ? (
+                      <div className="w-full short:mb-1 desktop:mb-2">
+                        <ChildColorPicker
+                          sequence={childColorSequence}
+                          onAddColor={(token) =>
+                            setChildColorSequence((prev) => [...prev, token])
+                          }
+                          onClear={() => {
+                            setChildColorSequence([]);
+                            setPasswordError("");
+                            setGeneralError("");
+                          }}
+                          theme="light"
+                        />
+                      </div>
+                    ) : (
+                      <input
+                        className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        value={password}
+                        onChange={handlePasswordChange}
+                      />
+                    )}
+                  </>
+                ) : null}
                 <ErrorBox message={passwordError} />
-                <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
-                  <Link
-                    className=" desktop:text-2xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
-                    href="/forgot-password"
+                {!isChildLogin && (
+                  <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
+                    <Link
+                      className=" desktop:text-2xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
+                      href="/forgot-password"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </p>
+                )}
+                {isChildLogin && isChildPasswordStep && (
+                  <button
+                    type="button"
+                    className="self-start text-textGrey underline mb-2"
+                    onClick={() => {
+                      setChildPasswordType(null);
+                      setPassword("");
+                      setChildColorSequence([]);
+                      setPasswordError("");
+                      setGeneralError("");
+                    }}
                   >
-                    Forgot Password?
-                  </Link>
-                </p>
+                    Change email
+                  </button>
+                )}
                 <button
                   className="w-full bg-loginGreen text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
                   type="submit"
                 >
-                  Login
+                  {isChildLogin && !isChildPasswordStep ? "Continue" : "Login"}
                 </button>
               </form>
-              <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
-                <div className="flex items-center justify-center w-full">
-                  <div className="border border-textGrey w-full" />
-                  <div className="text-textGrey px-4">or</div>
-                  <div className="border border-textGrey w-full" />
+              {!isChildLogin && (
+                <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
+                  <div className="flex items-center justify-center w-full">
+                    <div className="border border-textGrey w-full" />
+                    <div className="text-textGrey px-4">or</div>
+                    <div className="border border-textGrey w-full" />
+                  </div>
+                  <GoogleLoginButton setError={setGeneralError} />
                 </div>
-                <GoogleLoginButton setError={setGeneralError} />
-              </div>
+              )}
               <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">

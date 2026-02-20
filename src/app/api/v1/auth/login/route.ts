@@ -4,6 +4,7 @@ import { handleError } from "@/utils/errorHandler";
 import { validateRoutes } from "@/utils/validateRoute";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { LoginType } from "@/types/user";
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,9 +14,13 @@ export async function POST(req: NextRequest) {
       req.nextUrl.pathname.toString(),
       (await cookies()).get("auth_token")?.value,
     );
-    const { email, password } = await req.json();
+    const { email, password, loginType } = await req.json();
 
-    const { token, userId } = await AuthService.login(email, password);
+    const { token, userId } = await AuthService.login(
+      email,
+      password,
+      loginType ?? LoginType.PARENT,
+    );
 
     const nextResponse = NextResponse.json({ userId }, { status: 200 });
 
