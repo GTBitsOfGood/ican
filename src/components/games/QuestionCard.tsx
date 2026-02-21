@@ -22,7 +22,7 @@ export default function QuestionCard({
         <div className="grid grid-cols-2 gap-6 mt-8">
           {question.choices.map((option, idx) => {
             const buttonClass =
-              "rounded-xl border-4 px-40 py-4 shadow-[0_4px_0_0_#7D83B2] transition";
+              "w-full rounded-xl border-4 px-4 py-4 text-base shadow-[0_4px_0_0_#7D83B2] transition sm:px-6 sm:text-lg";
             let colorClass = isAnswered
               ? "border-icanBlue-200 bg-white"
               : "border-icanBlue-200 bg-white hover:bg-icanBlue-200 hover:text-white cursor-pointer";
@@ -42,7 +42,7 @@ export default function QuestionCard({
                 onClick={() => onAnswer(idx)}
                 disabled={isAnswered}
               >
-                {option}
+                <span className="block break-words">{option}</span>
               </button>
             );
           })}
