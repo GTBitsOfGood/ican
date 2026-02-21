@@ -13,6 +13,7 @@ export enum GameState {
   PLAYING,
   WON,
   LOSS,
+  TIE,
 }
 
 export interface GameWrapperControls {
@@ -117,14 +118,24 @@ export default function GameWrapper({
               </div>
             </div>
 
-            {(gameState === GameState.WON || gameState === GameState.LOSS) && (
+            {(gameState === GameState.WON ||
+              gameState === GameState.LOSS ||
+              gameState === GameState.TIE) && (
               <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
                 <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
                   <h2 className="text-3xl text-icanBlue-300">
-                    {gameState === GameState.WON ? "You Won!" : "Game Over"}
+                    {gameState === GameState.WON
+                      ? "You Won!"
+                      : gameState === GameState.TIE
+                        ? "It's a Tie!"
+                        : "Game Over"}
                   </h2>
                   <p className="mt-2 text-icanBlue-300">
-                    {gameState === GameState.WON ? "Good job!?" : "Nice try!"}
+                    {gameState === GameState.WON
+                      ? "Good job!?"
+                      : gameState === GameState.TIE
+                        ? "That was close!"
+                        : "Nice try!"}
                   </p>
                   <div className="mt-6 flex items-center justify-center gap-3">
                     <button
