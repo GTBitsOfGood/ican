@@ -132,7 +132,7 @@ export default function GameWrapper({
                   </h2>
                   <p className="mt-2 text-icanBlue-300">
                     {gameState === GameState.WON
-                      ? "Good job!?"
+                      ? "Good job!"
                       : gameState === GameState.TIE
                         ? "That was close!"
                         : "Nice try!"}
