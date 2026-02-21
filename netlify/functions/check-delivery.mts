@@ -14,8 +14,6 @@ const handler = async () => {
   );
 
   const data = await response.json();
-  console.log("check-delivery result:", data);
-
   return new Response(JSON.stringify(data), { status: response.status });
 };
 
