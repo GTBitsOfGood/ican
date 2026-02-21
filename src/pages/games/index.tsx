@@ -11,7 +11,7 @@ export default function GamesIndex() {
     },
     {
       name: "Hangman",
-      icon: "/icons/Flower.png",
+      icon: "/icons/Star.svg",
       href: "/games/hangman",
     },
     {
