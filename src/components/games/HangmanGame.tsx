@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { cn } from "@/lib/utils";
 
@@ -83,19 +83,18 @@ export default function HangmanGame({
     [difficulty, setSpeechText],
   );
 
-  // 2. Watch for "Play Again" from GameWrapper
+  // Reset only when user clicks "Play Again" (transition from WON/LOSS → PLAYING)
+  const prevGameStateRef = useRef(gameState);
   useEffect(() => {
-    // Check if we need to reset:
-    // 1. No word exists (initial start)
-    // 2. We lost (lives === 0)
-    // 3. We won (all letters in current word are already in guessedLetters)
-    const isGameWon =
-      word !== "" && [...word].every((char) => guessedLetters.has(char));
-
-    if (word === "" || lives === 0 || isGameWon) {
+    const prev = prevGameStateRef.current;
+    prevGameStateRef.current = gameState;
+    if (
+      (prev === GameState.WON || prev === GameState.LOSS) &&
+      gameState === GameState.PLAYING
+    ) {
       initGame();
     }
-  }, [gameState, word, lives, initGame]);
+  }, [gameState, initGame]);
 
   const handleDifficultySelect = (selected: Difficulty) => {
     setDifficulty(selected);
