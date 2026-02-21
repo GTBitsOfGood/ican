@@ -9,6 +9,11 @@ export default function GamesIndex() {
       icon: "/icons/Star.svg",
       href: "/games/sample",
     },
+    {
+      name: "Hangman",
+      icon: "/icons/Flower.png",
+      href: "/games/hangman",
+    },
   ];
 
   return (
