@@ -151,7 +151,7 @@ export default function HangmanGame({
 
   // UI: PLAYING/WON/LOSS State
   return (
-    <div className="flex min-h-full h-full flex-col items-center  py-8">
+    <div className="flex h-full min-h-0 flex-col items-center justify-center py-8">
       <div className="mb-12 flex items-center gap-10">
         <div className="flex gap-3 text-4xl font-bold font-quantico text-icanBlue-300 tracking-widest">
           {word.split("").map((char, i) => (

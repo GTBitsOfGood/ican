@@ -86,7 +86,7 @@ export default function GameWrapper({
             <div className="w-full tablet:pr-[20rem]">
               <div
                 className={cn(
-                  "min-h-[36rem]",
+                  "flex h-[36rem] min-h-[36rem] flex-col",
                   showGameAreaFrame && "rounded-2xl bg-white p-6 tablet:p-8",
                   gameAreaClassName,
                 )}
