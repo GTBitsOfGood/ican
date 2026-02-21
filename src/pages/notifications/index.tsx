@@ -3,10 +3,7 @@ import { useUser } from "@/components/UserContext";
 import { useSettings, useUpdateSettings } from "@/components/hooks/useSettings";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-import {
-  UpdateNotificationPreferencesBody,
-  UpdateSettingsRequestBody,
-} from "@/types/settings";
+import { UpdateNotificationPreferencesBody } from "@/types/settings";
 
 type NotifType = "early" | "on_time" | "missed";
 
@@ -41,9 +38,7 @@ export default function NotificationsPage() {
   const prefs = settings?.notificationPreferences;
 
   const updatePrefs = (patch: UpdateNotificationPreferencesBody) => {
-    updateSettings.mutate({
-      notificationPreferences: patch,
-    } as UpdateSettingsRequestBody);
+    updateSettings.mutate({ notificationPreferences: patch });
   };
 
   const handleTypeToggle = (type: NotifType, enabled: boolean) => {

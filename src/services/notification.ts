@@ -9,7 +9,6 @@ import {
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
-import EmailService from "./mail";
 import UserDAO from "@/db/actions/user";
 
 function buildMessage(
@@ -149,7 +148,9 @@ export default class NotificationService {
     return sentCount;
   }
 
-  static async checkAndSendEmailFallbacks(): Promise<number> {
+  static async checkAndSendEmailFallbacks(
+    sendEmail: (to: string, subject: string, html: string) => Promise<boolean>,
+  ): Promise<number> {
     const undelivered = await NotificationDAO.findUndelivered(30);
     let emailCount = 0;
 
@@ -162,7 +163,7 @@ export default class NotificationService {
       const user = await UserDAO.getUserFromId(notification.userId.toString());
       if (!user?.email) continue;
 
-      await EmailService.sendEmail(
+      await sendEmail(
         user.email,
         "Medication Reminder - iCAN Pill Pal",
         `<div style="font-family: sans-serif; padding: 20px;">
