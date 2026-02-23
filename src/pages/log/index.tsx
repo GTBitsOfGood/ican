@@ -1,4 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+import BackButton from "@/components/ui/BackButton";
 import { useMedicationSchedule } from "@/components/hooks/useMedication";
 import MedicationLogCard from "@/components/ui/MedicationLogCard";
 import { LogType } from "@/types/log";
@@ -96,7 +97,7 @@ export default function Log() {
     return futureDoses;
   };
 
-  const handleCloseIcon = () => {
+  const handleBackClick = () => {
     router.push("/");
   };
 
@@ -129,15 +130,9 @@ export default function Log() {
               </button>
             </div>
             <div className="py-9">
-              <button>
-                <Image
-                  src={"/assets/CloseIcon.svg"}
-                  alt=""
-                  width={46}
-                  height={46}
-                  onClick={handleCloseIcon}
-                />
-              </button>
+              <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+                <BackButton onClick={handleBackClick} />
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">

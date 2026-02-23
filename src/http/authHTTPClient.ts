@@ -6,6 +6,7 @@ export interface LoginRequestBody {
   email: string;
   password: string;
   loginType?: LoginType;
+  rememberMe?: boolean;
 }
 
 export interface LoginWithGoogleRequestBody {
@@ -74,8 +75,14 @@ export default class AuthHTTPClient {
     email: string,
     password: string,
     loginType: LoginType = LoginType.PARENT,
+    rememberMe: boolean = false,
   ): Promise<AuthResponseBody> {
-    const loginRequestBody: LoginRequestBody = { email, password, loginType };
+    const loginRequestBody: LoginRequestBody = {
+      email,
+      password,
+      loginType,
+      rememberMe,
+    };
     return await fetchHTTPClient<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),

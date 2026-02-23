@@ -3,12 +3,13 @@ import Image from "next/image";
 import { motion } from "motion/react";
 import Bubble from "@/components/ui/Bubble";
 import PetAppearance from "@/components/inventory/PetAppearance";
-import { PetType } from "@/types/pet";
+import { PetEmotion, PetType } from "@/types/pet";
 import { Appearance } from "@/db/models/pet";
 
 interface PetDisplayProps {
   petType: PetType;
   appearance: Appearance;
+  emotion?: PetEmotion;
   selectedFood: string | null;
   bubbleText?: string;
   bubbleAnimation?: "jump" | "none";
@@ -19,6 +20,7 @@ interface PetDisplayProps {
 const PetDisplay: React.FC<PetDisplayProps> = ({
   petType,
   appearance,
+  emotion = PetEmotion.NEUTRAL,
   selectedFood,
   bubbleText,
   bubbleAnimation = "none",
@@ -60,6 +62,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
           <PetAppearance
             appearance={appearance}
             petType={petType}
+            emotion={emotion}
             selectedItem={null}
             className="short:w-[300px] minimized:w-[270px] tiny:w-[240px] largeDesktop:w-[350px] desktop:w-[330px] tablet:w-[300px]"
             showBackground={false}

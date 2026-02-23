@@ -22,6 +22,7 @@ export default function Home() {
   const [passwordError, setPasswordError] = useState("");
   const [generalError, setGeneralError] = useState("");
   const [loggingIn, setLoggingIn] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const childPassword = childColorSequence.join("-");
   const isChildLogin = loginType === LoginType.CHILD;
@@ -77,7 +78,12 @@ export default function Home() {
         childPasswordType === ChildPasswordType.COLOR
           ? childPassword
           : password.trim();
-      await AuthHTTPClient.login(email.trim(), candidatePassword, loginType);
+      await AuthHTTPClient.login(
+        email.trim(),
+        candidatePassword,
+        loginType,
+        rememberMe,
+      );
       router.push("/");
     } catch (error) {
       if (error instanceof Error) {
@@ -256,6 +262,19 @@ export default function Home() {
                 >
                   {isChildLogin && !isChildPasswordStep ? "Continue" : "Login"}
                 </button>
+
+                <div className="flex justify-start flex-row">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <label htmlFor="rememberMe" className="text-textGrey">
+                    Remember me
+                  </label>
+                </div>
               </form>
               {!isChildLogin && (
                 <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
