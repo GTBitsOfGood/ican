@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
-import { TriviaQuestion } from "@/types/trivia";
+import { TriviaQuestion } from "@/types/games";
 
 function generateRoundQuestions(): TriviaQuestion[] {
   const shuffled = [...triviaQuestions];

@@ -1,4 +1,4 @@
-import { TriviaQuestion } from "@/types/trivia";
+import { TriviaQuestion } from "@/types/games";
 
 export const triviaQuestions: TriviaQuestion[] = [
   {
