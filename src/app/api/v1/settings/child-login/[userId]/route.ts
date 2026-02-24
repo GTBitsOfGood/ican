@@ -1,29 +1,25 @@
 import AuthService from "@/services/auth";
-import JWTService from "@/services/jwt";
 import SettingsService from "@/services/settings";
+import { UserDocument } from "@/db/models/user";
+import { JWTPayload } from "@/types/jwt";
 import { verifyUser } from "@/utils/auth";
-import { handleError } from "@/utils/errorHandler";
 import ERRORS from "@/utils/errorMessages";
 import { verifyParentalMode } from "@/utils/parentalControl";
-import { validateRoutes } from "@/utils/validateRoute";
-import { cookies } from "next/headers";
+import { withAuth } from "@/utils/withAuth";
 import { NextRequest, NextResponse } from "next/server";
 
-const route = "/api/v1/settings/child-login/[userId]";
-
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> },
-) {
-  try {
-    const authToken = (await cookies()).get("auth_token")?.value;
-    const tokenUser = await validateRoutes(req, req.method, route, authToken);
-    const userId = (await params).userId;
+export const PATCH = withAuth<{ userId: string }>(
+  async (
+    req: NextRequest,
+    { params }: { params: { userId: string } },
+    tokenUser: UserDocument,
+    tokenPayload: JWTPayload,
+  ) => {
+    const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const settings = await SettingsService.getSettings(userId);
-    if (settings.pin !== null && authToken) {
-      const tokenPayload = JWTService.verifyToken(authToken);
+    if (settings.pin !== null) {
       verifyParentalMode(tokenPayload);
     }
 
@@ -35,7 +31,5 @@ export async function PATCH(
     );
 
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
-    return handleError(error);
-  }
-}
+  },
+);

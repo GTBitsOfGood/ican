@@ -4,16 +4,16 @@ interface ChildColorPickerProps {
   sequence: string[];
   onAddColor: (token: string) => void;
   onClear: () => void;
-  theme?: "light" | "dark";
+  view?: "login" | "change";
 }
 
 export default function ChildColorPicker({
   sequence,
   onAddColor,
   onClear,
-  theme = "light",
+  view = "login",
 }: ChildColorPickerProps) {
-  const isDark = theme === "dark";
+  const isDark = view === "change";
   const labelClass = isDark ? "text-white" : "text-textGrey";
   const tileBorderClass = isDark ? "border-black" : "border-borderGrey";
   const previewBorderClass = isDark ? "border-white" : "border-borderGrey";

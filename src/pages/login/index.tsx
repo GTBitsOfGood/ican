@@ -215,7 +215,7 @@ export default function Home() {
                             setPasswordError("");
                             setGeneralError("");
                           }}
-                          theme="light"
+                          view="login"
                         />
                       </div>
                     ) : (

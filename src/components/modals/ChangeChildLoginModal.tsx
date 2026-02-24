@@ -138,7 +138,7 @@ export default function ChangeChildLoginModal() {
                     setColorSequence([]);
                     setError("");
                   }}
-                  theme="dark"
+                  view="change"
                 />
               </>
             )}

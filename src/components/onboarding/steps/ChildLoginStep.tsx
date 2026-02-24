@@ -98,7 +98,7 @@ export default function ChildLoginStep({
               sequence={colorSequence}
               onAddColor={onAddColor}
               onClear={onClearColors}
-              theme="dark"
+              view="change"
             />
           </div>
         )}
