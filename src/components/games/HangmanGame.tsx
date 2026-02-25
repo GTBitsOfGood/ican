@@ -1,62 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { cn } from "@/lib/utils";
+import { WORDS, DIFFICULTY_LIVES, ALPHABET } from "@/constant/hangmanConstants";
 
-const WORDS = [
-  "Apple",
-  "Astronaut",
-  "Balloon",
-  "Butterfly",
-  "Caterpillar",
-  "Cloud",
-  "Diamond",
-  "Dragon",
-  "Eagle",
-  "Elephant",
-  "Firefighter",
-  "Frog",
-  "Garden",
-  "Gorilla",
-  "Helicopter",
-  "Hospital",
-  "Igloo",
-  "Insect",
-  "Jacket",
-  "Jellyfish",
-  "Kangaroo",
-  "Kite",
-  "Lemon",
-  "Lighthouse",
-  "Monkey",
-  "Moon",
-  "Nest",
-  "Notebook",
-  "Octopus",
-  "Owl",
-  "Penguin",
-  "Pirate",
-  "Queen",
-  "Rainbow",
-  "Robot",
-  "Spider",
-  "Sun",
-  "Tiger",
-  "Train",
-  "Umbrella",
-  "Unicorn",
-  "Violin",
-  "Volcano",
-  "Wagon",
-  "Whale",
-  "Xylophone",
-  "Yacht",
-  "Yarn",
-  "Zipper",
-  "Zoo",
-];
-const DIFFICULTY_LIVES = { easy: 12, medium: 10, hard: 7 };
 type Difficulty = "easy" | "medium" | "hard";
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 export default function HangmanGame({
   setSpeechText,
