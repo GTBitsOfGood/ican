@@ -2,25 +2,25 @@ import { useEffect, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
-import { TriviaQuestion } from "@/types/trivia";
+import { TriviaQuestion } from "@/types/games";
+
+function generateRoundQuestions(): TriviaQuestion[] {
+  const shuffled = [...triviaQuestions];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled.slice(0, 5);
+}
 
 export default function TriviaGame({
   setSpeechText,
   gameState,
   setGameState,
 }: GameWrapperControls) {
-  const generateRoundQuestions = () => {
-    const shuffled = [...triviaQuestions];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-
-    return shuffled.slice(0, 5); //change later to 10
-  };
-
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
-  const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>(() =>
+  const [roundQuestions, setRoundQuestions] = useState(() =>
     generateRoundQuestions(),
   );
   const [results, setResults] = useState<boolean[]>([]);
@@ -62,13 +62,28 @@ export default function TriviaGame({
     if (isAnswered) return;
 
     const isCorrect = idx === roundQuestions[currQuestionIdx].answerIdx;
-    setResults((prev) => [...prev, isCorrect]);
+
+    setResults((prev) => {
+      const next = [...prev, isCorrect];
+
+      // decide win/loss if last question
+      const isLastQuestion = currQuestionIdx + 1 >= roundQuestions.length;
+      if (isLastQuestion) {
+        const finalCorrect = next.filter(Boolean).length;
+        if (finalCorrect < 0.8 * roundQuestions.length) {
+          setGameState(GameState.LOSS);
+        } else {
+          setGameState(GameState.WON);
+        }
+      }
+
+      return next;
+    });
 
     setSelectedChoiceIdx(idx);
-
-    if (isCorrect) setSpeechText("Great job!");
-    else setSpeechText(roundQuestions[currQuestionIdx].explanation);
-
+    setSpeechText(
+      isCorrect ? "Great job!" : roundQuestions[currQuestionIdx].explanation,
+    );
     setIsAnswered(true);
   };
 
@@ -81,14 +96,6 @@ export default function TriviaGame({
 
     if (nextQuestionIdx < roundQuestions.length) {
       setCurrQuestionIdx(nextQuestionIdx);
-    } else {
-      const finalCorrect = results.filter(Boolean).length;
-
-      if (finalCorrect < 0.8 * roundQuestions.length) {
-        setGameState(GameState.LOSS);
-      } else {
-        setGameState(GameState.WON);
-      }
     }
   };
 
