@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { cn } from "@/lib/utils";
 import { WORDS, DIFFICULTY_LIVES, ALPHABET } from "@/constant/hangmanConstants";
-
-type Difficulty = "easy" | "medium" | "hard";
+import { HangmanDifficulty } from "@/types/games";
 
 export default function HangmanGame({
   setSpeechText,
@@ -13,11 +12,11 @@ export default function HangmanGame({
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [lives, setLives] = useState<number>(0);
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [difficulty, setDifficulty] = useState<HangmanDifficulty>("medium");
 
   // 1. Unified Reset Logic
   const initGame = useCallback(
-    (selectedDiff: Difficulty = difficulty) => {
+    (selectedDiff: HangmanDifficulty = difficulty) => {
       const newWord =
         WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
       const startLives = DIFFICULTY_LIVES[selectedDiff];
@@ -43,7 +42,7 @@ export default function HangmanGame({
     }
   }, [gameState, initGame]);
 
-  const handleDifficultySelect = (selected: Difficulty) => {
+  const handleDifficultySelect = (selected: HangmanDifficulty) => {
     setDifficulty(selected);
     initGame(selected);
     setGameState(GameState.PLAYING);
@@ -81,7 +80,7 @@ export default function HangmanGame({
       <div className="flex h-full flex-col items-center justify-center text-icanBlue-300 font-quantico">
         <h2 className="text-3xl mb-8">Hangman</h2>
         <div className="flex gap-4">
-          {(["easy", "medium", "hard"] as Difficulty[]).map((diff) => (
+          {(["easy", "medium", "hard"] as HangmanDifficulty[]).map((diff) => (
             <button
               key={diff}
               onClick={() => handleDifficultySelect(diff)}
