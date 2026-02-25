@@ -49,3 +49,7 @@ next-env.d.ts
 .eslintcache
 bitwarden.env
 yarn.lock
+
+# Local Netlify folder
+.netlify
+deno.lock
