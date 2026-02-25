@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import Ably from "ably";
 import toast from "react-hot-toast";
 import NotificationHTTPClient from "@/http/notificationHTTPClient";
+import { NotificationType } from "@/db/models/notification";
 
 interface NotificationMessage {
   notificationId: string;
-  type: "early" | "on_time" | "missed";
+  type: NotificationType;
   medicationName: string;
   message: string;
   scheduledTime: string;
@@ -26,7 +27,8 @@ export function useNotifications(userId: string | null) {
       authMethod: "GET",
     });
 
-    const channel = client.channels.get(`notifications:${userId}`);
+    const env = process.env.NODE_ENV || "development";
+    const channel = client.channels.get(`notifications:${env}:${userId}`);
 
     channel.subscribe("medication-notification", (message) => {
       const data = message.data as NotificationMessage;

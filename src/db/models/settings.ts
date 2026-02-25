@@ -1,5 +1,5 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import { NotificationType } from "./notification";
+import { NOTIFICATION_TYPES, NotificationType } from "./notification";
 
 export interface NotificationPreferences {
   types: NotificationType[];
@@ -25,8 +25,8 @@ const notificationPreferencesSchema = new Schema(
   {
     types: {
       type: [String],
-      enum: ["early", "on_time", "missed"],
-      default: ["early", "on_time", "missed"],
+      enum: NOTIFICATION_TYPES,
+      default: [...NOTIFICATION_TYPES],
     },
     earlyWindow: { type: Number, default: 15 },
     emailEnabled: { type: Boolean, default: true },
@@ -51,7 +51,7 @@ const settingsSchema = new Schema<SettingsDocument>(
     notificationPreferences: {
       type: notificationPreferencesSchema,
       default: () => ({
-        types: ["early", "on_time", "missed"],
+        types: [...NOTIFICATION_TYPES],
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,

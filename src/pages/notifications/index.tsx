@@ -4,8 +4,7 @@ import { useSettings, useUpdateSettings } from "@/components/hooks/useSettings";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 import { UpdateNotificationPreferencesBody } from "@/types/settings";
-
-type NotifType = "early" | "on_time" | "missed";
+import { NotificationType } from "@/db/models/notification";
 
 function Toggle({
   label,
@@ -41,7 +40,7 @@ export default function NotificationsPage() {
     updateSettings.mutate({ notificationPreferences: patch });
   };
 
-  const handleTypeToggle = (type: NotifType, enabled: boolean) => {
+  const handleTypeToggle = (type: NotificationType, enabled: boolean) => {
     if (!prefs) return;
     const current = prefs.types || [];
     const updated = enabled
@@ -171,7 +170,7 @@ export default function NotificationsPage() {
 
               {userId && (
                 <p className="text-xs text-gray-500 text-center">
-                  Channel: notifications:{userId}
+                  Channel: notifications:{process.env.NODE_ENV}:{userId}
                 </p>
               )}
             </div>

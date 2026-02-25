@@ -1,6 +1,7 @@
 import { Document, model, models, Schema, Types } from "mongoose";
 
-export type NotificationType = "early" | "on_time" | "missed";
+export const NOTIFICATION_TYPES = ["early", "on_time", "missed"] as const;
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
 export interface Notification {
   userId: Types.ObjectId;
@@ -36,7 +37,7 @@ const notificationSchema = new Schema<NotificationDocument>(
     type: {
       type: String,
       required: true,
-      enum: ["early", "on_time", "missed"],
+      enum: NOTIFICATION_TYPES,
     },
     scheduledTime: { type: Date, required: true },
     message: { type: String, required: true },

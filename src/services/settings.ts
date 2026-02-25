@@ -1,4 +1,5 @@
 import SettingsDAO from "@/db/actions/settings";
+import { NOTIFICATION_TYPES } from "@/db/models/notification";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
 import {
@@ -35,7 +36,7 @@ export default class SettingsService {
       notifications: true,
       pin: null,
       notificationPreferences: {
-        types: ["early", "on_time", "missed"],
+        types: [...NOTIFICATION_TYPES],
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,

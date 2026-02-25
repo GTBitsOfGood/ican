@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
+import { NotificationType } from "@/db/models/notification";
 
 export interface UpdateNotificationPreferencesBody {
-  types?: ("early" | "on_time" | "missed")[];
+  types?: NotificationType[];
   earlyWindow?: number;
   emailEnabled?: boolean;
   realTimeEnabled?: boolean;
