@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { NOTIFICATION_TYPES } from "@/db/models/notification";
 import { objectIdSchema } from "./commonSchemaUtil";
 
 export const createSettingsSchema = z.object({
@@ -7,11 +8,21 @@ export const createSettingsSchema = z.object({
 
 export const getSettingsSchema = z.object({ userId: objectIdSchema("UserId") });
 
+const notificationPreferencesSchema = z
+  .object({
+    types: z.array(z.enum(NOTIFICATION_TYPES)).min(1).optional(),
+    earlyWindow: z.number().min(1).max(120).optional(),
+    emailEnabled: z.boolean().optional(),
+    realTimeEnabled: z.boolean().optional(),
+  })
+  .optional();
+
 export const updateSettingsSchema = z.object({
   userId: objectIdSchema("UserId"),
   notifications: z.boolean().optional(),
   helpfulTips: z.boolean().optional(),
   largeFontSize: z.boolean().optional(),
+  notificationPreferences: notificationPreferencesSchema,
 });
 
 export const updatePinSchema = z.object({

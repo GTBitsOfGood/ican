@@ -196,6 +196,24 @@ export default function SettingsModal() {
                           width={32}
                         />
                       )}
+                      <h5 className="text-3xl">Child Login</h5>
+                    </div>
+                    <ModalNextButton
+                      link="change-child-login"
+                      requirePin={!!settings.pin}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {!!settings.pin && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
                       <h5 className="text-3xl">Delete Account</h5>
                     </div>
                     <ModalNextButton

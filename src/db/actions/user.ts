@@ -3,6 +3,7 @@ import UserModel, { User, UserDocument } from "../models/user";
 import { HydratedDocument, Types } from "mongoose";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
+import { ChildPasswordType } from "@/types/user";
 
 export default class UserDAO {
   static async createUser(
@@ -43,6 +44,44 @@ export default class UserDAO {
     if (result.modifiedCount === 0) {
       throw new Error(ERRORS.USER.FAILURE.PASSWORD_UPDATE);
     }
+  }
+
+  static async updateChildLoginFromId(
+    id: string | Types.ObjectId,
+    childPassword: string,
+    childPasswordType: ChildPasswordType,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await UserModel.updateOne(
+      { _id: _id },
+      { childPassword, childPasswordType },
+    );
+    if (result.modifiedCount === 0) {
+      throw new Error("User child login update failed.");
+    }
+  }
+
+  static async getChildPasswordTypeFromEmail(email: string): Promise<{
+    childPasswordType: ChildPasswordType;
+    hasChildPassword: boolean;
+  } | null> {
+    if (!email || !email.trim()) {
+      throw new InvalidArgumentsError(ERRORS.USER.INVALID_ARGUMENTS.EMAIL);
+    }
+
+    await dbConnect();
+    const user = await UserModel.findOne({ email }).select(
+      "childPasswordType childPassword",
+    );
+    if (!user) {
+      return null;
+    }
+
+    return {
+      childPasswordType: user.childPasswordType ?? ChildPasswordType.NORMAL,
+      hasChildPassword: !!user.childPassword,
+    };
   }
 
   static async deleteUserFromId(id: string | Types.ObjectId) {

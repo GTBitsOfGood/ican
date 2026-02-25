@@ -13,11 +13,14 @@ import {
   validateLoginWithGoogle,
   validateRegister,
   validateTokenInput,
+  validateChildPasswordType,
+  validateUpdateChildLogin,
 } from "@/utils/serviceUtils/authServiceUtil";
 import { User } from "@/db/models/user";
 import HashingService from "./hashing";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
+import { ChildPasswordType, LoginType } from "@/types/user";
 
 export interface CreateUserBody {
   name: string;
@@ -29,6 +32,7 @@ export interface CreateUserBody {
 export interface LoginBody {
   email: string;
   password: string;
+  loginType?: LoginType;
 }
 
 export default class AuthService {
@@ -89,6 +93,7 @@ export default class AuthService {
   static async login(
     email: string,
     password: string,
+    loginType: LoginType = LoginType.PARENT,
   ): Promise<{ token: string; userId: string }> {
     // Validate parameters
     validateLogin({
@@ -103,18 +108,35 @@ export default class AuthService {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
 
-    if (existingUser.provider == Provider.GOOGLE) {
+    if (
+      existingUser.provider == Provider.GOOGLE &&
+      loginType !== LoginType.CHILD
+    ) {
       throw new ConflictError(ERRORS.USER.CONFLICT.PROVIDER.GOOGLE);
     }
 
-    // Check if password is correct
-    const passwordMatch = await HashingService.compare(
-      password,
-      existingUser.password as string,
-    );
+    if (loginType === LoginType.CHILD) {
+      if (!existingUser.childPassword) {
+        throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
+      }
 
-    if (!passwordMatch) {
-      throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
+      const childPasswordMatch = await HashingService.compare(
+        password,
+        existingUser.childPassword,
+      );
+
+      if (!childPasswordMatch) {
+        throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
+      }
+    } else {
+      const passwordMatch = await HashingService.compare(
+        password,
+        existingUser.password as string,
+      );
+
+      if (!passwordMatch) {
+        throw new UnauthorizedError(ERRORS.USER.UNAUTHORIZED.PASSWORD);
+      }
     }
 
     const settings = await settingsService.getSettings(
@@ -131,6 +153,42 @@ export default class AuthService {
     );
 
     return { token, userId: existingUser._id.toString() };
+  }
+
+  static async getChildPasswordType(email: string): Promise<{
+    childPasswordType: ChildPasswordType;
+  }> {
+    validateChildPasswordType({ email });
+    const result = await UserDAO.getChildPasswordTypeFromEmail(email);
+
+    if (!result || !result.hasChildPassword) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    return {
+      childPasswordType: result.childPasswordType,
+    };
+  }
+
+  static async updateChildLogin(
+    userId: string,
+    childPassword: string,
+    childPasswordType: ChildPasswordType,
+  ): Promise<void> {
+    validateUpdateChildLogin({ userId, childPassword, childPasswordType });
+
+    const user = await UserDAO.getUserFromId(userId);
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    const hashedChildPassword = await HashingService.hash(childPassword);
+
+    await UserDAO.updateChildLoginFromId(
+      userId,
+      hashedChildPassword,
+      childPasswordType,
+    );
   }
 
   // Validate login with Google

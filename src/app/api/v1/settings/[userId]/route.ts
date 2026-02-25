@@ -30,12 +30,18 @@ export const PATCH = withAuth<{ userId: string }>(
   ) => {
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
-    const { helpfulTips, largeFontSize, notifications } = await req.json();
+    const {
+      helpfulTips,
+      largeFontSize,
+      notifications,
+      notificationPreferences,
+    } = await req.json();
 
     await SettingsService.updateSettings(userId, {
       helpfulTips,
       largeFontSize,
       notifications,
+      notificationPreferences,
     });
 
     return new NextResponse(null, { status: 204 });
