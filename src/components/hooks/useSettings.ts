@@ -4,6 +4,7 @@ import { useUser } from "@/components/UserContext";
 import { WithId } from "@/types/models";
 import { Settings } from "@/db/models/settings";
 import { UpdateSettingsRequestBody } from "@/types/settings";
+import { ChildPasswordType } from "@/types/user";
 
 export const SETTINGS_QUERY_KEYS = {
   settings: (userId: string) => ["settings", userId] as const,
@@ -98,6 +99,35 @@ export const useUpdatePin = () => {
     mutationFn: (pin: string | null) => {
       if (!userId) throw new Error("User ID required");
       return SettingsHTTPClient.updatePin(userId, pin);
+    },
+    onSettled: () => {
+      if (userId) {
+        queryClient.invalidateQueries({
+          queryKey: SETTINGS_QUERY_KEYS.settings(userId),
+        });
+      }
+    },
+  });
+};
+
+export const useUpdateChildLogin = () => {
+  const { userId } = useUser();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      childPassword,
+      childPasswordType,
+    }: {
+      childPassword: string;
+      childPasswordType: ChildPasswordType;
+    }) => {
+      if (!userId) throw new Error("User ID required");
+      return SettingsHTTPClient.updateChildLogin(
+        userId,
+        childPassword,
+        childPasswordType,
+      );
     },
     onSettled: () => {
       if (userId) {

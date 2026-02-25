@@ -5,6 +5,12 @@ import {
   UpdateSettingsPinRequestBody,
 } from "@/types/settings";
 import { Settings } from "@/db/models/settings";
+import { ChildPasswordType } from "@/types/user";
+
+interface UpdateChildLoginRequestBody {
+  childPassword: string;
+  childPasswordType: ChildPasswordType;
+}
 
 export default class SettingsHTTPClient {
   static async getSettings(userId: string): Promise<WithId<Settings>> {
@@ -47,6 +53,23 @@ export default class SettingsHTTPClient {
   static async exitParentalMode(userId: string) {
     return fetchHTTPClient<void>(`/settings/parental-mode/${userId}`, {
       method: "DELETE",
+      credentials: "include",
+    });
+  }
+
+  static async updateChildLogin(
+    userId: string,
+    childPassword: string,
+    childPasswordType: ChildPasswordType,
+  ) {
+    const updateChildLoginRequestBody: UpdateChildLoginRequestBody = {
+      childPassword,
+      childPasswordType,
+    };
+
+    return fetchHTTPClient<void>(`/settings/child-login/${userId}`, {
+      method: "PATCH",
+      body: JSON.stringify(updateChildLoginRequestBody),
       credentials: "include",
     });
   }
