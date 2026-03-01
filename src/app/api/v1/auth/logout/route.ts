@@ -1,8 +1,15 @@
-import { cookies } from "next/headers";
+import { withoutAuth } from "@/utils/withAuth";
 import { NextResponse } from "next/server";
-import { withAuth } from "@/utils/withAuth";
 
-export const POST = withAuth<Record<string, never>>(async () => {
-  (await cookies()).delete("auth_token");
-  return new NextResponse(null, { status: 204 });
+export const POST = withoutAuth<Record<string, never>>(async () => {
+  const response = new NextResponse(null, { status: 204 });
+
+  response.cookies.set("auth_token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    expires: new Date(0),
+    path: "/",
+  });
+
+  return response;
 });

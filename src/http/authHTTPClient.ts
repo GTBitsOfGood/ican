@@ -1,10 +1,12 @@
 import fetchHTTPClient from "./fetchHTTPClient";
 import { JWTPayload } from "@/types/jwt";
+import { ChildPasswordType, LoginType } from "@/types/user";
 
 export interface LoginRequestBody {
   email: string;
   password: string;
-  rememberMe: boolean;
+  loginType?: LoginType;
+  rememberMe?: boolean;
 }
 
 export interface LoginWithGoogleRequestBody {
@@ -64,18 +66,41 @@ export interface ValidateTokenResponseBody {
   decodedToken: JWTPayload;
 }
 
+export interface ChildPasswordTypeResponseBody {
+  childPasswordType: ChildPasswordType;
+}
+
 export default class AuthHTTPClient {
   static async login(
     email: string,
     password: string,
+    loginType: LoginType = LoginType.PARENT,
     rememberMe: boolean = false,
   ): Promise<AuthResponseBody> {
-    const loginRequestBody: LoginRequestBody = { email, password, rememberMe };
+    const loginRequestBody: LoginRequestBody = {
+      email,
+      password,
+      loginType,
+      rememberMe,
+    };
     return await fetchHTTPClient<AuthResponseBody>(`/auth/login`, {
       method: "POST",
       body: JSON.stringify(loginRequestBody),
       credentials: "include",
     });
+  }
+
+  static async getChildPasswordType(
+    email: string,
+  ): Promise<ChildPasswordTypeResponseBody> {
+    return await fetchHTTPClient<ChildPasswordTypeResponseBody>(
+      `/auth/child-login-type`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        credentials: "include",
+      },
+    );
   }
 
   static async logout(): Promise<void> {

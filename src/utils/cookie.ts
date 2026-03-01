@@ -13,6 +13,7 @@ export const generateAPIAuthCookie = async (
     httpOnly: true,
     secure: isProduction,
     expires: expirationDate,
+    path: "/",
   });
 
   return nextResponse;
