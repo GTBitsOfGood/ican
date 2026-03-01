@@ -81,7 +81,7 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = () => {
-    if (isPracticeDose) {
+    if (isTutorialMedication) {
       setShowConfirmModal(false);
       tutorial.handlePracticeDoseLog();
       tutorial.completePracticeDoseLog();
