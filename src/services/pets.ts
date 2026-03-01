@@ -44,7 +44,7 @@ export default class PetService {
       name,
       petType,
       xpGained: 0,
-      xpLevel: 0,
+      xpLevel: 1,
       coins: 0,
       food: 0,
       lastFedAt: null,
