@@ -1,5 +1,5 @@
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InventoryLeftPanel from "@/components/inventory/InventoryLeftPanel";
 import InventoryTabContainer from "@/components/inventory/InventoryTabContainer";
 import LoadingScreen from "@/components/loadingScreen";
@@ -12,7 +12,6 @@ import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
 import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
-import { useTutorial } from "@/components/TutorialContext";
 import { useTutorialStatus } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 
@@ -22,37 +21,28 @@ export default function Store() {
   const isTutorial = !tutorialCompleted;
 
   const { data: realPet } = usePet();
-  const tutorial = useTutorial();
-
-  const pet = isTutorial ? tutorial.pet : realPet;
+  const pet = realPet;
 
   const { data: realBag } = usePetBag(pet?._id);
-  const petBag = isTutorial ? tutorial.bag : realBag;
+  const petBag = realBag;
 
   const realPurchase = usePurchaseItem();
-  const purchaseItemMutation = isTutorial
-    ? {
-        mutate: (
-          itemData: { petId: string; name: string; type: string; cost: number },
-          options?: {
-            onSuccess?: () => void;
-            onError?: (error: Error) => void;
-          },
-        ) =>
-          tutorial.purchaseItem(
-            itemData.name,
-            itemData.type,
-            itemData.cost,
-            options?.onSuccess,
-          ),
-        isPending: false,
-      }
-    : realPurchase;
+  const purchaseItemMutation = realPurchase;
 
   const [showPurchasedScreen, setShowPurchasedScreen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<
     InventoryItem | SavedOutfit | null
   >(null);
+
+  useEffect(() => {
+    if (!showPurchasedScreen) return;
+
+    const timeoutId = setTimeout(() => {
+      setShowPurchasedScreen(false);
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
+  }, [showPurchasedScreen]);
 
   const purchaseItem = async () => {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;

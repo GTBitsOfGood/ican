@@ -64,7 +64,7 @@ export default function ChangePinModal() {
         base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px] max-h-[550px]",
         header: "text-5xl",
       }}
-      className="w-[45%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
+      className="w-[85%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"

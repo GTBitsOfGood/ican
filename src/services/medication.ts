@@ -22,6 +22,7 @@ import ERRORS from "@/utils/errorMessages";
 import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
 import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
+import { calculateStreakUpdate } from "@/services/streak";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -112,12 +113,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    console.log(currentDate);
+    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
         time,
-        currentDate.toISOString(),
+        dateString,
         medicationLogs,
         localTime,
       );
@@ -177,10 +178,12 @@ export default class MedicationService {
     );
     currentDate.setUTCHours(0, 0, 0, 0);
 
+    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+
     const canCheckIn = existingMedication.doseTimes.some((time) => {
       const { canCheckIn } = processDoseTime(
         time,
-        currentDate.toISOString(),
+        dateString,
         medicationLogs,
         localTime,
       );
@@ -201,13 +204,28 @@ export default class MedicationService {
       throw new NotFoundError("No pet found for the user");
     }
 
-    // add food to pet
+    const petWithId = existingPet as WithId<Pet>;
+    const streakUpdate = calculateStreakUpdate(petWithId, now);
+
     await PetDAO.updatePetByUserId(userId, {
       food: existingPet.food + FOOD_INC,
+      coins: existingPet.coins + streakUpdate.coinsAwarded + 10,
+      currentStreak: streakUpdate.currentStreak,
+      longestStreak: streakUpdate.longestStreak,
+      perfectWeeksCount: streakUpdate.perfectWeeksCount,
+      lastDoseDate: streakUpdate.lastDoseDate,
     });
 
     // create medication log in
     await MedicationDAO.createMedicationLog(medicationId, new Date());
+
+    return {
+      isPerfectWeek: streakUpdate.isPerfectWeek,
+      isNewMilestone: streakUpdate.isNewMilestone,
+      milestoneReached: streakUpdate.milestoneReached,
+      coinsAwarded: streakUpdate.coinsAwarded,
+      currentStreak: streakUpdate.currentStreak,
+    };
   }
 
   static async getMedicationsSchedule(
@@ -232,7 +250,12 @@ export default class MedicationService {
 
     currentDate.setUTCHours(0, 0, 0, 0);
 
-    const givenDate = new Date(date);
+    const dateParts = date.split("-");
+    const givenDate = new Date(
+      parseInt(dateParts[0]),
+      parseInt(dateParts[1]) - 1,
+      parseInt(dateParts[2]),
+    );
 
     const allDoses = [];
 
@@ -244,7 +267,6 @@ export default class MedicationService {
       const lastLog = medicationLogs.length > 0 ? medicationLogs[0] : null;
       const lastTaken = lastLog ? lastLog.dateTaken : null;
       const medicationCreated = medication.createdAt;
-      medicationCreated.setUTCHours(0, 0, 0, 0);
 
       const shouldSchedule = shouldScheduleMedication(
         medication,
@@ -256,7 +278,7 @@ export default class MedicationService {
         for (const time of medication.doseTimes) {
           const doseResult = processDoseTime(
             time,
-            currentDate.toISOString(),
+            date,
             medicationLogs,
             localTime,
           );

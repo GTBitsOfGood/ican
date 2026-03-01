@@ -9,9 +9,12 @@ import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
 import { useTutorial } from "@/components/TutorialContext";
-import { PRACTICE_DOSE_ID, TUTORIAL_PORTIONS } from "@/constants/tutorial";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 import { useSettings } from "../hooks/useSettings";
+import { useUser } from "@/components/UserContext";
+
+const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
 
 export default function MedicationLogCard({
   id,
@@ -27,7 +30,8 @@ export default function MedicationLogCard({
 }: LogType) {
   const router = useRouter();
   const tutorial = useTutorial();
-  const isPracticeDose = id === PRACTICE_DOSE_ID;
+  const isTutorialMedication = name === TUTORIAL_MEDICATION_NAME;
+  const { userId } = useUser();
 
   const [showMissedDoseModal, setShowMissedDoseModal] =
     useState<boolean>(false);
@@ -85,6 +89,7 @@ export default function MedicationLogCard({
     } else {
       medicationLogMutation.mutate(
         {
+          userId: userId!,
           medicationId: id,
           localTime: new Date().toLocaleString("en-us"),
         },
@@ -99,31 +104,22 @@ export default function MedicationLogCard({
   };
 
   const handleMedicationCheckIn = () => {
-    if (isPracticeDose) {
-      tutorial.handlePracticeDoseCheckIn(() => {
-        if (hasParentalControls) {
-          openPasswordModal();
-        } else {
-          setShowConfirmModal(true);
-        }
-      });
-    } else {
-      medicationCheckInMutation.mutate(
-        {
-          medicationId: id,
-          localTime: new Date().toLocaleString(undefined),
+    medicationCheckInMutation.mutate(
+      {
+        userId: userId!,
+        medicationId: id,
+        localTime: new Date().toLocaleString(undefined),
+      },
+      {
+        onSuccess: () => {
+          if (hasParentalControls) {
+            openPasswordModal();
+          } else {
+            setShowConfirmModal(true);
+          }
         },
-        {
-          onSuccess: () => {
-            if (hasParentalControls) {
-              openPasswordModal();
-            } else {
-              setShowConfirmModal(true);
-            }
-          },
-        },
-      );
-    }
+      },
+    );
   };
 
   const toggleMissedDoseModal = () => {
@@ -177,8 +173,16 @@ export default function MedicationLogCard({
           handleTakenAction={handleTakeMedicationAction}
         />
       )}
-      {showSuccessModal && !isPracticeDose && (
-        <SuccessMedicationModal onModalClose={undefined} />
+      {showSuccessModal && (
+        <SuccessMedicationModal
+          onModalClose={
+            isTutorialMedication
+              ? () => {
+                  tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+                }
+              : undefined
+          }
+        />
       )}
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">

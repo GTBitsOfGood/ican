@@ -41,6 +41,7 @@ export default function EditMedicationModal({
     const { _id, ...info } = medicationInfo;
     if (_id) {
       await updateMedicationMutation.mutateAsync({
+        userId,
         medicationId: _id,
         medicationInfo: info,
       });

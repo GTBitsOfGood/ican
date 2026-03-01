@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const FeedButton = ({ active }: { active: boolean }) => {
   const router = useRouter();
@@ -9,26 +10,23 @@ const FeedButton = ({ active }: { active: boolean }) => {
 
   return (
     <button
-      className="relative aspect-feed-button mobile:h-[2rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer disabled:cursor-default disabled:grayscale"
+      className="z-10 relative mobile:h-[3.1rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent disabled:cursor-default disabled:grayscale px-10"
       type="button"
       onClick={redirect}
       disabled={!active}
     >
-      <div
-        className="w-full h-full left-0 top-0 absolute bg-gradient-to-b 
-        from-[#accc6e] via-[#7b9449] to-[#365914] 
-        border-4 border-[#1a2107]/40 flex justify-center items-center"
-      >
-        <div
-          className="w-[91.5%] h-[86.5%] bg-gradient-to-b from-[#accc6e] to-[#739935] 
-          shadow-inner border-4 border-t-0 border-[#b7c982]/40"
-        >
-          <div className="h-full w-full flex justify-center items-center">
-            <span className="font-quantico text-center text-white mobile:text-xl tablet:text-2xl desktop:text-4xl largeDesktop:text-5xl 4xl:text-6xl font-bold leading-9 text-stroke-4 text-stroke-[#516C05] text-shadow-[#798C3F] paint-stroke letter-spacing-ui">
-              {" "}
-              FEED{" "}
-            </span>
-          </div>
+      <div className="w-full h-full">
+        <Image
+          src={"/misc/FeedButton.svg"}
+          alt={"feed"}
+          fill
+          className="absolute inset-0 object-fill pointer-events-none"
+        />
+
+        <div className="w-full h-full flex items-center mobile:justify-center tablet:justify-end mobile:pb-2 tablet:pb-3 desktop:pb-3 largeDesktop:pb-4 4xl:pb-5 4xl:gap-1">
+          <span className="w-full z-10 font-quantico text-center text-white mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-5xl 4xl:text-6xl font-bold leading-9 text-stroke-4 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui pl-1">
+            FEED
+          </span>
         </div>
       </div>
     </button>

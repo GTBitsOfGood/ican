@@ -1,18 +1,16 @@
-import { StaticImageData } from "next/image";
-import { PetType } from "./pet";
-import catImg from "../../public/characters/cat.svg";
-import dinoImg from "../../public/characters/dino.svg";
-import dogImg from "../../public/characters/dog.svg";
-import duckImg from "../../public/characters/duck.svg";
-import penguinImg from "../../public/characters/penguin.svg";
+import { PetEmotion, PetType } from "./pet";
 
 export type CharacterType = "cat" | "dino" | "dog" | "duck" | "penguin";
 
-// Thinking of moving this into utils
-export const characterImages: Record<PetType, StaticImageData> = {
-  cat: catImg,
-  dino: dinoImg,
-  dog: dogImg,
-  duck: duckImg,
-  penguin: penguinImg,
-};
+/**
+ * Returns the character image path for a given pet type and emotion.
+ * Neutral uses the base image (e.g. /characters/cat.png),
+ * while happy/sad append a suffix (e.g. /characters/cat_happy.png).
+ */
+export function getCharacterImage(
+  petType: PetType,
+  emotion: PetEmotion = PetEmotion.NEUTRAL,
+): string {
+  const suffix = emotion === PetEmotion.NEUTRAL ? "" : `_${emotion}`;
+  return `/characters/${petType}${suffix}.png`;
+}

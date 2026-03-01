@@ -40,8 +40,9 @@ function PetCharacterCard({
       <Image
         src={character.image}
         alt={character.name}
-        width={200}
-        height={200}
+        width={175}
+        height={175}
+        className="object-contain"
       />
     </div>
   );
@@ -155,10 +156,6 @@ export default function FirstPetPage() {
       {
         onSuccess: () => {
           router.push("/");
-        },
-        onError: (error) => {
-          console.error("Error creating pet:", error);
-          // The user can retry by clicking Select again
         },
       },
     );

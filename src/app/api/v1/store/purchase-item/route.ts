@@ -1,23 +1,11 @@
 import StoreService from "@/services/store";
-import { handleError } from "@/utils/errorHandler";
-import { validateRoutes } from "@/utils/validateRoute";
-import { cookies } from "next/headers";
+import { withAuth } from "@/utils/withAuth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
-  try {
-    await validateRoutes(
-      req,
-      req.method,
-      req.nextUrl.pathname.toString(),
-      (await cookies()).get("auth_token")?.value,
-    );
-    const { petId, name, type } = await req.json();
+export const POST = withAuth(async (req: NextRequest) => {
+  const { petId, name, type } = await req.json();
 
-    await StoreService.validatePurchase(petId, name, type);
+  await StoreService.validatePurchase(petId, name, type);
 
-    return new NextResponse(null, { status: 204 });
-  } catch (err) {
-    return handleError(err);
-  }
-}
+  return new NextResponse(null, { status: 204 });
+});

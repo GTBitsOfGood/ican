@@ -1,4 +1,5 @@
 import SettingsDAO from "@/db/actions/settings";
+import { NOTIFICATION_TYPES } from "@/db/models/notification";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
 import {
@@ -34,6 +35,12 @@ export default class SettingsService {
       largeFontSize: true,
       notifications: true,
       pin: null,
+      notificationPreferences: {
+        types: [...NOTIFICATION_TYPES],
+        earlyWindow: 15,
+        emailEnabled: true,
+        realTimeEnabled: true,
+      },
     };
     const settings = await SettingsDAO.createNewSettings(newSettings);
     if (!settings) {

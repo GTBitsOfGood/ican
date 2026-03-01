@@ -19,7 +19,7 @@ import {
   validateUpdatePet,
 } from "@/utils/serviceUtils/petsUtil";
 import PetDAO from "@/db/actions/pets";
-import { LEVEL_THRESHOLD, XP_GAIN } from "@/utils/constants";
+import { calculateXPForLevel, XP_GAIN } from "@/utils/constants";
 import { Types } from "mongoose";
 import { Appearance, Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
@@ -47,9 +47,14 @@ export default class PetService {
       xpLevel: 0,
       coins: 0,
       food: 0,
+      lastFedAt: null,
       userId: new Types.ObjectId(userId),
       appearance: {},
       outfits: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      perfectWeeksCount: 0,
+      lastDoseDate: null,
     };
 
     const insertedPet = await PetDAO.createNewPet(newPet);
@@ -100,20 +105,27 @@ export default class PetService {
 
     const updatedPet: Pet = existingPet;
     updatedPet.food--;
-    if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
+
+    const currentLevelThreshold = calculateXPForLevel(updatedPet.xpLevel);
+
+    if (updatedPet.xpGained >= currentLevelThreshold - XP_GAIN) {
       updatedPet.xpLevel += 1;
       updatedPet.coins += 100;
-      updatedPet.xpGained = (XP_GAIN + updatedPet.xpGained) % LEVEL_THRESHOLD;
+      updatedPet.xpGained =
+        (XP_GAIN + updatedPet.xpGained) % currentLevelThreshold;
     } else {
       updatedPet.xpGained += XP_GAIN;
     }
 
+    const now = new Date();
     await PetDAO.updatePetByPetId(petId, {
       xpGained: updatedPet.xpGained,
       xpLevel: updatedPet.xpLevel,
       food: updatedPet.food,
       coins: updatedPet.coins,
+      lastFedAt: now,
     });
+    updatedPet.lastFedAt = now;
     return updatedPet;
   }
 

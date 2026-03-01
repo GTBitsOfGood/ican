@@ -5,11 +5,16 @@ import PinSteps from "@/components/onboarding/steps/PinSteps";
 import ConsentSteps from "@/components/onboarding/steps/ConsentSteps";
 import DisclaimerStep from "@/components/onboarding/steps/DisclaimerStep";
 import CompletionStep from "@/components/onboarding/steps/CompletionStep";
+import ChildLoginStep from "@/components/onboarding/steps/ChildLoginStep";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
 import { useUpdateOnboardingStatus } from "@/components/hooks/useAuth";
-import { useUpdatePin } from "@/components/hooks/useSettings";
+import {
+  useUpdateChildLogin,
+  useUpdatePin,
+} from "@/components/hooks/useSettings";
 import { OnboardingStep, UserType } from "@/types/onboarding";
+import { ChildPasswordType } from "@/types/user";
 
 export default function Onboard() {
   const router = useRouter();
@@ -17,22 +22,34 @@ export default function Onboard() {
   const [userType, setUserType] = useState<UserType>(null);
   const [pin, setPin] = useState<string>("");
   const [confirmPin, setConfirmPin] = useState<string>("");
+  const [childPasswordType, setChildPasswordType] = useState<ChildPasswordType>(
+    ChildPasswordType.NORMAL,
+  );
+  const [childPassword, setChildPassword] = useState<string>("");
+  const [confirmChildPassword, setConfirmChildPassword] = useState<string>("");
+  const [colorSequence, setColorSequence] = useState<string[]>([]);
   const [consentChecked, setConsentChecked] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string>("");
+  const [hasSavedParentPin, setHasSavedParentPin] = useState<boolean>(false);
   const { userId } = useUser();
   const updateOnboardingStatus = useUpdateOnboardingStatus();
   const updatePin = useUpdatePin();
+  const updateChildLogin = useUpdateChildLogin();
 
-  // Handle URL step parameter
+  // Handle URL step and userType parameters
   useEffect(() => {
     if (router.isReady) {
-      const { step } = router.query;
+      const { step, userType: urlUserType } = router.query;
 
       if (
         typeof step === "string" &&
         Object.values(OnboardingStep).includes(step as OnboardingStep)
       ) {
         setCurrentStep(step as OnboardingStep);
+      }
+
+      if (urlUserType === "parent" || urlUserType === "child") {
+        setUserType(urlUserType);
       }
     }
   }, [router.isReady, router.query]);
@@ -44,6 +61,8 @@ export default function Onboard() {
     setCurrentStep(OnboardingStep.ParentPinSetup);
   const goToParentPinConfirm = () =>
     setCurrentStep(OnboardingStep.ParentPinConfirm);
+  const goToParentChildLoginSetup = () =>
+    setCurrentStep(OnboardingStep.ParentChildLoginSetup);
   const goToParentConsent = () =>
     setCurrentStep(OnboardingStep.ParentUserConsent);
   const goToChildConsent = () =>
@@ -53,6 +72,20 @@ export default function Onboard() {
 
   // Functions to ensure correct states
   const handleChildSetup = () => {
+    if (hasSavedParentPin) {
+      updatePin.mutate(null, {
+        onSuccess: () => {
+          setHasSavedParentPin(false);
+        },
+        onError: (error) => {
+          console.error("Error removing parental pin:", error);
+        },
+      });
+    }
+    setPin("");
+    setConfirmPin("");
+    setPinError("");
+    setConsentChecked(false);
     setUserType("child");
     goToChildConsent();
   };
@@ -81,7 +114,9 @@ export default function Onboard() {
       updatePin.mutate(confirmPin, {
         onSuccess: () => {
           setPinError("");
-          goToParentConsent();
+          goToParentChildLoginSetup();
+          setHasSavedParentPin(true);
+          goToParentChildLoginSetup();
         },
         onError: (error) => {
           setPinError(
@@ -92,6 +127,46 @@ export default function Onboard() {
         },
       });
     }
+  };
+
+  const handleChildLoginSubmit = () => {
+    const candidatePassword =
+      childPasswordType === ChildPasswordType.COLOR
+        ? colorSequence.join("-")
+        : childPassword.trim();
+
+    if (candidatePassword.length < 3) {
+      setPinError("Child password must be at least 3 characters.");
+      return;
+    }
+
+    if (
+      childPasswordType === ChildPasswordType.NORMAL &&
+      candidatePassword !== confirmChildPassword.trim()
+    ) {
+      setPinError("Child passwords don't match.");
+      return;
+    }
+
+    updateChildLogin.mutate(
+      {
+        childPassword: candidatePassword,
+        childPasswordType,
+      },
+      {
+        onSuccess: () => {
+          setPinError("");
+          goToParentConsent();
+        },
+        onError: (error) => {
+          setPinError(
+            error instanceof Error
+              ? `Error saving child login: ${error.message}`
+              : "Error saving child login",
+          );
+        },
+      },
+    );
   };
 
   const handleConsentSubmit = () => {
@@ -106,7 +181,7 @@ export default function Onboard() {
   };
 
   const handleChooseMedication = () => {
-    window.location.href = "/medications/";
+    router.push(`/medications/?userType=${userType}`);
   };
 
   const handleChoosePet = () => {
@@ -115,7 +190,7 @@ export default function Onboard() {
         { userId, isOnboarded: true },
         {
           onSuccess: () => {
-            window.location.href = "/first-pet";
+            router.push("/first-pet");
           },
           onError: (error) => {
             console.error("Error updating onboarding status:", error);
@@ -138,6 +213,9 @@ export default function Onboard() {
         goToParentPinSetup();
         break;
       case OnboardingStep.ParentUserConsent:
+        goToParentChildLoginSetup();
+        break;
+      case OnboardingStep.ParentChildLoginSetup:
         goToParentPinConfirm();
         break;
       case OnboardingStep.ChildUserConsent:
@@ -199,6 +277,41 @@ export default function Onboard() {
             error={pinError}
           />
         );
+      case OnboardingStep.ParentChildLoginSetup:
+        return (
+          <ChildLoginStep
+            childPasswordType={childPasswordType}
+            password={childPassword}
+            confirmPassword={confirmChildPassword}
+            colorSequence={colorSequence}
+            error={pinError}
+            onBack={handleBack}
+            onTypeChange={(value) => {
+              setPinError("");
+              setChildPasswordType(value);
+              setChildPassword("");
+              setConfirmChildPassword("");
+              setColorSequence([]);
+            }}
+            onPasswordChange={(value) => {
+              setPinError("");
+              setChildPassword(value);
+            }}
+            onConfirmPasswordChange={(value) => {
+              setPinError("");
+              setConfirmChildPassword(value);
+            }}
+            onAddColor={(value) => {
+              setPinError("");
+              setColorSequence((prev) => [...prev, value]);
+            }}
+            onClearColors={() => {
+              setPinError("");
+              setColorSequence([]);
+            }}
+            onSubmit={handleChildLoginSubmit}
+          />
+        );
       case OnboardingStep.ParentUserConsent:
         return (
           <ConsentSteps
@@ -231,6 +344,7 @@ export default function Onboard() {
       case OnboardingStep.ChooseMedication:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChooseMedication}
             onBack={handleBack}
             onComplete={handleChooseMedication}
@@ -240,6 +354,7 @@ export default function Onboard() {
       case OnboardingStep.ChoosePet:
         return (
           <CompletionStep
+            userType={userType}
             currentStep={OnboardingStep.ChoosePet}
             onBack={handleBack}
             onComplete={handleChoosePet}

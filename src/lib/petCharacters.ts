@@ -13,35 +13,35 @@ export const PET_CHARACTERS: PetCharacter[] = [
     name: "Paws!",
     description:
       "Paws is loyal and playful. He loves running around and giving warm hugs to friends!",
-    image: "/characters/dog.svg",
+    image: "/characters/dog.png",
   },
   {
     type: PetType.DINO,
     name: "Roary!",
     description:
       "Roary is the friendliest dinosaur around. He stomps with joy and gives the biggest high-fives!",
-    image: "/characters/dino.svg",
+    image: "/characters/dino.png",
   },
   {
     type: PetType.CAT,
     name: "Whiskers!",
     description:
       "Whiskers is curious and loves adventures. Pick Cat if you enjoy exploring and trying new things!",
-    image: "/characters/cat.svg",
+    image: "/characters/cat.png",
   },
   {
     type: PetType.PENGUIN,
     name: "Waddles!",
     description:
       "Waddles loves sliding on ice and dancing to music. Choose Penguin if you like to groove and play!",
-    image: "/characters/penguin.svg",
+    image: "/characters/penguin.png",
   },
   {
     type: PetType.DUCK,
     name: "Quacky!",
     description:
       "Quacky loves splashing in puddles and telling silly jokes. Pick Duck if you like making everyone laugh!",
-    image: "/characters/duck.svg",
+    image: "/characters/duck.png",
   },
 ];
 

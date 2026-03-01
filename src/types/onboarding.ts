@@ -3,6 +3,7 @@ export enum OnboardingStep {
   Setup = "setup",
   ParentPinSetup = "parent-pin-setup",
   ParentPinConfirm = "parent-pin-confirm",
+  ParentChildLoginSetup = "parent-child-login-setup",
   ParentUserConsent = "parent-user-consent",
   ChildUserConsent = "child-user-consent",
   Disclaimer = "disclaimer",

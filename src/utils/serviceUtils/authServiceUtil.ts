@@ -1,11 +1,12 @@
 import { z } from "zod";
 import {
-  passwordSchema,
   emailSchema,
   tokenSchema,
   createValidateFunction,
   stringSchema,
+  passwordSchema,
 } from "./commonSchemaUtil";
+import { ChildPasswordType, LoginType } from "@/types/user";
 
 export const registerSchema = z
   .object({
@@ -30,8 +31,11 @@ export const registerSchema = z
 
 export const loginSchema = z.object({
   email: emailSchema,
-
-  password: passwordSchema,
+  password: z
+    .string()
+    .trim()
+    .nonempty("Invalid request body: 'password' is required."),
+  loginType: z.nativeEnum(LoginType).optional(),
 });
 
 export const loginWithGoogleSchema = z.object({
@@ -49,6 +53,22 @@ export const validateTokenSchema = z.object({
   token: tokenSchema,
 });
 
+export const childPasswordTypeSchema = z.object({
+  email: emailSchema,
+});
+
+export const updateChildLoginSchema = z.object({
+  userId: stringSchema,
+  childPassword: z
+    .string()
+    .trim()
+    .min(
+      3,
+      "Invalid request body: 'childPassword' is required and must be at least 3 characters.",
+    ),
+  childPasswordType: z.nativeEnum(ChildPasswordType),
+});
+
 export const validateDeleteSchema = z.object({
   userId: stringSchema,
 });
@@ -57,6 +77,8 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type LoginWithGoogleInput = z.infer<typeof loginWithGoogleSchema>;
 export type ValidateTokenInput = z.infer<typeof validateTokenSchema>;
+export type ChildPasswordTypeInput = z.infer<typeof childPasswordTypeSchema>;
+export type UpdateChildLoginInput = z.infer<typeof updateChildLoginSchema>;
 
 // Both can be used and are the same
 export const validateRegister = createValidateFunction(registerSchema);
@@ -66,3 +88,9 @@ export const validateLoginWithGoogle = createValidateFunction(
 );
 export const validateTokenInput = createValidateFunction(validateTokenSchema);
 export const validateDeleteUser = createValidateFunction(validateDeleteSchema);
+export const validateChildPasswordType = createValidateFunction(
+  childPasswordTypeSchema,
+);
+export const validateUpdateChildLogin = createValidateFunction(
+  updateChildLoginSchema,
+);

@@ -1,13 +1,14 @@
+import { calculateXPForLevel } from "@/utils/constants";
 import Image from "next/image";
 
 interface ExpProps {
   level: number;
   currentExp: number;
-  totalExp?: number;
 }
 
-const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp = 100 }) => {
-  const progress = totalExp > 0 ? (currentExp / totalExp) * 100 : 0;
+const ExpBar: React.FC<ExpProps> = ({ level, currentExp }) => {
+  const xpNeeded = calculateXPForLevel(level);
+  const progress = xpNeeded > 0 ? (currentExp / xpNeeded) * 100 : 0;
 
   return (
     <div className="relative w-fit h-full flex items-center flex-1">
@@ -34,7 +35,7 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp, totalExp = 100 }) => {
           </div>
         </div>
         <span className="h-fit z-10 font-quantico font-extrabold text-[2rem] text-white text-stroke-4 text-stroke-[#2A3213] text-shadow-[#444D29] paint-stroke letter-spacing-ui">
-          {currentExp}/{totalExp} XP
+          {currentExp}/{xpNeeded} XP
         </span>
       </div>
     </div>

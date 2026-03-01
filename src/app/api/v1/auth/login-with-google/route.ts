@@ -1,19 +1,10 @@
 import AuthService from "@/services/auth";
 import { generateAPIAuthCookie } from "@/utils/cookie";
-import { handleError } from "@/utils/errorHandler";
-import { validateRoutes } from "@/utils/validateRoute";
-import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { withoutAuth } from "@/utils/withAuth";
 
-export async function POST(req: NextRequest) {
-  try {
-    await validateRoutes(
-      req,
-      req.method,
-      req.nextUrl.pathname.toString(),
-      (await cookies()).get("auth_token")?.value,
-    );
-
+export const POST = withoutAuth<Record<string, never>>(
+  async (req: NextRequest) => {
     const { name, email } = await req.json();
 
     const { token, userId, isNewUser } = await AuthService.loginWithGoogle(
@@ -26,10 +17,6 @@ export async function POST(req: NextRequest) {
       { status: 200 },
     );
 
-    const response = generateAPIAuthCookie(nextResponse, token);
-
-    return response;
-  } catch (error) {
-    return handleError(error);
-  }
-}
+    return await generateAPIAuthCookie(nextResponse, token);
+  },
+);

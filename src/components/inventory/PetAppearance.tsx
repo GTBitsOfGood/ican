@@ -1,6 +1,6 @@
-import { PetType } from "@/types/pet";
+import { PetEmotion, PetType } from "@/types/pet";
 import Image from "next/image";
-import { characterImages } from "@/types/characters";
+import { getCharacterImage } from "@/types/characters";
 import { InventoryItem, ItemType } from "@/types/inventory";
 import ClothingItem from "./appearance/clothingItem";
 import storeItems from "@/lib/storeItems";
@@ -12,6 +12,7 @@ import { Appearance } from "@/db/models/pet";
 
 interface PetAppearanceProps {
   petType?: PetType;
+  emotion?: PetEmotion;
   selectedItem: InventoryItem | null;
   appearance: Appearance;
   className: string;
@@ -19,10 +20,12 @@ interface PetAppearanceProps {
   showBackground?: boolean;
   onDragOver?: (e: React.DragEvent<HTMLImageElement>) => void;
   onDrop?: (e: React.DragEvent<HTMLImageElement>) => void;
+  characterImageSize?: number;
 }
 
 const PetAppearance: React.FC<PetAppearanceProps> = ({
   petType,
+  emotion = PetEmotion.NEUTRAL,
   selectedItem,
   appearance,
   className,
@@ -30,6 +33,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
   showBackground = true,
   onDragOver,
   onDrop,
+  characterImageSize,
 }) => {
   const equippedBackground =
     appearance?.background && storeItems.background[appearance.background]
@@ -42,14 +46,14 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
     >
       {!outfitOnly && petType && (
         <Image
-          src={characterImages[petType]}
+          src={getCharacterImage(petType, emotion)}
           alt={`${petType}`}
-          width={characterImages[petType].width}
-          height={characterImages[petType].height}
+          width={characterImageSize || 275}
+          height={characterImageSize || 275}
           draggable="false"
           onDragOver={onDragOver}
           onDrop={onDrop}
-          className="object-contain pointer-events-none select-none relative z-10"
+          className="object-contain pointer-events-none select-none relative z-10 max-w-full max-h-full"
         />
       )}
       {selectedItem?.type === ItemType.CLOTHING ? (

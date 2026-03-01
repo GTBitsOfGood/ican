@@ -2,6 +2,9 @@ import { NotFoundError } from "@/types/exceptions";
 import UserDAO from "@/db/actions/user";
 import ERRORS from "@/utils/errorMessages";
 import { validateDeleteUser } from "@/utils/serviceUtils/authServiceUtil";
+import MedicationDAO from "@/db/actions/medication";
+
+const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
 
 export default class UserService {
   static async deleteUser(userId: string) {
@@ -35,6 +38,18 @@ export default class UserService {
     tutorial_completed: boolean,
   ): Promise<void> {
     await UserDAO.updateTutorialStatus(userId, tutorial_completed);
+
+    if (tutorial_completed) {
+      const tutorialMedication =
+        await MedicationDAO.getUserMedicationByCustomMedicationId(
+          TUTORIAL_MEDICATION_ID,
+          userId,
+        );
+
+      if (tutorialMedication) {
+        await MedicationDAO.deleteMedicationById(tutorialMedication._id);
+      }
+    }
   }
 
   static async getUserProfile(userId: string): Promise<{

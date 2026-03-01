@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/components/UserContext";
 import { MedicationInfo } from "@/types/medication";
 import { PET_QUERY_KEYS } from "./usePet";
+import { TUTORIAL_QUERY_KEYS } from "./useTutorial";
 
 export const MEDICATION_QUERY_KEYS = {
   allMedications: (userId: string) => ["medications", userId] as const,
@@ -28,14 +29,16 @@ export const useUserMedications = () => {
 };
 
 export const useMedication = (medicationId: string | undefined) => {
+  const { userId } = useUser();
+
   return useQuery({
     queryKey: MEDICATION_QUERY_KEYS.medication(medicationId || ""),
     queryFn: () => {
       if (!medicationId) throw new Error("Medication ID required");
 
-      return MedicationHTTPClient.getMedication(medicationId);
+      return MedicationHTTPClient.getMedication(userId!, medicationId);
     },
-    enabled: !!medicationId,
+    enabled: !!userId && !!medicationId,
     staleTime: 5 * 60 * 1000,
   });
 };
@@ -84,7 +87,11 @@ export const useUpdateMedication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: MedicationHTTPClient.updateMedication,
+    mutationFn: (variables: {
+      userId: string;
+      medicationId: string;
+      medicationInfo: MedicationInfo;
+    }) => MedicationHTTPClient.updateMedication(variables),
     onSettled: (_, __, variables) => {
       queryClient.invalidateQueries({
         queryKey: MEDICATION_QUERY_KEYS.medication(variables.medicationId),
@@ -103,9 +110,8 @@ export const useDeleteMedication = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (medicationId: string) => {
-      return MedicationHTTPClient.deleteMedication(medicationId);
-    },
+    mutationFn: (medicationId: string) =>
+      MedicationHTTPClient.deleteMedication(userId!, medicationId),
     onSettled: (_, __, medicationId) => {
       queryClient.removeQueries({
         queryKey: MEDICATION_QUERY_KEYS.medication(medicationId),
@@ -124,7 +130,11 @@ export const useMedicationCheckIn = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: MedicationHTTPClient.medicationCheckIn,
+    mutationFn: (variables: {
+      userId: string;
+      medicationId: string;
+      localTime: string;
+    }) => MedicationHTTPClient.medicationCheckIn(variables),
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
@@ -140,7 +150,11 @@ export const useMedicationLog = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: MedicationHTTPClient.medicationLog,
+    mutationFn: (variables: {
+      userId: string;
+      medicationId: string;
+      localTime: string;
+    }) => MedicationHTTPClient.medicationLog(variables),
     onSettled: () => {
       if (userId) {
         queryClient.invalidateQueries({
@@ -154,6 +168,37 @@ export const useMedicationLog = () => {
           queryKey: PET_QUERY_KEYS.pet(userId),
         });
       }
+      queryClient.invalidateQueries({
+        queryKey: TUTORIAL_QUERY_KEYS.progress(),
+      });
     },
   });
+};
+
+export const useUpcomingMedication = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const dateStr = `${year}-${month}-${day}`;
+  const localTimeStr = now.toLocaleString();
+
+  const { data: schedule } = useMedicationSchedule(dateStr, localTimeStr);
+
+  const upcomingMedication = schedule?.medications?.find(
+    (med) => med.status === "pending" && med.canCheckIn,
+  );
+
+  const recentlyTakenMedication = schedule?.medications?.find((med) => {
+    if (med.status !== "taken" || !med.lastTaken) return false;
+    const takenTime = new Date(med.lastTaken).getTime();
+    const timeThreshold = Date.now() - 2 * 60 * 1000; // show ts for 2 minutes
+    return takenTime > timeThreshold;
+  });
+
+  return {
+    medication: upcomingMedication,
+    hasMedication: !!upcomingMedication,
+    recentlyTaken: recentlyTakenMedication,
+  };
 };

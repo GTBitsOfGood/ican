@@ -8,7 +8,7 @@ export default class MedicationHTTPClient {
   static async getAllUserMedications(
     userId: string,
   ): Promise<WithId<Medication>[]> {
-    return await fetchHTTPClient(`/medications/${userId}`, {
+    return await fetchHTTPClient(`/users/${userId}/medications`, {
       method: "GET",
       credentials: "include",
     });
@@ -18,62 +18,80 @@ export default class MedicationHTTPClient {
     userId: string,
     medicationInfo: MedicationInfo,
   ): Promise<string> {
-    const createMedicationBody = { ...medicationInfo, userId };
-    return await fetchHTTPClient("/medication", {
+    return await fetchHTTPClient(`/users/${userId}/medications`, {
       method: "POST",
-      body: JSON.stringify(createMedicationBody),
-      credentials: "include",
-    });
-  }
-
-  static async getMedication(
-    medicationId: string,
-  ): Promise<WithId<Medication>> {
-    return await fetchHTTPClient(`/medication/${medicationId}`, {
-      method: "GET",
-      credentials: "include",
-    });
-  }
-
-  static async updateMedication({
-    medicationId,
-    medicationInfo,
-  }: {
-    medicationId: string;
-    medicationInfo: MedicationInfo;
-  }) {
-    return await fetchHTTPClient(`/medication/${medicationId}`, {
-      method: "PATCH",
       body: JSON.stringify(medicationInfo),
       credentials: "include",
     });
   }
 
-  static async deleteMedication(medicationId: string) {
-    return await fetchHTTPClient(`/medication/${medicationId}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+  static async getMedication(
+    userId: string,
+    medicationId: string,
+  ): Promise<WithId<Medication>> {
+    return await fetchHTTPClient(
+      `/users/${userId}/medications/${medicationId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    );
+  }
+
+  static async updateMedication({
+    userId,
+    medicationId,
+    medicationInfo,
+  }: {
+    userId: string;
+    medicationId: string;
+    medicationInfo: MedicationInfo;
+  }) {
+    return await fetchHTTPClient(
+      `/users/${userId}/medications/${medicationId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(medicationInfo),
+        credentials: "include",
+      },
+    );
+  }
+
+  static async deleteMedication(userId: string, medicationId: string) {
+    return await fetchHTTPClient(
+      `/users/${userId}/medications/${medicationId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
   }
 
   static async medicationCheckIn({
+    userId,
     medicationId,
     localTime,
   }: {
+    userId: string;
     medicationId: string;
     localTime: string;
   }): Promise<void> {
-    return fetchHTTPClient<void>(`/medication/${medicationId}/check-in`, {
-      method: "POST",
-      body: JSON.stringify({ localTime }),
-      credentials: "include",
-    });
+    return fetchHTTPClient<void>(
+      `/users/${userId}/medications/${medicationId}/check-in`,
+      {
+        method: "POST",
+        body: JSON.stringify({ localTime }),
+        credentials: "include",
+      },
+    );
   }
 
   static async medicationLog({
+    userId,
     medicationId,
     localTime,
   }: {
+    userId: string;
     medicationId: string;
     localTime: string;
   }): Promise<void> {
@@ -81,11 +99,14 @@ export default class MedicationHTTPClient {
       localTime,
     };
 
-    return fetchHTTPClient<void>(`/medication/${medicationId}/log`, {
-      method: "POST",
-      body: JSON.stringify(medicationLogBody),
-      credentials: "include",
-    });
+    return fetchHTTPClient<void>(
+      `/users/${userId}/medications/${medicationId}/log`,
+      {
+        method: "POST",
+        body: JSON.stringify(medicationLogBody),
+        credentials: "include",
+      },
+    );
   }
   // date must be in yyyy-mm-dd format
   static async getMedicationSchedule(
@@ -94,7 +115,7 @@ export default class MedicationHTTPClient {
     localTime: string,
   ): Promise<{ date: string; medications: LogType[] }> {
     return fetchHTTPClient<{ date: string; medications: LogType[] }>(
-      `/medications/${userId}/schedule?date=${date}&localTime=${localTime}`,
+      `/users/${userId}/medications/schedule?date=${date}&localTime=${localTime}`,
       {
         method: "GET",
         credentials: "include",
