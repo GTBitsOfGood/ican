@@ -11,7 +11,7 @@ const LockedItem: React.FC<LockedItemProps> = ({ item, currentStreak = 0 }) => {
   const isStreakLocked =
     item.isStreakLocked && currentStreak < (item.streakRequirement || 3);
   const lockReason = isStreakLocked
-    ? `Streak Required: ${item.streakRequirement || 3} days`
+    ? `${item.streakRequirement || 3} day Streak`
     : `Level ${item.level}`;
 
   return (
