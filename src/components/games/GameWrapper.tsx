@@ -4,6 +4,7 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import Bubble from "@/components/ui/Bubble";
+import ProfileHeader from "@/components/home/ProfileHeader";
 import { usePet } from "@/components/hooks/usePet";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
@@ -75,112 +76,129 @@ export default function GameWrapper({
         <LoadingScreen />
       ) : (
         <div
-          className="min-h-screen bg-no-repeat"
+          className="relative min-h-screen overflow-hidden bg-no-repeat"
           style={{
             backgroundImage: `url("${equippedBackgroundImage}")`,
             backgroundSize: "cover",
             backgroundPosition: "center bottom",
           }}
         >
-          <div className="relative min-h-screen w-full px-4 py-6 tablet:px-8 tablet:py-8">
-            <div className="w-full tablet:pr-[20rem]">
-              <div
-                className={cn(
-                  "flex h-[36rem] min-h-[36rem] flex-col",
-                  showGameAreaFrame && "rounded-2xl bg-white p-6 tablet:p-8",
-                  gameAreaClassName,
-                )}
-              >
-                <GameComponent
-                  setSpeechText={setSpeechText}
-                  gameState={gameState}
-                  setGameState={setGameState}
-                  showInformationModal={setInformationModal}
-                />
-              </div>
-            </div>
+          {/* Profile header */}
+          <ProfileHeader
+            petType={pet.petType}
+            level={pet.xpLevel}
+            coins={pet.coins}
+            currentExp={pet.xpGained}
+          />
 
-            <div className="absolute right-0 top-1/2 w-[17rem] -translate-y-1/2 tablet:w-[22rem]">
-              <div className="relative">
-                {speechText && (
-                  <div className="absolute bottom-[100%] right-[12%] z-20 scale-[0.5] origin-bottom-right tablet:scale-[0.64]">
-                    <Bubble text={speechText} />
-                  </div>
-                )}
-                <PetAppearance
-                  petType={pet.petType}
-                  selectedItem={null}
-                  appearance={pet.appearance}
-                  showBackground={false}
-                  className="h-[17rem] tablet:h-[22rem]"
-                  characterImageSize={340}
-                />
-              </div>
-            </div>
-
-            {(gameState === GameState.WON ||
-              gameState === GameState.LOSS ||
-              gameState === GameState.TIE) && (
-              <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
-                <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                  <h2 className="text-3xl text-icanBlue-300">
-                    {gameState === GameState.WON
-                      ? "You Won!"
-                      : gameState === GameState.TIE
-                        ? "It's a Tie!"
-                        : "Game Over"}
-                  </h2>
-                  <p className="mt-2 text-icanBlue-300">
-                    {gameState === GameState.WON
-                      ? "Good job!"
-                      : gameState === GameState.TIE
-                        ? "That was close!"
-                        : "Nice try!"}
-                  </p>
-                  <div className="mt-6 flex items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      className="rounded-xl border-4 border-icanBlue-200 bg-white px-4 py-2 text-icanBlue-300 shadow-[0_4px_0_0_#7D83B2]"
-                      onClick={() => setGameState(GameState.PLAYING)}
-                    >
-                      Play Again
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-xl border-4 border-icanBlue-200 bg-icanBlue-200 px-4 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                      onClick={() => router.push("/games")}
-                    >
-                      Back to Games
-                    </button>
-                  </div>
+          {/* Pet */}
+          <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
+            <div className="relative">
+              {speechText && (
+                <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
+                  <Bubble text={speechText} />
                 </div>
-              </div>
-            )}
+              )}
+              <PetAppearance
+                petType={pet.petType}
+                selectedItem={null}
+                appearance={pet.appearance}
+                showBackground={false}
+                className="h-[17rem] tablet:h-[22rem]"
+                characterImageSize={340}
+              />
+            </div>
+          </div>
 
-            {informationModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-                <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                  <h2 className="text-3xl text-icanBlue-300">
-                    {informationModal.title}
-                  </h2>
-                  <p className="mt-3 text-icanBlue-300">
-                    {informationModal.message}
-                  </p>
+          {/* Whiteboard */}
+          <div className="absolute right-20 top-0 aspect-square w-[50%]">
+            {showGameAreaFrame && (
+              <img
+                src="/games/whiteboard.png"
+                className="absolute inset-0 h-full w-full"
+                alt=""
+                aria-hidden="true"
+              />
+            )}
+            <div
+              className={cn(
+                "absolute inset-0 overflow-hidden",
+                showGameAreaFrame &&
+                  "bottom-[24%] left-[8%] right-[10%] top-[25%]",
+                gameAreaClassName,
+              )}
+            >
+              <GameComponent
+                setSpeechText={setSpeechText}
+                gameState={gameState}
+                setGameState={setGameState}
+                showInformationModal={setInformationModal}
+              />
+            </div>
+          </div>
+
+          {(gameState === GameState.WON ||
+            gameState === GameState.LOSS ||
+            gameState === GameState.TIE) && (
+            <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
+              <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
+                <h2 className="text-3xl text-icanBlue-300">
+                  {gameState === GameState.WON
+                    ? "You Won!"
+                    : gameState === GameState.TIE
+                      ? "It's a Tie!"
+                      : "Game Over"}
+                </h2>
+                <p className="mt-2 text-icanBlue-300">
+                  {gameState === GameState.WON
+                    ? "Good job!"
+                    : gameState === GameState.TIE
+                      ? "That was close!"
+                      : "Nice try!"}
+                </p>
+                <div className="mt-6 flex items-center justify-center gap-3">
                   <button
                     type="button"
-                    className="mt-6 rounded-xl bg-icanBlue-200 px-5 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                    onClick={() => {
-                      const onClose = informationModal.onClose;
-                      setInformationModal(null);
-                      onClose?.();
-                    }}
+                    className="rounded-xl border-4 border-icanBlue-200 bg-white px-4 py-2 text-icanBlue-300 shadow-[0_4px_0_0_#7D83B2]"
+                    onClick={() => setGameState(GameState.PLAYING)}
                   >
-                    {informationModal.closeLabel || "Close"}
+                    Play Again
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-xl border-4 border-icanBlue-200 bg-icanBlue-200 px-4 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
+                    onClick={() => router.push("/games")}
+                  >
+                    Back to Games
                   </button>
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {informationModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
+                <h2 className="text-3xl text-icanBlue-300">
+                  {informationModal.title}
+                </h2>
+                <p className="mt-3 text-icanBlue-300">
+                  {informationModal.message}
+                </p>
+                <button
+                  type="button"
+                  className="mt-6 rounded-xl bg-icanBlue-200 px-5 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
+                  onClick={() => {
+                    const onClose = informationModal.onClose;
+                    setInformationModal(null);
+                    onClose?.();
+                  }}
+                >
+                  {informationModal.closeLabel || "Close"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </AuthorizedRoute>

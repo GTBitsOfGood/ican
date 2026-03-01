@@ -206,7 +206,7 @@ export default function TicTacToe({
   };
 
   return (
-    <div className="flex h-full min-h-[420px] w-full flex-col items-center justify-center rounded-2xl bg-white/50 px-6 py-8">
+    <div className="flex h-full w-full flex-col items-center justify-center px-6 py-8">
       {gameState !== GameState.START && (
         <div className="grid grid-cols-3 gap-3">
           {board.map((value, index) => (

@@ -100,7 +100,7 @@ export default function TriviaGame({
   };
 
   return (
-    <div className="flex h-full min-h-[420px] w-full items-center justify-center rounded-2xl bg-white/50 px-6">
+    <div className="flex h-full w-full items-center justify-center px-6">
       <div className="text-center font-quantico text-icanBlue-300">
         {/* Start screen */}
         {gameState === GameState.START && (

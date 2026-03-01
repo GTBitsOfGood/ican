@@ -96,9 +96,9 @@ export default function HangmanGame({
 
   // UI: PLAYING/WON/LOSS State
   return (
-    <div className="flex h-full min-h-0 flex-col items-center justify-center py-8">
-      <div className="mb-12 flex items-center gap-10">
-        <div className="flex gap-3 text-4xl font-bold font-quantico text-icanBlue-300 tracking-widest">
+    <div className="flex h-full min-h-0 flex-col items-center justify-center py-2">
+      <div className="mb-4 flex flex-col items-center gap-2">
+        <div className="flex flex-wrap justify-center gap-2 text-4xl font-bold font-quantico text-icanBlue-300 tracking-widest">
           {word.split("").map((char, i) => (
             <span
               key={i}
@@ -113,7 +113,7 @@ export default function HangmanGame({
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-2 max-w-2xl">
+      <div className="flex flex-wrap justify-center gap-2">
         {ALPHABET.map((letter) => {
           const isGuessed = guessedLetters.has(letter);
           const isCorrect = isGuessed && word.includes(letter);

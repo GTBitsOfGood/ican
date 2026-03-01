@@ -16,7 +16,7 @@ export default function QuestionCard({
   onNext,
 }: QuestionCardProps) {
   return (
-    <div className="flex h-full min-h-[420px] w-full items-center justify-center rounded-2xl bg-white/50 px-6">
+    <div className="flex h-full w-full items-center justify-center px-4">
       <div className="text-center font-quantico text-icanBlue-300">
         <p className="text-3xl">{question.prompt}</p>
         <div className="grid grid-cols-2 gap-6 mt-8">
