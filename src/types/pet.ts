@@ -26,4 +26,8 @@ export interface Pet {
   lastFedAt: string | null;
   appearance: Appearance;
   outfits: SavedOutfit[];
+  currentStreak: number;
+  longestStreak: number;
+  perfectWeeksCount: number;
+  lastDoseDate: Date | null;
 }

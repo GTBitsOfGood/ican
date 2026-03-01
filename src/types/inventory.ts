@@ -8,6 +8,12 @@ export enum ItemType {
   OCCUPATION = "occupation",
 }
 
+export enum ItemPrice {
+  CHEAP = 10,
+  MEDIUM = 25,
+  EXPENSIVE = 50,
+}
+
 export interface InventoryItem {
   name: string;
   displayName: string;
@@ -16,6 +22,8 @@ export interface InventoryItem {
   cost: number;
   level: number;
   description: string;
+  isStreakLocked?: boolean;
+  streakRequirement?: number; // min streak days needed to unlock
 }
 
 export interface Bag {

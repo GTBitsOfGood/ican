@@ -51,6 +51,10 @@ export default class PetService {
       userId: new Types.ObjectId(userId),
       appearance: {},
       outfits: [],
+      currentStreak: 0,
+      longestStreak: 0,
+      perfectWeeksCount: 0,
+      lastDoseDate: null,
     };
 
     const insertedPet = await PetDAO.createNewPet(newPet);
@@ -101,11 +105,14 @@ export default class PetService {
 
     const updatedPet: Pet = existingPet;
     updatedPet.food--;
-    const LEVEL_THRESHOLD = calculateXPForLevel(existingPet.xpLevel ?? 0);
-    if (updatedPet.xpGained >= LEVEL_THRESHOLD - XP_GAIN) {
+
+    const currentLevelThreshold = calculateXPForLevel(updatedPet.xpLevel);
+
+    if (updatedPet.xpGained >= currentLevelThreshold - XP_GAIN) {
       updatedPet.xpLevel += 1;
       updatedPet.coins += 100;
-      updatedPet.xpGained = (XP_GAIN + updatedPet.xpGained) % LEVEL_THRESHOLD;
+      updatedPet.xpGained =
+        (XP_GAIN + updatedPet.xpGained) % currentLevelThreshold;
     } else {
       updatedPet.xpGained += XP_GAIN;
     }
