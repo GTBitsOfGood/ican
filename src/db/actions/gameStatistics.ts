@@ -36,7 +36,10 @@ export default class GameStatisticsDAO {
             $add: [{ $ifNull: [`${fieldRef}.wins`, 0] }, isWin ? 1 : 0],
           },
           [`gameStatistics.${gameName}.losses`]: {
-            $add: [{ $ifNull: [`${fieldRef}.losses`, 0] }, isWin ? 0 : 1],
+            $add: [
+              { $ifNull: [`${fieldRef}.losses`, 0] },
+              result === GameResult.LOSS ? 1 : 0,
+            ],
           },
           [`gameStatistics.${gameName}.currentWinStreak`]: isWin
             ? { $add: [{ $ifNull: [`${fieldRef}.currentWinStreak`, 0] }, 1] }

@@ -16,6 +16,7 @@ export enum GameName {
 export enum GameResult {
   WIN = "WIN",
   LOSS = "LOSS",
+  DRAW = "DRAW",
 }
 
 export interface GameStats {
