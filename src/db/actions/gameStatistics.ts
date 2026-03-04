@@ -1,7 +1,9 @@
 import { Types } from "mongoose";
 import UserModel from "../models/user";
 import dbConnect from "../dbConnect";
-import { GameResult, GameStats } from "@/types/games";
+import { GameName, GameResult, GameStats } from "@/types/games";
+import { NotFoundError } from "@/types/exceptions";
+import ERRORS from "@/utils/errorMessages";
 
 const DEFAULT_GAME_STATS: GameStats = {
   wins: 0,
@@ -14,23 +16,28 @@ const DEFAULT_GAME_STATS: GameStats = {
 export default class GameStatisticsDAO {
   static async getGameStatistics(
     userId: string,
-  ): Promise<Map<string, GameStats> | undefined> {
+  ): Promise<Map<string, GameStats>> {
     const _id = new Types.ObjectId(userId);
     await dbConnect();
     const user = await UserModel.findById(_id).select("gameStatistics");
-    return user?.gameStatistics;
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+    return user.gameStatistics ?? new Map();
   }
 
   static async recordGameResult(
     userId: string,
-    gameName: string,
+    gameName: GameName,
     result: GameResult,
   ): Promise<void> {
     const _id = new Types.ObjectId(userId);
     await dbConnect();
 
     const user = await UserModel.findById(_id).select("gameStatistics");
-    if (!user) return;
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
 
     const stats: GameStats = user.gameStatistics?.get(gameName) ?? {
       ...DEFAULT_GAME_STATS,
