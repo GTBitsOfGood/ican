@@ -1,5 +1,6 @@
 import { Document, model, models, Schema, Types } from "mongoose";
 import { ChildPasswordType } from "@/types/user";
+import { GameResult, GameStats } from "@/types/games";
 
 export interface User {
   name: string;
@@ -10,6 +11,7 @@ export interface User {
   provider: string;
   isOnboarded?: boolean;
   tutorial_completed?: boolean;
+  gameStatistics?: Map<string, GameStats>;
 }
 
 export interface UserDocument extends User, Document {
@@ -31,6 +33,23 @@ const userSchema = new Schema<UserDocument>(
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
     tutorial_completed: { type: Boolean, required: false, default: false },
+    gameStatistics: {
+      type: Map,
+      of: new Schema<GameStats>(
+        {
+          wins: { type: Number, default: 0 },
+          losses: { type: Number, default: 0 },
+          bestWinStreak: { type: Number, default: 0 },
+          currentWinStreak: { type: Number, default: 0 },
+          lastTenResults: {
+            type: [{ type: String, enum: Object.values(GameResult) }],
+            default: [],
+          },
+        },
+        { _id: false },
+      ),
+      default: () => ({}),
+    },
   },
   { timestamps: true },
 );
