@@ -5,14 +5,6 @@ import { GameName, GameResult, GameStats } from "@/types/games";
 import { NotFoundError } from "@/types/exceptions";
 import ERRORS from "@/utils/errorMessages";
 
-const DEFAULT_GAME_STATS: GameStats = {
-  wins: 0,
-  losses: 0,
-  bestWinStreak: 0,
-  currentWinStreak: 0,
-  lastTenResults: [],
-};
-
 export default class GameStatisticsDAO {
   static async getGameStatistics(
     userId: string,
@@ -34,26 +26,48 @@ export default class GameStatisticsDAO {
     const _id = new Types.ObjectId(userId);
     await dbConnect();
 
-    const user = await UserModel.findById(_id).select("gameStatistics");
-    if (!user) {
+    const isWin = result === GameResult.WIN;
+    const fieldRef = `$gameStatistics.${gameName}`;
+
+    const updateResult = await UserModel.updateOne({ _id }, [
+      {
+        $set: {
+          [`gameStatistics.${gameName}.wins`]: {
+            $add: [{ $ifNull: [`${fieldRef}.wins`, 0] }, isWin ? 1 : 0],
+          },
+          [`gameStatistics.${gameName}.losses`]: {
+            $add: [{ $ifNull: [`${fieldRef}.losses`, 0] }, isWin ? 0 : 1],
+          },
+          [`gameStatistics.${gameName}.currentWinStreak`]: isWin
+            ? { $add: [{ $ifNull: [`${fieldRef}.currentWinStreak`, 0] }, 1] }
+            : 0,
+          [`gameStatistics.${gameName}.bestWinStreak`]: isWin
+            ? {
+                $max: [
+                  { $ifNull: [`${fieldRef}.bestWinStreak`, 0] },
+                  {
+                    $add: [{ $ifNull: [`${fieldRef}.currentWinStreak`, 0] }, 1],
+                  },
+                ],
+              }
+            : { $ifNull: [`${fieldRef}.bestWinStreak`, 0] },
+          [`gameStatistics.${gameName}.lastTenResults`]: {
+            $slice: [
+              {
+                $concatArrays: [
+                  { $ifNull: [`${fieldRef}.lastTenResults`, []] },
+                  [result],
+                ],
+              },
+              -10,
+            ],
+          },
+        },
+      },
+    ]);
+
+    if (updateResult.matchedCount === 0) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
     }
-
-    const stats: GameStats = user.gameStatistics?.get(gameName) ?? {
-      ...DEFAULT_GAME_STATS,
-    };
-
-    const isWin = result === GameResult.WIN;
-
-    stats.wins += isWin ? 1 : 0;
-    stats.losses += isWin ? 0 : 1;
-    stats.currentWinStreak = isWin ? stats.currentWinStreak + 1 : 0;
-    stats.bestWinStreak = Math.max(stats.bestWinStreak, stats.currentWinStreak);
-    stats.lastTenResults = [...stats.lastTenResults, result].slice(-10);
-
-    await UserModel.updateOne(
-      { _id },
-      { $set: { [`gameStatistics.${gameName}`]: stats } },
-    );
   }
 }

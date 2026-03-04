@@ -12,10 +12,13 @@ export const getGameStatisticsSchema = z.object({
   userId: objectIdSchema("UserId"),
 });
 
-export const validateRecordGameResult = (data: unknown) => {
+export type RecordGameResult = z.infer<typeof recordGameResultSchema>;
+export type GetGameStatistics = z.infer<typeof getGameStatisticsSchema>;
+
+export const validateRecordGameResult = (data: unknown): RecordGameResult => {
   return recordGameResultSchema.parse(data);
 };
 
-export const validateGetGameStatistics = (data: unknown) => {
+export const validateGetGameStatistics = (data: unknown): GetGameStatistics => {
   return getGameStatisticsSchema.parse(data);
 };

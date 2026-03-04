@@ -1,4 +1,4 @@
-import { GameName, GameResult, GameStatistics, GameStats } from "@/types/games";
+import { GameName, GameResult, GameStatistics } from "@/types/games";
 import GameStatisticsDAO from "@/db/actions/gameStatistics";
 import {
   validateGetGameStatistics,
@@ -20,11 +20,6 @@ export default class GameStatisticsService {
     validateGetGameStatistics({ userId });
 
     const statsMap = await GameStatisticsDAO.getGameStatistics(userId);
-
-    const gameStatistics: GameStatistics = {};
-    statsMap.forEach((value: GameStats, key: string) => {
-      gameStatistics[key as keyof GameStatistics] = value;
-    });
-    return gameStatistics;
+    return Object.fromEntries(statsMap) as GameStatistics;
   }
 }
