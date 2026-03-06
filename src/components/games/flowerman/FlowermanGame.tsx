@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { GameState, type GameWrapperControls } from "./GameWrapper";
+import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { cn } from "@/lib/utils";
 import {
   WORDS,
