@@ -4,5 +4,3 @@ export type TriviaQuestion = {
   answerIdx: number;
   explanation: string;
 };
-
-export type HangmanDifficulty = "easy" | "medium" | "hard";

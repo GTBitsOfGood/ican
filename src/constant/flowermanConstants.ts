@@ -51,5 +51,5 @@ export const WORDS = [
   "Zoo",
 ];
 
-export const DIFFICULTY_LIVES = { easy: 12, medium: 10, hard: 7 };
+export const LIVES = 10;
 export const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");

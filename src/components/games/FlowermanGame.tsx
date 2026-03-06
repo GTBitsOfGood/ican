@@ -1,10 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { cn } from "@/lib/utils";
-import { WORDS, DIFFICULTY_LIVES, ALPHABET } from "@/constant/hangmanConstants";
-import { HangmanDifficulty } from "@/types/games";
+import {
+  WORDS,
+  LIVES as START_LIVES,
+  ALPHABET,
+} from "@/constant/flowermanConstants";
 
-export default function HangmanGame({
+export default function FlowermanGame({
   setSpeechText,
   gameState,
   setGameState,
@@ -12,22 +15,15 @@ export default function HangmanGame({
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [lives, setLives] = useState<number>(0);
-  const [difficulty, setDifficulty] = useState<HangmanDifficulty>("medium");
 
-  // 1. Unified Reset Logic
-  const initGame = useCallback(
-    (selectedDiff: HangmanDifficulty = difficulty) => {
-      const newWord =
-        WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
-      const startLives = DIFFICULTY_LIVES[selectedDiff];
-
-      setWord(newWord);
-      setGuessedLetters(new Set());
-      setLives(startLives);
-      setSpeechText(`Guess the word! You have ${startLives} lives.`);
-    },
-    [difficulty, setSpeechText],
-  );
+  const initGame = useCallback(() => {
+    const newWord =
+      WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
+    setWord(newWord);
+    setGuessedLetters(new Set());
+    setLives(START_LIVES);
+    setSpeechText(`Guess the word! You have ${START_LIVES} lives.`);
+  }, [setSpeechText]);
 
   // Reset only when user clicks "Play Again" (transition from WON/LOSS → PLAYING)
   const prevGameStateRef = useRef(gameState);
@@ -42,9 +38,8 @@ export default function HangmanGame({
     }
   }, [gameState, initGame]);
 
-  const handleDifficultySelect = (selected: HangmanDifficulty) => {
-    setDifficulty(selected);
-    initGame(selected);
+  const handleStart = () => {
+    initGame();
     setGameState(GameState.PLAYING);
   };
 
@@ -78,18 +73,13 @@ export default function HangmanGame({
   if (gameState === GameState.START) {
     return (
       <div className="flex h-full flex-col items-center justify-center text-icanBlue-300 font-quantico">
-        <h2 className="text-3xl mb-8">Hangman</h2>
-        <div className="flex gap-4">
-          {(["easy", "medium", "hard"] as HangmanDifficulty[]).map((diff) => (
-            <button
-              key={diff}
-              onClick={() => handleDifficultySelect(diff)}
-              className="rounded-xl border-4 border-icanBlue-200 bg-white px-6 py-3 shadow-[0_4px_0_0_#7D83B2] hover:bg-icanBlue-50 capitalize"
-            >
-              {diff}
-            </button>
-          ))}
-        </div>
+        <h2 className="text-3xl mb-8">Flowerman</h2>
+        <button
+          onClick={handleStart}
+          className="rounded-xl border-4 border-icanBlue-200 bg-white px-8 py-4 shadow-[0_4px_0_0_#7D83B2] hover:bg-icanBlue-50 font-quantico text-xl"
+        >
+          Play
+        </button>
       </div>
     );
   }
