@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
+import { useUser } from "@/components/UserContext";
+import { useUserProfile } from "@/components/hooks/useAuth";
 
 type Board = (string | null)[];
 type Difficulty = "normal" | "expert";
@@ -9,6 +11,8 @@ export default function TicTacToe({
   gameState,
   setGameState,
 }: GameWrapperControls) {
+  const { userId } = useUser();
+  const { data: userProfile } = useUserProfile(userId);
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [aiIsThinking, setAiIsThinking] = useState(false);
@@ -28,14 +32,17 @@ export default function TicTacToe({
 
   useEffect(() => {
     if (gameState === GameState.START) {
-      setSpeechText("Let's play Tic Tac Toe! You are X.");
+      setSpeechText("Yay lets start! It’s your turn first.");
       return;
     }
     if (gameState === GameState.PLAYING) {
       if (aiIsThinking) {
         setSpeechText("Hmm...");
       } else {
-        setSpeechText("Your turn!");
+        const turnMessages = ["Nice move! My turn next", "Yay! Your turn!"];
+        const randomMessage =
+          turnMessages[Math.floor(Math.random() * turnMessages.length)];
+        setSpeechText(randomMessage);
       }
       return;
     }
@@ -44,14 +51,25 @@ export default function TicTacToe({
       return;
     }
     if (gameState === GameState.TIE) {
-      setSpeechText("That was close!");
+      const playerName = userProfile?.name || "friend";
+      setSpeechText(`Nice job ${playerName}! It looks like a tie!`);
       return;
     }
     if (gameState === GameState.LOSS) {
-      setSpeechText("Nice try! Good luck next time!");
+      const playerName = userProfile?.name || "friend";
+      setSpeechText(`That was fun! I loved playing with you ${playerName}!`);
       return;
     }
-  }, [gameState, aiIsThinking, setSpeechText]);
+  }, [gameState, aiIsThinking, setSpeechText, userProfile?.name]);
+
+  const petMovesLeft = Math.max(
+    0,
+    4 - board.filter((val) => val === "O").length,
+  );
+  const playerMovesLeft = Math.max(
+    0,
+    5 - board.filter((val) => val === "X").length,
+  );
 
   useEffect(() => {
     if (gameState === GameState.START && difficulty === "expert") {
@@ -206,36 +224,47 @@ export default function TicTacToe({
   };
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-start px-6 py-8 overflow-auto">
+    <div className="pt-12 flex h-full w-full flex-col items-center justify-center overflow-hidden">
       {gameState !== GameState.START && (
         <div className="grid grid-cols-3 gap-4">
-          {board.map((value, index) => (
-            <button
-              key={index}
-              onClick={() => handleSquareClick(index)}
-              disabled={aiIsThinking || gameState !== GameState.PLAYING}
-              className={`flex h-32 w-32 items-center justify-center rounded-2xl hover:opacity-80 disabled:opacity-50 ${
-                value === null ? "bg-icanGreen-100" : ""
-              }`}
-            >
-              {value === "X" && (
-                <img
-                  src="/games/tictactoe/x.png"
-                  alt="X"
-                  className="h-32 w-32 object-contain"
-                  style={{ imageRendering: "pixelated" }}
-                />
-              )}
-              {value === "O" && (
-                <img
-                  src="/games/tictactoe/o.png"
-                  alt="O"
-                  className="h-32 w-32 object-contain"
-                  style={{ imageRendering: "pixelated" }}
-                />
-              )}
-            </button>
-          ))}
+          {board.map((value, index) => {
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            const isTopRow = row === 0;
+            const isBottomRow = row === 2;
+            const isLeftCol = col === 0;
+            const isRightCol = col === 2;
+
+            return (
+              <button
+                key={index}
+                onClick={() => handleSquareClick(index)}
+                disabled={aiIsThinking || gameState !== GameState.PLAYING}
+                className={`flex h-24 w-24 items-center justify-center rounded-2xl disabled:opacity-50 transition-colors ${
+                  value === null
+                    ? "bg-icanGreen-100 hover:bg-icanGreen-200"
+                    : ""
+                } ${isTopRow ? "mt-0" : ""} ${isBottomRow ? "mb-0" : ""} ${isLeftCol ? "ml-0" : ""} ${isRightCol ? "mr-0" : ""}`}
+              >
+                {value === "X" && (
+                  <img
+                    src="/games/tictactoe/x.png"
+                    alt="X"
+                    className="h-24 w-24 object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                  />
+                )}
+                {value === "O" && (
+                  <img
+                    src="/games/tictactoe/o.png"
+                    alt="O"
+                    className="h-24 w-24 object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -251,7 +280,7 @@ export default function TicTacToe({
       </div>
 
       <div className="mt-6 flex gap-3">
-        {gameState !== GameState.PLAYING && (
+        {gameState === GameState.START && (
           <>
             <button
               onClick={() => setDifficulty("normal")}
@@ -276,6 +305,50 @@ export default function TicTacToe({
           </>
         )}
       </div>
+
+      {gameState === GameState.PLAYING && (
+        <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-16 pb-8">
+          {/* Pet moves */}
+          <div className="flex flex-col items-start">
+            <p className="font-quantico text-white text-4xl font-bold">
+              Pet&apos;s turns left:
+            </p>
+            <div className="mt-2.5 flex gap-4">
+              {Array(petMovesLeft)
+                .fill(null)
+                .map((_, i) => (
+                  <img
+                    key={i}
+                    src="/games/tictactoe/o.png"
+                    alt="O"
+                    className="h-14 w-14 object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                  />
+                ))}
+            </div>
+          </div>
+
+          {/* Player moves */}
+          <div className="flex flex-col items-end">
+            <p className="font-quantico text-white text-4xl font-bold">
+              Your turns left:
+            </p>
+            <div className="mt-2.5 flex gap-3">
+              {Array(playerMovesLeft)
+                .fill(null)
+                .map((_, i) => (
+                  <img
+                    key={i}
+                    src="/games/tictactoe/x.png"
+                    alt="X"
+                    className="h-14 w-14 object-contain"
+                    style={{ imageRendering: "pixelated" }}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
