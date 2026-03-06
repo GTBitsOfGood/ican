@@ -72,6 +72,8 @@ export default function ChildLoginStep({
           >
             <option value={ChildPasswordType.NORMAL}>Normal</option>
             <option value={ChildPasswordType.COLOR}>Color Pattern</option>
+            <option value={ChildPasswordType.SHAPE}>Shape Pattern</option>
+            <option value={ChildPasswordType.EMOJI}>Emoji Pattern</option>
           </select>
         </div>
 
@@ -99,6 +101,7 @@ export default function ChildLoginStep({
               onAddColor={onAddColor}
               onClear={onClearColors}
               view="change"
+              passwordType={childPasswordType}
             />
           </div>
         )}

@@ -14,7 +14,7 @@ import {
   useUpdatePin,
 } from "@/components/hooks/useSettings";
 import { OnboardingStep, UserType } from "@/types/onboarding";
-import { ChildPasswordType } from "@/types/user";
+import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 
 export default function Onboard() {
   const router = useRouter();
@@ -130,10 +130,9 @@ export default function Onboard() {
   };
 
   const handleChildLoginSubmit = () => {
-    const candidatePassword =
-      childPasswordType === ChildPasswordType.COLOR
-        ? colorSequence.join("-")
-        : childPassword.trim();
+    const candidatePassword = isPatternChildPasswordType(childPasswordType)
+      ? colorSequence.join("-")
+      : childPassword.trim();
 
     if (candidatePassword.length < 3) {
       setPinError("Child password must be at least 3 characters.");

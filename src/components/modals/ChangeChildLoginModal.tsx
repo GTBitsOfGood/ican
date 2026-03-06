@@ -8,7 +8,7 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/router";
 import ModalCloseButton from "./ModalCloseButton";
-import { ChildPasswordType } from "@/types/user";
+import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 import { useUpdateChildLogin } from "../hooks/useSettings";
 import ChildColorPicker from "@/components/child-login/ChildColorPicker";
 
@@ -24,10 +24,9 @@ export default function ChangeChildLoginModal() {
   const [colorSequence, setColorSequence] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
 
-  const candidatePassword =
-    childPasswordType === ChildPasswordType.COLOR
-      ? colorSequence.join("-")
-      : childPassword.trim();
+  const candidatePassword = isPatternChildPasswordType(childPasswordType)
+    ? colorSequence.join("-")
+    : childPassword.trim();
 
   useEffect(() => {
     onOpen();
@@ -101,6 +100,8 @@ export default function ChangeChildLoginModal() {
             >
               <option value={ChildPasswordType.NORMAL}>Normal</option>
               <option value={ChildPasswordType.COLOR}>Color Pattern</option>
+              <option value={ChildPasswordType.SHAPE}>Shape Pattern</option>
+              <option value={ChildPasswordType.EMOJI}>Emoji Pattern</option>
             </select>
 
             {childPasswordType === ChildPasswordType.NORMAL ? (
@@ -139,6 +140,7 @@ export default function ChangeChildLoginModal() {
                     setError("");
                   }}
                   view="change"
+                  passwordType={childPasswordType}
                 />
               </>
             )}

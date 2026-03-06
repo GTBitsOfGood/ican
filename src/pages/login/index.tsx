@@ -8,7 +8,11 @@ import { useRouter } from "next/router";
 import UnauthorizedRoute from "@/components/UnauthorizedRoute";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import { getStatusCode } from "@/types/exceptions";
-import { ChildPasswordType, LoginType } from "@/types/user";
+import {
+  ChildPasswordType,
+  LoginType,
+  isPatternChildPasswordType,
+} from "@/types/user";
 import ChildColorPicker from "@/components/child-login/ChildColorPicker";
 
 export default function Home() {
@@ -27,6 +31,16 @@ export default function Home() {
   const childPassword = childColorSequence.join("-");
   const isChildLogin = loginType === LoginType.CHILD;
   const isChildPasswordStep = isChildLogin && !!childPasswordType;
+  const isPatternChildLogin = isPatternChildPasswordType(childPasswordType);
+  const modalLoginDisabled = isPatternChildLogin
+    ? childColorSequence.length < 4
+    : password.trim().length < 3;
+  const childPatternLabel =
+    childPasswordType === ChildPasswordType.SHAPE
+      ? "shape"
+      : childPasswordType === ChildPasswordType.EMOJI
+        ? "emoji"
+        : "color";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,12 +61,16 @@ export default function Home() {
         errorDetected = true;
       }
     } else if (isChildPasswordStep) {
-      const candidatePassword =
-        childPasswordType === ChildPasswordType.COLOR
-          ? childPassword
-          : password.trim();
+      if (isPatternChildLogin && childColorSequence.length < 4) {
+        setPasswordError("Please enter 4 selections.");
+        errorDetected = true;
+      }
 
-      if (candidatePassword.length < 3) {
+      const candidatePassword = isPatternChildLogin
+        ? childPassword
+        : password.trim();
+
+      if (!isPatternChildLogin && candidatePassword.length < 3) {
         setPasswordError("Password incorrect, please check again.");
         errorDetected = true;
       }
@@ -74,10 +92,9 @@ export default function Home() {
         return false;
       }
 
-      const candidatePassword =
-        childPasswordType === ChildPasswordType.COLOR
-          ? childPassword
-          : password.trim();
+      const candidatePassword = isPatternChildLogin
+        ? childPassword
+        : password.trim();
       await AuthHTTPClient.login(
         email.trim(),
         candidatePassword,
@@ -133,12 +150,18 @@ export default function Home() {
     setChildColorSequence([]);
   };
 
+  const closeChildPasswordModal = () => {
+    setChildPasswordType(null);
+    setPassword("");
+    setChildColorSequence([]);
+    setPasswordError("");
+    setGeneralError("");
+  };
+
   return (
     <UnauthorizedRoute>
       <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
-        <div
-          className={`self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white ${loggingIn ? "h-auto" : "h-full"} mx-auto my-auto`}
-        >
+        <div className="self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white h-auto mx-auto my-auto">
           <Image
             className="desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
             src="/icanLogo.svg"
@@ -165,12 +188,10 @@ export default function Home() {
           ) : (
             <>
               <form
+                id="login-form"
                 onSubmit={handleSubmit}
                 className="flex flex-col items-center justify-center w-[80%] bg-white rounded-lg"
               >
-                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-4">
-                  Log In
-                </div>
                 {generalError && (
                   <div className="self-start w-full mb-2">
                     <ErrorBox message={generalError} />
@@ -192,6 +213,9 @@ export default function Home() {
                     Child Login
                   </button>
                 </div>
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-4">
+                  Log In
+                </div>
                 <input
                   className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
@@ -201,34 +225,15 @@ export default function Home() {
                   onChange={handleEmailChange}
                 />
                 <ErrorBox message={emailError} />
-                {!isChildLogin || isChildPasswordStep ? (
-                  <>
-                    {childPasswordType === ChildPasswordType.COLOR ? (
-                      <div className="w-full short:mb-1 desktop:mb-2">
-                        <ChildColorPicker
-                          sequence={childColorSequence}
-                          onAddColor={(token) =>
-                            setChildColorSequence((prev) => [...prev, token])
-                          }
-                          onClear={() => {
-                            setChildColorSequence([]);
-                            setPasswordError("");
-                            setGeneralError("");
-                          }}
-                          view="login"
-                        />
-                      </div>
-                    ) : (
-                      <input
-                        className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
-                        type="password"
-                        placeholder="Password"
-                        name="password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                      />
-                    )}
-                  </>
+                {!isChildLogin ? (
+                  <input
+                    className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                  />
                 ) : null}
                 <ErrorBox message={passwordError} />
                 {!isChildLogin && (
@@ -241,21 +246,6 @@ export default function Home() {
                     </Link>
                   </p>
                 )}
-                {isChildLogin && isChildPasswordStep && (
-                  <button
-                    type="button"
-                    className="self-start text-textGrey underline mb-2"
-                    onClick={() => {
-                      setChildPasswordType(null);
-                      setPassword("");
-                      setChildColorSequence([]);
-                      setPasswordError("");
-                      setGeneralError("");
-                    }}
-                  >
-                    Change email
-                  </button>
-                )}
                 <button
                   className="w-full bg-loginGreen text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
                   type="submit"
@@ -263,18 +253,20 @@ export default function Home() {
                   {isChildLogin && !isChildPasswordStep ? "Continue" : "Login"}
                 </button>
 
-                <div className="flex justify-start flex-row">
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4"
-                  />
-                  <label htmlFor="rememberMe" className="text-textGrey">
-                    Remember me
-                  </label>
-                </div>
+                {!isChildPasswordStep && (
+                  <div className="flex justify-start flex-row">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <label htmlFor="rememberMe" className="text-textGrey">
+                      Remember me
+                    </label>
+                  </div>
+                )}
               </form>
               {!isChildLogin && (
                 <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
@@ -295,6 +287,95 @@ export default function Home() {
             </>
           )}
         </div>
+        {isChildPasswordStep && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
+            <div className="relative w-full max-w-[480px] rounded-[40px] bg-white px-6 py-6">
+              <button
+                type="button"
+                aria-label="Close"
+                className="absolute right-5 top-3 text-[40px] leading-none text-black"
+                onClick={closeChildPasswordModal}
+              >
+                ×
+              </button>
+              <h2 className="text-center text-[40px]/[48px] font-bold text-black">
+                Enter Password
+              </h2>
+              <p className="mt-3 text-center text-[16px]/[24px] text-black">
+                {isPatternChildPasswordType(childPasswordType)
+                  ? `Enter your ${childPatternLabel} password by clicking on the squares below`
+                  : "Enter your child password"}
+              </p>
+
+              <div className="mt-6">
+                {isPatternChildLogin ? (
+                  <ChildColorPicker
+                    sequence={childColorSequence}
+                    onAddColor={(token) => {
+                      setChildColorSequence((prev) =>
+                        prev.length >= 4 ? prev : [...prev, token],
+                      );
+                      setPasswordError("");
+                      setGeneralError("");
+                    }}
+                    onClear={() => {
+                      setChildColorSequence([]);
+                      setPasswordError("");
+                      setGeneralError("");
+                    }}
+                    view="login"
+                    passwordType={childPasswordType}
+                    showInstruction={false}
+                  />
+                ) : (
+                  <input
+                    className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white w-full`}
+                    type="password"
+                    placeholder="Password"
+                    name="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                  />
+                )}
+              </div>
+              {(passwordError || generalError) && (
+                <div className="mt-3 text-center text-sm text-errorRed">
+                  {passwordError || generalError}
+                </div>
+              )}
+
+              <div className="mt-5 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="rememberMeModal"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4"
+                />
+                <label
+                  htmlFor="rememberMeModal"
+                  className="text-[16px] text-black"
+                >
+                  Remember me
+                </label>
+              </div>
+
+              <button
+                type="button"
+                className={`mx-auto mt-5 block px-10 py-2 text-[20px]/[28px] ${modalLoginDisabled ? "bg-[#CDCDCD] text-[#8D8D8D]" : "bg-loginGreen text-black"}`}
+                disabled={modalLoginDisabled}
+                onClick={() => {
+                  const form = document.getElementById(
+                    "login-form",
+                  ) as HTMLFormElement | null;
+                  form?.requestSubmit();
+                }}
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </UnauthorizedRoute>
   );

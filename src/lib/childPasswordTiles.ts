@@ -1,50 +1,167 @@
 import { CSSProperties } from "react";
+import { ChildPasswordType } from "@/types/user";
 
 export interface ChildPasswordTile {
   token: string;
   label: string;
   style: CSSProperties;
+  content?: string;
 }
 
-export const childPasswordTiles: ChildPasswordTile[] = [
-  { token: "red", label: "Red", style: { backgroundColor: "#e11d48" } },
-  { token: "green", label: "Green", style: { backgroundColor: "#39b54a" } },
-  { token: "yellow", label: "Yellow", style: { backgroundColor: "#f9df00" } },
-  { token: "blue", label: "Blue", style: { backgroundColor: "#1682bf" } },
-  { token: "orange", label: "Orange", style: { backgroundColor: "#f0822f" } },
-  { token: "purple", label: "Purple", style: { backgroundColor: "#8f23b5" } },
-  {
-    token: "cyan",
-    label: "Cyan",
-    style: { backgroundColor: "#47d1d1" },
-  },
-  {
-    token: "pink",
-    label: "Pink",
-    style: { backgroundColor: "#d92dd9" },
-  },
-  {
-    token: "red_stripes",
-    label: "Red Stripes",
-    style: {
-      backgroundImage:
-        "repeating-linear-gradient(45deg,#e11d48,#e11d48 8px,#ffffff 8px,#ffffff 14px)",
+type PatternChildPasswordType =
+  | ChildPasswordType.COLOR
+  | ChildPasswordType.SHAPE
+  | ChildPasswordType.EMOJI;
+
+export const childPatternTiles: Record<
+  PatternChildPasswordType,
+  ChildPasswordTile[]
+> = {
+  [ChildPasswordType.COLOR]: [
+    { token: "sage", label: "Sage", style: { backgroundColor: "#5D9275" } },
+    { token: "salmon", label: "Salmon", style: { backgroundColor: "#E69A92" } },
+    {
+      token: "blush",
+      label: "Blush",
+      style: { backgroundColor: "#E1C7C9" },
     },
-  },
-  {
-    token: "blue_stripes",
-    label: "Blue Stripes",
-    style: {
-      backgroundImage:
-        "repeating-linear-gradient(45deg,#1682bf,#1682bf 8px,#ffffff 8px,#ffffff 14px)",
+    {
+      token: "mist",
+      label: "Mist",
+      style: { backgroundColor: "#DFE7E8" },
     },
-  },
-  {
-    token: "yellow_stripes",
-    label: "Yellow Stripes",
-    style: {
-      backgroundImage:
-        "repeating-linear-gradient(45deg,#f9df00,#f9df00 8px,#1f2937 8px,#1f2937 14px)",
+    { token: "iris", label: "Iris", style: { backgroundColor: "#82559C" } },
+    { token: "mint", label: "Mint", style: { backgroundColor: "#C4DDC6" } },
+    {
+      token: "mustard",
+      label: "Mustard",
+      style: { backgroundColor: "#DEC945" },
     },
-  },
-];
+    {
+      token: "crimson",
+      label: "Crimson",
+      style: { backgroundColor: "#C02736" },
+    },
+    {
+      token: "rose",
+      label: "Rose",
+      style: { backgroundColor: "#CF95A2" },
+    },
+  ],
+  [ChildPasswordType.SHAPE]: [
+    {
+      token: "circle",
+      label: "Circle",
+      content: "●",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "square",
+      label: "Square",
+      content: "■",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "triangle",
+      label: "Triangle",
+      content: "▲",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "diamond",
+      label: "Diamond",
+      content: "◆",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "star",
+      label: "Star",
+      content: "★",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "heart",
+      label: "Heart",
+      content: "♥",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "club",
+      label: "Club",
+      content: "♣",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "spade",
+      label: "Spade",
+      content: "♠",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "sun",
+      label: "Sun",
+      content: "☀",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+  ],
+  [ChildPasswordType.EMOJI]: [
+    {
+      token: "smile",
+      label: "Smile",
+      content: "😀",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "cool",
+      label: "Cool",
+      content: "😎",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "love",
+      label: "Love",
+      content: "😍",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "party",
+      label: "Party",
+      content: "🥳",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "robot",
+      label: "Robot",
+      content: "🤖",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "cat",
+      label: "Cat",
+      content: "🐱",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "dog",
+      label: "Dog",
+      content: "🐶",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "rocket",
+      label: "Rocket",
+      content: "🚀",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+    {
+      token: "soccer",
+      label: "Soccer",
+      content: "⚽",
+      style: { backgroundColor: "#FFFFFF" },
+    },
+  ],
+};
+
+export const getChildPatternTiles = (
+  type: PatternChildPasswordType,
+): ChildPasswordTile[] => childPatternTiles[type];

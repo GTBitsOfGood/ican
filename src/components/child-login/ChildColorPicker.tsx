@@ -1,10 +1,13 @@
-import { childPasswordTiles } from "@/lib/childPasswordTiles";
+import { getChildPatternTiles } from "@/lib/childPasswordTiles";
+import { ChildPasswordType } from "@/types/user";
 
 interface ChildColorPickerProps {
   sequence: string[];
   onAddColor: (token: string) => void;
   onClear: () => void;
   view?: "login" | "change";
+  passwordType?: ChildPasswordType;
+  showInstruction?: boolean;
 }
 
 export default function ChildColorPicker({
@@ -12,6 +15,8 @@ export default function ChildColorPicker({
   onAddColor,
   onClear,
   view = "login",
+  passwordType = ChildPasswordType.COLOR,
+  showInstruction = true,
 }: ChildColorPickerProps) {
   const isDark = view === "change";
   const labelClass = isDark ? "text-white" : "text-textGrey";
@@ -21,53 +26,71 @@ export default function ChildColorPicker({
   const clearButtonClass = isDark
     ? "border-white text-black bg-white"
     : "border-borderGrey text-textGrey bg-white";
+  const tiles = getChildPatternTiles(passwordType);
+  const instruction =
+    passwordType === ChildPasswordType.SHAPE
+      ? "Tap shapes in order"
+      : passwordType === ChildPasswordType.EMOJI
+        ? "Tap emojis in order"
+        : "Tap colors in order";
+  const tileTextClass =
+    passwordType === ChildPasswordType.SHAPE
+      ? "text-4xl leading-none text-black"
+      : passwordType === ChildPasswordType.EMOJI
+        ? "text-3xl leading-none"
+        : "text-2xl leading-none text-black";
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className={`${labelClass} text-sm`}>Tap colors in order</span>
-      <div className="grid grid-cols-4 gap-2">
-        {childPasswordTiles.map((colorOption, index) => (
+    <div className="flex flex-col items-center gap-2">
+      {showInstruction && (
+        <span className={`${labelClass} text-sm self-start`}>
+          {instruction}
+        </span>
+      )}
+      <div className="grid grid-cols-3 gap-2 w-fit mx-auto place-items-center">
+        {tiles.map((tileOption, index) => (
           <button
-            key={colorOption.token}
+            key={tileOption.token}
             type="button"
-            aria-label={colorOption.label}
-            className={`group relative h-10 border-2 ${tileBorderClass} text-sm font-bold`}
-            onClick={() => onAddColor(colorOption.token)}
-            style={colorOption.style}
+            aria-label={tileOption.label}
+            className={`group relative ${view === "login" ? "size-14" : "size-20"} border-2 ${tileBorderClass} flex items-center justify-center ${tileTextClass}`}
+            onClick={() => onAddColor(tileOption.token)}
+            style={tileOption.style}
           >
-            {index}
+            {tileOption.content || index + 1}
             <span className="pointer-events-none absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded bg-black px-1.5 py-0.5 text-[10px] text-white opacity-0 transition-opacity duration-75 group-hover:opacity-100">
-              {colorOption.label}
+              {tileOption.label}
             </span>
           </button>
         ))}
       </div>
-      <div
-        className={`min-h-10 px-2 py-1 border ${previewBorderClass} ${previewTextClass} flex flex-wrap items-center gap-2`}
-      >
-        {sequence.length > 0
-          ? sequence.map((token, index) => {
-              const option = childPasswordTiles.find(
-                (item) => item.token === token,
-              );
-              return (
-                <div
-                  key={`${token}-${index}`}
-                  title={option?.label || token}
-                  className={`size-6 border ${previewBorderClass}`}
-                  style={option?.style}
-                />
-              );
-            })
-          : "No colors selected"}
+      <div className="flex items-center justify-center gap-2">
+        {Array.from({ length: 4 }, (_, index) => {
+          const token = sequence[index];
+          const option = token
+            ? tiles.find((item) => item.token === token)
+            : undefined;
+          return (
+            <div
+              key={`${token ?? "empty"}-${index}`}
+              title={option?.label || "Empty"}
+              className={`size-10 border ${previewBorderClass} ${previewTextClass} flex items-center justify-center text-xl`}
+              style={option?.style}
+            >
+              {option?.content || ""}
+            </div>
+          );
+        })}
       </div>
-      <button
-        type="button"
-        className={`w-fit px-3 py-1 border ${clearButtonClass}`}
-        onClick={onClear}
-      >
-        Clear pattern
-      </button>
+      {view === "change" && (
+        <button
+          type="button"
+          className={`w-fit px-3 py-1 border ${clearButtonClass}`}
+          onClick={onClear}
+        >
+          Clear pattern
+        </button>
+      )}
     </div>
   );
 }
