@@ -176,6 +176,15 @@ export default function GameWrapper({
             </div>
           )}
 
+          <button
+            type="button"
+            onClick={() => router.push("/games")}
+            className="fixed bottom-6 right-6 z-67 flex items-center justify-center"
+            aria-label="Leave game"
+          >
+            <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
+          </button>
+
           {informationModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
               <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
