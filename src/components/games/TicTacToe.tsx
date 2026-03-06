@@ -206,17 +206,34 @@ export default function TicTacToe({
   };
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center px-6 py-8">
+    <div className="flex h-full w-full flex-col items-center justify-start px-6 py-8 overflow-auto">
       {gameState !== GameState.START && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-4">
           {board.map((value, index) => (
             <button
               key={index}
               onClick={() => handleSquareClick(index)}
               disabled={aiIsThinking || gameState !== GameState.PLAYING}
-              className="flex h-20 w-20 items-center justify-center rounded-lg border-4 border-icanBlue-200 bg-white text-3xl font-bold text-icanBlue-300 shadow-[0_4px_0_0_#7D83B2] hover:bg-gray-100 disabled:opacity-50"
+              className={`flex h-32 w-32 items-center justify-center rounded-2xl hover:opacity-80 disabled:opacity-50 ${
+                value === null ? "bg-icanGreen-100" : ""
+              }`}
             >
-              {value}
+              {value === "X" && (
+                <img
+                  src="/games/tictactoe/x.png"
+                  alt="X"
+                  className="h-32 w-32 object-contain"
+                  style={{ imageRendering: "pixelated" }}
+                />
+              )}
+              {value === "O" && (
+                <img
+                  src="/games/tictactoe/o.png"
+                  alt="O"
+                  className="h-32 w-32 object-contain"
+                  style={{ imageRendering: "pixelated" }}
+                />
+              )}
             </button>
           ))}
         </div>
