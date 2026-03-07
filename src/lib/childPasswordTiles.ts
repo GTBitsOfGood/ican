@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { ChildPasswordType } from "@/types/user";
+import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 
 export interface ChildPasswordTile {
   token: string;
@@ -8,7 +8,7 @@ export interface ChildPasswordTile {
   content?: string;
 }
 
-type PatternChildPasswordType =
+export type PatternChildPasswordType =
   | ChildPasswordType.COLOR
   | ChildPasswordType.SHAPE
   | ChildPasswordType.EMOJI;
@@ -163,5 +163,10 @@ export const childPatternTiles: Record<
 };
 
 export const getChildPatternTiles = (
-  type: PatternChildPasswordType,
-): ChildPasswordTile[] => childPatternTiles[type];
+  type: ChildPasswordType,
+): ChildPasswordTile[] => {
+  const safeType = isPatternChildPasswordType(type)
+    ? type
+    : ChildPasswordType.COLOR;
+  return childPatternTiles[safeType];
+};
