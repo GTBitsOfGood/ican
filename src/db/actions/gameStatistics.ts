@@ -27,6 +27,8 @@ export default class GameStatisticsDAO {
     await dbConnect();
 
     const isWin = result === GameResult.WIN;
+    const isLoss = result === GameResult.LOSS;
+    const isDraw = result === GameResult.DRAW;
     const fieldRef = `$gameStatistics.${gameName}`;
 
     const updateResult = await UserModel.updateOne({ _id }, [
@@ -36,14 +38,16 @@ export default class GameStatisticsDAO {
             $add: [{ $ifNull: [`${fieldRef}.wins`, 0] }, isWin ? 1 : 0],
           },
           [`gameStatistics.${gameName}.losses`]: {
-            $add: [
-              { $ifNull: [`${fieldRef}.losses`, 0] },
-              result === GameResult.LOSS ? 1 : 0,
-            ],
+            $add: [{ $ifNull: [`${fieldRef}.losses`, 0] }, isLoss ? 1 : 0],
+          },
+          [`gameStatistics.${gameName}.draws`]: {
+            $add: [{ $ifNull: [`${fieldRef}.draws`, 0] }, isDraw ? 1 : 0],
           },
           [`gameStatistics.${gameName}.currentWinStreak`]: isWin
             ? { $add: [{ $ifNull: [`${fieldRef}.currentWinStreak`, 0] }, 1] }
-            : 0,
+            : isDraw
+              ? { $ifNull: [`${fieldRef}.currentWinStreak`, 0] }
+              : 0,
           [`gameStatistics.${gameName}.bestWinStreak`]: isWin
             ? {
                 $max: [

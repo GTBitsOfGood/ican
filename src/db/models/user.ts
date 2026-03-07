@@ -39,6 +39,7 @@ const userSchema = new Schema<UserDocument>(
         {
           wins: { type: Number, default: 0 },
           losses: { type: Number, default: 0 },
+          draws: { type: Number, default: 0 },
           bestWinStreak: { type: Number, default: 0 },
           currentWinStreak: { type: Number, default: 0 },
           lastTenResults: {

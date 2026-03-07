@@ -22,6 +22,7 @@ export enum GameResult {
 export interface GameStats {
   wins: number;
   losses: number;
+  draws: number;
   bestWinStreak: number;
   currentWinStreak: number;
   lastTenResults: GameResult[];

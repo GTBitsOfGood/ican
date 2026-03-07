@@ -16,6 +16,6 @@ export const POST = withAuth<{ userId: string }>(
     const { gameName, result } = await req.json();
 
     await GameStatisticsService.recordGameResult(userId, gameName, result);
-    return NextResponse.json({ success: true }, { status: 201 });
+    return NextResponse.json({}, { status: 201 });
   },
 );
