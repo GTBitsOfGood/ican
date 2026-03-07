@@ -124,7 +124,7 @@ export default function GameWrapper({
               className={cn(
                 "absolute inset-0 overflow-hidden",
                 showGameAreaFrame &&
-                  "bottom-[24%] left-[8%] right-[10%] top-[25%]",
+                  "bottom-[24%] left-[12%] right-[10%] top-[12%]",
                 gameAreaClassName,
               )}
             >
@@ -140,7 +140,7 @@ export default function GameWrapper({
           {(gameState === GameState.WON ||
             gameState === GameState.LOSS ||
             gameState === GameState.TIE) && (
-            <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
+            <div className="fixed inset-0 z-40s flex items-center justify-center bg-black/60 px-4">
               <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
                 <h2 className="text-3xl text-icanBlue-300">
                   {gameState === GameState.WON
