@@ -33,7 +33,7 @@ export default function QuestionCard({
               <div
                 key={idx}
                 className={`h-3 w-3 rounded-full border border-black ${
-                  isActive ? "bg-[#9CCB4A]" : "bg-white"
+                  isActive ? "bg-icanGreen-300" : "bg-white"
                 }`}
               />
             );

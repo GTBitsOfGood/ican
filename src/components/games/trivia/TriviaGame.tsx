@@ -21,9 +21,7 @@ export default function TriviaGame({
   showInformationModal,
 }: GameWrapperControls) {
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
-  const [roundQuestions, setRoundQuestions] = useState(() =>
-    generateRoundQuestions(),
-  );
+  const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState<number | null>(
     null,
@@ -34,6 +32,15 @@ export default function TriviaGame({
   const [showXpPopup, setShowXpPopup] = useState(false);
   const [showCongratsPopup, setShowCongratsPopup] = useState(false);
   const hasAutoStartedRef = useRef(false);
+  const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const congratsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
+    };
+  }, []);
 
   const handleStart = useCallback(() => {
     setSpeechText("Let's learn how to play!");
@@ -86,18 +93,17 @@ export default function TriviaGame({
 
     if (isCorrect) {
       setShowXpPopup(true);
-
-      setTimeout(() => {
-        setShowXpPopup(false);
-      }, 1200);
+      if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+      xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
     }
 
     if (isLastQuestion) {
       setShowCongratsPopup(true);
-
-      setTimeout(() => {
-        setShowCongratsPopup(false);
-      }, 5000);
+      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
+      congratsTimerRef.current = setTimeout(
+        () => setShowCongratsPopup(false),
+        5000,
+      );
     }
 
     setIsSubmitted(true);
@@ -130,7 +136,7 @@ export default function TriviaGame({
   return (
     <div className="flex h-full w-full items-center justify-center px-6">
       <div className="text-center font-quantico text-icanBlue-300">
-        {gameState === GameState.PLAYING && (
+        {gameState === GameState.PLAYING && roundQuestions.length > 0 && (
           <>
             {showCongratsPopup && (
               <div
@@ -175,7 +181,7 @@ export default function TriviaGame({
                     : handleNextQuestion
               }
               disabled={!isSubmitted && selectedChoiceIdx === null}
-              className="fixed right-[6%] bottom-[18%] z-50 border-[3px] border-black bg-[#8FB14F] px-12 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50"
+              className="fixed right-[6%] bottom-[18%] z-50 border-[3px] border-black bg-icanGreen-200 px-12 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50"
             >
               {!isSubmitted ? "Submit" : isLastQuestion ? "Play Again" : "Next"}
             </button>
