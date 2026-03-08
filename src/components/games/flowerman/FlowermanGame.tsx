@@ -7,6 +7,7 @@ import {
 } from "@/constant/flowermanConstants";
 import FlowermanWordWithFlower from "@/components/flowerman/FlowermanWordWithFlower";
 import FlowermanKeyboard from "@/components/flowerman/FlowermanKeyboard";
+import MistakesLeft from "@/components/games/MistakesLeft";
 
 export default function FlowermanGame({
   setSpeechText,
@@ -98,6 +99,11 @@ export default function FlowermanGame({
 
   return (
     <>
+      {/* Mistakes left — top left, to the right of the profile header; z below modal (60) so it greys out with overlay */}
+      <div className="fixed top-17 left-[350] z-[50]">
+        <MistakesLeft count={lives} />
+      </div>
+
       <div className="flex h-full flex-col items-center justify-center py-2">
         <FlowermanWordWithFlower
           word={word}
