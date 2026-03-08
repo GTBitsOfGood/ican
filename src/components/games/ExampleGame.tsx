@@ -63,7 +63,6 @@ export default function ExampleGame({
               showInformationModal({
                 title: "Information Modal",
                 message: "This blocks the game until you close it.",
-                closeLabel: "Got it",
               })
             }
             className="rounded-xl border-4 border-icanBlue-200 bg-icanBlue-200 px-4 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"

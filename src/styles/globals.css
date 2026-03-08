@@ -166,3 +166,26 @@ body {
     image-rendering: crisp-edges;
   }
 }
+
+@keyframes xpFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-24px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+}
+
+.animate-xpFloat {
+  animation: xpFloat 1.2s ease-out forwards;
+}
