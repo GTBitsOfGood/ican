@@ -23,10 +23,9 @@ export default function Onboard() {
   const [pin, setPin] = useState<string>("");
   const [confirmPin, setConfirmPin] = useState<string>("");
   const [childPasswordType, setChildPasswordType] = useState<ChildPasswordType>(
-    ChildPasswordType.NORMAL,
+    ChildPasswordType.COLOR,
   );
   const [childPassword, setChildPassword] = useState<string>("");
-  const [confirmChildPassword, setConfirmChildPassword] = useState<string>("");
   const [colorSequence, setColorSequence] = useState<string[]>([]);
   const [consentChecked, setConsentChecked] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string>("");
@@ -144,17 +143,9 @@ export default function Onboard() {
 
     if (
       childPasswordType === ChildPasswordType.NORMAL &&
-      candidatePassword.length < 3
+      !/^\d{4}$/.test(candidatePassword)
     ) {
-      setPinError("Child password must be at least 3 characters.");
-      return;
-    }
-
-    if (
-      childPasswordType === ChildPasswordType.NORMAL &&
-      candidatePassword !== confirmChildPassword.trim()
-    ) {
-      setPinError("Child passwords don't match.");
+      setPinError("Please enter a valid 4-digit PIN.");
       return;
     }
 
@@ -292,7 +283,6 @@ export default function Onboard() {
           <ChildLoginStep
             childPasswordType={childPasswordType}
             password={childPassword}
-            confirmPassword={confirmChildPassword}
             colorSequence={colorSequence}
             error={pinError}
             onBack={handleBack}
@@ -300,22 +290,25 @@ export default function Onboard() {
               setPinError("");
               setChildPasswordType(value);
               setChildPassword("");
-              setConfirmChildPassword("");
               setColorSequence([]);
             }}
             onPasswordChange={(value) => {
               setPinError("");
               setChildPassword(value);
             }}
-            onConfirmPasswordChange={(value) => {
-              setPinError("");
-              setConfirmChildPassword(value);
-            }}
             onAddColor={(value) => {
               setPinError("");
               setColorSequence((prev) =>
                 prev.length >= 4 ? prev : [...prev, value],
               );
+            }}
+            onRemoveColor={(value) => {
+              setPinError("");
+              setColorSequence((prev) => {
+                const index = prev.lastIndexOf(value);
+                if (index === -1) return prev;
+                return [...prev.slice(0, index), ...prev.slice(index + 1)];
+              });
             }}
             onClearColors={() => {
               setPinError("");

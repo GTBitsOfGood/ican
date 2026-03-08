@@ -11,7 +11,8 @@ export interface ChildPasswordTile {
 export type PatternChildPasswordType =
   | ChildPasswordType.COLOR
   | ChildPasswordType.SHAPE
-  | ChildPasswordType.EMOJI;
+  | ChildPasswordType.EMOJI
+  | ChildPasswordType.PATTERN;
 
 export const childPatternTiles: Record<
   PatternChildPasswordType,
@@ -51,57 +52,57 @@ export const childPatternTiles: Record<
   [ChildPasswordType.SHAPE]: [
     {
       token: "circle",
-      label: "Circle",
+      label: "Star",
       content: "●",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "square",
-      label: "Square",
+      label: "Heart",
       content: "■",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "triangle",
-      label: "Triangle",
+      label: "Spiral",
       content: "▲",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "diamond",
       label: "Diamond",
       content: "◆",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "star",
-      label: "Star",
+      label: "Flower",
       content: "★",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "heart",
-      label: "Heart",
+      label: "Cloud",
       content: "♥",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "club",
-      label: "Club",
+      label: "Moon",
       content: "♣",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "spade",
-      label: "Spade",
+      label: "Burst",
       content: "♠",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
     {
       token: "sun",
-      label: "Sun",
+      label: "Octagon",
       content: "☀",
-      style: { backgroundColor: "#FFFFFF" },
+      style: { backgroundColor: "#FAFAFA" },
     },
   ],
   [ChildPasswordType.EMOJI]: [
@@ -158,6 +159,53 @@ export const childPatternTiles: Record<
       label: "Soccer",
       content: "⚽",
       style: { backgroundColor: "#FFFFFF" },
+    },
+  ],
+  [ChildPasswordType.PATTERN]: [
+    {
+      token: "pattern1",
+      label: "Pattern 1",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern2",
+      label: "Pattern 2",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern3",
+      label: "Pattern 3",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern4",
+      label: "Pattern 4",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern5",
+      label: "Pattern 5",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern6",
+      label: "Pattern 6",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern7",
+      label: "Pattern 7",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern8",
+      label: "Pattern 8",
+      style: { backgroundColor: "#FAFAFA" },
+    },
+    {
+      token: "pattern9",
+      label: "Pattern 9",
+      style: { backgroundColor: "#FAFAFA" },
     },
   ],
 };

@@ -11,16 +11,21 @@ import ModalCloseButton from "./ModalCloseButton";
 import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 import { useUpdateChildLogin } from "../hooks/useSettings";
 import ChildColorPicker from "@/components/child-login/ChildColorPicker";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 
 export default function ChangeChildLoginModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const updateChildLogin = useUpdateChildLogin();
   const [childPasswordType, setChildPasswordType] = useState<ChildPasswordType>(
-    ChildPasswordType.NORMAL,
+    ChildPasswordType.COLOR,
   );
   const [childPassword, setChildPassword] = useState<string>("");
-  const [confirmChildPassword, setConfirmChildPassword] = useState<string>("");
   const [colorSequence, setColorSequence] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
 
@@ -43,17 +48,9 @@ export default function ChangeChildLoginModal() {
 
     if (
       childPasswordType === ChildPasswordType.NORMAL &&
-      candidatePassword.length < 3
+      !/^\d{4}$/.test(candidatePassword)
     ) {
-      setError("Child password must be at least 3 characters.");
-      return;
-    }
-
-    if (
-      childPasswordType === ChildPasswordType.NORMAL &&
-      candidatePassword !== confirmChildPassword.trim()
-    ) {
-      setError("Child passwords don't match.");
+      setError("Please enter a valid 4-digit PIN.");
       return;
     }
 
@@ -103,40 +100,40 @@ export default function ChangeChildLoginModal() {
               onChange={(e) => {
                 setChildPasswordType(e.target.value as ChildPasswordType);
                 setChildPassword("");
-                setConfirmChildPassword("");
                 setColorSequence([]);
                 setError("");
               }}
               className="h-12 px-3 text-black text-lg"
             >
-              <option value={ChildPasswordType.NORMAL}>Normal</option>
-              <option value={ChildPasswordType.COLOR}>Color Pattern</option>
-              <option value={ChildPasswordType.SHAPE}>Shape Pattern</option>
-              <option value={ChildPasswordType.EMOJI}>Emoji Pattern</option>
+              <option value={ChildPasswordType.NORMAL}>Pin</option>
+              <option value={ChildPasswordType.COLOR}>Color</option>
+              <option value={ChildPasswordType.SHAPE}>Shape</option>
+              <option value={ChildPasswordType.EMOJI}>Emoji</option>
+              <option value={ChildPasswordType.PATTERN}>Pattern</option>
             </select>
 
             {childPasswordType === ChildPasswordType.NORMAL ? (
               <>
-                <input
-                  type="password"
+                <p className="text-white/80 text-lg">Enter a new pin below</p>
+                <InputOTP
+                  maxLength={4}
                   value={childPassword}
-                  onChange={(e) => {
-                    setChildPassword(e.target.value);
+                  onChange={(value) => {
+                    setChildPassword(value);
                     setError("");
                   }}
-                  placeholder="Child password"
-                  className="h-12 px-3 text-black text-lg"
-                />
-                <input
-                  type="password"
-                  value={confirmChildPassword}
-                  onChange={(e) => {
-                    setConfirmChildPassword(e.target.value);
-                    setError("");
-                  }}
-                  placeholder="Confirm child password"
-                  className="h-12 px-3 text-black text-lg"
-                />
+                  pattern={REGEXP_ONLY_DIGITS}
+                >
+                  <InputOTPGroup className="flex items-center gap-3">
+                    {[0, 1, 2, 3].map((index) => (
+                      <InputOTPSlot
+                        key={index}
+                        index={index}
+                        className="h-[120px] w-[120px] rounded-[4px] border border-black/10 bg-[#FAFAFA] text-5xl text-black first:rounded-[4px] first:border last:rounded-[4px]"
+                      />
+                    ))}
+                  </InputOTPGroup>
+                </InputOTP>
               </>
             ) : (
               <>
@@ -146,6 +143,17 @@ export default function ChangeChildLoginModal() {
                     setColorSequence((prev) =>
                       prev.length >= 4 ? prev : [...prev, token],
                     );
+                    setError("");
+                  }}
+                  onRemoveColor={(token) => {
+                    setColorSequence((prev) => {
+                      const index = prev.lastIndexOf(token);
+                      if (index === -1) return prev;
+                      return [
+                        ...prev.slice(0, index),
+                        ...prev.slice(index + 1),
+                      ];
+                    });
                     setError("");
                   }}
                   onClear={() => {

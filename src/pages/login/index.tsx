@@ -36,7 +36,10 @@ export default function Home() {
   const isPatternChildLogin = isPatternChildPasswordType(childPasswordType);
   const modalLoginDisabled = isPatternChildLogin
     ? childColorSequence.length < 4
-    : password.trim().length < 3;
+    : !/^\d{4}$/.test(password.trim());
+  const hasChildPasswordInput = isPatternChildLogin
+    ? childColorSequence.length > 0
+    : password.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,8 +69,8 @@ export default function Home() {
         ? childPassword
         : password.trim();
 
-      if (!isPatternChildLogin && candidatePassword.length < 3) {
-        setPasswordError("Password incorrect, please check again.");
+      if (!isPatternChildLogin && !/^\d{4}$/.test(candidatePassword)) {
+        setPasswordError("Please enter a valid 4-digit PIN.");
         errorDetected = true;
       }
     }
@@ -307,10 +310,12 @@ export default function Home() {
                 {isPatternChildPasswordType(childPasswordType)
                   ? childPasswordType === ChildPasswordType.SHAPE
                     ? "Select the shapes in the correct order"
-                    : childPasswordType === ChildPasswordType.EMOJI
-                      ? "Select the emojis in the correct order"
-                      : "Select the colors in the correct order"
-                  : "Enter your child password"}
+                    : childPasswordType === ChildPasswordType.PATTERN
+                      ? "Select the patterns in the correct order"
+                      : childPasswordType === ChildPasswordType.EMOJI
+                        ? "Select the emojis in the correct order"
+                        : "Select the colors in the correct order"
+                  : "Enter your 4-digit pin"}
               </p>
 
               <div className="mt-6">
@@ -321,6 +326,18 @@ export default function Home() {
                       setChildColorSequence((prev) =>
                         prev.length >= 4 ? prev : [...prev, token],
                       );
+                      setPasswordError("");
+                      setGeneralError("");
+                    }}
+                    onRemoveColor={(token) => {
+                      setChildColorSequence((prev) => {
+                        const index = prev.lastIndexOf(token);
+                        if (index === -1) return prev;
+                        return [
+                          ...prev.slice(0, index),
+                          ...prev.slice(index + 1),
+                        ];
+                      });
                       setPasswordError("");
                       setGeneralError("");
                     }}
@@ -337,7 +354,10 @@ export default function Home() {
                   <input
                     className={`flex h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} text-[24px]/[32px] placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white w-full`}
                     type="password"
-                    placeholder="Password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={4}
+                    placeholder="PIN"
                     name="password"
                     value={password}
                     onChange={handlePasswordChange}
@@ -368,7 +388,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${modalLoginDisabled ? "bg-[#C6C6C6] text-[#8D8D8D]" : "bg-loginGreen text-black"}`}
+                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${hasChildPasswordInput ? "bg-[#ACCC6E] text-black" : "bg-[#C6C6C6] text-[#8D8D8D]"}`}
                 disabled={modalLoginDisabled}
                 onClick={() => {
                   const form = document.getElementById(
