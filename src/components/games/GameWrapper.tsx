@@ -97,7 +97,6 @@ export default function GameWrapper({
             backgroundPosition: "center bottom",
           }}
         >
-          {/* Profile header */}
           <ProfileHeader
             petType={pet.petType}
             level={pet.xpLevel}
