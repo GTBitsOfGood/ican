@@ -18,34 +18,34 @@ export const childPatternTiles: Record<
   ChildPasswordTile[]
 > = {
   [ChildPasswordType.COLOR]: [
-    { token: "sage", label: "Sage", style: { backgroundColor: "#5D9275" } },
-    { token: "salmon", label: "Salmon", style: { backgroundColor: "#E69A92" } },
+    { token: "sage", label: "Sage", style: { backgroundColor: "#538B6E" } },
+    { token: "salmon", label: "Salmon", style: { backgroundColor: "#F5A49D" } },
     {
       token: "blush",
       label: "Blush",
-      style: { backgroundColor: "#E1C7C9" },
+      style: { backgroundColor: "#F6DBDB" },
     },
     {
       token: "mist",
       label: "Mist",
-      style: { backgroundColor: "#DFE7E8" },
+      style: { backgroundColor: "#F7FEFF" },
     },
-    { token: "iris", label: "Iris", style: { backgroundColor: "#82559C" } },
-    { token: "mint", label: "Mint", style: { backgroundColor: "#C4DDC6" } },
+    { token: "iris", label: "Iris", style: { backgroundColor: "#7C4D90" } },
+    { token: "mint", label: "Mint", style: { backgroundColor: "#DDF6DF" } },
     {
       token: "mustard",
       label: "Mustard",
-      style: { backgroundColor: "#DEC945" },
+      style: { backgroundColor: "#E0CC46" },
     },
     {
       token: "crimson",
       label: "Crimson",
-      style: { backgroundColor: "#C02736" },
+      style: { backgroundColor: "#B62735" },
     },
     {
       token: "rose",
       label: "Rose",
-      style: { backgroundColor: "#CF95A2" },
+      style: { backgroundColor: "#DC9DAA" },
     },
   ],
   [ChildPasswordType.SHAPE]: [

@@ -18,14 +18,10 @@ export default function ChildColorPicker({
   passwordType = ChildPasswordType.COLOR,
   showInstruction = true,
 }: ChildColorPickerProps) {
-  const isDark = view === "change";
-  const labelClass = isDark ? "text-white" : "text-textGrey";
-  const tileBorderClass = isDark ? "border-black" : "border-borderGrey";
-  const previewBorderClass = isDark ? "border-white" : "border-borderGrey";
-  const previewTextClass = isDark ? "text-white" : "text-textGrey";
-  const clearButtonClass = isDark
-    ? "border-white text-black bg-white"
-    : "border-borderGrey text-textGrey bg-white";
+  const squareBorderClass = "border border-black/10";
+  const previewTextClass = "text-black";
+  const instructionTextClass =
+    view === "change" ? "text-white/80" : "text-textGrey";
   const tiles = getChildPatternTiles(passwordType);
   const instruction =
     passwordType === ChildPasswordType.SHAPE
@@ -38,23 +34,29 @@ export default function ChildColorPicker({
       ? "text-4xl leading-none text-black"
       : passwordType === ChildPasswordType.EMOJI
         ? "text-3xl leading-none"
-        : "text-2xl leading-none text-black";
+        : "text-[14px] leading-none text-black";
+  const handleTileSelect = (token: string) => {
+    if (sequence.length >= 4) {
+      return;
+    }
+    onAddColor(token);
+  };
 
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center gap-3">
       {showInstruction && (
-        <span className={`${labelClass} text-sm self-start`}>
+        <span className={`text-sm self-start ${instructionTextClass}`}>
           {instruction}
         </span>
       )}
-      <div className="grid grid-cols-3 gap-2 w-fit mx-auto place-items-center">
+      <div className="grid grid-cols-3 gap-3 w-fit mx-auto place-items-center">
         {tiles.map((tileOption, index) => (
           <button
             key={tileOption.token}
             type="button"
             aria-label={tileOption.label}
-            className={`group relative ${view === "login" ? "size-14" : "size-20"} border-2 ${tileBorderClass} flex items-center justify-center ${tileTextClass}`}
-            onClick={() => onAddColor(tileOption.token)}
+            className={`group relative size-[90px] rounded-[4px] ${squareBorderClass} flex items-center justify-center ${tileTextClass}`}
+            onClick={() => handleTileSelect(tileOption.token)}
             style={tileOption.style}
           >
             {tileOption.content || index + 1}
@@ -64,7 +66,7 @@ export default function ChildColorPicker({
           </button>
         ))}
       </div>
-      <div className="flex items-center justify-center gap-2">
+      <div className="mt-2 flex items-center justify-center gap-3">
         {Array.from({ length: 4 }, (_, index) => {
           const token = sequence[index];
           const option = token
@@ -74,7 +76,7 @@ export default function ChildColorPicker({
             <div
               key={`${token ?? "empty"}-${index}`}
               title={option?.label || "Empty"}
-              className={`size-10 border ${previewBorderClass} ${previewTextClass} flex items-center justify-center text-xl`}
+              className={`size-[50px] rounded-[4px] bg-[#FBF8F8] ${squareBorderClass} ${previewTextClass} flex items-center justify-center text-xl`}
               style={option?.style}
             >
               {option?.content || ""}
@@ -82,15 +84,17 @@ export default function ChildColorPicker({
           );
         })}
       </div>
-      {view === "change" && (
-        <button
-          type="button"
-          className={`w-fit px-3 py-1 border ${clearButtonClass}`}
-          onClick={onClear}
-        >
-          Clear pattern
-        </button>
-      )}
+      <button
+        type="button"
+        className="mt-1 flex items-center gap-2 text-[16px]/[16px] tracking-[-0.04em] text-[#C6C6C6] disabled:opacity-70"
+        onClick={onClear}
+        disabled={sequence.length === 0}
+      >
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#C6C6C6] text-[14px] leading-none text-white">
+          ×
+        </span>
+        <span>Clear Password</span>
+      </button>
     </div>
   );
 }

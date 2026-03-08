@@ -134,7 +134,18 @@ export default function Onboard() {
       ? colorSequence.join("-")
       : childPassword.trim();
 
-    if (candidatePassword.length < 3) {
+    if (
+      isPatternChildPasswordType(childPasswordType) &&
+      colorSequence.length < 4
+    ) {
+      setPinError("Please enter 4 selections.");
+      return;
+    }
+
+    if (
+      childPasswordType === ChildPasswordType.NORMAL &&
+      candidatePassword.length < 3
+    ) {
       setPinError("Child password must be at least 3 characters.");
       return;
     }
@@ -302,7 +313,9 @@ export default function Onboard() {
             }}
             onAddColor={(value) => {
               setPinError("");
-              setColorSequence((prev) => [...prev, value]);
+              setColorSequence((prev) =>
+                prev.length >= 4 ? prev : [...prev, value],
+              );
             }}
             onClearColors={() => {
               setPinError("");

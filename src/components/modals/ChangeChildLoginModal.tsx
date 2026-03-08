@@ -33,7 +33,18 @@ export default function ChangeChildLoginModal() {
   }, [onOpen]);
 
   const handleSave = () => {
-    if (candidatePassword.length < 3) {
+    if (
+      isPatternChildPasswordType(childPasswordType) &&
+      colorSequence.length < 4
+    ) {
+      setError("Please enter 4 selections.");
+      return;
+    }
+
+    if (
+      childPasswordType === ChildPasswordType.NORMAL &&
+      candidatePassword.length < 3
+    ) {
       setError("Child password must be at least 3 characters.");
       return;
     }
@@ -132,7 +143,9 @@ export default function ChangeChildLoginModal() {
                 <ChildColorPicker
                   sequence={colorSequence}
                   onAddColor={(token) => {
-                    setColorSequence((prev) => [...prev, token]);
+                    setColorSequence((prev) =>
+                      prev.length >= 4 ? prev : [...prev, token],
+                    );
                     setError("");
                   }}
                   onClear={() => {

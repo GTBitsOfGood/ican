@@ -37,7 +37,7 @@ export default function ChildLoginStep({
   const isNormal = childPasswordType === ChildPasswordType.NORMAL;
   const isDisabled = isNormal
     ? password.trim().length < 3 || password !== confirmPassword
-    : colorSequence.length < 3;
+    : colorSequence.length < 4;
 
   return (
     <div className="w-full flex flex-col items-center gap-4">

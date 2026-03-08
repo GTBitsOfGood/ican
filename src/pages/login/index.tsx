@@ -16,6 +16,8 @@ import {
 import ChildColorPicker from "@/components/child-login/ChildColorPicker";
 
 export default function Home() {
+  const childPasswordIncorrectMessage =
+    "Oh no! The password you entered is incorrect. Please try again.";
   const [loginType, setLoginType] = useState<LoginType>(LoginType.PARENT);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,12 +37,6 @@ export default function Home() {
   const modalLoginDisabled = isPatternChildLogin
     ? childColorSequence.length < 4
     : password.trim().length < 3;
-  const childPatternLabel =
-    childPasswordType === ChildPasswordType.SHAPE
-      ? "shape"
-      : childPasswordType === ChildPasswordType.EMOJI
-        ? "emoji"
-        : "color";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -115,9 +111,15 @@ export default function Home() {
             );
           }
         } else if (statusCode === 401 || statusCode === 400) {
-          setPasswordError("Password incorrect, please check again.");
+          if (isChildLogin && isChildPasswordStep) {
+            setPasswordError(childPasswordIncorrectMessage);
+          } else {
+            setPasswordError("Password incorrect, please check again.");
+          }
         } else {
-          setGeneralError("An error occurred. Please try again.");
+          setGeneralError(
+            "Oh no! The password you entered is incorrect. Please try again.",
+          );
         }
       }
     } finally {
@@ -160,17 +162,17 @@ export default function Home() {
 
   return (
     <UnauthorizedRoute>
-      <div className="flex h-screen font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
-        <div className="self-center flex flex-col overflow-y-auto items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white h-auto mx-auto my-auto">
+      <div className="flex min-h-screen overflow-y-auto font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
+        <div className="self-center flex flex-col items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white h-auto mx-auto my-auto mobile:pt-3 mobile:pb-2 desktop:pt-4 desktop:pb-3">
           <Image
-            className="desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
+            className="desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[220px] desktop:h-[148px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
             height={167}
           />
           {!loggingIn && (
-            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-3 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[26px] font-bold leading-[36px] tracking-[-1.44px]">
               Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
             </div>
           )}
@@ -207,17 +209,17 @@ export default function Home() {
                   </button>
                   <button
                     type="button"
-                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.CHILD ? "bg-loginGreen text-black" : "bg-white text-textGrey"}`}
+                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.CHILD ? "bg-[#7D83B2] text-white" : "bg-white text-textGrey"}`}
                     onClick={() => handleLoginTypeChange(LoginType.CHILD)}
                   >
                     Child Login
                   </button>
                 </div>
-                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-4">
+                <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-2xl desktop:text-[30px]/[38px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-1 minimized:mb-1 tablet:mb-3">
                   Log In
                 </div>
                 <input
-                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                  className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-14 px-4 items-center gap-[5px] ${emailError === "" ? "text-textGrey placeholder-textGrey border-borderGrey mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                   type="text"
                   placeholder="Email"
                   name="email"
@@ -227,7 +229,7 @@ export default function Home() {
                 <ErrorBox message={emailError} />
                 {!isChildLogin ? (
                   <input
-                    className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-16 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
+                    className={`flex mobile:h-10 tiny:h-8 short:h-10 tablet:h-12 desktop:h-14 px-4 items-center gap-[5px] ${passwordError === "" ? "text-textGrey placeholder-textGrey border-borderGrey short:mb-1 desktop:mb-2" : "text-errorRed placeholder-errorRed border-errorRed"} mobile:text-lg mobile:placeholder:text-lg short:text-lg short:placeholder:text-lg tablet:text-[24px]/[32px] tablet:placeholder:text-[24px]/[32px] focus:text-textGrey focus:placeholder-textGrey focus:border-borderGrey self-stretch border-2 bg-white`}
                     type="password"
                     placeholder="Password"
                     name="password"
@@ -239,7 +241,7 @@ export default function Home() {
                 {!isChildLogin && (
                   <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
                     <Link
-                      className=" desktop:text-2xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
+                      className=" desktop:text-xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
                       href="/forgot-password"
                     >
                       Forgot Password?
@@ -247,14 +249,14 @@ export default function Home() {
                   </p>
                 )}
                 <button
-                  className="w-full bg-loginGreen text-black desktop:h-12 mobile:h-8 short:h-8 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
+                  className="w-full bg-loginGreen text-black desktop:h-11 mobile:h-8 short:h-8 desktop:text-[22px]/[30px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-center mb-4"
                   type="submit"
                 >
                   {isChildLogin && !isChildPasswordStep ? "Continue" : "Login"}
                 </button>
 
                 {!isChildPasswordStep && (
-                  <div className="flex justify-start flex-row">
+                  <div className="mt-2 flex justify-start flex-row">
                     <input
                       type="checkbox"
                       id="rememberMe"
@@ -269,7 +271,7 @@ export default function Home() {
                 )}
               </form>
               {!isChildLogin && (
-                <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 desktop:gap-y-6 w-[80%]">
+                <div className="mt-3 flex flex-col mobile:gap-y-2 short:gap-y-2 desktop:gap-y-6 w-[80%]">
                   <div className="flex items-center justify-center w-full">
                     <div className="border border-textGrey w-full" />
                     <div className="text-textGrey px-4">or</div>
@@ -278,7 +280,7 @@ export default function Home() {
                   <GoogleLoginButton setError={setGeneralError} />
                 </div>
               )}
-              <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
+              <div className="mt-2 mb-2 text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">
                   Sign up
@@ -289,21 +291,25 @@ export default function Home() {
         </div>
         {isChildPasswordStep && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4">
-            <div className="relative w-full max-w-[480px] rounded-[40px] bg-white px-6 py-6">
+            <div className="relative w-full max-w-[540px] rounded-[40px] bg-white px-8 py-6">
               <button
                 type="button"
                 aria-label="Close"
-                className="absolute right-5 top-3 text-[40px] leading-none text-black"
+                className="absolute right-6 top-4 font-pixelify text-[48px] leading-none text-black"
                 onClick={closeChildPasswordModal}
               >
-                ×
+                x
               </button>
-              <h2 className="text-center text-[40px]/[48px] font-bold text-black">
-                Enter Password
+              <h2 className="mx-auto w-full max-w-[380px] pr-8 text-center text-[32px]/[32px] font-bold tracking-[-0.04em] text-black">
+                Enter your password
               </h2>
-              <p className="mt-3 text-center text-[16px]/[24px] text-black">
+              <p className="mx-auto mt-3 w-full max-w-[320px] text-center text-[16px]/[16px] font-normal tracking-[-0.04em] text-black">
                 {isPatternChildPasswordType(childPasswordType)
-                  ? `Enter your ${childPatternLabel} password by clicking on the squares below`
+                  ? childPasswordType === ChildPasswordType.SHAPE
+                    ? "Select the shapes in the correct order"
+                    : childPasswordType === ChildPasswordType.EMOJI
+                      ? "Select the emojis in the correct order"
+                      : "Select the colors in the correct order"
                   : "Enter your child password"}
               </p>
 
@@ -339,22 +345,22 @@ export default function Home() {
                 )}
               </div>
               {(passwordError || generalError) && (
-                <div className="mt-3 text-center text-sm text-errorRed">
+                <div className="mt-3 px-4 text-center text-[16px]/[20px] text-[#D06664]">
                   {passwordError || generalError}
                 </div>
               )}
 
-              <div className="mt-5 flex items-center gap-2">
+              <div className="mt-8 flex h-6 items-center justify-center gap-2">
                 <input
                   type="checkbox"
                   id="rememberMeModal"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4"
+                  className="h-6 w-6 appearance-none rounded-[4px] border border-black/40 bg-white checked:border-transparent checked:bg-[#C3C8E2] checked:before:block checked:before:text-center checked:before:text-[18px] checked:before:leading-6 checked:before:text-[#2C3694] checked:before:content-['✓']"
                 />
                 <label
                   htmlFor="rememberMeModal"
-                  className="text-[16px] text-black"
+                  className="text-[16px]/[16px] font-normal tracking-[-0.04em] text-black"
                 >
                   Remember me
                 </label>
@@ -362,7 +368,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className={`mx-auto mt-5 block px-10 py-2 text-[20px]/[28px] ${modalLoginDisabled ? "bg-[#CDCDCD] text-[#8D8D8D]" : "bg-loginGreen text-black"}`}
+                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${modalLoginDisabled ? "bg-[#C6C6C6] text-[#8D8D8D]" : "bg-loginGreen text-black"}`}
                 disabled={modalLoginDisabled}
                 onClick={() => {
                   const form = document.getElementById(
