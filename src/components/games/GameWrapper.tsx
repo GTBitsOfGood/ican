@@ -17,16 +17,19 @@ export enum GameState {
   TIE,
 }
 
+type InformationModalOptions = {
+  gameMode?: string;
+  title: string;
+  message: string;
+  letters?: string;
+  onClose?: () => void;
+};
+
 export interface GameWrapperControls {
   setSpeechText: (text: string) => void;
   gameState: GameState;
   setGameState: (state: GameState) => void;
-  showInformationModal: (options: {
-    title: string;
-    message: string;
-    closeLabel?: string;
-    onClose?: () => void;
-  }) => void;
+  showInformationModal: (options: InformationModalOptions) => void;
 }
 
 export default function GameWrapper({
@@ -45,19 +48,30 @@ export default function GameWrapper({
   const { data: pet } = usePet();
   const [gameState, setGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
-  const [informationModal, setInformationModal] = useState<{
-    title: string;
-    message: string;
-    closeLabel?: string;
-    onClose?: () => void;
-  } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [informationModal, setInformationModal] =
+    useState<InformationModalOptions | null>(null);
 
   useEffect(() => {
     if (initialSpeechText && gameState === GameState.START) {
       setSpeechText(initialSpeechText);
-      return;
     }
   }, [gameState, initialSpeechText]);
+
+  // Show success overlay for 5 seconds on win
+  useEffect(() => {
+    if (gameState === GameState.WON) {
+      setShowSuccess(true);
+      const timer = setTimeout(() => setShowSuccess(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState]);
+
+  const closeModal = () => {
+    const onClose = informationModal?.onClose;
+    setInformationModal(null);
+    onClose?.();
+  };
 
   // Copy and pasted from the main page, probably a better way to do this or just make a util function
   const equippedBackgroundKey = pet?.appearance?.background;
@@ -137,74 +151,79 @@ export default function GameWrapper({
             </div>
           </div>
 
-          {(gameState === GameState.WON ||
-            gameState === GameState.LOSS ||
-            gameState === GameState.TIE) && (
-            <div className="fixed inset-0 z-40s flex items-center justify-center bg-black/60 px-4">
-              <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                <h2 className="text-3xl text-icanBlue-300">
-                  {gameState === GameState.WON
-                    ? "You Won!"
-                    : gameState === GameState.TIE
-                      ? "It's a Tie!"
-                      : "Game Over"}
-                </h2>
-                <p className="mt-2 text-icanBlue-300">
-                  {gameState === GameState.WON
-                    ? "Good job!"
-                    : gameState === GameState.TIE
-                      ? "That was close!"
-                      : "Nice try!"}
-                </p>
-                <div className="mt-6 flex items-center justify-center gap-3">
-                  <button
-                    type="button"
-                    className="rounded-xl border-4 border-icanBlue-200 bg-white px-4 py-2 text-icanBlue-300 shadow-[0_4px_0_0_#7D83B2]"
-                    onClick={() => setGameState(GameState.PLAYING)}
-                  >
-                    Play Again
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-xl border-4 border-icanBlue-200 bg-icanBlue-200 px-4 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                    onClick={() => router.push("/games")}
-                  >
-                    Back to Games
-                  </button>
-                </div>
-              </div>
+          {/* Success overlay — shown for 5 seconds on win */}
+          {showSuccess && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <img
+                src="/games/success.svg"
+                alt="Success!"
+                className="w-full max-w-2xl h-auto px-8"
+              />
             </div>
           )}
 
           <button
             type="button"
             onClick={() => router.push("/games")}
-            className="fixed bottom-6 right-6 z-67 flex items-center justify-center"
+            className="fixed bottom-6 right-6 z-[67] flex items-center justify-center"
             aria-label="Leave game"
           >
             <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
           </button>
 
           {informationModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-              <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                <h2 className="text-3xl text-icanBlue-300">
-                  {informationModal.title}
-                </h2>
-                <p className="mt-3 text-icanBlue-300">
-                  {informationModal.message}
-                </p>
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
+              <div className="relative w-full max-w-2xl">
+                {/* Card background */}
+                <img
+                  src="/games/instruction_card.svg"
+                  alt=""
+                  className="w-full h-auto pointer-events-none select-none"
+                />
+                {/* X close button */}
                 <button
                   type="button"
-                  className="mt-6 rounded-xl bg-icanBlue-200 px-5 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                  onClick={() => {
-                    const onClose = informationModal.onClose;
-                    setInformationModal(null);
-                    onClose?.();
-                  }}
+                  onClick={closeModal}
+                  className="absolute top-[6%] right-[4%] z-10 p-1"
+                  aria-label="Close"
                 >
-                  {informationModal.closeLabel || "Close"}
+                  <img
+                    src="/games/instruction_card_X.svg"
+                    alt="Close"
+                    className="h-7 w-auto"
+                  />
                 </button>
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
+                  {informationModal.gameMode && (
+                    <p
+                      className="font-quantico text-2xl uppercase mb-5 font-bold"
+                      style={{ color: "#EFE9DD" }}
+                    >
+                      GAME MODE: {informationModal.gameMode}
+                    </p>
+                  )}
+                  <h2
+                    className="font-quantico text-5xl font-bold uppercase mb-5"
+                    style={{ color: "#EFE9DD" }}
+                  >
+                    {informationModal.title}
+                  </h2>
+                  <p
+                    className="font-quantico text-2xl font-bold leading-relaxed"
+                    style={{ color: "#EFE9DD" }}
+                  >
+                    {informationModal.message}
+                  </p>
+                  {informationModal.letters && (
+                    <p
+                      className="font-quantico text-2xl font-bold mt-1 tracking-widest uppercase"
+                      style={{ color: "#EFE9DD" }}
+                    >
+                      {informationModal.letters}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           )}
