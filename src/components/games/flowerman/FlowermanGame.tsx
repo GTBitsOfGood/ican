@@ -5,8 +5,8 @@ import {
   INSTRUCTIONS,
   LIVES as START_LIVES,
 } from "@/constant/flowermanConstants";
-import FlowermanWordWithFlower from "@/components/flowerman/FlowermanWordWithFlower";
-import FlowermanKeyboard from "@/components/flowerman/FlowermanKeyboard";
+import FlowermanWordWithFlower from "@/components/games/flowerman/FlowermanWordWithFlower";
+import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
 import MistakesLeft from "@/components/games/MistakesLeft";
 
 export default function FlowermanGame({
@@ -62,12 +62,12 @@ export default function FlowermanGame({
   const handleRestart = () => {
     const { hint, wordLength } = startNewWord();
     setSpeechText("New word! It’s your turn to guess a letter.");
-    setGameState(GameState.PLAYING);
     showInformationModal({
       gameMode: "FLOWERMAN",
       title: "HINT",
       message: hint,
       letters: `${wordLength} LETTERS`,
+      onClose: () => setGameState(GameState.PLAYING),
     });
   };
 
@@ -100,7 +100,7 @@ export default function FlowermanGame({
   return (
     <>
       {/* Mistakes left — top left, to the right of the profile header; z below modal (60) so it greys out with overlay */}
-      <div className="fixed top-17 left-[350] z-[50]">
+      <div className="fixed top-17 left-[350px] z-[50]">
         <MistakesLeft count={lives} />
       </div>
 
