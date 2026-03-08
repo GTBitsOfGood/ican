@@ -8,6 +8,7 @@ import ProfileHeader from "@/components/home/ProfileHeader";
 import { usePet } from "@/components/hooks/usePet";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
+import { PetEmotion } from "@/types/pet";
 
 export enum GameState {
   START,
@@ -30,6 +31,8 @@ export interface GameWrapperControls {
   gameState: GameState;
   setGameState: (state: GameState) => void;
   showInformationModal: (options: InformationModalOptions) => void;
+  setPetBoardX?: (percent: number | null) => void;
+  setPetEmotion?: (emotion: PetEmotion | null) => void;
 }
 
 export default function GameWrapper({
@@ -51,6 +54,8 @@ export default function GameWrapper({
   const [showSuccess, setShowSuccess] = useState(false);
   const [informationModal, setInformationModal] =
     useState<InformationModalOptions | null>(null);
+  const [petBoardX, setPetBoardX] = useState<number | null>(null);
+  const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
 
   useEffect(() => {
     if (initialSpeechText && gameState === GameState.START) {
@@ -104,24 +109,26 @@ export default function GameWrapper({
             currentExp={pet.xpGained}
           />
 
-          {/* Pet */}
-          <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
-            <div className="relative">
-              {speechText && (
-                <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
-                  <Bubble text={speechText} />
-                </div>
-              )}
-              <PetAppearance
-                petType={pet.petType}
-                selectedItem={null}
-                appearance={pet.appearance}
-                showBackground={false}
-                className="h-[17rem] tablet:h-[22rem]"
-                characterImageSize={340}
-              />
+          {/* Pet at default home position */}
+          {petBoardX === null && (
+            <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
+              <div className="relative">
+                {speechText && (
+                  <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
+                    <Bubble text={speechText} />
+                  </div>
+                )}
+                <PetAppearance
+                  petType={pet.petType}
+                  selectedItem={null}
+                  appearance={pet.appearance}
+                  showBackground={false}
+                  className="h-[17rem] tablet:h-[22rem]"
+                  characterImageSize={340}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Whiteboard */}
           <div className="absolute right-20 top-0 aspect-square w-[50%]">
@@ -132,6 +139,26 @@ export default function GameWrapper({
                 alt=""
                 aria-hidden="true"
               />
+            )}
+            {/* Pet overlaid on the board when an X translation is provided */}
+            {petBoardX !== null && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <div
+                  style={{
+                    transform: `translateX(${petBoardX}%)`,
+                  }}
+                >
+                  <PetAppearance
+                    petType={pet.petType}
+                    selectedItem={null}
+                    appearance={pet.appearance}
+                    showBackground={false}
+                    className="h-[17rem] tablet:h-[22rem]"
+                    characterImageSize={340}
+                    emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                  />
+                </div>
+              </div>
             )}
             <div
               className={cn(
@@ -146,6 +173,8 @@ export default function GameWrapper({
                 gameState={gameState}
                 setGameState={setGameState}
                 showInformationModal={setInformationModal}
+                setPetBoardX={setPetBoardX}
+                setPetEmotion={setPetEmotion}
               />
             </div>
           </div>

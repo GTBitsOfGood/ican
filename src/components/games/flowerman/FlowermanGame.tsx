@@ -8,12 +8,15 @@ import {
 import FlowermanWordWithFlower from "@/components/games/flowerman/FlowermanWordWithFlower";
 import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
 import MistakesLeft from "@/components/games/MistakesLeft";
+import { PetEmotion } from "@/types/pet";
 
 export default function FlowermanGame({
   setSpeechText,
   gameState,
   setGameState,
   showInformationModal,
+  setPetBoardX,
+  setPetEmotion,
 }: GameWrapperControls) {
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
@@ -59,6 +62,32 @@ export default function FlowermanGame({
     }
   }, [gameState, handleStart]);
 
+  const writingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerWriting = useCallback(() => {
+    if (!setPetBoardX || !setPetEmotion) return;
+
+    if (writingTimeoutRef.current) {
+      clearTimeout(writingTimeoutRef.current);
+    }
+
+    setPetBoardX(-45);
+    setPetEmotion(PetEmotion.WRITING);
+
+    writingTimeoutRef.current = setTimeout(() => {
+      setPetBoardX(null);
+      setPetEmotion(null);
+    }, 1500);
+  }, [setPetBoardX, setPetEmotion]);
+
+  useEffect(() => {
+    return () => {
+      if (writingTimeoutRef.current) {
+        clearTimeout(writingTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleRestart = () => {
     const { hint, wordLength } = startNewWord();
     setSpeechText("New word! It’s your turn to guess a letter.");
@@ -88,6 +117,7 @@ export default function FlowermanGame({
     } else {
       const newLives = lives - 1;
       setLives(newLives);
+      triggerWriting();
       if (newLives === 0) {
         setGameState(GameState.LOSS);
         setSpeechText(`Game over! The word was "${word}".`);
