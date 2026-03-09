@@ -98,7 +98,7 @@ export default function ChildLoginStep({
                   <InputOTPSlot
                     key={index}
                     index={index}
-                    className="h-[120px] w-[120px] rounded-[4px] border border-black/10 bg-[#FAFAFA] text-5xl text-black first:rounded-[4px] first:border last:rounded-[4px]"
+                    className="h-[120px] w-[120px] rounded-[4px] border border-black/10 bg-tilePreviewBg text-5xl text-black first:rounded-[4px] first:border last:rounded-[4px]"
                   />
                 ))}
               </InputOTPGroup>

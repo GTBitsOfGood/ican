@@ -90,23 +90,23 @@ export default function ChildColorPicker({
     view === "change" ? "text-white/80" : "text-textGrey";
   const tiles = getChildPatternTiles(passwordType);
   const instructionMap: Record<ChildPasswordType, string> = {
-    [ChildPasswordType.NORMAL]: "Tap colors in order",
-    [ChildPasswordType.COLOR]: "Tap colors in order",
-    [ChildPasswordType.SHAPE]: "Tap shapes in order",
-    [ChildPasswordType.EMOJI]: "Tap emojis in order",
-    [ChildPasswordType.PATTERN]: "Tap patterns in order",
+    [ChildPasswordType.NORMAL]: "Enter a new pin below",
+    [ChildPasswordType.COLOR]: "Choose the colors for your password below",
+    [ChildPasswordType.SHAPE]: "Choose the shapes for your password below",
+    [ChildPasswordType.EMOJI]: "Choose the emojis for your password below",
+    [ChildPasswordType.PATTERN]: "Choose the patterns for your password below",
   };
   const instruction = instructionMap[passwordType];
   const isShapeType = passwordType === ChildPasswordType.SHAPE;
   const isPatternType = passwordType === ChildPasswordType.PATTERN;
   const isEmojiType = passwordType === ChildPasswordType.EMOJI;
   const isVisualType = isShapeType || isPatternType;
-  const tileTextClass =
-    isVisualType || !isEmojiType
-      ? isVisualType
-        ? ""
-        : "text-[14px] leading-none text-black"
-      : "text-[46px] leading-none";
+  let tileTextClass = "text-[14px] leading-none text-black";
+  if (isVisualType) {
+    tileTextClass = "";
+  } else if (isEmojiType) {
+    tileTextClass = "text-[46px] leading-none";
+  }
   const renderShapeGlyph = (
     token: string,
     preview = false,
@@ -211,7 +211,9 @@ export default function ChildColorPicker({
   return (
     <div className="flex flex-col items-center gap-3">
       {showInstruction && (
-        <span className={`text-sm self-start ${instructionTextClass}`}>
+        <span
+          className={`w-full text-center text-lg leading-none ${instructionTextClass}`}
+        >
           {instruction}
         </span>
       )}
@@ -225,10 +227,13 @@ export default function ChildColorPicker({
           const tileBackgroundClass =
             isPatternType && view === "change" ? "bg-icanBlue-200" : "";
           const tileBorderClass = isPatternType ? "" : SQUARE_BORDER_CLASS;
-          const selectedClass =
-            isSelected && !isPatternType
-              ? "border-icanBlue-300 ring-1 ring-icanBlue-300"
-              : "";
+          const selectedClass = isSelected
+            ? isPatternType
+              ? view === "change"
+                ? "ring-2 ring-white"
+                : "ring-2 ring-icanBlue-300"
+              : "border-icanBlue-300 ring-1 ring-icanBlue-300"
+            : "";
           return (
             <button
               key={tileOption.token}
@@ -238,7 +243,7 @@ export default function ChildColorPicker({
               onClick={() => handleTileSelect(tileOption.token)}
               style={tileStyle}
             >
-              {isSelected && isVisualType && (
+              {isSelected && isVisualType && !isPatternType && (
                 <span className="absolute inset-0 z-0 rounded-[4px] bg-icanBlue-100 opacity-70" />
               )}
               {getTileContent(
@@ -247,6 +252,11 @@ export default function ChildColorPicker({
                 index,
                 isSelected,
                 patternDir,
+              )}
+              {isSelected && isPatternType && (
+                <span
+                  className={`pointer-events-none absolute inset-0 z-20 rounded-[4px] ring-2 ring-inset ${view === "change" ? "ring-white" : "ring-icanBlue-300"}`}
+                />
               )}
               {isSelected && !isVisualType && (
                 <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-icanBlue-300 text-[12px] leading-none text-white">

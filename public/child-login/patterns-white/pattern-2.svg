@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
-  <rect x="8" y="8" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="40" y="8" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="72" y="8" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="24" y="24" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="56" y="24" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="8" y="40" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="40" y="40" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="72" y="40" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="24" y="56" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="56" y="56" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="8" y="72" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="40" y="72" width="18" height="18" rx="2" fill="#FFFFFF"/>
-  <rect x="72" y="72" width="18" height="18" rx="2" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="101 1 90 90" fill="none">
+  <rect x="101" y="1" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="101" y="35" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="101" y="69" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="135" y="1" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="135" y="35" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="135" y="69" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="169" y="1" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="169" y="35" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="169" y="69" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="118" y="18" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="118" y="52" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="152" y="18" width="17" height="17" rx="4" fill="#FFFFFF"/>
+  <rect x="152" y="52" width="17" height="17" rx="4" fill="#FFFFFF"/>
 </svg>
