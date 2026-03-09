@@ -12,7 +12,6 @@ interface ChildColorPickerProps {
   showInstruction?: boolean;
 }
 
-const CHANGE_POPUP_BLUE = "#4C539B";
 const SQUARE_BORDER_CLASS = "border border-black/10";
 const PATTERN_IMAGE_MAP: Record<string, string> = {
   pattern1: "pattern-1.svg",
@@ -37,6 +36,8 @@ const SHAPE_SIZES: Record<string, { width: number; height: number }> = {
   sun: { width: 68.48, height: 68.48 },
 };
 const SHAPE_IMAGE_MAP: Record<string, { base: string; selected: string }> = {
+  // Keep legacy token keys stable for credential matching.
+  // Display assets map to updated design names from Figma.
   circle: {
     base: "/child-login/shapes/star.svg",
     selected: "/child-login/shapes-selected/star.svg",
@@ -205,7 +206,7 @@ export default function ChildColorPicker({
   const hasSequence = sequence.length > 0;
   const clearActiveTextClass = view === "change" ? "text-white" : "text-black";
   const clearActiveIconClass =
-    view === "change" ? "bg-white text-[#2C3694]" : "bg-black text-white";
+    view === "change" ? "bg-white text-icanBlue-300" : "bg-black text-white";
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -220,25 +221,25 @@ export default function ChildColorPicker({
           const patternDir =
             view === "change" ? "patterns-white" : "patterns-blue";
           const tileStyle =
-            isPatternType && view === "change"
-              ? { ...tileOption.style, backgroundColor: CHANGE_POPUP_BLUE }
-              : tileOption.style;
+            isPatternType && view === "change" ? undefined : tileOption.style;
+          const tileBackgroundClass =
+            isPatternType && view === "change" ? "bg-icanBlue-200" : "";
           const tileBorderClass = isPatternType ? "" : SQUARE_BORDER_CLASS;
           const selectedClass =
             isSelected && !isPatternType
-              ? "border-[#2C3694] ring-1 ring-[#2C3694]"
+              ? "border-icanBlue-300 ring-1 ring-icanBlue-300"
               : "";
           return (
             <button
               key={tileOption.token}
               type="button"
               aria-label={tileOption.label}
-              className={`group relative size-[90px] rounded-[4px] ${tileBorderClass} flex items-center justify-center ${tileTextClass} ${selectedClass}`}
+              className={`group relative size-[90px] rounded-[4px] ${tileBorderClass} ${tileBackgroundClass} flex items-center justify-center ${tileTextClass} ${selectedClass}`}
               onClick={() => handleTileSelect(tileOption.token)}
               style={tileStyle}
             >
               {isSelected && isVisualType && (
-                <span className="absolute inset-0 z-0 rounded-[4px] bg-[#B7BDEF] opacity-70" />
+                <span className="absolute inset-0 z-0 rounded-[4px] bg-icanBlue-100 opacity-70" />
               )}
               {getTileContent(
                 tileOption.token,
@@ -248,7 +249,7 @@ export default function ChildColorPicker({
                 patternDir,
               )}
               {isSelected && !isVisualType && (
-                <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#2C3694] text-[12px] leading-none text-white">
+                <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-icanBlue-300 text-[12px] leading-none text-white">
                   ✓
                 </span>
               )}
@@ -274,7 +275,7 @@ export default function ChildColorPicker({
             <div
               key={`${token ?? "empty"}-${index}`}
               title={option?.label || "Empty"}
-              className={`size-[50px] rounded-[4px] bg-[#FBF8F8] ${SQUARE_BORDER_CLASS} ${previewTextClass} flex items-center justify-center ${previewContentClass}`}
+              className={`size-[50px] rounded-[4px] bg-tilePreviewBg ${SQUARE_BORDER_CLASS} ${previewTextClass} flex items-center justify-center ${previewContentClass}`}
               style={previewStyle}
             >
               {token ? getTileDisplayValue(token) : ""}
@@ -284,12 +285,12 @@ export default function ChildColorPicker({
       </div>
       <button
         type="button"
-        className={`mt-1 flex items-center gap-2 text-[16px]/[16px] tracking-[-0.04em] ${hasSequence ? clearActiveTextClass : "text-[#C6C6C6]"} disabled:opacity-70`}
+        className={`mt-1 flex items-center gap-2 text-[16px]/[16px] tracking-[-0.04em] ${hasSequence ? clearActiveTextClass : "text-loginDisabledBg"} disabled:opacity-70`}
         onClick={onClear}
         disabled={sequence.length === 0}
       >
         <span
-          className={`flex h-5 w-5 items-center justify-center rounded-full text-[14px] leading-none ${hasSequence ? clearActiveIconClass : "bg-[#C6C6C6] text-white"}`}
+          className={`flex h-5 w-5 items-center justify-center rounded-full text-[14px] leading-none ${hasSequence ? clearActiveIconClass : "bg-loginDisabledBg text-white"}`}
         >
           ×
         </span>

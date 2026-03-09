@@ -50,6 +50,9 @@ export const childPatternTiles: Record<
     },
   ],
   [ChildPasswordType.SHAPE]: [
+    // Shape tokens are persisted in saved child credentials.
+    // Labels/assets intentionally follow the newer Figma naming, so do not
+    // rename tokens without a migration for stored passwords.
     {
       token: "circle",
       label: "Star",

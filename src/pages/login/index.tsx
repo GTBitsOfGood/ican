@@ -212,7 +212,7 @@ export default function Home() {
                   </button>
                   <button
                     type="button"
-                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.CHILD ? "bg-[#7D83B2] text-white" : "bg-white text-textGrey"}`}
+                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.CHILD ? "bg-loginBlue text-white" : "bg-white text-textGrey"}`}
                     onClick={() => handleLoginTypeChange(LoginType.CHILD)}
                   >
                     Child Login
@@ -365,7 +365,7 @@ export default function Home() {
                 )}
               </div>
               {(passwordError || generalError) && (
-                <div className="mt-3 px-4 text-center text-[16px]/[20px] text-[#D06664]">
+                <div className="mt-3 px-4 text-center text-[16px]/[20px] text-loginError">
                   {passwordError || generalError}
                 </div>
               )}
@@ -376,7 +376,7 @@ export default function Home() {
                   id="rememberMeModal"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-6 w-6 appearance-none rounded-[4px] border border-black/40 bg-white checked:border-transparent checked:bg-[#C3C8E2] checked:before:block checked:before:text-center checked:before:text-[18px] checked:before:leading-6 checked:before:text-[#2C3694] checked:before:content-['✓']"
+                  className="h-6 w-6 appearance-none rounded-[4px] border border-black/40 bg-white checked:border-transparent checked:bg-loginCheckboxCheckedBg checked:before:block checked:before:text-center checked:before:text-[18px] checked:before:leading-6 checked:before:text-icanBlue-300 checked:before:content-['✓']"
                 />
                 <label
                   htmlFor="rememberMeModal"
@@ -388,7 +388,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${hasChildPasswordInput ? "bg-[#ACCC6E] text-black" : "bg-[#C6C6C6] text-[#8D8D8D]"}`}
+                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${hasChildPasswordInput ? "bg-loginGreen text-black" : "bg-loginDisabledBg text-loginDisabledText"}`}
                 disabled={modalLoginDisabled}
                 onClick={() => {
                   const form = document.getElementById(

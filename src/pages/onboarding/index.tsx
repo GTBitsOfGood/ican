@@ -113,7 +113,6 @@ export default function Onboard() {
       updatePin.mutate(confirmPin, {
         onSuccess: () => {
           setPinError("");
-          goToParentChildLoginSetup();
           setHasSavedParentPin(true);
           goToParentChildLoginSetup();
         },

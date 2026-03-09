@@ -39,13 +39,8 @@ export function useNotifications(userId: string | null) {
         icon: style.icon,
         duration: style.duration,
         position: "top-right",
-        style: {
-          borderRadius: "12px",
-          background: "#1a1a2e",
-          color: "#fff",
-          border: "2px solid #4a90d9",
-          fontFamily: "Quantico, sans-serif",
-        },
+        className:
+          "font-quantico rounded-xl border-2 border-icanBlue-300 bg-icanBlue-200 text-white",
       });
 
       NotificationHTTPClient.markDelivered(data.notificationId).catch(() => {});
