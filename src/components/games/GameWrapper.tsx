@@ -140,7 +140,7 @@ export default function GameWrapper({
             )}
             {/* Pet overlaid on the board when an X translation is provided */}
             {petBoardX !== null && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+              <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
                 <div
                   style={{
                     transform: `translateX(${petBoardX}%)`,

@@ -71,7 +71,7 @@ export default function FlowermanGame({
       clearTimeout(writingTimeoutRef.current);
     }
 
-    setPetBoardX(-45);
+    setPetBoardX(-55);
     setPetEmotion(PetEmotion.WRITING);
 
     writingTimeoutRef.current = setTimeout(() => {
