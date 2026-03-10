@@ -146,7 +146,7 @@ export default function FlowermanGame({
       <button
         type="button"
         onClick={handleRestart}
-        className="fixed bottom-24 right-6 z-[67] flex items-center justify-center"
+        className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
         aria-label="Restart game"
       >
         <img
