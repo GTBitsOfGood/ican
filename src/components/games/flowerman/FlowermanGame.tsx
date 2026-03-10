@@ -90,7 +90,7 @@ export default function FlowermanGame({
 
   const handleRestart = () => {
     const { hint, wordLength } = startNewWord();
-    setSpeechText("New word! It’s your turn to guess a letter.");
+    setSpeechText("New word! It's your turn to guess a letter.");
     showInformationModal({
       gameMode: "FLOWERMAN",
       title: "HINT",
@@ -134,7 +134,7 @@ export default function FlowermanGame({
         <MistakesLeft count={lives} />
       </div>
 
-      <div className="flex h-full flex-col items-center justify-center py-2">
+      <div className="flex h-full flex-col items-center justify-center mt-8">
         <FlowermanWordWithFlower
           word={word}
           guessedLetters={guessedLetters}

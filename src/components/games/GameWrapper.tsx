@@ -40,12 +40,18 @@ export default function GameWrapper({
   initialSpeechText = "",
   showGameAreaFrame = true,
   gameAreaClassName,
+  whiteboardSrc = "/games/whiteboard.png",
+  whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
+  gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
   initialSpeechText?: string;
   speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
   gameAreaClassName?: string;
+  whiteboardSrc?: string;
+  whiteboardContainerClassName?: string;
+  gameAreaFrameInsetClassName?: string;
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
@@ -131,11 +137,11 @@ export default function GameWrapper({
           )}
 
           {/* Whiteboard */}
-          <div className="absolute right-20 top-0 aspect-square w-[50%]">
+          <div className={whiteboardContainerClassName}>
             {showGameAreaFrame && (
               <img
-                src="/games/whiteboard.png"
-                className="absolute inset-0 h-full w-full"
+                src={whiteboardSrc}
+                className={"absolute inset-0 h-full w-full"}
                 alt=""
                 aria-hidden="true"
               />
@@ -163,8 +169,7 @@ export default function GameWrapper({
             <div
               className={cn(
                 "absolute inset-0 overflow-hidden",
-                showGameAreaFrame &&
-                  "bottom-[24%] left-[12%] right-[10%] top-[12%]",
+                showGameAreaFrame && gameAreaFrameInsetClassName,
                 gameAreaClassName,
               )}
             >
