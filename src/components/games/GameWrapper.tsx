@@ -4,7 +4,6 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import Bubble from "@/components/ui/Bubble";
-import ProfileHeader from "@/components/home/ProfileHeader";
 import { usePet } from "@/components/hooks/usePet";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
@@ -108,14 +107,7 @@ export default function GameWrapper({
             backgroundPosition: "center bottom",
           }}
         >
-          <ProfileHeader
-            petType={pet.petType}
-            level={pet.xpLevel}
-            coins={pet.coins}
-            currentExp={pet.xpGained}
-          />
-
-          {/* Pet at default home position */}
+          {/* Pet at default home position with speech bubble */}
           {petBoardX === null && (
             <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
               <div className="relative">

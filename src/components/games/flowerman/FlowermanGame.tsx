@@ -130,7 +130,7 @@ export default function FlowermanGame({
   return (
     <>
       {/* Mistakes left — top left, to the right of the profile header; z below modal (60) so it greys out with overlay */}
-      <div className="fixed top-17 left-[350px] z-[50]">
+      <div className="fixed top-[100px] left-[90px] z-[50]">
         <MistakesLeft count={lives} />
       </div>
 
