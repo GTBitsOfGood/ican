@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { useUser } from "@/components/UserContext";
 import { useUserProfile } from "@/components/hooks/useAuth";
@@ -10,6 +10,7 @@ export default function TicTacToe({
   setSpeechText,
   gameState,
   setGameState,
+  showInformationModal,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
@@ -17,6 +18,24 @@ export default function TicTacToe({
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [aiIsThinking, setAiIsThinking] = useState(false);
   const [prevGameState, setPrevGameState] = useState<GameState>(gameState);
+  const hasShownInitialPlayingMessageRef = useRef(false);
+
+  useEffect(() => {
+    if (gameState === GameState.START) {
+      setSpeechText("Welcome!");
+      hasShownInitialPlayingMessageRef.current = false;
+    }
+  }, [gameState, setSpeechText]);
+
+  const handleStart = useCallback(() => {
+    showInformationModal({
+      gameMode: "TIC-TAC-TOE",
+      title: "INSTRUCTIONS",
+      message:
+        "Press a space on the board to place your tile. You and your pet will take turns placing tiles. Get three X's in a row to win!",
+      onClose: () => setGameState(GameState.PLAYING),
+    });
+  }, [showInformationModal, setGameState]);
 
   useEffect(() => {
     if (
@@ -247,6 +266,7 @@ export default function TicTacToe({
                 } ${isTopRow ? "mt-0" : ""} ${isBottomRow ? "mb-0" : ""} ${isLeftCol ? "ml-0" : ""} ${isRightCol ? "mr-0" : ""}`}
               >
                 {value === "X" && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src="/games/tictactoe/x.png"
                     alt="X"
@@ -255,6 +275,7 @@ export default function TicTacToe({
                   />
                 )}
                 {value === "O" && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src="/games/tictactoe/o.png"
                     alt="O"
@@ -271,7 +292,7 @@ export default function TicTacToe({
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         {gameState === GameState.START && (
           <button
-            onClick={() => setGameState(GameState.PLAYING)}
+            onClick={handleStart}
             className="rounded-xl border-4 border-icanBlue-200 bg-icanGreen-300 px-6 py-3 text-white shadow-[0_4px_0_0_#7D83B2] font-quantico text-lg"
           >
             Start Game
@@ -317,6 +338,7 @@ export default function TicTacToe({
               {Array(petMovesLeft)
                 .fill(null)
                 .map((_, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={i}
                     src="/games/tictactoe/o.png"
@@ -337,6 +359,7 @@ export default function TicTacToe({
               {Array(playerMovesLeft)
                 .fill(null)
                 .map((_, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     key={i}
                     src="/games/tictactoe/x.png"
