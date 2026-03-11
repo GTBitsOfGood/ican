@@ -48,7 +48,6 @@ export default function AnswerChoiceBar({
         aria-hidden="true"
         className="block w-full h-auto"
         draggable={false}
-        style={{ imageRendering: "pixelated" }}
       />
 
       {/* Letter */}
