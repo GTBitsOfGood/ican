@@ -178,11 +178,14 @@ export default function GameWrapper({
 
           {/* Success overlay — shown for 5 seconds on win */}
           {showSuccess && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer"
+              onClick={() => setShowSuccess(false)}
+            >
               <img
-                src="/games/success.svg"
+                src="/assets/CongratulationsBackdrop.svg"
                 alt="Success!"
-                className="w-full max-w-2xl h-auto px-8"
+                className="w-[900px] max-w-[80vw] h-auto"
               />
             </div>
           )}
