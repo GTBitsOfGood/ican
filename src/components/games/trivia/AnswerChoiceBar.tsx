@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 interface AnswerChoiceBarProps {
   letter: string;
   children: React.ReactNode;
@@ -25,28 +23,18 @@ export default function AnswerChoiceBar({
   disabled,
   className = "",
 }: AnswerChoiceBarProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  let displayVariant = variant;
-
-  if (!disabled && isHovered && variant === "default") {
-    displayVariant = "hover";
-  }
-
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative block w-full scale-x-[1.06] cursor-pointer disabled:cursor-default ${className}`}
+      className={`relative block w-full scale-x-[1.06] cursor-pointer transition-[filter] hover:brightness-[0.98] hover:drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] disabled:cursor-default disabled:hover:brightness-100 disabled:hover:drop-shadow-none ${className}`}
     >
       <img
-        src={variantToSrc[displayVariant]}
+        src={variantToSrc[variant]}
         alt=""
         aria-hidden="true"
-        className="block w-full h-auto"
+        className="block h-auto w-full"
         draggable={false}
       />
 
