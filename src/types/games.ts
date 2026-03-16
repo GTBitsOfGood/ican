@@ -6,3 +6,26 @@ export type TriviaQuestion = {
 };
 
 export type HangmanDifficulty = "easy" | "medium" | "hard";
+
+export enum GameName {
+  HANGMAN = "HANGMAN",
+  TRIVIA = "TRIVIA",
+  TIC_TAC_TOE = "TIC_TAC_TOE",
+}
+
+export enum GameResult {
+  WIN = "WIN",
+  LOSS = "LOSS",
+  DRAW = "DRAW",
+}
+
+export interface GameStats {
+  wins: number;
+  losses: number;
+  draws: number;
+  bestWinStreak: number;
+  currentWinStreak: number;
+  lastTenResults: GameResult[];
+}
+
+export type GameStatistics = Partial<Record<GameName, GameStats>>;
