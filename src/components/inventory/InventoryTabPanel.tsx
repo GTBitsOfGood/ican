@@ -33,6 +33,26 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
   const items = inventoryData.filter(
     (item) => !exclude.map((i) => i.name).includes(item.name),
   );
+  const sortedItems = [...items].sort((a, b) => {
+    if (!("level" in a) || !("level" in b)) {
+      return 0;
+    }
+
+    const aIsStreakLocked =
+      a.isStreakLocked && petData.currentStreak < (a.streakRequirement || 3);
+    const bIsStreakLocked =
+      b.isStreakLocked && petData.currentStreak < (b.streakRequirement || 3);
+
+    if (aIsStreakLocked !== bIsStreakLocked) {
+      return aIsStreakLocked ? 1 : -1;
+    }
+
+    if (a.level !== b.level) {
+      return a.level - b.level;
+    }
+
+    return a.displayName.localeCompare(b.displayName);
+  });
 
   return (
     <TabPanel
@@ -41,10 +61,12 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
       selectedClassName={`!block`}
     >
       <div className="p-4 grid grid-cols-4 gap-4">
-        {items.map((item, index) =>
+        {sortedItems.map((item, index) =>
           "level" in item ? (
             type === "Store" ? (
-              petData.xpLevel >= item.level ? (
+              petData.xpLevel >= item.level &&
+              (!item.isStreakLocked ||
+                petData.currentStreak >= (item.streakRequirement || 3)) ? (
                 <Item
                   key={index}
                   type={type}
@@ -56,7 +78,11 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
                   setSelectedItem={setSelectedItem}
                 />
               ) : (
-                <LockedItem key={index} item={item} />
+                <LockedItem
+                  key={index}
+                  item={item}
+                  currentStreak={petData.currentStreak}
+                />
               )
             ) : (
               <Item

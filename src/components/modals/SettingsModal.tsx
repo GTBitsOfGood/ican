@@ -10,12 +10,9 @@ import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
 import ModalNextButton from "./ModalNextButton";
 import LogPasswordModal from "./LogPasswordModal";
+import NotificationSettingsModal from "./NotificationSettingsModal";
 import { useUser } from "../UserContext";
-import {
-  useSettings,
-  useUpdatePin,
-  useUpdateSettings,
-} from "../hooks/useSettings";
+import { useSettings, useUpdatePin } from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -33,8 +30,12 @@ export default function SettingsModal() {
     onOpen: onPinModalOpen,
     onClose: onPinModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isNotifModalOpen,
+    onOpen: onNotifModalOpen,
+    onClose: onNotifModalClose,
+  } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
-  const updateSettingsMutation = useUpdateSettings();
   const updatePinMutation = useUpdatePin();
   const logoutMutation = useLogout();
   const deleteAccountMutation = useDeleteAccount();
@@ -55,10 +56,6 @@ export default function SettingsModal() {
   const handleDisableParentalControls = async () => {
     updatePinMutation.mutate(null);
     onPinModalClose();
-  };
-
-  const handleNotificationsChange = (value: boolean) => {
-    updateSettingsMutation.mutate({ notifications: value });
   };
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -122,10 +119,22 @@ export default function SettingsModal() {
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <h5 className="text-3xl">Notifications</h5>
-                    <ModalSwitch
-                      state={settings.notifications}
-                      setState={handleNotificationsChange}
-                    />
+                    <div
+                      className="flex bg-white w-[26%] p-2 justify-center items-stretch cursor-pointer"
+                      onClick={onNotifModalOpen}
+                    >
+                      <svg
+                        fill="black"
+                        className="w-8 h-8"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M4 11v2h12v2h2v-2h2v-2h-2V9h-2v2H4zm10-4h2v2h-2V7zm0 0h-2V5h2v2zm0 10h2v-2h-2v2zm0 0h-2v2h2v-2z"
+                          fill="black"
+                        />
+                      </svg>
+                    </div>
                   </div>
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
@@ -144,6 +153,7 @@ export default function SettingsModal() {
                       link="settings"
                       onClick={handleLogout}
                       requirePin={!!settings.pin}
+                      preventNavigation={true}
                     />
                   </div>
                 </div>
@@ -282,6 +292,11 @@ export default function SettingsModal() {
           handleNext={handleDisableParentalControls}
         />
       )}
+
+      <NotificationSettingsModal
+        isOpen={isNotifModalOpen}
+        onClose={onNotifModalClose}
+      />
     </>
   );
 }
