@@ -27,11 +27,12 @@ export function useNotifications(userId: string | null) {
       authUrl: "/api/v1/notifications/ably-token",
       authMethod: "GET",
     });
+    let isCleaningUp = false;
 
     const env = process.env.NODE_ENV || "development";
     const channel = client.channels.get(`notifications:${env}:${userId}`);
 
-    channel.subscribe("medication-notification", (message) => {
+    const onMedicationNotification = (message: Ably.Message) => {
       const data = message.data as NotificationMessage;
 
       toast.custom(
@@ -40,10 +41,21 @@ export function useNotifications(userId: string | null) {
       );
 
       NotificationHTTPClient.markDelivered(data.notificationId).catch(() => {});
-    });
+    };
+
+    void channel
+      .subscribe("medication-notification", onMedicationNotification)
+      .catch((error) => {
+        if (isCleaningUp) return;
+        const message =
+          error instanceof Error ? error.message.toLowerCase() : "";
+        if (message.includes("connection closed")) return;
+        console.error("Failed to subscribe to notifications:", error);
+      });
 
     return () => {
-      channel.unsubscribe();
+      isCleaningUp = true;
+      channel.unsubscribe("medication-notification", onMedicationNotification);
       client.close();
     };
   }, [userId]);

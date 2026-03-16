@@ -63,17 +63,17 @@ const GoogleLoginButton = ({
         </button>
       ) : (
         <button
-          className="w-full gap-y-2.5 border-2 flex py-3 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-12 short:h-8 desktop:text-[24px]/[32px] short:text-[16px] mobile:text-[16px] text-center desktop:mb-3 mobile:mb-1 short:mb-1"
+          className="w-full gap-y-2.5 border-2 flex py-2 justify-center items-center border-solid border-[#000] bg-white text-black mobile:h-8 desktop:h-11 short:h-8 desktop:text-[22px]/[30px] short:text-[16px] mobile:text-[16px] text-center desktop:mb-2 mobile:mb-1 short:mb-1"
           type="button"
           onClick={() => login()}
         >
           <Image
             src="/GoogleSocialIcon.svg"
             alt="Google Logo"
-            width={30}
-            height={30}
+            width={28}
+            height={28}
           />
-          <div className="px-3 desktop:text-[24px]/[32px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-[24px]/[32px] text-[#000]">
+          <div className="px-3 desktop:text-[22px]/[30px] short:text-lg tiny:text-[16px] mobile:text-[16px] text-[22px]/[30px] text-[#000]">
             Login with Google
           </div>
         </button>
