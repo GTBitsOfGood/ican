@@ -388,7 +388,7 @@ export default function Home() {
 
               <button
                 type="button"
-                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${hasChildPasswordInput ? "bg-loginGreen text-black" : "bg-loginDisabledBg text-loginDisabledText"}`}
+                className={`mx-auto mt-4 flex h-[56px] w-[136px] items-center justify-center text-[24px]/[24px] tracking-[-0.04em] ${!modalLoginDisabled ? "bg-loginGreen text-black" : "bg-loginDisabledBg text-loginDisabledText"}`}
                 disabled={modalLoginDisabled}
                 onClick={() => {
                   const form = document.getElementById(
