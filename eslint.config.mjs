@@ -1,13 +1,22 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypeScript from "eslint-config-next/typescript";
+import prettier from "eslint-config-prettier/flat";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-export default [...compat.extends("next/core-web-vitals", "next/typescript", "prettier")];
+const config = [
+  ...nextCoreWebVitals,
+  ...nextTypeScript,
+  {
+    files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
+    settings: {
+      react: {
+        version: "19.2",
+      },
+    },
+  },
+  {
+    ignores: [".netlify/**"],
+  },
+  prettier,
+];
+
+export default config;
