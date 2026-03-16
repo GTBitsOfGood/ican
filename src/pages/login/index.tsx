@@ -37,9 +37,6 @@ export default function Home() {
   const modalLoginDisabled = isPatternChildLogin
     ? childColorSequence.length < 4
     : !/^\d{4}$/.test(password.trim());
-  const hasChildPasswordInput = isPatternChildLogin
-    ? childColorSequence.length > 0
-    : password.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
