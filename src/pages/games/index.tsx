@@ -10,9 +10,9 @@ export default function GamesIndex() {
       href: "/games/sample",
     },
     {
-      name: "Hangman",
+      name: "Flowerman",
       icon: "/icons/Star.svg",
-      href: "/games/hangman",
+      href: "/games/flowerman",
     },
     {
       name: "Tic Tac Toe",

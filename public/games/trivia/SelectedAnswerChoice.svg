@@ -1,0 +1,19 @@
+<svg width="695" height="82" viewBox="0 0 695 82" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="81.48" height="81.48" fill="url(#pattern0_selected_answer_choice)"/>
+<mask id="path-2-inside-1_selected_answer_choice" fill="white">
+<path d="M81.48 12.7212H682.547V68.7585H81.48V12.7212Z"/>
+</mask>
+<path d="M81.48 12.7212H682.547V68.7585H81.48V12.7212Z" fill="#AF7426"/>
+<path d="M682.547 68.7585V65.6585H81.48V68.7585V71.8585H682.547V68.7585Z" fill="#8F5E1D" mask="url(#path-2-inside-1_selected_answer_choice)"/>
+<rect x="682.547" y="12.7275" width="12.45" height="56.025" fill="url(#pattern1_selected_answer_choice)"/>
+<defs>
+<pattern id="pattern0_selected_answer_choice" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_selected_answer_choice" transform="scale(0.0400524 0.04)"/>
+</pattern>
+<pattern id="pattern1_selected_answer_choice" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image1_selected_answer_choice" transform="scale(0.25 0.0555556)"/>
+</pattern>
+<image id="image0_selected_answer_choice" width="26" height="25" preserveAspectRatio="none" image-rendering="pixelated" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAYAAAAv3j5gAAAAAXNSR0IArs4c6QAAAF5JREFUSIljZEAF/xmoBxhxcf7HWUhSzZZFJ56jmA9jUNUSbJYx0soSdMuYaGYDElhfovafLhYxMDAwjFo0atGoRaMWjVo0atFAW/Tg1Xf6thlggC6tILhlVLMJzWwAg5MbNQpEVNkAAAAASUVORK5CYII="/>
+<image id="image1_selected_answer_choice" width="4" height="18" preserveAspectRatio="none" image-rendering="pixelated" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAASCAYAAAB8fn/4AAAAAXNSR0IArs4c6QAAAFBJREFUGJVjWF+i9p8BCTAxMDAw9MfJ/kcRUBDjhAsywWQUxDgZUARgWlEEMFQMkEDhoseMcIEHr74jVDx49Z2hcNFjRgYGBgYGjPCAKYUBAMeoF3uj/gAPAAAAAElFTkSuQmCC"/>
+</defs>
+</svg>

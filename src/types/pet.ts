@@ -12,6 +12,7 @@ export enum PetEmotion {
   HAPPY = "happy",
   SAD = "sad",
   NEUTRAL = "neutral",
+  WRITING = "writing",
 }
 
 export interface Pet {

@@ -121,6 +121,10 @@ const ERRORS = Object.freeze({
       DELETE: "Failed to delete forgot password code.",
     },
   },
+  GAME_STATISTICS: {
+    UNAUTHORIZED:
+      "User is not permitted to access another user's game statistics",
+  },
   MAIL: {
     FAILURE: "Failed to send email.",
   },

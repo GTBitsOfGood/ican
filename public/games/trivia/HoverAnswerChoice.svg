@@ -1,0 +1,31 @@
+<svg width="705" height="92" viewBox="0 0 705 92" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g filter="url(#filter0_d_16313_15742)">
+<rect x="5" width="81.4789" height="81.5856" fill="url(#pattern0_16313_15742)"/>
+<mask id="path-2-inside-1_16313_15742" fill="white">
+<path d="M86.479 12.7739H684.434V68.8112H86.479V12.7739Z"/>
+</mask>
+<path d="M86.479 12.7739H684.434V68.8112H86.479V12.7739Z" fill="#EFE9DD"/>
+<path d="M86.479 12.7739V15.8739H684.434V12.7739V9.67393H86.479V12.7739ZM684.434 68.8112V65.7112H86.479V68.8112V71.9112H684.434V68.8112Z" fill="black" mask="url(#path-2-inside-1_16313_15742)"/>
+<rect x="684.434" y="12.7739" width="15.566" height="56.0374" fill="url(#pattern1_16313_15742)"/>
+</g>
+<defs>
+<filter id="filter0_d_16313_15742" x="0" y="0" width="705" height="91.5854" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="5"/>
+<feGaussianBlur stdDeviation="2.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_16313_15742"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_16313_15742" result="shape"/>
+</filter>
+<pattern id="pattern0_16313_15742" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image0_16313_15742" transform="scale(0.0400524 0.04)"/>
+</pattern>
+<pattern id="pattern1_16313_15742" patternContentUnits="objectBoundingBox" width="1" height="1">
+<use xlink:href="#image1_16313_15742" transform="scale(0.2 0.0555556)"/>
+</pattern>
+<image id="image0_16313_15742" width="26" height="25" preserveAspectRatio="none" image-rendering="pixelated" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAZCAYAAAAv3j5gAAAAAXNSR0IArs4c6QAAAF5JREFUSIljZEAF/xmoBxhxcf7HWUhSzZZFJ56jmA9jUNUSbJYx0soSdMuYaGYDElhfovafLhYxMDAwjFo0atGoRaMWjVo0atFAW/Tg1Xf6thlggC6tILhlVLMJzWwAg5MbNQpEVNkAAAAASUVORK5CYII="/>
+<image id="image1_16313_15742" width="5" height="18" preserveAspectRatio="none" image-rendering="pixelated" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAASCAYAAACTvBTGAAAAAXNSR0IArs4c6QAAAEFJREFUGJVjYGBg+A/FcMD0/uVdhvcv7zIgSzDBGMgSTAxYAIogTDVhlYNQUFBcmYGBgYERv0qYKrggsgAMYAQyANr1EtITxBKvAAAAAElFTkSuQmCC"/>
+</defs>
+</svg>
