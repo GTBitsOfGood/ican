@@ -1,8 +1,9 @@
 import { PetType } from "@/types/pet";
 import { InvalidArgumentsError } from "../types/exceptions";
-import { Appearance, SavedOutfit } from "@/db/models/pet";
+import type { Appearance, SavedOutfit } from "@/db/models/pet";
 import { ItemType } from "@/types/inventory";
-import { Types } from "mongoose";
+
+const OBJECT_ID_REGEX = /^[0-9a-fA-F]{24}$/;
 
 export async function validateParams({
   userId,
@@ -17,7 +18,7 @@ export async function validateParams({
   petId?: string;
   food?: number;
 }): Promise<void> {
-  if (userId && !Types.ObjectId.isValid(userId)) {
+  if (userId && !OBJECT_ID_REGEX.test(userId)) {
     throw new InvalidArgumentsError(
       "Invalid parameters: 'userId' must be a valid ObjectId.",
     );
@@ -36,7 +37,7 @@ export async function validateParams({
     );
   }
 
-  if (petId && !Types.ObjectId.isValid(petId)) {
+  if (petId && !OBJECT_ID_REGEX.test(petId)) {
     throw new InvalidArgumentsError(
       "Invalid parameters: 'petId' must be a non-empty string.",
     );

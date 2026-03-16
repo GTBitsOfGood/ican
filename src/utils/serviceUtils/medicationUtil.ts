@@ -18,7 +18,7 @@ function convertTimeToMinutes(timeStr: string): number {
 
 export const baseMedicationSchema = z.object({
   formOfMedication: z.enum(["Pill", "Syrup", "Shot"], {
-    errorMap: () => ({
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
     }),
   }),
@@ -29,7 +29,7 @@ export const baseMedicationSchema = z.object({
     .max(5, ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID),
 
   repeatUnit: z.enum(["Day", "Week", "Month"], {
-    errorMap: () => ({
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
     }),
   }),
@@ -78,7 +78,7 @@ export const baseMedicationSchema = z.object({
     .optional(),
 
   dosesUnit: z.enum(["Doses", "Hours"], {
-    errorMap: () => ({
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_UNIT,
     }),
   }),
@@ -100,7 +100,7 @@ export const baseMedicationSchema = z.object({
   doseTimes: z.array(z.string()),
 
   notificationFrequency: z.enum(["Day Of Dose", "Every Dose"], {
-    errorMap: () => ({
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
     }),
   }),

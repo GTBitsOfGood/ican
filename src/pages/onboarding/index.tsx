@@ -14,7 +14,7 @@ import {
   useUpdatePin,
 } from "@/components/hooks/useSettings";
 import { OnboardingStep, UserType } from "@/types/onboarding";
-import { ChildPasswordType } from "@/types/user";
+import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 
 export default function Onboard() {
   const router = useRouter();
@@ -23,10 +23,9 @@ export default function Onboard() {
   const [pin, setPin] = useState<string>("");
   const [confirmPin, setConfirmPin] = useState<string>("");
   const [childPasswordType, setChildPasswordType] = useState<ChildPasswordType>(
-    ChildPasswordType.NORMAL,
+    ChildPasswordType.COLOR,
   );
   const [childPassword, setChildPassword] = useState<string>("");
-  const [confirmChildPassword, setConfirmChildPassword] = useState<string>("");
   const [colorSequence, setColorSequence] = useState<string[]>([]);
   const [consentChecked, setConsentChecked] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string>("");
@@ -114,7 +113,6 @@ export default function Onboard() {
       updatePin.mutate(confirmPin, {
         onSuccess: () => {
           setPinError("");
-          goToParentChildLoginSetup();
           setHasSavedParentPin(true);
           goToParentChildLoginSetup();
         },
@@ -130,21 +128,23 @@ export default function Onboard() {
   };
 
   const handleChildLoginSubmit = () => {
-    const candidatePassword =
-      childPasswordType === ChildPasswordType.COLOR
-        ? colorSequence.join("-")
-        : childPassword.trim();
+    const candidatePassword = isPatternChildPasswordType(childPasswordType)
+      ? colorSequence.join("-")
+      : childPassword.trim();
 
-    if (candidatePassword.length < 3) {
-      setPinError("Child password must be at least 3 characters.");
+    if (
+      isPatternChildPasswordType(childPasswordType) &&
+      colorSequence.length < 4
+    ) {
+      setPinError("Please enter 4 selections.");
       return;
     }
 
     if (
       childPasswordType === ChildPasswordType.NORMAL &&
-      candidatePassword !== confirmChildPassword.trim()
+      !/^\d{4}$/.test(candidatePassword)
     ) {
-      setPinError("Child passwords don't match.");
+      setPinError("Please enter a valid 4-digit PIN.");
       return;
     }
 
@@ -282,7 +282,6 @@ export default function Onboard() {
           <ChildLoginStep
             childPasswordType={childPasswordType}
             password={childPassword}
-            confirmPassword={confirmChildPassword}
             colorSequence={colorSequence}
             error={pinError}
             onBack={handleBack}
@@ -290,20 +289,25 @@ export default function Onboard() {
               setPinError("");
               setChildPasswordType(value);
               setChildPassword("");
-              setConfirmChildPassword("");
               setColorSequence([]);
             }}
             onPasswordChange={(value) => {
               setPinError("");
               setChildPassword(value);
             }}
-            onConfirmPasswordChange={(value) => {
-              setPinError("");
-              setConfirmChildPassword(value);
-            }}
             onAddColor={(value) => {
               setPinError("");
-              setColorSequence((prev) => [...prev, value]);
+              setColorSequence((prev) =>
+                prev.length >= 4 ? prev : [...prev, value],
+              );
+            }}
+            onRemoveColor={(value) => {
+              setPinError("");
+              setColorSequence((prev) => {
+                const index = prev.lastIndexOf(value);
+                if (index === -1) return prev;
+                return [...prev.slice(0, index), ...prev.slice(index + 1)];
+              });
             }}
             onClearColors={() => {
               setPinError("");
