@@ -83,6 +83,7 @@ export default {
           300: "#98D03B",
         },
         textGrey: "#626262",
+        textBeige: "#efe9dd",
         loginGreen: "#ACCC6E",
         loginBlue: "#7D83B2",
         loginError: "#D06664",

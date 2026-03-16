@@ -7,6 +7,7 @@ import Bubble from "@/components/ui/Bubble";
 import { usePet } from "@/components/hooks/usePet";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
+import { PetEmotion } from "@/types/pet";
 
 export enum GameState {
   START,
@@ -16,16 +17,21 @@ export enum GameState {
   TIE,
 }
 
+type InformationModalOptions = {
+  gameMode?: string;
+  title: string;
+  message: string;
+  letters?: string;
+  onClose?: () => void;
+};
+
 export interface GameWrapperControls {
   setSpeechText: (text: string) => void;
   gameState: GameState;
   setGameState: (state: GameState) => void;
-  showInformationModal: (options: {
-    title: string;
-    message: string;
-    closeLabel?: string;
-    onClose?: () => void;
-  }) => void;
+  showInformationModal: (options: InformationModalOptions) => void;
+  setPetBoardX?: (percent: number | null) => void;
+  setPetEmotion?: (emotion: PetEmotion | null) => void;
 }
 
 export default function GameWrapper({
@@ -33,30 +39,49 @@ export default function GameWrapper({
   initialSpeechText = "",
   showGameAreaFrame = true,
   gameAreaClassName,
+  whiteboardSrc = "/games/whiteboard.png",
+  whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
+  gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
   initialSpeechText?: string;
   speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
   gameAreaClassName?: string;
+  whiteboardSrc?: string;
+  whiteboardContainerClassName?: string;
+  gameAreaFrameInsetClassName?: string;
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
   const [gameState, setGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
-  const [informationModal, setInformationModal] = useState<{
-    title: string;
-    message: string;
-    closeLabel?: string;
-    onClose?: () => void;
-  } | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [informationModal, setInformationModal] =
+    useState<InformationModalOptions | null>(null);
+  const [petBoardX, setPetBoardX] = useState<number | null>(null);
+  const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
 
   useEffect(() => {
     if (initialSpeechText && gameState === GameState.START) {
       setSpeechText(initialSpeechText);
-      return;
     }
   }, [gameState, initialSpeechText]);
+
+  // Show success overlay for 5 seconds on win
+  useEffect(() => {
+    if (gameState === GameState.WON) {
+      setShowSuccess(true);
+      const timer = setTimeout(() => setShowSuccess(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState]);
+
+  const closeModal = () => {
+    const onClose = informationModal?.onClose;
+    setInformationModal(null);
+    onClose?.();
+  };
 
   // Copy and pasted from the main page, probably a better way to do this or just make a util function
   const equippedBackgroundKey = pet?.appearance?.background;
@@ -75,35 +100,19 @@ export default function GameWrapper({
         <LoadingScreen />
       ) : (
         <div
-          className="min-h-screen bg-no-repeat"
+          className="relative min-h-screen overflow-hidden bg-no-repeat"
           style={{
             backgroundImage: `url("${equippedBackgroundImage}")`,
             backgroundSize: "cover",
             backgroundPosition: "center bottom",
           }}
         >
-          <div className="relative min-h-screen w-full px-4 py-6 tablet:px-8 tablet:py-8">
-            <div className="w-full tablet:pr-[20rem]">
-              <div
-                className={cn(
-                  "flex h-[36rem] min-h-[36rem] flex-col",
-                  showGameAreaFrame && "rounded-2xl bg-white p-6 tablet:p-8",
-                  gameAreaClassName,
-                )}
-              >
-                <GameComponent
-                  setSpeechText={setSpeechText}
-                  gameState={gameState}
-                  setGameState={setGameState}
-                  showInformationModal={setInformationModal}
-                />
-              </div>
-            </div>
-
-            <div className="absolute right-0 top-1/2 w-[17rem] -translate-y-1/2 tablet:w-[22rem]">
+          {/* Pet at default home position with speech bubble */}
+          {petBoardX === null && (
+            <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
               <div className="relative">
                 {speechText && (
-                  <div className="absolute bottom-[100%] right-[12%] z-20 scale-[0.5] origin-bottom-right tablet:scale-[0.64]">
+                  <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
                     <Bubble text={speechText} />
                   </div>
                 )}
@@ -117,70 +126,123 @@ export default function GameWrapper({
                 />
               </div>
             </div>
+          )}
 
-            {(gameState === GameState.WON ||
-              gameState === GameState.LOSS ||
-              gameState === GameState.TIE) && (
-              <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
-                <div className="w-full max-w-md rounded-3xl border-4 border-icanBlue-200 bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                  <h2 className="text-3xl text-icanBlue-300">
-                    {gameState === GameState.WON
-                      ? "You Won!"
-                      : gameState === GameState.TIE
-                        ? "It's a Tie!"
-                        : "Game Over"}
-                  </h2>
-                  <p className="mt-2 text-icanBlue-300">
-                    {gameState === GameState.WON
-                      ? "Good job!"
-                      : gameState === GameState.TIE
-                        ? "That was close!"
-                        : "Nice try!"}
-                  </p>
-                  <div className="mt-6 flex items-center justify-center gap-3">
-                    <button
-                      type="button"
-                      className="rounded-xl border-4 border-icanBlue-200 bg-white px-4 py-2 text-icanBlue-300 shadow-[0_4px_0_0_#7D83B2]"
-                      onClick={() => setGameState(GameState.PLAYING)}
-                    >
-                      Play Again
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-xl border-4 border-icanBlue-200 bg-icanBlue-200 px-4 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                      onClick={() => router.push("/games")}
-                    >
-                      Back to Games
-                    </button>
-                  </div>
+          {/* Whiteboard */}
+          <div className={whiteboardContainerClassName}>
+            {showGameAreaFrame && (
+              <img
+                src={whiteboardSrc}
+                className={"absolute inset-0 h-full w-full"}
+                alt=""
+                aria-hidden="true"
+              />
+            )}
+            {/* Pet overlaid on the board when an X translation is provided */}
+            {petBoardX !== null && (
+              <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <div
+                  style={{
+                    transform: `translateX(${petBoardX}%)`,
+                  }}
+                >
+                  <PetAppearance
+                    petType={pet.petType}
+                    selectedItem={null}
+                    appearance={pet.appearance}
+                    showBackground={false}
+                    className="h-[17rem] tablet:h-[22rem]"
+                    characterImageSize={340}
+                    emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                  />
                 </div>
               </div>
             )}
+            <div
+              className={cn(
+                "absolute inset-0 overflow-hidden",
+                showGameAreaFrame && gameAreaFrameInsetClassName,
+                gameAreaClassName,
+              )}
+            >
+              <GameComponent
+                setSpeechText={setSpeechText}
+                gameState={gameState}
+                setGameState={setGameState}
+                showInformationModal={setInformationModal}
+                setPetBoardX={setPetBoardX}
+                setPetEmotion={setPetEmotion}
+              />
+            </div>
+          </div>
 
-            {informationModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-                <div className="w-full max-w-md rounded-2xl bg-white p-6 text-center font-quantico shadow-[0_8px_0_0_#7D83B2]">
-                  <h2 className="text-3xl text-icanBlue-300">
+          {/* Success overlay — shown for 5 seconds on win */}
+          {showSuccess && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer"
+              onClick={() => setShowSuccess(false)}
+            >
+              <img
+                src="/assets/CongratulationsBackdrop.svg"
+                alt="Success!"
+                className="w-[900px] max-w-[80vw] h-auto"
+              />
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={() => router.push("/games")}
+            className="fixed top-[15px] right-[5px] z-[67] flex items-center justify-center"
+            aria-label="Leave game"
+          >
+            <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
+          </button>
+
+          {informationModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
+              <div className="relative w-full max-w-2xl">
+                {/* Card background */}
+                <img
+                  src="/games/instruction_card.svg"
+                  alt=""
+                  className="w-full h-auto pointer-events-none select-none"
+                />
+                {/* X close button */}
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="absolute top-[6%] right-[4%] z-10 p-1"
+                  aria-label="Close"
+                >
+                  <img
+                    src="/games/instruction_card_X.svg"
+                    alt="Close"
+                    className="h-7 w-auto"
+                  />
+                </button>
+                {/* Content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
+                  {informationModal.gameMode && (
+                    <p className="font-quantico text-2xl uppercase mb-5 font-bold text-textBeige">
+                      GAME MODE: {informationModal.gameMode}
+                    </p>
+                  )}
+                  <h2 className="font-quantico text-5xl font-bold uppercase mb-5 text-textBeige">
                     {informationModal.title}
                   </h2>
-                  <p className="mt-3 text-icanBlue-300">
+                  <p className="font-quantico text-2xl font-bold leading-relaxed text-textBeige">
                     {informationModal.message}
                   </p>
-                  <button
-                    type="button"
-                    className="mt-6 rounded-xl bg-icanBlue-200 px-5 py-2 text-white shadow-[0_4px_0_0_#7D83B2]"
-                    onClick={() => {
-                      const onClose = informationModal.onClose;
-                      setInformationModal(null);
-                      onClose?.();
-                    }}
-                  >
-                    {informationModal.closeLabel || "Close"}
-                  </button>
+                  {informationModal.letters && (
+                    <p className="font-quantico text-2xl font-bold mt-1 tracking-widest uppercase text-textBeige">
+                      {informationModal.letters}
+                    </p>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </AuthorizedRoute>
