@@ -16,7 +16,7 @@ export const handleError = (error: unknown) => {
 
   if (error instanceof Error) {
     if (error instanceof ZodError) {
-      const errorMessage = error.errors
+      const errorMessage = error.issues
         .map((err) => `${err.path.join(".")}: ${err.message}`)
         .join("; ");
 
