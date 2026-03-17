@@ -15,6 +15,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRef, useState } from "react";
 import GoogleLoginButton from "@/components/GoogleLoginButton";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Sections = [
   {
@@ -48,6 +49,7 @@ const ButtonStates: Record<number, string> = {
 };
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -109,7 +111,7 @@ export default function ForgotPasswordPage() {
     }
 
     if (page == 3) {
-      window.location.href = "login";
+      await router.push("/login");
       return;
     }
 

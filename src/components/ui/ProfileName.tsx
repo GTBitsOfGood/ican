@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useUpdatePetName, usePet } from "../hooks/usePet";
 
 const ProfileName: React.FC = () => {
@@ -38,10 +38,10 @@ const ProfileName: React.FC = () => {
     setEditing((prev) => !prev);
   };
 
-  const cancelEditing = () => {
+  const cancelEditing = useCallback(() => {
     setEditingName(currentName);
     setEditing(false);
-  };
+  }, [currentName]);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -80,7 +80,7 @@ const ProfileName: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscapeKey);
     };
-  }, [isEditing, currentName]);
+  }, [isEditing, cancelEditing]);
 
   return (
     <div

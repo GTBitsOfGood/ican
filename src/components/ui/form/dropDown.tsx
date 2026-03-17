@@ -18,10 +18,12 @@ export default function DropDown({
   value,
   setValue,
 }: DropDownProps) {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [currentX, setCurrentX] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const selectedIndex = children.findIndex(
+    (child) => child.props.value === value,
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,13 +37,6 @@ export default function DropDown({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    const initialIndex = children.findIndex(
-      (child) => child.props.value === value,
-    );
-    setSelectedIndex(initialIndex);
-  }, [value, children]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
