@@ -54,4 +54,13 @@ export default class BagDAO {
     ]);
     return items;
   }
+
+  static async deleteBagItemsByPetId(
+    petId: string | Types.ObjectId,
+  ): Promise<void> {
+    const petIdObj =
+      petId instanceof Types.ObjectId ? petId : new Types.ObjectId(petId);
+    await dbConnect();
+    await BagItemModel.deleteMany({ petId: petIdObj });
+  }
 }

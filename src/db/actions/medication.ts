@@ -67,6 +67,7 @@ export default class MedicationDAO {
     _userId: string,
   ): Promise<HydratedDocument<MedicationDocument>[]> {
     const userId = new Types.ObjectId(_userId);
+    await dbConnect();
     return await MedicationModel.find({ userId });
   }
 
@@ -126,5 +127,36 @@ export default class MedicationDAO {
     if (result.deletedCount == 0) {
       throw new Error("Failed to delete medication.");
     }
+  }
+
+  static async deleteMedicationArtifactsByMedicationIds(
+    medicationIds: Array<string | Types.ObjectId>,
+  ): Promise<void> {
+    if (medicationIds.length === 0) {
+      return;
+    }
+
+    const medicationIdObjs = medicationIds.map((medicationId) =>
+      medicationId instanceof Types.ObjectId
+        ? medicationId
+        : new Types.ObjectId(medicationId),
+    );
+
+    await dbConnect();
+    await MedicationLogModel.deleteMany({
+      medicationId: { $in: medicationIdObjs },
+    });
+    await MedicationCheckInModel.deleteMany({
+      medicationId: { $in: medicationIdObjs },
+    });
+  }
+
+  static async deleteMedicationsByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    await MedicationModel.deleteMany({ userId });
   }
 }
