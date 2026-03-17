@@ -28,15 +28,19 @@ export default function ForgotPinModal() {
 
   //sends OTP
   useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
     (async () => {
       try {
-        await AuthHTTPClient.forgotPassword({ userId: userId! });
+        await AuthHTTPClient.forgotPassword({ userId: userId });
       } catch (error) {
         setDisplayError((error as Error).message);
         return;
       }
     })();
-  }, []);
+  }, [userId]);
 
   const handleClick = async () => {
     if (!userId) {
