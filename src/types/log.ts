@@ -1,6 +1,7 @@
 export type LogType = {
   id: string;
   name: string;
+  formOfMedication: "Pill" | "Syrup" | "Shot";
   dosage: string;
   notes: string;
   scheduledDoseTime: string;

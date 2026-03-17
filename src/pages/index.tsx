@@ -26,6 +26,7 @@ import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
 import { useUpcomingMedication } from "@/components/hooks/useMedication";
 import { usePetEmotion } from "@/components/hooks/usePetEmotion";
 import { formatMedicationTime } from "@/utils/medicationDisplay";
+import { useRouter } from "next/router";
 
 interface HomeProps {
   activeModal: string;
@@ -36,6 +37,7 @@ export default function Home({
   activeModal = "",
   foods = undefined,
 }: HomeProps) {
+  const router = useRouter();
   const { userId } = useUser();
   const { data: tutorialCompleted } = useTutorialStatus(userId);
   const isTutorial = !tutorialCompleted;
@@ -68,6 +70,21 @@ export default function Home({
     hasMedication,
     recentlyTaken,
   } = useUpcomingMedication();
+  const activeMedicationFlowType =
+    router.query.medicationFlow === "true" &&
+    (router.query.medicationType === "Pill" ||
+      router.query.medicationType === "Syrup" ||
+      router.query.medicationType === "Shot")
+      ? router.query.medicationType
+      : null;
+  const [completedMedicationFlow, setCompletedMedicationFlow] =
+    useState<boolean>(false);
+  const activeMedicationFlowStage =
+    activeMedicationFlowType && router.query.medicationStage === "drag"
+      ? "drag"
+      : activeMedicationFlowType
+        ? "intro"
+        : null;
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
     equippedBackgroundKey &&
@@ -91,6 +108,45 @@ export default function Home({
     tutorial.tutorialStep,
     ensureStarterKitMutation,
   ]);
+
+  useEffect(() => {
+    if (!activeMedicationFlowType || isTutorial) {
+      return;
+    }
+
+    if (activeMedicationFlowStage !== "intro") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      router.replace(
+        {
+          pathname: "/",
+          query: {
+            medicationFlow: "true",
+            medicationType: activeMedicationFlowType,
+            medicationStage: "drag",
+          },
+        },
+        undefined,
+        { shallow: true },
+      );
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [activeMedicationFlowStage, activeMedicationFlowType, isTutorial, router]);
+
+  useEffect(() => {
+    if (!completedMedicationFlow) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setCompletedMedicationFlow(false);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [completedMedicationFlow]);
 
   const handleFoodDrop = async () => {
     if (!pet) return;
@@ -131,6 +187,15 @@ export default function Home({
     if (isTutorial) {
       return tutorial.getTutorialText();
     }
+    if (activeMedicationFlowType && activeMedicationFlowStage === "intro") {
+      return "Great job taking your medication {userName}! Now it's time for mine!";
+    }
+    if (activeMedicationFlowType && activeMedicationFlowStage === "drag") {
+      return "Drag the medication into the correct place to medicate me!";
+    }
+    if (completedMedicationFlow) {
+      return "I feel great! Thank you for helping me, {userName}!";
+    }
     if (recentlyTaken) {
       return "Great job taking your medication {userName}!";
     }
@@ -144,6 +209,8 @@ export default function Home({
   };
 
   const getBubbleAnimation = () => {
+    if (activeMedicationFlowType || completedMedicationFlow)
+      return "none" as const;
     if (isTutorial) return "none" as const;
     if (hasMedication && !recentlyTaken) return "jump" as const;
     return "none" as const;
@@ -154,13 +221,21 @@ export default function Home({
   };
 
   const handleMedicationDrop = async () => {
-    if (!isTutorial) return;
     if (!pet) return;
     if (medicationDistance == null || medicationDistance > 150) return;
 
-    setShowMedicationSuccessModal(true);
-    tutorial.clearMedicationDrag();
-    tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+    if (isTutorial) {
+      setShowMedicationSuccessModal(true);
+      tutorial.clearMedicationDrag();
+      tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+      return;
+    }
+
+    if (!activeMedicationFlowType) return;
+
+    setCompletedMedicationFlow(true);
+    setMedicationDistance(null);
+    router.replace("/", undefined, { shallow: true });
   };
 
   return (
@@ -243,9 +318,13 @@ export default function Home({
             bubbleAnimation={getBubbleAnimation()}
             onFoodDrop={handleFoodDrop}
             onDrag={handleDrag}
-            medicationType={isTutorial ? tutorial.medicationType : null}
+            medicationType={
+              isTutorial ? tutorial.medicationType : activeMedicationFlowType
+            }
             shouldShowMedicationDrag={
-              isTutorial ? tutorial.shouldShowMedicationDrag : false
+              isTutorial
+                ? tutorial.shouldShowMedicationDrag
+                : !!activeMedicationFlowType
             }
             onMedicationDrop={handleMedicationDrop}
             onMedicationDrag={handleMedicationDrag}

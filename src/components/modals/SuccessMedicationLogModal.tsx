@@ -7,14 +7,20 @@ import {
 } from "@heroui/react";
 import { useEffect } from "react";
 import ModalCloseButton from "./ModalCloseButton";
-import Image from "next/image";
+import {
+  InjectionIcon,
+  LiquidIcon,
+  PillIcon,
+} from "../ui/modals/medicationIcons";
 
 interface SuccessMedicationModalProps {
   onModalClose?: () => void;
+  medicationType?: "Pill" | "Syrup" | "Shot";
 }
 
 export default function SuccessMedicationModal({
   onModalClose,
+  medicationType = "Pill",
 }: SuccessMedicationModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -28,6 +34,15 @@ export default function SuccessMedicationModal({
       onModalClose();
     }
   };
+
+  const medicationIcon =
+    medicationType === "Syrup" ? (
+      <LiquidIcon className="h-[200px] w-[200px]" />
+    ) : medicationType === "Shot" ? (
+      <InjectionIcon className="h-[200px] w-[200px]" />
+    ) : (
+      <PillIcon className="h-[200px] w-[200px]" />
+    );
 
   return (
     <Modal
@@ -51,15 +66,10 @@ export default function SuccessMedicationModal({
         <ModalHeader>Medication Logged Successfully</ModalHeader>
         <ModalBody>
           <div className="flex justify-center items-center">
-            <Image
-              src={"/misc/SuccessPizza.svg"}
-              alt=""
-              width={200}
-              height={200}
-            />
+            {medicationIcon}
           </div>
           <div className="flex justify-center text-center text-3xl font-medium font-quantico">
-            Congratulations! You have earned food to feed your pet!
+            You have gained medicine to give to your pet!
           </div>
         </ModalBody>
       </ModalContent>

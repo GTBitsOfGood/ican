@@ -9,16 +9,17 @@ import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
 import { useTutorial } from "@/components/TutorialContext";
-import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 import { useSettings } from "../hooks/useSettings";
 import { useUser } from "@/components/UserContext";
+import { InjectionIcon, LiquidIcon, PillIcon } from "./modals/medicationIcons";
 
 const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
 
 export default function MedicationLogCard({
   id,
   name,
+  formOfMedication,
   dosage,
   notes,
   scheduledDoseTime,
@@ -104,6 +105,11 @@ export default function MedicationLogCard({
   };
 
   const handleMedicationCheckIn = () => {
+    if (isTutorialMedication) {
+      setShowConfirmModal(true);
+      return;
+    }
+
     medicationCheckInMutation.mutate(
       {
         userId: userId!,
@@ -148,6 +154,18 @@ export default function MedicationLogCard({
     );
   };
 
+  const getMedicationIcon = () => {
+    switch (formOfMedication) {
+      case "Syrup":
+        return <LiquidIcon className="h-[34px] w-[34px]" />;
+      case "Shot":
+        return <InjectionIcon className="h-[34px] w-[34px]" />;
+      case "Pill":
+      default:
+        return <PillIcon className="h-[34px] w-[34px]" />;
+    }
+  };
+
   return (
     <div
       className={`p-5 flex flex-col justify-between gap-y-4 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
@@ -175,18 +193,23 @@ export default function MedicationLogCard({
       )}
       {showSuccessModal && (
         <SuccessMedicationModal
-          onModalClose={
-            isTutorialMedication
-              ? () => {
-                  tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
-                }
-              : undefined
-          }
+          medicationType={formOfMedication}
+          onModalClose={() => {
+            setShowSuccessModal(false);
+            router.push({
+              pathname: "/",
+              query: {
+                medicationFlow: "true",
+                medicationType: formOfMedication,
+                medicationStage: "intro",
+              },
+            });
+          }}
         />
       )}
       <div className="flex flex-col gap-y-6">
         <div className="flex gap-1 items-center">
-          <Image src={"/icons/Pill.svg"} alt="" width={34} height={34} />
+          {getMedicationIcon()}
           <h1 className="text-3xl text-black font-quantico">{name}</h1>
         </div>
         <div className="flex flex-col gap-y-[16px] font-quantico">
