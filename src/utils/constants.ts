@@ -2,6 +2,14 @@ export const calculateXPForLevel = (level: number): number => {
   return 90 + level * 10;
 };
 
+export const REGULAR_NOTIFICATION_TYPES = [
+  "early",
+  "on_time",
+  "missed",
+] as const;
+export type RegularNotificationType =
+  (typeof REGULAR_NOTIFICATION_TYPES)[number];
+
 export const XP_GAIN = 5;
 export const FOOD_INC = 1;
 
