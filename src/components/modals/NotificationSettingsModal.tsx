@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
 import ModalCloseButton from "./ModalCloseButton";
 import ModalSwitch from "./ModalSwitch";
@@ -43,13 +43,6 @@ export default function NotificationSettingsModal({
     updateSettings.mutate({ notificationPreferences: { types: next } });
   };
 
-  const handleEarlyWindowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value, 10);
-    if (!isNaN(value) && value >= 1 && value <= 60) {
-      updatePref("earlyWindow", value);
-    }
-  };
-
   return (
     <Modal
       backdrop="opaque"
@@ -59,7 +52,7 @@ export default function NotificationSettingsModal({
         header: "text-5xl underline mb-4",
         closeButton: "right-[3rem] top-[3rem]",
       }}
-      className="w-[80%] tablet:w-[55%] font-quantico font-bold z-[60] border-8 border-[#7177AC] text-white py-8 px-6 rounded-none outline-none"
+      className="w-[80%] tablet:w-[55%] font-quantico font-bold z-[60] border-8 border-[var(--color-periwinkle)] text-white py-8 px-6 rounded-none outline-none"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
@@ -69,9 +62,9 @@ export default function NotificationSettingsModal({
       <ModalContent>
         <ModalHeader>Notifications</ModalHeader>
         <ModalBody>
-          <div className="flex flex-col w-full text-[#1E2353] gap-6 border-8 border-[#7177AC] bg-[#B7BDEF] p-6">
+          <div className="flex flex-col w-full text-[var(--color-navy)] gap-6 border-8 border-[var(--color-periwinkle)] bg-[var(--color-lavender)] p-6">
             <div className="flex flex-col gap-4">
-              <h6 className="text-xl font-bold text-[#1E2353] uppercase tracking-wide">
+              <h6 className="text-xl font-bold text-[var(--color-navy)] uppercase tracking-wide">
                 Delivery
               </h6>
               <div className="flex justify-between items-center pl-4">
@@ -90,10 +83,10 @@ export default function NotificationSettingsModal({
               </div>
             </div>
 
-            <div className="border-t-2 border-[#7177AC]" />
+            <div className="border-t-2 border-[var(--color-periwinkle)]" />
 
             <div className="flex flex-col gap-4">
-              <h6 className="text-xl font-bold text-[#1E2353] uppercase tracking-wide">
+              <h6 className="text-xl font-bold text-[var(--color-navy)] uppercase tracking-wide">
                 Notification Types
               </h6>
               {REGULAR_NOTIFICATION_TYPES.map((type) => (
@@ -110,25 +103,18 @@ export default function NotificationSettingsModal({
               ))}
             </div>
 
-            <div className="border-t-2 border-[#7177AC]" />
+            <div className="border-t-2 border-[var(--color-periwinkle)]" />
 
             <div className="flex flex-col gap-4">
-              <h6 className="text-xl font-bold text-[#1E2353] uppercase tracking-wide">
+              <h6 className="text-xl font-bold text-[var(--color-navy)] uppercase tracking-wide">
                 Reminder Settings
               </h6>
               <div className="flex justify-between items-center pl-4 gap-4">
                 <h5 className="text-2xl shrink-0">Early Reminder Window</h5>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    max={60}
-                    value={prefs?.earlyWindow ?? 15}
-                    onChange={handleEarlyWindowChange}
-                    className="w-16 text-center text-[#1E2353] bg-white border-2 border-[#7177AC] px-2 py-1 text-xl font-bold outline-none"
-                  />
-                  <span className="text-lg text-[#1E2353]">min</span>
-                </div>
+                <EarlyWindowInput
+                  value={prefs?.earlyWindow ?? 15}
+                  onCommit={(v) => updatePref("earlyWindow", v)}
+                />
               </div>
               <div className="flex justify-between items-center pl-4">
                 <h5 className="text-2xl">24-Hour Time (e.g. 16:00)</h5>
@@ -142,5 +128,43 @@ export default function NotificationSettingsModal({
         </ModalBody>
       </ModalContent>
     </Modal>
+  );
+}
+
+function EarlyWindowInput({
+  value,
+  onCommit,
+}: {
+  value: number;
+  onCommit: (v: number) => void;
+}) {
+  const [local, setLocal] = useState(value);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseInt(e.target.value, 10);
+    if (!isNaN(v) && v >= 1 && v <= 60) {
+      setLocal(v);
+    }
+  };
+
+  const handleBlur = () => {
+    if (local !== value) {
+      onCommit(local);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="number"
+        min={1}
+        max={60}
+        value={local}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        className="w-16 text-center text-[var(--color-navy)] bg-white border-2 border-[var(--color-periwinkle)] px-2 py-1 text-xl font-bold outline-none"
+      />
+      <span className="text-lg text-[var(--color-navy)]">min</span>
+    </div>
   );
 }

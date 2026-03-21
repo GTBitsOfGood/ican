@@ -22,28 +22,17 @@ export default function NotificationBanner({
       }`}
     >
       {isStreak && (
-        <p
-          className="text-[11px] mb-1 leading-none"
-          style={{ color: "#4DBDBA" }}
-        >
+        <p className="text-[1.1rem] mb-1 leading-none text-[var(--color-teal)]">
           broken streak
         </p>
       )}
 
       <div
-        className={`flex gap-2.5 px-3 py-2.5 w-80 ${
+        className={`flex gap-2.5 px-3 py-2.5 w-80 bg-[var(--color-lavender)] border border-solid border-[var(--color-lavender-border)] text-[var(--color-navy)] ${
           isStreak ? "items-start" : "items-center"
         }`}
-        style={{
-          backgroundColor: "#B7BDEF",
-          border: "1px solid #9DA4D5",
-          color: "#1E2353",
-        }}
       >
-        <span
-          className="text-sm shrink-0 leading-tight"
-          style={{ color: "#4C539B" }}
-        >
+        <span className="text-sm shrink-0 leading-tight text-icanBlue-200">
           ⓘ
         </span>
 
@@ -54,8 +43,7 @@ export default function NotificationBanner({
         <button
           onClick={() => toast.dismiss(t.id)}
           aria-label="Dismiss"
-          className="shrink-0 text-xs leading-tight hover:opacity-60"
-          style={{ color: "#1E2353" }}
+          className="shrink-0 text-xs leading-tight hover:opacity-60 text-[var(--color-navy)]"
         >
           ×
         </button>
@@ -76,9 +64,7 @@ function formatContent(
       <>
         <p className="font-bold text-xs">{title}</p>
         {subtitle && (
-          <p className="text-[11px] mt-0.5" style={{ opacity: 0.75 }}>
-            {subtitle}
-          </p>
+          <p className="text-[1.1rem] mt-0.5 opacity-75">{subtitle}</p>
         )}
       </>
     );

@@ -71,7 +71,7 @@ export default function SettingsModal() {
     }
   };
 
-  const handlePinVerifiedForNotif = async () => {
+  const handlePinVerifiedForNotif = () => {
     onPinForNotifModalClose();
     onNotifModalOpen();
   };
