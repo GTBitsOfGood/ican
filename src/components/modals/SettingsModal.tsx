@@ -35,6 +35,11 @@ export default function SettingsModal() {
     onOpen: onNotifModalOpen,
     onClose: onNotifModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isPinForNotifModalOpen,
+    onOpen: onPinForNotifModalOpen,
+    onClose: onPinForNotifModalClose,
+  } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
   const updatePinMutation = useUpdatePin();
   const logoutMutation = useLogout();
@@ -56,6 +61,19 @@ export default function SettingsModal() {
   const handleDisableParentalControls = async () => {
     updatePinMutation.mutate(null);
     onPinModalClose();
+  };
+
+  const handleNotificationsClick = () => {
+    if (settings?.pin) {
+      onPinForNotifModalOpen();
+    } else {
+      onNotifModalOpen();
+    }
+  };
+
+  const handlePinVerifiedForNotif = async () => {
+    onPinForNotifModalClose();
+    onNotifModalOpen();
   };
 
   const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -118,10 +136,21 @@ export default function SettingsModal() {
                     />
                   </div>
                   <div className="flex justify-between items-center pl-4">
-                    <h5 className="text-3xl">Notifications</h5>
+                    <div className="flex items-center gap-2">
+                      {!!settings.pin && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
+                      <h5 className="text-3xl">Notifications</h5>
+                    </div>
                     <div
                       className="flex bg-white w-[26%] p-2 justify-center items-stretch cursor-pointer"
-                      onClick={onNotifModalOpen}
+                      onClick={handleNotificationsClick}
                     >
                       <svg
                         fill="black"
@@ -290,6 +319,14 @@ export default function SettingsModal() {
           isOpen={isPinModalOpen}
           onClose={onPinModalClose}
           handleNext={handleDisableParentalControls}
+        />
+      )}
+
+      {isPinForNotifModalOpen && (
+        <LogPasswordModal
+          isOpen={isPinForNotifModalOpen}
+          onClose={onPinForNotifModalClose}
+          handleNext={handlePinVerifiedForNotif}
         />
       )}
 

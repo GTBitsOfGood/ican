@@ -1,6 +1,16 @@
 import { Document, model, models, Schema, Types } from "mongoose";
+import {
+  REGULAR_NOTIFICATION_TYPES,
+  RegularNotificationType,
+} from "@/utils/constants";
 
-export const NOTIFICATION_TYPES = ["early", "on_time", "missed"] as const;
+export { REGULAR_NOTIFICATION_TYPES };
+export type { RegularNotificationType };
+
+export const NOTIFICATION_TYPES = [
+  ...REGULAR_NOTIFICATION_TYPES,
+  "streak_warning",
+] as const;
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 
 export interface Notification {

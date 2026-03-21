@@ -36,10 +36,11 @@ export default class SettingsService {
       notifications: true,
       pin: null,
       notificationPreferences: {
-        types: [...NOTIFICATION_TYPES],
+        types: ["early", "on_time", "missed"],
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,
+        use24HourTime: false,
       },
     };
     const settings = await SettingsDAO.createNewSettings(newSettings);

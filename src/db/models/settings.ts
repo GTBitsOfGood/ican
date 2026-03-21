@@ -6,6 +6,7 @@ export interface NotificationPreferences {
   earlyWindow: number;
   emailEnabled: boolean;
   realTimeEnabled: boolean;
+  use24HourTime: boolean;
 }
 
 export interface Settings {
@@ -26,11 +27,12 @@ const notificationPreferencesSchema = new Schema(
     types: {
       type: [String],
       enum: NOTIFICATION_TYPES,
-      default: [...NOTIFICATION_TYPES],
+      default: ["early", "on_time", "missed"],
     },
     earlyWindow: { type: Number, default: 15 },
     emailEnabled: { type: Boolean, default: true },
     realTimeEnabled: { type: Boolean, default: true },
+    use24HourTime: { type: Boolean, default: false },
   },
   { _id: false },
 );
@@ -51,10 +53,11 @@ const settingsSchema = new Schema<SettingsDocument>(
     notificationPreferences: {
       type: notificationPreferencesSchema,
       default: () => ({
-        types: [...NOTIFICATION_TYPES],
+        types: ["early", "on_time", "missed"],
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,
+        use24HourTime: false,
       }),
     },
   },

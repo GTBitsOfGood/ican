@@ -6,6 +6,7 @@ export interface UpdateNotificationPreferencesBody {
   earlyWindow?: number;
   emailEnabled?: boolean;
   realTimeEnabled?: boolean;
+  use24HourTime?: boolean;
 }
 
 export interface UpdateSettingsRequestBody {

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Ably from "ably";
 import toast from "react-hot-toast";
 import NotificationHTTPClient from "@/http/notificationHTTPClient";
-import NotificationToast from "@/components/NotificationToast";
+import NotificationBanner from "@/components/NotificationBanner";
 import { NotificationType } from "@/db/models/notification";
 
 interface NotificationMessage {
@@ -11,12 +11,14 @@ interface NotificationMessage {
   medicationName: string;
   message: string;
   scheduledTime: string;
+  streakDays?: number;
 }
 
 const TOAST_DURATION: Record<NotificationType, number> = {
   early: 8000,
   on_time: 10000,
   missed: 12000,
+  streak_warning: 14000,
 };
 
 export function useNotifications(userId: string | null) {
@@ -36,7 +38,9 @@ export function useNotifications(userId: string | null) {
       const data = message.data as NotificationMessage;
 
       toast.custom(
-        (t) => NotificationToast({ t, type: data.type, message: data.message }),
+        (t) => (
+          <NotificationBanner t={t} type={data.type} message={data.message} />
+        ),
         { duration: TOAST_DURATION[data.type], position: "top-right" },
       );
 
