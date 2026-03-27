@@ -3,6 +3,10 @@ import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
 import { TriviaQuestion } from "@/types/games";
+import { useUser } from "@/components/UserContext";
+import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
+import GameRewardsService from "@/services/gameRewards";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 function generateRoundQuestions(): TriviaQuestion[] {
   const shuffled = [...triviaQuestions];
@@ -20,12 +24,14 @@ export default function TriviaGame({
   setGameState,
   showInformationModal,
 }: GameWrapperControls) {
+  const { userId } = useUser();
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
   const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState<number | null>(
     null,
   );
+  const [isProcessingWin, setIsProcessingWin] = useState(false);
 
   const isLastQuestion = currQuestionIdx === roundQuestions.length - 1;
 
@@ -95,6 +101,13 @@ export default function TriviaGame({
       setShowXpPopup(true);
       if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
       xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
+
+      // If last question and correct, process win with rewards
+      if (isLastQuestion) {
+        handleGameWin();
+        setIsSubmitted(true);
+        return;
+      }
     }
 
     if (isLastQuestion) {
@@ -107,6 +120,57 @@ export default function TriviaGame({
     }
 
     setIsSubmitted(true);
+  };
+
+  const handleGameWin = async () => {
+    if (!userId || isProcessingWin) return;
+
+    setIsProcessingWin(true);
+
+    try {
+      const stats = await GameStatsHTTPClient.getGameStats(userId);
+      const streakInDays = stats.streakInDays;
+      const coinsAlreadyEarned = stats.coinsEarnedToday;
+
+      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
+      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
+        coinsToPay,
+        coinsAlreadyEarned,
+      );
+
+      await GameStatsHTTPClient.recordGameWin(
+        userId,
+        "trivia",
+        actualCoinsEarned,
+      );
+
+      setShowCongratsPopup(true);
+      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
+      congratsTimerRef.current = setTimeout(
+        () => setShowCongratsPopup(false),
+        5000,
+      );
+
+      setGameState(GameState.WON);
+
+      showInformationModal({
+        title: "YOU WIN!",
+        message:
+          actualCoinsEarned > 0
+            ? `You earned +${actualCoinsEarned} coins!\n\nDaily coins: ${coinsAlreadyEarned + actualCoinsEarned}/${GAMES_DAILY_COIN_LIMIT}`
+            : `You've reached today's coin limit!\n\nDaily coins: ${coinsAlreadyEarned}/${GAMES_DAILY_COIN_LIMIT}`,
+        onClose: () => {},
+      });
+    } catch (error) {
+      console.error("Error processing game win:", error);
+      setGameState(GameState.WON);
+      showInformationModal({
+        title: "YOU WIN!",
+        message: "Congratulations! You completed the game!",
+      });
+    } finally {
+      setIsProcessingWin(false);
+    }
   };
 
   const handlePlayAgain = () => {
