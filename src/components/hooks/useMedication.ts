@@ -4,6 +4,9 @@ import { useUser } from "@/components/UserContext";
 import { MedicationInfo } from "@/types/medication";
 import { PET_QUERY_KEYS } from "./usePet";
 import { TUTORIAL_QUERY_KEYS } from "./useTutorial";
+import { useTutorial } from "@/components/TutorialContext";
+
+const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
 
 export const MEDICATION_QUERY_KEYS = {
   allMedications: (userId: string) => ["medications", userId] as const,
@@ -176,6 +179,7 @@ export const useMedicationLog = () => {
 };
 
 export const useUpcomingMedication = () => {
+  const tutorial = useTutorial();
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -184,12 +188,17 @@ export const useUpcomingMedication = () => {
   const localTimeStr = now.toLocaleString();
 
   const { data: schedule } = useMedicationSchedule(dateStr, localTimeStr);
+  const visibleMedications = tutorial.isActive
+    ? (schedule?.medications ?? [])
+    : (schedule?.medications ?? []).filter(
+        (med) => med.name !== TUTORIAL_MEDICATION_NAME,
+      );
 
-  const upcomingMedication = schedule?.medications?.find(
+  const upcomingMedication = visibleMedications.find(
     (med) => med.status === "pending" && med.canCheckIn,
   );
 
-  const recentlyTakenMedication = schedule?.medications?.find((med) => {
+  const recentlyTakenMedication = visibleMedications.find((med) => {
     if (med.status !== "taken" || !med.lastTaken) return false;
     const takenTime = new Date(med.lastTaken).getTime();
     const timeThreshold = Date.now() - 2 * 60 * 1000; // show ts for 2 minutes

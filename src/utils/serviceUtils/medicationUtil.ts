@@ -478,3 +478,57 @@ export function processDoseTime(
     canCheckIn,
   };
 }
+
+export function processUntimedDose(
+  date: string,
+  medicationLogs: MedicationLogDocument[],
+  localTime: string,
+) {
+  const dateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const targetDate = dateMatch
+    ? new Date(
+        parseInt(dateMatch[1]),
+        parseInt(dateMatch[2]) - 1,
+        parseInt(dateMatch[3]),
+        0,
+        0,
+        0,
+        0,
+      )
+    : normalizeToLocalMidnight(new Date(date));
+
+  const targetDateNormalized = normalizeToLocalMidnight(targetDate);
+  const now = new Date(localTime);
+  const todayNormalized = normalizeToLocalMidnight(now);
+
+  const matchingLog = medicationLogs.find((log) => {
+    const logDate = normalizeToLocalMidnight(new Date(log.dateTaken));
+    return logDate.getTime() === targetDateNormalized.getTime();
+  });
+
+  if (matchingLog) {
+    return {
+      status: "taken" as const,
+      canCheckIn: false,
+    };
+  }
+
+  if (targetDateNormalized.getTime() < todayNormalized.getTime()) {
+    return {
+      status: "missed" as const,
+      canCheckIn: false,
+    };
+  }
+
+  if (targetDateNormalized.getTime() > todayNormalized.getTime()) {
+    return {
+      status: "pending" as const,
+      canCheckIn: false,
+    };
+  }
+
+  return {
+    status: "pending" as const,
+    canCheckIn: true,
+  };
+}

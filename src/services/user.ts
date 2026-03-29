@@ -8,8 +8,7 @@ import BagDAO from "@/db/actions/bag";
 import SettingsDAO from "@/db/actions/settings";
 import NotificationDAO from "@/db/actions/notification";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
-
-const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
+import TutorialService from "./tutorial";
 
 export default class UserService {
   static async deleteUser(userId: string) {
@@ -71,15 +70,7 @@ export default class UserService {
     await UserDAO.updateTutorialStatus(userId, tutorial_completed);
 
     if (tutorial_completed) {
-      const tutorialMedication =
-        await MedicationDAO.getUserMedicationByCustomMedicationId(
-          TUTORIAL_MEDICATION_ID,
-          userId,
-        );
-
-      if (tutorialMedication) {
-        await MedicationDAO.deleteMedicationById(tutorialMedication._id);
-      }
+      await TutorialService.resetTutorialArtifacts(userId);
     }
   }
 

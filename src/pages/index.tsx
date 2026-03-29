@@ -18,8 +18,6 @@ import LevelUpModal from "@/components/modals/LevelUpModal";
 import SuccessMedicationLogModal from "@/components/modals/SuccessMedicationLogModal";
 import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
-import { useTutorialStatus } from "@/components/hooks/useAuth";
-import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
@@ -27,6 +25,7 @@ import { useUpcomingMedication } from "@/components/hooks/useMedication";
 import { usePetEmotion } from "@/components/hooks/usePetEmotion";
 import { formatMedicationTime } from "@/utils/medicationDisplay";
 import { useRouter } from "next/router";
+import { usePetFoods } from "@/components/hooks/useInventory";
 
 interface HomeProps {
   activeModal: string;
@@ -38,17 +37,33 @@ export default function Home({
   foods = undefined,
 }: HomeProps) {
   const router = useRouter();
-  const { userId } = useUser();
-  const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const isTutorial = !tutorialCompleted;
+  const tutorial = useTutorial();
+  const isTutorial = tutorial.isActive;
 
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
-  const tutorial = useTutorial();
   const ensureStarterKitMutation = useEnsureStarterKit();
 
   const pet = realPetData.data;
+  const displayCoins =
+    pet && isTutorial && tutorial.isReplay
+      ? (tutorial.replayCoins ?? 100)
+      : (pet?.coins ?? 0);
+  const displayLevel =
+    pet && isTutorial && tutorial.isReplay
+      ? tutorial.replayXpLevel
+      : pet?.xpLevel;
+  const displayCurrentExp =
+    pet && isTutorial && tutorial.isReplay
+      ? tutorial.replayXpGained
+      : pet?.xpGained;
   const feedPetMutation = realFeedPet;
+  const { data: tutorialBagFoods = [] } = usePetFoods(
+    pet && isTutorial && !tutorial.isReplay ? pet._id : undefined,
+  );
+  const tutorialFoods = tutorial.isReplay
+    ? tutorial.replayFoods
+    : tutorialBagFoods;
   const petEmotion = usePetEmotion(pet?.lastFedAt);
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
@@ -150,6 +165,21 @@ export default function Home({
 
   const handleFoodDrop = async () => {
     if (!pet) return;
+
+    if (isTutorial) {
+      if (tutorial.isReplay && selectedFood) {
+        tutorial.consumeReplayFood(selectedFood);
+      }
+      tutorial.markPetFed();
+      setHearts(true);
+      setTimeout(() => {
+        setHearts(false);
+        setShowSuccessModalVisible(true);
+      }, 2000);
+      setSelectedFood("");
+      return;
+    }
+
     if (distance == null || distance > 150) return;
     if (feeding) return;
 
@@ -222,14 +252,14 @@ export default function Home({
 
   const handleMedicationDrop = async () => {
     if (!pet) return;
-    if (medicationDistance == null || medicationDistance > 150) return;
 
     if (isTutorial) {
       setShowMedicationSuccessModal(true);
-      tutorial.clearMedicationDrag();
-      tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+      tutorial.markMedicationDragComplete();
       return;
     }
+
+    if (medicationDistance == null || medicationDistance > 150) return;
 
     if (!activeMedicationFlowType) return;
 
@@ -281,9 +311,9 @@ export default function Home({
             {/* Profile */}
             <ProfileHeader
               petType={pet.petType}
-              level={pet.xpLevel}
-              coins={pet.coins}
-              currentExp={pet.xpGained}
+              level={displayLevel}
+              coins={displayCoins}
+              currentExp={displayCurrentExp}
             />
             {/* Side Bar */}
             <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
@@ -306,7 +336,15 @@ export default function Home({
               buttonType="log"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
             />
-            <FeedButton active={pet.food > 0} />
+            <FeedButton
+              active={
+                isTutorial
+                  ? tutorial.tutorialPortion ===
+                      TUTORIAL_PORTIONS.FEED_TUTORIAL &&
+                    tutorialFoods.length > 0
+                  : pet.food > 0
+              }
+            />
           </Navbar>
           {/* Character, speech bubble and food image is made relative to the image */}
           <PetDisplay

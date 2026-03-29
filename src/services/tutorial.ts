@@ -3,7 +3,7 @@ import UserDAO from "@/db/actions/user";
 import { Pet } from "@/db/models/pet";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
-import { IllegalOperationError, NotFoundError } from "@/types/exceptions";
+import { NotFoundError } from "@/types/exceptions";
 import MedicationDAO from "@/db/actions/medication";
 import { Types } from "mongoose";
 import BagDAO from "@/db/actions/bag";
@@ -19,12 +19,10 @@ const toWithIdPet = (
 });
 
 export default class TutorialService {
-  static async setupTutorialMedication(userId: string): Promise<string> {
-    const tutorialCompleted = await UserDAO.getTutorialStatus(userId);
-    if (tutorialCompleted) {
-      throw new IllegalOperationError("Tutorial already completed");
-    }
-
+  static async setupTutorialMedication(userId: string): Promise<{
+    medicationId: string;
+    scheduledDoseTime: string;
+  }> {
     const existingMedication =
       await MedicationDAO.getUserMedicationByCustomMedicationId(
         TUTORIAL_MEDICATION_ID,
@@ -42,7 +40,6 @@ export default class TutorialService {
     const minutes = futureTime.getMinutes().toString().padStart(2, "0");
     const doseTime = `${hours}:${minutes}`;
 
-    // we use createdAt for when the dose will actually occur
     const createdAt = crossesMidnight ? futureTime : now;
     if (existingMedication) {
       await MedicationDAO.updateMedicationById(
@@ -52,7 +49,10 @@ export default class TutorialService {
           createdAt: createdAt,
         },
       );
-      return existingMedication._id.toString();
+      return {
+        medicationId: existingMedication._id.toString(),
+        scheduledDoseTime: doseTime,
+      };
     }
 
     const newMedication = await MedicationDAO.createNewMedication({
@@ -71,15 +71,64 @@ export default class TutorialService {
       createdAt: createdAt,
       updatedAt: new Date(),
     });
-    return newMedication._id.toString();
+    return {
+      medicationId: newMedication._id.toString(),
+      scheduledDoseTime: doseTime,
+    };
+  }
+
+  static async resetTutorialArtifacts(userId: string): Promise<void> {
+    const tutorialMedication =
+      await MedicationDAO.getUserMedicationByCustomMedicationId(
+        TUTORIAL_MEDICATION_ID,
+        userId,
+      );
+
+    if (!tutorialMedication) {
+      return;
+    }
+
+    await MedicationDAO.deleteMedicationArtifactsByMedicationIds([
+      tutorialMedication._id,
+    ]);
+    await MedicationDAO.deleteMedicationById(tutorialMedication._id);
+  }
+
+  static async restoreReplayCoins(
+    userId: string,
+    restoreCoins: number,
+  ): Promise<void> {
+    await this.restoreReplayPetState(userId, {
+      coins: restoreCoins,
+    });
+  }
+
+  static async restoreReplayPetState(
+    userId: string,
+    state: {
+      coins?: number;
+      xpGained?: number;
+      xpLevel?: number;
+      food?: number;
+      lastFedAt?: Date | null;
+    },
+  ): Promise<void> {
+    const petDocument = await PetDAO.getPetByUserId(userId);
+    if (!petDocument) {
+      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
+    }
+
+    const normalizedState = {
+      ...state,
+      lastFedAt: state.lastFedAt ?? undefined,
+    };
+
+    await PetDAO.updatePetByPetId(petDocument._id.toString(), {
+      ...normalizedState,
+    });
   }
 
   static async ensureStarterCoins(userId: string): Promise<WithId<Pet>> {
-    const tutorialCompleted = await UserDAO.getTutorialStatus(userId);
-    if (tutorialCompleted) {
-      throw new IllegalOperationError("Tutorial already completed");
-    }
-
     const petDocument = await PetDAO.getPetByUserId(userId);
     if (!petDocument) {
       throw new NotFoundError(ERRORS.PET.NOT_FOUND);

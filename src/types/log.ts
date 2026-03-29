@@ -5,6 +5,7 @@ export type LogType = {
   dosage: string;
   notes: string;
   scheduledDoseTime: string;
+  includeTimes?: boolean;
   canCheckIn: boolean;
   status: "pending" | "taken" | "missed";
   // date as a string
