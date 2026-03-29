@@ -52,11 +52,11 @@ export default function Home({
   const displayLevel =
     pet && isTutorial && tutorial.isReplay
       ? tutorial.replayXpLevel
-      : pet?.xpLevel;
+      : (pet?.xpLevel ?? 0);
   const displayCurrentExp =
     pet && isTutorial && tutorial.isReplay
       ? tutorial.replayXpGained
-      : pet?.xpGained;
+      : (pet?.xpGained ?? 0);
   const feedPetMutation = realFeedPet;
   const { data: tutorialBagFoods = [] } = usePetFoods(
     pet && isTutorial && !tutorial.isReplay ? pet._id : undefined,
