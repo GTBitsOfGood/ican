@@ -35,7 +35,7 @@ export default class GameStatsHTTPClient {
     };
 
     return await fetchHTTPClient<GameStatsResponse>(
-      `/users/${userId}/game-stats/record-win`,
+      `/users/${userId}/game-stats`,
       {
         method: "POST",
         body: JSON.stringify(body),

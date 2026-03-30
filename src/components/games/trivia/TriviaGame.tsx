@@ -34,8 +34,6 @@ export default function TriviaGame({
   );
   const [isProcessingWin, setIsProcessingWin] = useState(false);
 
-  const isLastQuestion = currQuestionIdx === roundQuestions.length - 1;
-
   const [showXpPopup, setShowXpPopup] = useState(false);
   const hasAutoStartedRef = useRef(false);
   const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

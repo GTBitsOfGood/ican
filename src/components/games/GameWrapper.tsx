@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
@@ -62,7 +62,7 @@ export default function GameWrapper({
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
-  const [gameState, setGameState] = useState(GameState.START);
+  const [gameState, setInternalGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
   const [showSuccess, setShowSuccess] = useState(false);
   const [informationModal, setInformationModal] =
@@ -71,27 +71,50 @@ export default function GameWrapper({
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
   const [winRewardDetails, setWinRewardDetails] =
     useState<WinRewardDetails | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetSuccessState = useCallback(() => {
+    if (successTimerRef.current) {
+      clearTimeout(successTimerRef.current);
+      successTimerRef.current = null;
+    }
+    setShowSuccess(false);
+  }, []);
+
+  const handleGameStateChange = useCallback(
+    (state: GameState) => {
+      setInternalGameState(state);
+
+      if (state === GameState.START && initialSpeechText) {
+        setSpeechText(initialSpeechText);
+      }
+
+      if (state === GameState.WON) {
+        setShowSuccess(true);
+        if (successTimerRef.current) {
+          clearTimeout(successTimerRef.current);
+        }
+        successTimerRef.current = setTimeout(() => {
+          setShowSuccess(false);
+          successTimerRef.current = null;
+        }, 5000);
+      } else {
+        resetSuccessState();
+        if (winRewardDetails !== null) {
+          setWinRewardDetails(null);
+        }
+      }
+    },
+    [initialSpeechText, resetSuccessState, winRewardDetails],
+  );
 
   useEffect(() => {
-    if (initialSpeechText && gameState === GameState.START) {
-      setSpeechText(initialSpeechText);
-    }
-  }, [gameState, initialSpeechText]);
-
-  // Show success overlay for 5 seconds on win
-  useEffect(() => {
-    if (gameState === GameState.WON) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => setShowSuccess(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameState]);
-
-  useEffect(() => {
-    if (gameState !== GameState.WON && winRewardDetails !== null) {
-      setWinRewardDetails(null);
-    }
-  }, [gameState, winRewardDetails]);
+    return () => {
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+      }
+    };
+  }, []);
 
   const closeModal = () => {
     const onClose = informationModal?.onClose;
@@ -184,7 +207,7 @@ export default function GameWrapper({
               <GameComponent
                 setSpeechText={setSpeechText}
                 gameState={gameState}
-                setGameState={setGameState}
+                setGameState={handleGameStateChange}
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}
@@ -196,9 +219,9 @@ export default function GameWrapper({
           {/* Success overlay on win */}
           {showSuccess && (
             <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-              <div className="relative w-full max-w-3xl px-4">
+              <div className="relative w-full max-w-6xl px-4">
                 <img
-                  src="/games/success.svg"
+                  src="/assets/CongratulationsBackdrop.svg"
                   alt="Success!"
                   className="w-full h-auto"
                 />
