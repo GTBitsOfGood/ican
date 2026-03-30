@@ -25,6 +25,13 @@ type InformationModalOptions = {
   onClose?: () => void;
 };
 
+type WinRewardDetails = {
+  coinsEarned: number;
+  dailyCoinsTotal: number;
+  maxCoinsPerDay: number;
+  maxReached: boolean;
+};
+
 export interface GameWrapperControls {
   setSpeechText: (text: string) => void;
   gameState: GameState;
@@ -32,6 +39,7 @@ export interface GameWrapperControls {
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
   setPetEmotion?: (emotion: PetEmotion | null) => void;
+  setWinRewardDetails?: (details: WinRewardDetails | null) => void;
 }
 
 export default function GameWrapper({
@@ -61,6 +69,8 @@ export default function GameWrapper({
     useState<InformationModalOptions | null>(null);
   const [petBoardX, setPetBoardX] = useState<number | null>(null);
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
+  const [winRewardDetails, setWinRewardDetails] =
+    useState<WinRewardDetails | null>(null);
 
   useEffect(() => {
     if (initialSpeechText && gameState === GameState.START) {
@@ -76,6 +86,12 @@ export default function GameWrapper({
       return () => clearTimeout(timer);
     }
   }, [gameState]);
+
+  useEffect(() => {
+    if (gameState !== GameState.WON && winRewardDetails !== null) {
+      setWinRewardDetails(null);
+    }
+  }, [gameState, winRewardDetails]);
 
   const closeModal = () => {
     const onClose = informationModal?.onClose;
@@ -172,18 +188,43 @@ export default function GameWrapper({
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}
+                setWinRewardDetails={setWinRewardDetails}
               />
             </div>
           </div>
 
-          {/* Success overlay — shown for 5 seconds on win */}
+          {/* Success overlay on win */}
           {showSuccess && (
             <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-              <img
-                src="/games/success.svg"
-                alt="Success!"
-                className="w-full max-w-2xl h-auto px-8"
-              />
+              <div className="relative w-full max-w-3xl px-4">
+                <img
+                  src="/games/success.svg"
+                  alt="Success!"
+                  className="w-full h-auto"
+                />
+                {winRewardDetails && (
+                  <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
+                    {winRewardDetails.maxReached ? (
+                      <p className="font-quantico text-3xl uppercase tracking-wide text-icanBlue-300">
+                        Max coins reached
+                      </p>
+                    ) : (
+                      <>
+                        <img
+                          src="/icons/Coin.svg"
+                          alt="Coins"
+                          className="h-12 w-12"
+                          draggable={false}
+                        />
+                        <p className="font-quantico text-3xl uppercase text-icanBlue-300 whitespace-nowrap">
+                          Daily Coins: {winRewardDetails.dailyCoinsTotal}/
+                          {winRewardDetails.maxCoinsPerDay}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

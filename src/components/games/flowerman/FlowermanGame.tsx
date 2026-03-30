@@ -21,6 +21,7 @@ export default function FlowermanGame({
   showInformationModal,
   setPetBoardX,
   setPetEmotion,
+  setWinRewardDetails,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const [word, setWord] = useState<string>("");
@@ -110,6 +111,7 @@ export default function FlowermanGame({
     if (!userId || isProcessingWin) return;
 
     setIsProcessingWin(true);
+    setWinRewardDetails?.(null);
 
     try {
       const stats = await GameStatsHTTPClient.getGameStats(userId);
@@ -128,18 +130,22 @@ export default function FlowermanGame({
         actualCoinsEarned,
       );
 
-      showInformationModal({
-        title: "YOU WIN!",
-        message:
-          actualCoinsEarned > 0
-            ? `You earned +${actualCoinsEarned} coins!\n\nDaily coins: ${coinsAlreadyEarned + actualCoinsEarned}/${GAMES_DAILY_COIN_LIMIT}`
-            : `You've reached today's coin limit!\n\nDaily coins: ${coinsAlreadyEarned}/${GAMES_DAILY_COIN_LIMIT}`,
-        onClose: () => {},
+      const updatedDailyCoins = Math.min(
+        coinsAlreadyEarned + actualCoinsEarned,
+        GAMES_DAILY_COIN_LIMIT,
+      );
+
+      setWinRewardDetails?.({
+        coinsEarned: actualCoinsEarned,
+        dailyCoinsTotal: updatedDailyCoins,
+        maxCoinsPerDay: GAMES_DAILY_COIN_LIMIT,
+        maxReached: actualCoinsEarned === 0,
       });
 
       setGameState(GameState.WON);
     } catch (error) {
       console.error("Error processing game win:", error);
+      setWinRewardDetails?.(null);
       showInformationModal({
         title: "YOU WIN!",
         message: "Congratulations! You won!",

@@ -7,8 +7,7 @@ import {
 
 export default class GameRewardsService {
   /**
-   * Calculates coin reward for a game win based on streak
-   * Caps streak at MAX_STREAK_DAYS to prevent extreme multipliers
+   * Calculates coins accounting for streak and streak cap
    * Formula: GAMES_COINS_BASE + (GAMES_COINS_PER_STREAK * cappedStreak)
    */
   static calculateGameCoins(streakInDays: number): number {
@@ -16,10 +15,6 @@ export default class GameRewardsService {
     return GAMES_COINS_BASE + GAMES_COINS_PER_STREAK * cappedStreak;
   }
 
-  /**
-   * Checks if earning coins would exceed the daily limit
-   * Returns true if within limit, false if at or would exceed limit
-   */
   static isWithinDailyLimit(
     coinsToEarn: number,
     coinsAlreadyEarnedToday: number,
@@ -28,8 +23,7 @@ export default class GameRewardsService {
   }
 
   /**
-   * Returns the amount of coins that can actually be earned given the daily limit
-   * If already at limit, returns 0
+   * Returns the amount of coins earned accounting for daily limit
    */
   static getActualCoinsToEarn(
     coinsToEarn: number,
