@@ -150,13 +150,6 @@ export default function TriviaGame({
         actualCoinsEarned,
       );
 
-      setShowCongratsPopup(true);
-      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
-      congratsTimerRef.current = setTimeout(
-        () => setShowCongratsPopup(false),
-        5000,
-      );
-
       setGameState(GameState.WON);
 
       const updatedDailyCoins = Math.min(
