@@ -17,9 +17,9 @@ export const POST = withAuth<{ userId: string }>(
     const body = await req.json();
     const { gameType, coinsEarned } = body;
 
-    if (!gameType || coinsEarned === undefined) {
+    if (!gameType || typeof coinsEarned !== "number" || coinsEarned < 0) {
       return NextResponse.json(
-        { error: "Missing required fields: gameType or coinsEarned" },
+        { error: "Invalid input for gameType or coinsEarned" },
         { status: 400 },
       );
     }

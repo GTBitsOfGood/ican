@@ -81,11 +81,14 @@ export default class GameStatsService {
       newCoinsToday = 0;
     }
 
+    const previousCoinsToday = isNewDay ? 0 : user.gameCoinsEarnedToday || 0;
     newCoinsToday += coinsEarned;
 
     if (newCoinsToday > GAMES_DAILY_COIN_LIMIT) {
       newCoinsToday = GAMES_DAILY_COIN_LIMIT;
     }
+
+    const actualCoinsApplied = newCoinsToday - previousCoinsToday;
 
     await UserDAO.updateUserById(userId, {
       gameStreakDays: newStreak,
@@ -96,7 +99,7 @@ export default class GameStatsService {
     const currentPetCoins = pet.coins || 0;
     await PetDAO.updatePetCoinsByPetId(
       pet._id.toString(),
-      currentPetCoins + coinsEarned,
+      currentPetCoins + actualCoinsApplied,
     );
 
     return {
