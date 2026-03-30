@@ -25,6 +25,11 @@ interface TutorialContextType {
   getTutorialText: () => string | undefined;
   advanceToPortion: (portion: number) => void;
   shouldEnlargeButton: (buttonType: "store" | "log") => boolean;
+  medicationType: "Pill" | "Syrup" | "Shot" | null;
+  shouldShowMedicationDrag: boolean;
+  handlePracticeDoseLog: () => void;
+  completePracticeDoseLog: () => void;
+  clearMedicationDrag: () => void;
 }
 
 const TutorialContext = createContext<TutorialContextType | undefined>(
@@ -53,11 +58,18 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   const [step, setStep] = useState<number>(0);
   const [completionTriggered, setCompletionTriggered] =
     useState<boolean>(false);
+  const [medicationType, setMedicationType] = useState<
+    "Pill" | "Syrup" | "Shot" | null
+  >(null);
+  const [shouldShowMedicationDrag, setShouldShowMedicationDrag] =
+    useState<boolean>(false);
 
   // Reset completion when exiting tutorial
   useEffect(() => {
     if (!isTutorial) {
       setCompletionTriggered(false);
+      setMedicationType(null);
+      setShouldShowMedicationDrag(false);
     }
   }, [isTutorial]);
 
@@ -164,7 +176,30 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     [isTutorial, portion, step],
   );
 
+  const handlePracticeDoseLog = useCallback(() => {
+    if (!isTutorial) return;
+
+    setMedicationType("Pill");
+    setShouldShowMedicationDrag(true);
+  }, [isTutorial]);
+
+  const completePracticeDoseLog = useCallback(() => {
+    if (!isTutorial) return;
+
+    // Move to home to perform the drag/drop medication step.
+    setStep(0);
+  }, [isTutorial]);
+
+  const clearMedicationDrag = useCallback(() => {
+    setMedicationType(null);
+    setShouldShowMedicationDrag(false);
+  }, []);
+
   const getTutorialText = useCallback(() => {
+    if (shouldShowMedicationDrag) {
+      return "Feed me the medicine!";
+    }
+
     const dialogues = TUTORIAL_DIALOGUES[portion];
     if (!dialogues || step >= dialogues.length) return undefined;
 
@@ -174,7 +209,13 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     return dialogues[step]
       .replace("{userName}", userName)
       .replace("{petName}", petName);
-  }, [portion, step, userProfile?.name, realPet?.name]);
+  }, [
+    shouldShowMedicationDrag,
+    portion,
+    step,
+    userProfile?.name,
+    realPet?.name,
+  ]);
 
   const value = useMemo(
     () => ({
@@ -183,8 +224,24 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       getTutorialText,
       advanceToPortion,
       shouldEnlargeButton,
+      medicationType,
+      shouldShowMedicationDrag,
+      handlePracticeDoseLog,
+      completePracticeDoseLog,
+      clearMedicationDrag,
     }),
-    [getTutorialText, advanceToPortion, shouldEnlargeButton, step, portion],
+    [
+      getTutorialText,
+      advanceToPortion,
+      shouldEnlargeButton,
+      medicationType,
+      shouldShowMedicationDrag,
+      handlePracticeDoseLog,
+      completePracticeDoseLog,
+      clearMedicationDrag,
+      step,
+      portion,
+    ],
   );
 
   return (

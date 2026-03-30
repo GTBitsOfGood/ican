@@ -37,21 +37,17 @@ export default function TriviaGame({
   const isLastQuestion = currQuestionIdx === roundQuestions.length - 1;
 
   const [showXpPopup, setShowXpPopup] = useState(false);
-  const [showCongratsPopup, setShowCongratsPopup] = useState(false);
   const hasAutoStartedRef = useRef(false);
   const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const congratsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isLastQuestion = currQuestionIdx === roundQuestions.length - 1;
 
   useEffect(() => {
     return () => {
       if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
-      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
     };
   }, []);
 
   const handleStart = useCallback(() => {
-    setSpeechText("Let's learn how to play!");
-
     showInformationModal({
       gameMode: "TRIVIA",
       title: "INSTRUCTIONS",
@@ -59,7 +55,7 @@ export default function TriviaGame({
         "Your pet will ask you a series of questions.\nSelect the answer you think is right!\n\nGet 10 XP for each correct answer.",
       onClose: () => setGameState(GameState.PLAYING),
     });
-  }, [setSpeechText, showInformationModal, setGameState]);
+  }, [showInformationModal, setGameState]);
 
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
@@ -76,9 +72,11 @@ export default function TriviaGame({
     }
   }, [gameState, handleStart, setSpeechText]);
 
+  const buttonClassName =
+    "fixed right-[6%] bottom-[18%] z-50 border-[3px] border-black bg-icanGreen-200 px-12 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50";
+
   const handleAnswer = (idx: number) => {
     if (isSubmitted) return;
-
     setSelectedChoiceIdx(idx);
   };
 
@@ -112,12 +110,20 @@ export default function TriviaGame({
     }
 
     if (isLastQuestion) {
-      setShowCongratsPopup(true);
-      if (congratsTimerRef.current) clearTimeout(congratsTimerRef.current);
-      congratsTimerRef.current = setTimeout(
-        () => setShowCongratsPopup(false),
-        5000,
+      setGameState(GameState.WON);
+      setSpeechText("That was fun! I loved playing with you!");
+    } else {
+      setSpeechText(
+        isCorrect
+          ? "Great job!"
+          : `Nice try! The correct answer was ${correctLetter}.`,
       );
+
+      if (isCorrect) {
+        setShowXpPopup(true);
+        if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+        xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
+      }
     }
 
     setIsSubmitted(true);
@@ -180,14 +186,8 @@ export default function TriviaGame({
   };
 
   const handlePlayAgain = () => {
-    const newQuestions = generateRoundQuestions();
-    setCurrQuestionIdx(0);
-    setRoundQuestions(newQuestions);
-    setIsSubmitted(false);
-    setSelectedChoiceIdx(null);
     setShowXpPopup(false);
-    setShowCongratsPopup(false);
-    setSpeechText(newQuestions[0].prompt);
+    setGameState(GameState.PLAYING);
   };
 
   const handleNextQuestion = () => {
@@ -196,11 +196,8 @@ export default function TriviaGame({
     setShowXpPopup(false);
 
     const nextQuestionIdx = currQuestionIdx + 1;
-
-    if (nextQuestionIdx < roundQuestions.length) {
-      setCurrQuestionIdx(nextQuestionIdx);
-      setSpeechText(roundQuestions[nextQuestionIdx].prompt);
-    }
+    setCurrQuestionIdx(nextQuestionIdx);
+    setSpeechText(roundQuestions[nextQuestionIdx].prompt);
   };
 
   return (
@@ -208,20 +205,6 @@ export default function TriviaGame({
       <div className="text-center font-quantico text-icanBlue-300">
         {gameState === GameState.PLAYING && roundQuestions.length > 0 && (
           <>
-            {showCongratsPopup && (
-              <div
-                className="fixed inset-0 z-[100] flex items-center justify-center"
-                onClick={() => setShowCongratsPopup(false)}
-              >
-                <img
-                  src="/assets/CongratulationsBackdrop.svg"
-                  alt="Congratulations"
-                  className="w-[420px] max-w-[80vw] h-auto"
-                  draggable={false}
-                  style={{ imageRendering: "pixelated" }}
-                />
-              </div>
-            )}
             {showXpPopup && (
               <img
                 src="/games/trivia/Notification.svg"
@@ -243,17 +226,32 @@ export default function TriviaGame({
 
             <button
               type="button"
-              onClick={
-                !isSubmitted
-                  ? handleSubmit
-                  : isLastQuestion
-                    ? handlePlayAgain
-                    : handleNextQuestion
-              }
+              onClick={!isSubmitted ? handleSubmit : handleNextQuestion}
               disabled={!isSubmitted && selectedChoiceIdx === null}
-              className="fixed right-[6%] bottom-[18%] z-50 border-[3px] border-black bg-icanGreen-200 px-12 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50"
+              className={buttonClassName}
             >
-              {!isSubmitted ? "Submit" : isLastQuestion ? "Play Again" : "Next"}
+              {!isSubmitted ? "Submit" : "Next"}
+            </button>
+          </>
+        )}
+        {gameState === GameState.WON && roundQuestions.length > 0 && (
+          <>
+            <div className="mt-8 flex flex-col items-center">
+              <QuestionCard
+                question={roundQuestions[currQuestionIdx]}
+                onAnswer={() => {}}
+                isAnswered={true}
+                selectedChoiceIdx={selectedChoiceIdx}
+                currentQuestionNumber={currQuestionIdx + 1}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handlePlayAgain}
+              className={buttonClassName}
+            >
+              Play Again
             </button>
           </>
         )}

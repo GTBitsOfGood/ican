@@ -3,6 +3,11 @@ import UserDAO from "@/db/actions/user";
 import ERRORS from "@/utils/errorMessages";
 import { validateDeleteUser } from "@/utils/serviceUtils/authServiceUtil";
 import MedicationDAO from "@/db/actions/medication";
+import PetDAO from "@/db/actions/pets";
+import BagDAO from "@/db/actions/bag";
+import SettingsDAO from "@/db/actions/settings";
+import NotificationDAO from "@/db/actions/notification";
+import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 
 const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
 
@@ -13,6 +18,32 @@ export default class UserService {
     const user = await UserDAO.getUserFromId(userId);
     if (!user) {
       throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    const pet = await PetDAO.getPetByUserId(userId);
+    const medications = await MedicationDAO.getMedicationsByUserId(userId);
+    const medicationIds = medications.map((medication) => medication._id);
+
+    if (pet) {
+      await BagDAO.deleteBagItemsByPetId(pet._id);
+    }
+
+    if (medicationIds.length > 0) {
+      await MedicationDAO.deleteMedicationArtifactsByMedicationIds(
+        medicationIds,
+      );
+    }
+
+    await NotificationDAO.deleteNotificationsByUserId(userId);
+    await ForgotPasswordCodeDAO.deleteForgotPasswordCodesByUserId(userId);
+    await SettingsDAO.deleteSettingsByUserId(userId);
+
+    if (medicationIds.length > 0) {
+      await MedicationDAO.deleteMedicationsByUserId(userId);
+    }
+
+    if (pet) {
+      await PetDAO.deletePetByUserId(userId);
     }
 
     await UserDAO.deleteUserFromId(userId);

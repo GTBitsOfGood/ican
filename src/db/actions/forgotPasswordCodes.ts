@@ -52,4 +52,13 @@ export default class ForgotPasswordCodeDAO {
       throw new Error(ERRORS.FORGOTPASSWORDCODE.FAILURE.DELETE);
     }
   }
+
+  static async deleteForgotPasswordCodesByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    await ForgotPasswordCodeModel.deleteMany({ userId });
+  }
 }

@@ -71,21 +71,31 @@ export default async function fetchHTTPClient<T>(
 ): Promise<T> {
   const httpMethod = (request.method as HttpMethod) || "NO METHOD PROVIDED";
   verifyFetchRequest(httpMethod, request);
-  console.log(`${BASE_URL}${endpoint}`);
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...request,
-    headers: {
-      "Content-Type": "application/json",
-      ...request.headers,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...request,
+      headers: {
+        "Content-Type": "application/json",
+        ...request.headers,
+      },
+    });
+  } catch {
+    throw new HTTPError("Connection to server unavailable", 503);
+  }
 
   if (!response.ok) {
-    const errorBody = await response.json();
-    const error = new HTTPError(
-      errorBody.error || `HTTP error! Status: ${response.status}`,
-      response.status,
-    );
+    let errorMessage = `HTTP error! Status: ${response.status}`;
+    const errorText = await response.text();
+    if (errorText) {
+      try {
+        const errorBody = JSON.parse(errorText);
+        errorMessage = errorBody.error || errorMessage;
+      } catch {
+        errorMessage = errorText;
+      }
+    }
+    const error = new HTTPError(errorMessage, response.status);
     throw error;
   }
 

@@ -71,4 +71,13 @@ export default class SettingsDAO {
     await dbConnect();
     return await SettingsModel.find({ notifications: true });
   }
+
+  static async deleteSettingsByUserId(
+    _userId: string | Types.ObjectId,
+  ): Promise<void> {
+    const userId =
+      _userId instanceof Types.ObjectId ? _userId : new Types.ObjectId(_userId);
+    await dbConnect();
+    await SettingsModel.deleteOne({ userId });
+  }
 }

@@ -62,4 +62,13 @@ export default class NotificationDAO {
     });
     return !!doc;
   }
+
+  static async deleteNotificationsByUserId(
+    userId: string | Types.ObjectId,
+  ): Promise<void> {
+    const userIdObj =
+      userId instanceof Types.ObjectId ? userId : new Types.ObjectId(userId);
+    await dbConnect();
+    await NotificationModel.deleteMany({ userId: userIdObj });
+  }
 }
