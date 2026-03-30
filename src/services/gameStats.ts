@@ -25,13 +25,17 @@ export default class GameStatsService {
       : null;
 
     const isNewDay = !lastPlayDate || !this.isSameDay(now, lastPlayDate);
+    const isConsecutiveDay =
+      lastPlayDate && this.isYesterday(now, lastPlayDate);
 
     if (isNewDay) {
+      const newStreak = isConsecutiveDay ? (user.gameStreakDays || 0) + 1 : 1;
       await UserDAO.updateUserById(userId, {
         gameCoinsEarnedToday: 0,
+        gameStreakDays: newStreak,
       });
       return {
-        streakInDays: user.gameStreakDays || 0,
+        streakInDays: newStreak,
         coinsEarnedToday: 0,
       };
     }
@@ -69,9 +73,11 @@ export default class GameStatsService {
     let newCoinsToday = user.gameCoinsEarnedToday || 0;
 
     const isNewDay = !lastPlayDate || !this.isSameDay(now, lastPlayDate);
+    const isConsecutiveDay =
+      lastPlayDate && this.isYesterday(now, lastPlayDate);
 
     if (isNewDay) {
-      newStreak = newStreak > 0 ? newStreak + 1 : 1;
+      newStreak = isConsecutiveDay ? newStreak + 1 : 1;
       newCoinsToday = 0;
     }
 
@@ -105,5 +111,11 @@ export default class GameStatsService {
       date1.getMonth() === date2.getMonth() &&
       date1.getDate() === date2.getDate()
     );
+  }
+
+  private static isYesterday(today: Date, date: Date): boolean {
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    return this.isSameDay(yesterday, date);
   }
 }
