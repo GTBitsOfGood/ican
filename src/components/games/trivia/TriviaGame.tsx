@@ -3,6 +3,10 @@ import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
 import { TriviaQuestion } from "@/types/games";
+import { useUser } from "@/components/UserContext";
+import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
+import GameRewardsService from "@/services/gameRewards";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 function generateRoundQuestions(): TriviaQuestion[] {
   const shuffled = [...triviaQuestions];
@@ -19,13 +23,17 @@ export default function TriviaGame({
   gameState,
   setGameState,
   showInformationModal,
+  setWinRewardDetails,
 }: GameWrapperControls) {
+  const { userId } = useUser();
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
   const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState<number | null>(
     null,
   );
+  const [isProcessingWin, setIsProcessingWin] = useState(false);
+
   const [showXpPopup, setShowXpPopup] = useState(false);
   const hasAutoStartedRef = useRef(false);
   const xpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -80,6 +88,25 @@ export default function TriviaGame({
       roundQuestions[currQuestionIdx].answerIdx
     ];
 
+    setSpeechText(
+      isCorrect
+        ? "Great job!"
+        : `Nice try! The correct answer was ${correctLetter}.`,
+    );
+
+    if (isCorrect) {
+      setShowXpPopup(true);
+      if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
+      xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
+
+      // If last question and correct, process win with rewards
+      if (isLastQuestion) {
+        handleGameWin();
+        setIsSubmitted(true);
+        return;
+      }
+    }
+
     if (isLastQuestion) {
       setGameState(GameState.WON);
       setSpeechText("That was fun! I loved playing with you!");
@@ -98,6 +125,51 @@ export default function TriviaGame({
     }
 
     setIsSubmitted(true);
+  };
+
+  const handleGameWin = async () => {
+    if (!userId || isProcessingWin) return;
+
+    setIsProcessingWin(true);
+    setWinRewardDetails?.(null);
+
+    try {
+      const stats = await GameStatsHTTPClient.getGameStats(userId);
+      const streakInDays = stats.streakInDays;
+      const coinsAlreadyEarned = stats.coinsEarnedToday;
+
+      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
+      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
+        coinsToPay,
+        coinsAlreadyEarned,
+      );
+
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
+
+      setGameState(GameState.WON);
+
+      const updatedDailyCoins = Math.min(
+        coinsAlreadyEarned + actualCoinsEarned,
+        GAMES_DAILY_COIN_LIMIT,
+      );
+
+      setWinRewardDetails?.({
+        coinsEarned: actualCoinsEarned,
+        dailyCoinsTotal: updatedDailyCoins,
+        maxCoinsPerDay: GAMES_DAILY_COIN_LIMIT,
+        maxReached: actualCoinsEarned === 0,
+      });
+    } catch (error) {
+      console.error("Error processing game win:", error);
+      setGameState(GameState.WON);
+      setWinRewardDetails?.(null);
+      showInformationModal({
+        title: "YOU WIN!",
+        message: "Congratulations! You completed the game!",
+      });
+    } finally {
+      setIsProcessingWin(false);
+    }
   };
 
   const handlePlayAgain = () => {

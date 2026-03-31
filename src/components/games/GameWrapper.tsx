@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
@@ -25,6 +25,13 @@ type InformationModalOptions = {
   onClose?: () => void;
 };
 
+type WinRewardDetails = {
+  coinsEarned: number;
+  dailyCoinsTotal: number;
+  maxCoinsPerDay: number;
+  maxReached: boolean;
+};
+
 export interface GameWrapperControls {
   setSpeechText: (text: string) => void;
   gameState: GameState;
@@ -32,6 +39,7 @@ export interface GameWrapperControls {
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
   setPetEmotion?: (emotion: PetEmotion | null) => void;
+  setWinRewardDetails?: (details: WinRewardDetails | null) => void;
 }
 
 export default function GameWrapper({
@@ -54,28 +62,59 @@ export default function GameWrapper({
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
-  const [gameState, setGameState] = useState(GameState.START);
+  const [gameState, setInternalGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
   const [showSuccess, setShowSuccess] = useState(false);
   const [informationModal, setInformationModal] =
     useState<InformationModalOptions | null>(null);
   const [petBoardX, setPetBoardX] = useState<number | null>(null);
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
+  const [winRewardDetails, setWinRewardDetails] =
+    useState<WinRewardDetails | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetSuccessState = useCallback(() => {
+    if (successTimerRef.current) {
+      clearTimeout(successTimerRef.current);
+      successTimerRef.current = null;
+    }
+    setShowSuccess(false);
+  }, []);
+
+  const handleGameStateChange = useCallback(
+    (state: GameState) => {
+      setInternalGameState(state);
+
+      if (state === GameState.START && initialSpeechText) {
+        setSpeechText(initialSpeechText);
+      }
+
+      if (state === GameState.WON) {
+        setShowSuccess(true);
+        if (successTimerRef.current) {
+          clearTimeout(successTimerRef.current);
+        }
+        successTimerRef.current = setTimeout(() => {
+          setShowSuccess(false);
+          successTimerRef.current = null;
+        }, 5000);
+      } else {
+        resetSuccessState();
+        if (winRewardDetails !== null) {
+          setWinRewardDetails(null);
+        }
+      }
+    },
+    [initialSpeechText, resetSuccessState, winRewardDetails],
+  );
 
   useEffect(() => {
-    if (initialSpeechText && gameState === GameState.START) {
-      setSpeechText(initialSpeechText);
-    }
-  }, [gameState, initialSpeechText]);
-
-  // Show success overlay for 5 seconds on win
-  useEffect(() => {
-    if (gameState === GameState.WON) {
-      setShowSuccess(true);
-      const timer = setTimeout(() => setShowSuccess(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameState]);
+    return () => {
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+      }
+    };
+  }, []);
 
   const closeModal = () => {
     const onClose = informationModal?.onClose;
@@ -168,25 +207,47 @@ export default function GameWrapper({
               <GameComponent
                 setSpeechText={setSpeechText}
                 gameState={gameState}
-                setGameState={setGameState}
+                setGameState={handleGameStateChange}
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}
+                setWinRewardDetails={setWinRewardDetails}
               />
             </div>
           </div>
 
-          {/* Success overlay — shown for 5 seconds on win */}
+          {/* Success overlay on win */}
           {showSuccess && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer"
-              onClick={() => setShowSuccess(false)}
-            >
-              <img
-                src="/assets/CongratulationsBackdrop.svg"
-                alt="Success!"
-                className="w-[900px] max-w-[80vw] h-auto"
-              />
+            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <div className="relative w-full max-w-6xl px-4">
+                <img
+                  src="/assets/CongratulationsBackdrop.svg"
+                  alt="Success!"
+                  className="w-full h-auto"
+                />
+                {winRewardDetails && (
+                  <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
+                    {winRewardDetails.maxReached ? (
+                      <p className="font-quantico text-3xl uppercase tracking-wide text-icanBlue-300">
+                        Max coins reached
+                      </p>
+                    ) : (
+                      <>
+                        <img
+                          src="/icons/Coin.svg"
+                          alt="Coins"
+                          className="h-12 w-12"
+                          draggable={false}
+                        />
+                        <p className="font-quantico text-3xl uppercase text-icanBlue-300 whitespace-nowrap">
+                          Daily Coins: {winRewardDetails.dailyCoinsTotal}/
+                          {winRewardDetails.maxCoinsPerDay}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

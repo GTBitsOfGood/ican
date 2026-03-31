@@ -165,4 +165,24 @@ export default class UserDAO {
       email: user.email,
     };
   }
+
+  static async updateUserById(
+    id: string | Types.ObjectId,
+    updateObj: Partial<User>,
+  ): Promise<void> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await UserModel.updateOne({ _id }, updateObj);
+    if (result.modifiedCount === 0) {
+      throw new Error("Failed to update user.");
+    }
+  }
+
+  static async getUserById(
+    id: string | Types.ObjectId,
+  ): Promise<HydratedDocument<UserDocument> | null> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    return await UserModel.findById(_id);
+  }
 }
