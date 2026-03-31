@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { useUser } from "@/components/UserContext";
 import { useUserProfile } from "@/components/hooks/useAuth";
+import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
+import GameRewardsService from "@/services/gameRewards";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 type Board = (string | null)[];
 type Difficulty = "normal" | "expert";
@@ -11,6 +14,7 @@ export default function TicTacToe({
   gameState,
   setGameState,
   showInformationModal,
+  setWinRewardDetails,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
@@ -19,6 +23,7 @@ export default function TicTacToe({
   const [aiIsThinking, setAiIsThinking] = useState(false);
   const [prevGameState, setPrevGameState] = useState<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
+  const [isProcessingWin, setIsProcessingWin] = useState(false);
 
   useEffect(() => {
     if (gameState === GameState.START) {
@@ -194,6 +199,53 @@ export default function TicTacToe({
     }
   };
 
+  const handleGameWin = async () => {
+    if (!userId || isProcessingWin) return;
+
+    setIsProcessingWin(true);
+    setWinRewardDetails?.(null);
+
+    try {
+      const stats = await GameStatsHTTPClient.getGameStats(userId);
+      const streakInDays = stats.streakInDays;
+      const coinsAlreadyEarned = stats.coinsEarnedToday;
+
+      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
+      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
+        coinsToPay,
+        coinsAlreadyEarned,
+      );
+
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
+
+      const updatedDailyCoins = Math.min(
+        coinsAlreadyEarned + actualCoinsEarned,
+        GAMES_DAILY_COIN_LIMIT,
+      );
+
+      setWinRewardDetails?.({
+        coinsEarned: actualCoinsEarned,
+        dailyCoinsTotal: updatedDailyCoins,
+        maxCoinsPerDay: GAMES_DAILY_COIN_LIMIT,
+        maxReached: actualCoinsEarned === 0,
+      });
+
+      setGameState(GameState.WON);
+    } catch (error) {
+      console.error("Error processing game win:", error);
+      setWinRewardDetails?.(null);
+      showInformationModal({
+        title: "YOU WIN!",
+        message: "Great job! You won the game!",
+        onClose: () => {
+          setGameState(GameState.WON);
+        },
+      });
+    } finally {
+      setIsProcessingWin(false);
+    }
+  };
+
   const handleSquareClick = (index: number) => {
     if (gameState !== GameState.PLAYING || aiIsThinking) return;
     if (board[index] !== null) return;
@@ -203,8 +255,8 @@ export default function TicTacToe({
 
     const winner = calculateWinner(newBoard);
     if (winner === "X") {
-      setGameState(GameState.WON);
       setBoard(newBoard);
+      handleGameWin();
       return;
     }
 
