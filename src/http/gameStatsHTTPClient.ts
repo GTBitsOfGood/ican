@@ -6,7 +6,6 @@ export interface GameStatsResponse {
 }
 
 export interface RecordGameWinRequest {
-  gameType: string;
   coinsEarned: number;
 }
 
@@ -26,16 +25,14 @@ export default class GameStatsHTTPClient {
 
   static async recordGameWin(
     userId: string,
-    gameType: string,
     coinsEarned: number,
   ): Promise<GameStatsResponse> {
     const body: RecordGameWinRequest = {
-      gameType,
       coinsEarned,
     };
 
     return await fetchHTTPClient<GameStatsResponse>(
-      `/users/${userId}/game-stats`,
+      `/users/${userId}/game-stats/record-win`,
       {
         method: "POST",
         body: JSON.stringify(body),

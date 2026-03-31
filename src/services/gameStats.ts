@@ -51,7 +51,6 @@ export default class GameStatsService {
    */
   static async recordGameWin(
     userId: string,
-    gameType: string,
     coinsEarned: number,
   ): Promise<GameStatsResponse> {
     const user = await UserDAO.getUserById(userId);

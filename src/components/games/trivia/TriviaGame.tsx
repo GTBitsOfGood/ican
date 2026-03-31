@@ -144,11 +144,7 @@ export default function TriviaGame({
         coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(
-        userId,
-        "trivia",
-        actualCoinsEarned,
-      );
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
 
       setGameState(GameState.WON);
 

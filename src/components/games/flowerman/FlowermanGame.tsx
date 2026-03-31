@@ -124,11 +124,7 @@ export default function FlowermanGame({
         coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(
-        userId,
-        "flowerman",
-        actualCoinsEarned,
-      );
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
 
       const updatedDailyCoins = Math.min(
         coinsAlreadyEarned + actualCoinsEarned,

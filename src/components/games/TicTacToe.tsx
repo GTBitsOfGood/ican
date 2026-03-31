@@ -216,11 +216,7 @@ export default function TicTacToe({
         coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(
-        userId,
-        "tictactoe",
-        actualCoinsEarned,
-      );
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
 
       const updatedDailyCoins = Math.min(
         coinsAlreadyEarned + actualCoinsEarned,

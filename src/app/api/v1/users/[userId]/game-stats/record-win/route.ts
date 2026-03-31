@@ -15,20 +15,16 @@ export const POST = withAuth<{ userId: string }>(
     verifyUser(tokenUser, userId, ERRORS.USER.NOT_FOUND);
 
     const body = await req.json();
-    const { gameType, coinsEarned } = body;
+    const { coinsEarned } = body;
 
-    if (!gameType || typeof coinsEarned !== "number" || coinsEarned < 0) {
+    if (typeof coinsEarned !== "number" || coinsEarned < 0) {
       return NextResponse.json(
-        { error: "Invalid input for gameType or coinsEarned" },
+        { error: "Invalid input for coinsEarned" },
         { status: 400 },
       );
     }
 
-    const stats = await GameStatsService.recordGameWin(
-      userId,
-      gameType,
-      coinsEarned,
-    );
+    const stats = await GameStatsService.recordGameWin(userId, coinsEarned);
     return NextResponse.json(stats, { status: 200 });
   },
 );
