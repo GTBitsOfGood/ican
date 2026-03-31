@@ -1,30 +1,26 @@
 import NotificationDAO from "@/db/actions/notification";
 import MedicationDAO from "@/db/actions/medication";
 import SettingsDAO from "@/db/actions/settings";
-import { NotificationType } from "@/db/models/notification";
+import PetDAO from "@/db/actions/pets";
+import type { NotificationPreferences } from "@/db/models/settings";
 import { publishToUser } from "@/lib/ably";
 import {
   shouldScheduleMedication,
   processDoseTime,
 } from "@/utils/serviceUtils/medicationUtil";
+import {
+  buildMedicationNotificationMessage,
+  buildStreakWarningMessage,
+  getPreferredNotificationName,
+  MISSED_NOTIFICATION_DELAY_MINUTES,
+  type MedicationNotificationType,
+} from "@/utils/notificationMessages";
 import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
 import UserDAO from "@/db/actions/user";
-
-function buildMessage(
-  type: NotificationType,
-  medicationName: string,
-  time: string,
-): string {
-  switch (type) {
-    case "early":
-      return `Heads up! Your medication ${medicationName} is coming up at ${time}.`;
-    case "on_time":
-      return `Time to take your medication ${medicationName}!`;
-    case "missed":
-      return `You missed your ${medicationName} dose scheduled at ${time}.`;
-  }
-}
+import { hasActiveStreak } from "@/services/streak";
+import { MedicationLogDocument } from "@/db/models/medicationLog";
+import { HydratedDocument } from "mongoose";
 
 function parseDoseTimeToDate(doseTime: string, now: Date): Date {
   const [hours, minutes] = doseTime.split(":").map(Number);
@@ -36,6 +32,14 @@ function parseDoseTimeToDate(doseTime: string, now: Date): Date {
     minutes,
     0,
     0,
+  );
+}
+
+function isSameLocalDay(date1: Date, date2: Date): boolean {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
   );
 }
 
@@ -52,9 +56,59 @@ export default class NotificationService {
       const medications = await MedicationDAO.getMedicationsByUserId(userId);
       if (medications.length === 0) continue;
 
+      const user = await UserDAO.getUserFromId(userId);
+      const notificationName = getPreferredNotificationName(user?.name);
+
       const now = new Date();
       const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      const logsCache = new Map<
+        string,
+        HydratedDocument<MedicationLogDocument>[]
+      >();
+      for (const medication of medications) {
+        const logs = await MedicationDAO.getMedicationLogs(
+          medication._id.toString(),
+        );
+        logsCache.set(medication._id.toString(), logs);
+      }
+
+      let lastScheduledDate: Date | null = null;
+      let lastMedicationId: string | null = null;
+      let lastDoseTimeStr: string | null = null;
+
+      for (const medication of medications) {
+        const med: WithId<Medication> = {
+          ...medication.toObject(),
+          _id: medication._id.toString(),
+        };
+        if (!shouldScheduleMedication(med, today, medication.createdAt))
+          continue;
+
+        for (const doseTime of medication.doseTimes) {
+          const scheduledDate = parseDoseTimeToDate(doseTime, now);
+          if (!lastScheduledDate || scheduledDate > lastScheduledDate) {
+            lastScheduledDate = scheduledDate;
+            lastMedicationId = med._id;
+            lastDoseTimeStr = doseTime;
+          }
+        }
+      }
+
+      const hasTakenMedToday = [...logsCache.values()].some((logs) =>
+        logs.some((log) => isSameLocalDay(new Date(log.dateTaken), today)),
+      );
+
+      const pet = await PetDAO.getPetByUserId(userId);
+      const petWithId = pet
+        ? { ...pet.toObject(), _id: pet._id.toString() }
+        : null;
+      const shouldCheckStreak =
+        petWithId &&
+        hasActiveStreak(petWithId) &&
+        !hasTakenMedToday &&
+        lastScheduledDate !== null;
 
       for (const medication of medications) {
         const med: WithId<Medication> = {
@@ -66,7 +120,7 @@ export default class NotificationService {
           continue;
         }
 
-        const medicationLogs = await MedicationDAO.getMedicationLogs(med._id);
+        const medicationLogs = logsCache.get(med._id) ?? [];
 
         for (const doseTime of medication.doseTimes) {
           const scheduledDate = parseDoseTimeToDate(doseTime, now);
@@ -83,7 +137,7 @@ export default class NotificationService {
           if (status === "taken") continue;
 
           const typesToCheck: {
-            type: NotificationType;
+            type: MedicationNotificationType;
             condition: boolean;
           }[] = [
             {
@@ -98,7 +152,9 @@ export default class NotificationService {
             },
             {
               type: "missed",
-              condition: diffMinutes >= 15 && diffMinutes < 16,
+              condition:
+                diffMinutes >= MISSED_NOTIFICATION_DELAY_MINUTES &&
+                diffMinutes < MISSED_NOTIFICATION_DELAY_MINUTES + 1,
             },
           ];
 
@@ -113,11 +169,12 @@ export default class NotificationService {
             );
             if (alreadyExists) continue;
 
-            const message = buildMessage(
+            const message = buildMedicationNotificationMessage({
               type,
-              medication.customMedicationId,
-              doseTime,
-            );
+              userName: notificationName,
+              medicationName: medication.customMedicationId,
+              earlyWindowMinutes: prefs.earlyWindow,
+            });
 
             const notification = await NotificationDAO.create({
               userId: medication.userId,
@@ -140,6 +197,48 @@ export default class NotificationService {
             }
 
             sentCount++;
+
+            const isLastDose =
+              med._id === lastMedicationId && doseTime === lastDoseTimeStr;
+
+            if (
+              shouldCheckStreak &&
+              isLastDose &&
+              petWithId &&
+              prefs.types.includes("streak_warning")
+            ) {
+              const streakWarningExists = await NotificationDAO.exists(
+                med._id,
+                scheduledDate,
+                "streak_warning",
+              );
+
+              if (!streakWarningExists) {
+                const streakMessage = buildStreakWarningMessage();
+
+                const streakNotification = await NotificationDAO.create({
+                  userId: medication.userId,
+                  medicationId: medication._id,
+                  type: "streak_warning",
+                  scheduledTime: scheduledDate,
+                  message: streakMessage,
+                  delivered: false,
+                  emailSent: false,
+                });
+
+                if (prefs.realTimeEnabled) {
+                  await publishToUser(userId, "medication-notification", {
+                    notificationId: streakNotification._id.toString(),
+                    type: "streak_warning",
+                    medicationName: medication.customMedicationId,
+                    message: streakMessage,
+                    scheduledTime: scheduledDate.toISOString(),
+                  });
+                }
+
+                sentCount++;
+              }
+            }
           }
         }
       }

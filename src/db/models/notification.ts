@@ -1,7 +1,6 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-
-export const NOTIFICATION_TYPES = ["early", "on_time", "missed"] as const;
-export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+import { NOTIFICATION_TYPES } from "@/types/notifications";
+import type { NotificationType } from "@/types/notifications";
 
 export interface Notification {
   userId: Types.ObjectId;
@@ -56,4 +55,6 @@ const NotificationModel =
   models.Notification ||
   model<NotificationDocument>("Notification", notificationSchema);
 
+export { NOTIFICATION_TYPES };
+export type { NotificationType };
 export default NotificationModel;

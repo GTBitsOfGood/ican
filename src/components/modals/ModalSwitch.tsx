@@ -1,17 +1,26 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { twMerge } from "tailwind-merge";
 
 interface ModalSwitchProps {
   state: boolean;
   setState: (value: boolean) => void;
+  className?: string;
 }
 
-export default function ModalSwitch({ state, setState }: ModalSwitchProps) {
+export default function ModalSwitch({
+  state,
+  setState,
+  className,
+}: ModalSwitchProps) {
   return (
     <AnimatePresence mode="wait">
       <div
         onClick={() => setState(!state)}
-        className="flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[26%] desktop:w-[26%] largeDesktop:w-[26%] h-12 py-2 px-[0.75rem] border-2 border-black"
+        className={twMerge(
+          "flex cursor-pointer justify-between items-center mobile:w-[20%] tablet:w-[26%] desktop:w-[26%] largeDesktop:w-[26%] h-12 py-2 px-[0.75rem] border-2 border-black",
+          className,
+        )}
       >
         {state ? (
           <>
