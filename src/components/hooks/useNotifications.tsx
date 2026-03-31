@@ -3,7 +3,7 @@ import Ably from "ably";
 import toast from "react-hot-toast";
 import NotificationHTTPClient from "@/http/notificationHTTPClient";
 import NotificationBanner from "@/components/NotificationBanner";
-import { NotificationType } from "@/db/models/notification";
+import type { NotificationType } from "@/types/notifications";
 
 interface NotificationMessage {
   notificationId: string;
@@ -41,7 +41,7 @@ export function useNotifications(userId: string | null) {
         (t) => (
           <NotificationBanner t={t} type={data.type} message={data.message} />
         ),
-        { duration: TOAST_DURATION[data.type], position: "top-right" },
+        { duration: TOAST_DURATION[data.type], position: "top-center" },
       );
 
       NotificationHTTPClient.markDelivered(data.notificationId).catch(() => {});

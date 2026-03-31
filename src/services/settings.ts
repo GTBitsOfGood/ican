@@ -1,5 +1,4 @@
 import SettingsDAO from "@/db/actions/settings";
-import { NOTIFICATION_TYPES } from "@/db/models/notification";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
 import {
@@ -19,6 +18,7 @@ import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
 import { Types } from "mongoose";
 import HashingService from "./hashing";
+import { NOTIFICATION_TYPES } from "@/types/notifications";
 
 export default class SettingsService {
   static async createSettings(userId: string): Promise<WithId<Settings>> {
@@ -36,7 +36,7 @@ export default class SettingsService {
       notifications: true,
       pin: null,
       notificationPreferences: {
-        types: ["early", "on_time", "missed"],
+        types: [...NOTIFICATION_TYPES],
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,

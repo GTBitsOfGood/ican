@@ -1,17 +1,15 @@
 import { withAuth } from "@/utils/withAuth";
 import { publishToUser } from "@/lib/ably";
-import { NOTIFICATION_TYPES, NotificationType } from "@/db/models/notification";
 import { NextRequest, NextResponse } from "next/server";
 import { UserDocument } from "@/db/models/user";
 import { Types } from "mongoose";
-
-const DEFAULT_MESSAGES: Record<NotificationType, string> = {
-  early: "Heads up! Your medication TestMed is coming up at 4:00pm.",
-  on_time: "Time to take your medication TestMed!",
-  missed: "You missed your TestMed dose scheduled at 3:00pm.",
-  streak_warning:
-    "Your 5-day streak is at risk! Take your medication before midnight to keep it going.",
-};
+import { NOTIFICATION_TYPES } from "@/types/notifications";
+import type { NotificationType } from "@/types/notifications";
+import {
+  buildMedicationNotificationMessage,
+  buildStreakWarningMessage,
+  getPreferredNotificationName,
+} from "@/utils/notificationMessages";
 
 export const POST = withAuth(
   async (
@@ -29,7 +27,6 @@ export const POST = withAuth(
     const body = (await req.json()) as {
       type?: NotificationType;
       message?: string;
-      streakDays?: number;
     };
 
     const type: NotificationType = NOTIFICATION_TYPES.includes(
@@ -38,8 +35,19 @@ export const POST = withAuth(
       ? (body.type as NotificationType)
       : "on_time";
 
-    const message = body.message ?? DEFAULT_MESSAGES[type];
     const userId = user._id.toString();
+    const userName = getPreferredNotificationName(user.name);
+    const message =
+      body.message ??
+      (type === "streak_warning"
+        ? buildStreakWarningMessage()
+        : buildMedicationNotificationMessage({
+            type,
+            userName,
+            medicationName: "TestMed",
+            earlyWindowMinutes: 5,
+            missedWindowMinutes: 15,
+          }));
 
     await publishToUser(userId, "medication-notification", {
       notificationId: new Types.ObjectId().toString(),
@@ -47,9 +55,6 @@ export const POST = withAuth(
       medicationName: "TestMed",
       message,
       scheduledTime: new Date().toISOString(),
-      ...(type === "streak_warning" && {
-        streakDays: body.streakDays ?? 5,
-      }),
     });
 
     return NextResponse.json({ ok: true, type, message });

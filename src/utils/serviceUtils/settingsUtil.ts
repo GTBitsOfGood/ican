@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { NOTIFICATION_TYPES } from "@/db/models/notification";
 import { objectIdSchema } from "./commonSchemaUtil";
+import { NOTIFICATION_TYPES } from "@/types/notifications";
 
 export const createSettingsSchema = z.object({
   userId: objectIdSchema("UserId"),
@@ -14,6 +14,7 @@ const notificationPreferencesSchema = z
     earlyWindow: z.number().min(1).max(120).optional(),
     emailEnabled: z.boolean().optional(),
     realTimeEnabled: z.boolean().optional(),
+    use24HourTime: z.boolean().optional(),
   })
   .optional();
 

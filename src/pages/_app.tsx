@@ -33,7 +33,14 @@ export default function App({ Component, pageProps }: AppProps) {
             </NotificationProvider>
           </UserProvider>
         </GoogleOAuthProvider>
-        <Toaster containerStyle={{ top: 20, right: 20 }} gutter={8} />
+        <Toaster
+          containerStyle={{
+            top: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+          gutter={12}
+        />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </main>
