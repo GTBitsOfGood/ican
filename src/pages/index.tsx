@@ -32,6 +32,8 @@ interface HomeProps {
   foods?: string[];
 }
 
+const TUTORIAL_XP_GAIN = 20;
+
 export default function Home({
   activeModal = "",
   foods = undefined,
@@ -39,6 +41,12 @@ export default function Home({
   const router = useRouter();
   const tutorial = useTutorial();
   const isTutorial = tutorial.isActive;
+  const initialTutorialDisplayExp =
+    isTutorial &&
+    !tutorial.isReplay &&
+    tutorial.tutorialPortion >= TUTORIAL_PORTIONS.END_TUTORIAL
+      ? TUTORIAL_XP_GAIN
+      : 0;
 
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
@@ -50,12 +58,16 @@ export default function Home({
       ? (tutorial.replayCoins ?? 100)
       : (pet?.coins ?? 0);
   const displayLevel =
-    pet && isTutorial && tutorial.isReplay
-      ? tutorial.replayXpLevel
+    pet && isTutorial
+      ? tutorial.isReplay
+        ? tutorial.replayXpLevel
+        : 0
       : (pet?.xpLevel ?? 0);
   const displayCurrentExp =
-    pet && isTutorial && tutorial.isReplay
-      ? tutorial.replayXpGained
+    pet && isTutorial
+      ? tutorial.isReplay
+        ? tutorial.replayXpGained
+        : initialTutorialDisplayExp
       : (pet?.xpGained ?? 0);
   const feedPetMutation = realFeedPet;
   const { data: tutorialBagFoods = [] } = usePetFoods(

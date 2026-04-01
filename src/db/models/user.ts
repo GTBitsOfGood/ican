@@ -23,6 +23,9 @@ export interface User {
   tutorialStep?: number;
   tutorialMedicationType?: TutorialMedicationType | null;
   tutorialShouldShowMedicationDrag?: boolean;
+  gameStreakDays?: number;
+  gameCoinsEarnedToday?: number;
+  gameLastPlayDate?: Date | null;
   gameStatistics?: Map<string, GameStats>;
 }
 
@@ -69,6 +72,9 @@ const userSchema = new Schema<UserDocument>(
       required: false,
       default: false,
     },
+    gameStreakDays: { type: Number, required: false, default: 0 },
+    gameCoinsEarnedToday: { type: Number, required: false, default: 0 },
+    gameLastPlayDate: { type: Date, required: false, default: null },
     gameStatistics: {
       type: Map,
       of: new Schema<GameStats>(

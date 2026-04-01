@@ -114,6 +114,7 @@ export default function MedicationLogCard({
           onSuccess: () => {
             setShowConfirmModal(false);
             tutorial.completeTutorialMedicationStep(formOfMedication);
+            router.push("/");
           },
           onError: (error) => {
             toast.error(
