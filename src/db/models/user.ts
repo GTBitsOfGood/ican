@@ -1,5 +1,12 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import { ChildPasswordType } from "@/types/user";
+import {
+  ChildPasswordType,
+  TUTORIAL_MODES,
+  TUTORIAL_STATES,
+  TutorialMedicationType,
+  TutorialMode,
+  TutorialState,
+} from "@/types/user";
 import { GameResult, GameStats } from "@/types/games";
 
 export interface User {
@@ -11,6 +18,11 @@ export interface User {
   provider: string;
   isOnboarded?: boolean;
   tutorial_completed?: boolean;
+  tutorialState?: TutorialState;
+  tutorialMode?: TutorialMode | null;
+  tutorialStep?: number;
+  tutorialMedicationType?: TutorialMedicationType | null;
+  tutorialShouldShowMedicationDrag?: boolean;
   gameStatistics?: Map<string, GameStats>;
 }
 
@@ -33,6 +45,30 @@ const userSchema = new Schema<UserDocument>(
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
     tutorial_completed: { type: Boolean, required: false, default: false },
+    tutorialState: {
+      type: String,
+      required: false,
+      default: "food",
+      enum: TUTORIAL_STATES,
+    },
+    tutorialMode: {
+      type: String,
+      required: false,
+      default: "initial",
+      enum: [...TUTORIAL_MODES, null],
+    },
+    tutorialStep: { type: Number, required: false, default: 0 },
+    tutorialMedicationType: {
+      type: String,
+      required: false,
+      default: null,
+      enum: ["Pill", "Syrup", "Shot", null],
+    },
+    tutorialShouldShowMedicationDrag: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     gameStatistics: {
       type: Map,
       of: new Schema<GameStats>(

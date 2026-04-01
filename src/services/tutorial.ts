@@ -159,8 +159,8 @@ export default class TutorialService {
     hasTakenTutorialMedication: boolean;
     hasFedPet: boolean;
   }> {
-    const tutorialCompleted = await UserDAO.getTutorialStatus(userId);
-    if (tutorialCompleted) {
+    const tutorialStatus = await UserDAO.getTutorialStatus(userId);
+    if (tutorialStatus.tutorialCompleted) {
       return {
         hasPurchasedFood: true,
         hasTakenTutorialMedication: true,

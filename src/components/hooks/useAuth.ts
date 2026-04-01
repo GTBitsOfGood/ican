@@ -1,6 +1,9 @@
 import AuthHTTPClient from "@/http/authHTTPClient";
-import UserHTTPClient from "@/http/userHTTPClient";
+import UserHTTPClient, {
+  UpdateTutorialStatusBody,
+} from "@/http/userHTTPClient";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TutorialStatus } from "@/types/user";
 
 export const AUTH_QUERY_KEYS = {
   validateToken: ["validateToken"] as const,
@@ -115,13 +118,12 @@ export const useUpdateOnboardingStatus = () => {
 };
 
 export const useTutorialStatus = (userId: string | null) => {
-  return useQuery<boolean>({
+  return useQuery<TutorialStatus>({
     queryKey: USER_QUERY_KEYS.tutorialStatus(userId || ""),
     queryFn: async () => {
       if (!userId) throw new Error("User ID required");
 
-      const response = await UserHTTPClient.getTutorialStatus(userId);
-      return response.tutorial_completed;
+      return await UserHTTPClient.getTutorialStatus(userId);
     },
     enabled: !!userId,
     staleTime: 1 * 60 * 1000,
@@ -147,15 +149,55 @@ export const useUpdateTutorialStatus = () => {
   return useMutation({
     mutationFn: ({
       userId,
-      tutorial_completed,
+      ...status
     }: {
       userId: string;
-      tutorial_completed: boolean;
-    }) => {
-      return UserHTTPClient.updateTutorialStatus(userId, tutorial_completed);
+    } & UpdateTutorialStatusBody) => {
+      return UserHTTPClient.updateTutorialStatus(userId, status);
     },
 
-    onSuccess: (_data, variables) => {
+    onMutate: async ({ userId, ...status }) => {
+      await queryClient.cancelQueries({
+        queryKey: USER_QUERY_KEYS.tutorialStatus(userId),
+      });
+
+      const previousStatus = queryClient.getQueryData<TutorialStatus>(
+        USER_QUERY_KEYS.tutorialStatus(userId),
+      );
+
+      if (previousStatus) {
+        queryClient.setQueryData<TutorialStatus>(
+          USER_QUERY_KEYS.tutorialStatus(userId),
+          {
+            tutorialCompleted:
+              status.tutorialCompleted ?? previousStatus.tutorialCompleted,
+            tutorialState: status.tutorialState,
+            tutorialMode: status.tutorialMode,
+            tutorialStep: status.tutorialStep ?? previousStatus.tutorialStep,
+            tutorialMedicationType:
+              status.tutorialMedicationType !== undefined
+                ? status.tutorialMedicationType
+                : previousStatus.tutorialMedicationType,
+            tutorialShouldShowMedicationDrag:
+              status.tutorialShouldShowMedicationDrag ??
+              previousStatus.tutorialShouldShowMedicationDrag,
+          },
+        );
+      }
+
+      return { previousStatus, userId };
+    },
+
+    onError: (_error, _variables, context) => {
+      if (context?.previousStatus && context.userId) {
+        queryClient.setQueryData<TutorialStatus>(
+          USER_QUERY_KEYS.tutorialStatus(context.userId),
+          context.previousStatus,
+        );
+      }
+    },
+
+    onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({
         queryKey: USER_QUERY_KEYS.tutorialStatus(variables.userId),
       });

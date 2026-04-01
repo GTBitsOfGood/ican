@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import toast from "react-hot-toast";
@@ -21,30 +22,16 @@ import {
   useSetupTutorialMedication,
   useTutorialProgress,
 } from "./hooks/useTutorial";
-import { Pet } from "@/types/pet";
 import { calculateXPForLevel } from "@/utils/constants";
+import { TutorialState } from "@/types/user";
 
 const TUTORIAL_REPLAY_XP_GAIN = 20;
 
-type ReplayPetSnapshot = Pick<
-  Pet,
-  "coins" | "xpGained" | "xpLevel" | "food" | "lastFedAt"
->;
-
-interface TutorialSession {
-  active: boolean;
-  replay: boolean;
-  originalCoins: number | null;
-  originalPetState: ReplayPetSnapshot | null;
-  replayCoins: number | null;
+interface ReplaySession {
+  replayCoins: number;
   replayXpLevel: number;
   replayXpGained: number;
   replayFoods: string[];
-  practiceDose: TutorialMedicationSetup | null;
-  portion: number;
-  step: number;
-  medicationType: "Pill" | "Syrup" | "Shot" | null;
-  shouldShowMedicationDrag: boolean;
 }
 
 interface TutorialContextType {
@@ -73,189 +60,97 @@ interface TutorialContextType {
   isStartingReplay: boolean;
 }
 
-const STORAGE_KEY = "tutorial-session-v1";
-const SUPPRESS_AUTO_START_KEY = "tutorial-suppress-auto-start";
-
-const createDefaultSession = (
-  replay: boolean,
-  originalCoins: number | null = null,
-  originalPetState: ReplayPetSnapshot | null = null,
-  replayCoins: number | null = null,
-): TutorialSession => ({
-  active: true,
-  replay,
-  originalCoins,
-  originalPetState,
-  replayCoins,
-  replayXpLevel: 0,
-  replayXpGained: 0,
-  replayFoods: [],
-  practiceDose: null,
-  portion: TUTORIAL_PORTIONS.FOOD_TUTORIAL,
-  step: 0,
-  medicationType: null,
-  shouldShowMedicationDrag: false,
-});
-
-const readStoredSession = (): TutorialSession | null => {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(raw) as Partial<TutorialSession>;
-    if (!parsed || typeof parsed !== "object") {
-      return null;
-    }
-
-    return {
-      active: parsed.active === true,
-      replay: parsed.replay === true,
-      originalCoins:
-        typeof parsed.originalCoins === "number" ? parsed.originalCoins : null,
-      originalPetState:
-        parsed.originalPetState &&
-        typeof parsed.originalPetState === "object" &&
-        typeof parsed.originalPetState.coins === "number" &&
-        typeof parsed.originalPetState.xpGained === "number" &&
-        typeof parsed.originalPetState.xpLevel === "number" &&
-        typeof parsed.originalPetState.food === "number"
-          ? {
-              coins: parsed.originalPetState.coins,
-              xpGained: parsed.originalPetState.xpGained,
-              xpLevel: parsed.originalPetState.xpLevel,
-              food: parsed.originalPetState.food,
-              lastFedAt:
-                typeof parsed.originalPetState.lastFedAt === "string" ||
-                parsed.originalPetState.lastFedAt === null
-                  ? parsed.originalPetState.lastFedAt
-                  : null,
-            }
-          : null,
-      replayCoins:
-        typeof parsed.replayCoins === "number" ? parsed.replayCoins : null,
-      replayXpLevel:
-        typeof parsed.replayXpLevel === "number" ? parsed.replayXpLevel : 0,
-      replayXpGained:
-        typeof parsed.replayXpGained === "number" ? parsed.replayXpGained : 0,
-      replayFoods: Array.isArray(parsed.replayFoods)
-        ? parsed.replayFoods.filter(
-            (food): food is string => typeof food === "string",
-          )
-        : [],
-      practiceDose:
-        parsed.practiceDose &&
-        typeof parsed.practiceDose === "object" &&
-        typeof parsed.practiceDose.medicationId === "string" &&
-        typeof parsed.practiceDose.scheduledDoseTime === "string"
-          ? {
-              medicationId: parsed.practiceDose.medicationId,
-              scheduledDoseTime: parsed.practiceDose.scheduledDoseTime,
-            }
-          : null,
-      portion:
-        typeof parsed.portion === "number"
-          ? parsed.portion
-          : TUTORIAL_PORTIONS.FOOD_TUTORIAL,
-      step: typeof parsed.step === "number" ? parsed.step : 0,
-      medicationType:
-        parsed.medicationType === "Pill" ||
-        parsed.medicationType === "Syrup" ||
-        parsed.medicationType === "Shot"
-          ? parsed.medicationType
-          : null,
-      shouldShowMedicationDrag: parsed.shouldShowMedicationDrag === true,
-    };
-  } catch {
-    return null;
+const getStateRank = (tutorialState: TutorialState): number => {
+  switch (tutorialState) {
+    case "food":
+      return 0;
+    case "medication":
+      return 1;
+    case "feed":
+      return 2;
+    case "complete":
+      return 3;
   }
 };
 
-const persistSession = (session: TutorialSession | null) => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  if (!session) {
-    window.localStorage.removeItem(STORAGE_KEY);
-    return;
-  }
-
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-};
-
-const persistAndSetSession = (
-  setSession: React.Dispatch<React.SetStateAction<TutorialSession | null>>,
-  session: TutorialSession | null,
-) => {
-  persistSession(session);
-  setSession(session);
-};
-
-const readSuppressAutoStart = (): boolean => {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  return window.localStorage.getItem(SUPPRESS_AUTO_START_KEY) === "true";
-};
-
-const persistSuppressAutoStart = (value: boolean) => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  if (value) {
-    window.localStorage.setItem(SUPPRESS_AUTO_START_KEY, "true");
-    return;
-  }
-
-  window.localStorage.removeItem(SUPPRESS_AUTO_START_KEY);
-};
-
-const getSessionProgressRank = (session: TutorialSession): number => {
-  if (session.portion >= TUTORIAL_PORTIONS.END_TUTORIAL) {
-    return 4;
-  }
-
-  if (session.portion >= TUTORIAL_PORTIONS.FEED_TUTORIAL) {
-    return 3;
-  }
-
-  if (session.shouldShowMedicationDrag) {
-    return 2;
-  }
-
-  if (session.portion >= TUTORIAL_PORTIONS.LOG_TUTORIAL) {
-    return 1;
-  }
-
-  return 0;
-};
-
-const getProgressRank = (progress: {
+const getProgressState = (progress: {
   hasPurchasedFood: boolean;
   hasTakenTutorialMedication: boolean;
   hasFedPet: boolean;
-}): number => {
+}): TutorialState => {
   if (progress.hasFedPet) {
-    return 4;
+    return "complete";
   }
 
   if (progress.hasTakenTutorialMedication) {
-    return 2;
+    return "feed";
   }
 
   if (progress.hasPurchasedFood) {
-    return 1;
+    return "medication";
   }
 
-  return 0;
+  return "food";
+};
+
+const getPortionForState = (tutorialState: TutorialState): number => {
+  switch (tutorialState) {
+    case "food":
+      return TUTORIAL_PORTIONS.FOOD_TUTORIAL;
+    case "medication":
+      return TUTORIAL_PORTIONS.LOG_TUTORIAL;
+    case "feed":
+      return TUTORIAL_PORTIONS.FEED_TUTORIAL;
+    case "complete":
+      return TUTORIAL_PORTIONS.END_TUTORIAL;
+  }
+};
+
+const applyReplayFeedProgress = (session: ReplaySession): ReplaySession => {
+  const nextXp = session.replayXpGained + TUTORIAL_REPLAY_XP_GAIN;
+  const threshold = calculateXPForLevel(session.replayXpLevel);
+
+  if (nextXp >= threshold) {
+    return {
+      ...session,
+      replayXpLevel: session.replayXpLevel + 1,
+      replayXpGained: nextXp - threshold,
+      replayFoods: [],
+    };
+  }
+
+  return {
+    ...session,
+    replayXpGained: nextXp,
+    replayFoods: [],
+  };
+};
+
+const createReplaySession = (tutorialState: TutorialState): ReplaySession => {
+  if (tutorialState === "food") {
+    return {
+      replayCoins: 100,
+      replayXpLevel: 0,
+      replayXpGained: 0,
+      replayFoods: [],
+    };
+  }
+
+  if (tutorialState === "medication" || tutorialState === "feed") {
+    return {
+      replayCoins: 100,
+      replayXpLevel: 0,
+      replayXpGained: 0,
+      replayFoods: [],
+    };
+  }
+
+  return {
+    replayCoins: 100,
+    replayXpLevel: 0,
+    replayXpGained: 0,
+    replayFoods: [],
+  };
 };
 
 const TutorialContext = createContext<TutorialContextType | undefined>(
@@ -266,150 +161,128 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { userId } = useUser();
-  const { data: tutorialCompleted, isSuccess: tutorialStatusLoaded } =
+  const { data: tutorialStatus, isSuccess: tutorialStatusLoaded } =
     useTutorialStatus(userId);
   const { data: userProfile } = useUserProfile(userId);
   const { data: realPet } = usePet();
-  const [session, setSession] = useState<TutorialSession | null>(null);
-  const [sessionLoaded, setSessionLoaded] = useState(false);
-  const [suppressAutoStart, setSuppressAutoStart] = useState(false);
-  const [completionTriggered, setCompletionTriggered] =
-    useState<boolean>(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+  const [practiceDose, setPracticeDose] =
+    useState<TutorialMedicationSetup | null>(null);
+  const [medicationType, setMedicationType] = useState<
+    "Pill" | "Syrup" | "Shot" | null
+  >(null);
+  const [shouldShowMedicationDrag, setShouldShowMedicationDrag] =
+    useState(false);
+  const [completionTriggered, setCompletionTriggered] = useState(false);
+  const [replaySession, setReplaySession] = useState<ReplaySession | null>(
+    null,
+  );
+  const previousStatusKeyRef = useRef<string | null>(null);
   const updateTutorialStatus = useUpdateTutorialStatus();
   const setupTutorialMedication = useSetupTutorialMedication();
   const resetTutorial = useResetTutorial();
 
+  const shouldHoldFinalScreen = completionTriggered;
+  const isPersistedActive =
+    tutorialStatusLoaded && tutorialStatus.tutorialMode !== null;
+  const isActive = isPersistedActive || shouldHoldFinalScreen;
+  const isReplay = tutorialStatus?.tutorialMode === "replay";
+  const tutorialState = tutorialStatus?.tutorialState ?? "food";
+  const portion = shouldHoldFinalScreen
+    ? TUTORIAL_PORTIONS.END_TUTORIAL
+    : getPortionForState(tutorialState);
+
   useEffect(() => {
-    setSession(readStoredSession());
-    setSuppressAutoStart(readSuppressAutoStart());
-    setSessionLoaded(true);
-  }, []);
+    if (!tutorialStatusLoaded || !tutorialStatus) {
+      return;
+    }
 
-  const isInitialTutorial = tutorialStatusLoaded && tutorialCompleted === false;
-  const isActive =
-    !!session?.active ||
-    (!!sessionLoaded && !!tutorialStatusLoaded && isInitialTutorial);
-  const isReplay = session?.replay === true;
-  const portion = session?.portion ?? TUTORIAL_PORTIONS.FOOD_TUTORIAL;
-  const step = session?.step ?? 0;
-  const originalCoins = session?.originalCoins ?? null;
-  const replayCoins = session?.replayCoins ?? null;
-  const replayXpLevel = session?.replayXpLevel ?? 0;
-  const replayXpGained = session?.replayXpGained ?? 0;
-  const replayFoods = session?.replayFoods ?? [];
-  const practiceDose = session?.practiceDose ?? null;
-  const medicationType = session?.medicationType ?? null;
-  const shouldShowMedicationDrag = session?.shouldShowMedicationDrag ?? false;
+    if (completionTriggered && tutorialStatus.tutorialMode === null) {
+      return;
+    }
 
-  const updateSession = useCallback(
-    (
-      updater:
-        | TutorialSession
-        | null
-        | ((current: TutorialSession | null) => TutorialSession | null),
-    ) => {
-      setSession((current) => {
-        const next = typeof updater === "function" ? updater(current) : updater;
-        persistSession(next);
-        return next;
+    const statusKey = [
+      tutorialStatus.tutorialMode ?? "none",
+      tutorialStatus.tutorialState,
+      tutorialStatus.tutorialStep,
+      tutorialStatus.tutorialMedicationType ?? "none",
+      tutorialStatus.tutorialShouldShowMedicationDrag ? "drag" : "nodrag",
+    ].join(":");
+    if (previousStatusKeyRef.current === statusKey) {
+      return;
+    }
+
+    previousStatusKeyRef.current = statusKey;
+    setTutorialStep(tutorialStatus.tutorialStep);
+    setCompletionTriggered(false);
+    setMedicationType(tutorialStatus.tutorialMedicationType);
+    setShouldShowMedicationDrag(
+      tutorialStatus.tutorialShouldShowMedicationDrag,
+    );
+    setPracticeDose(null);
+
+    if (tutorialStatus.tutorialMode === "replay") {
+      setReplaySession((current) => {
+        if (current) {
+          return current;
+        }
+
+        return createReplaySession(tutorialStatus.tutorialState);
       });
-    },
-    [],
-  );
-
-  useEffect(() => {
-    if (!sessionLoaded || !tutorialStatusLoaded) {
       return;
     }
 
-    if (tutorialCompleted === false) {
-      if (suppressAutoStart) {
-        return;
-      }
-      updateSession((current) => current ?? createDefaultSession(false, null));
-      return;
-    }
+    setReplaySession(null);
+  }, [completionTriggered, tutorialStatus, tutorialStatusLoaded]);
 
-    if (session?.active && !session.replay) {
-      updateSession(null);
-      setCompletionTriggered(false);
-    }
-  }, [
-    session?.active,
-    session?.replay,
-    sessionLoaded,
-    tutorialCompleted,
-    tutorialStatusLoaded,
-    updateSession,
-    suppressAutoStart,
-  ]);
+  const isInitialTutorial =
+    tutorialStatusLoaded && tutorialStatus.tutorialMode === "initial";
 
   const { data: tutorialProgress } = useTutorialProgress(
-    sessionLoaded && tutorialStatusLoaded && isInitialTutorial && !isReplay,
+    isInitialTutorial && tutorialState !== "complete",
   );
 
   useEffect(() => {
-    if (!isActive || isReplay || !tutorialProgress) {
+    if (
+      !userId ||
+      !tutorialStatusLoaded ||
+      !tutorialStatus ||
+      tutorialStatus.tutorialMode !== "initial" ||
+      !tutorialProgress ||
+      updateTutorialStatus.isPending
+    ) {
       return;
     }
 
-    updateSession((current) => {
-      if (!current || current.replay) {
-        return current;
-      }
+    const targetState = getProgressState(tutorialProgress);
+    if (
+      getStateRank(targetState) <= getStateRank(tutorialStatus.tutorialState)
+    ) {
+      return;
+    }
 
-      const currentRank = getSessionProgressRank(current);
-      const targetRank = getProgressRank(tutorialProgress);
-
-      if (currentRank >= targetRank) {
-        return current;
-      }
-
-      if (tutorialProgress.hasFedPet) {
-        return {
-          ...current,
-          practiceDose: null,
-          portion: TUTORIAL_PORTIONS.END_TUTORIAL,
-          step: 0,
-          medicationType: null,
-          shouldShowMedicationDrag: false,
-        };
-      }
-
-      if (tutorialProgress.hasTakenTutorialMedication) {
-        return {
-          ...current,
-          practiceDose: current.practiceDose,
-          portion: TUTORIAL_PORTIONS.LOG_TUTORIAL,
-          step: 0,
-          medicationType: "Pill",
-          shouldShowMedicationDrag: true,
-        };
-      }
-
-      if (tutorialProgress.hasPurchasedFood) {
-        return {
-          ...current,
-          practiceDose: current.practiceDose,
-          portion: TUTORIAL_PORTIONS.LOG_TUTORIAL,
-          step: 0,
-          medicationType: null,
-          shouldShowMedicationDrag: false,
-        };
-      }
-
-      return current;
+    updateTutorialStatus.mutate({
+      userId,
+      tutorialState: targetState,
+      tutorialMode: "initial",
+      tutorialStep: 0,
+      tutorialMedicationType: null,
+      tutorialShouldShowMedicationDrag: false,
     });
-  }, [isActive, isReplay, tutorialProgress, updateSession]);
+  }, [
+    tutorialProgress,
+    tutorialStatus,
+    tutorialStatusLoaded,
+    updateTutorialStatus,
+    userId,
+  ]);
 
   useEffect(() => {
-    if (!isActive || portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL) {
-      return;
-    }
-
     if (
-      practiceDose ||
+      !isActive ||
+      tutorialState !== "medication" ||
       shouldShowMedicationDrag ||
+      practiceDose ||
       setupTutorialMedication.isPending
     ) {
       return;
@@ -417,28 +290,19 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setupTutorialMedication.mutate(undefined, {
       onSuccess: (tutorialMedication) => {
-        updateSession((current) =>
-          current
-            ? {
-                ...current,
-                practiceDose: tutorialMedication,
-              }
-            : current,
-        );
+        setPracticeDose(tutorialMedication);
       },
     });
   }, [
     isActive,
-    portion,
     practiceDose,
     setupTutorialMedication,
     shouldShowMedicationDrag,
-    updateSession,
+    tutorialState,
   ]);
 
   useEffect(() => {
     if (!isActive) {
-      setCompletionTriggered(false);
       return;
     }
 
@@ -448,62 +312,83 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      const nextStep = step + 1;
+      const nextStep = tutorialStep + 1;
       if (
         portion === TUTORIAL_PORTIONS.END_TUTORIAL &&
         nextStep >= dialogues.length
       ) {
-        if (completionTriggered) {
+        if (completionTriggered || !userId) {
           return;
         }
 
         setCompletionTriggered(true);
 
         if (isReplay) {
-          resetTutorial.mutate(
-            session?.originalPetState
-              ? { restorePetState: session.originalPetState }
-              : undefined,
-            {
-              onSuccess: () => {
-                persistSuppressAutoStart(true);
-                setSuppressAutoStart(true);
-                persistSession(null);
-                window.location.assign("/");
-              },
-              onError: (error) => {
-                setCompletionTriggered(false);
-                toast.error(
-                  error instanceof Error
-                    ? error.message
-                    : "Failed to clean up tutorial replay.",
-                );
-              },
+          resetTutorial.mutate(undefined, {
+            onSuccess: () => {
+              updateTutorialStatus.mutate(
+                {
+                  userId,
+                  tutorialState: "complete",
+                  tutorialMode: null,
+                  tutorialStep,
+                  tutorialMedicationType: medicationType,
+                  tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
+                },
+                {
+                  onSuccess: () => {
+                    setReplaySession(null);
+                    window.location.assign("/");
+                  },
+                  onError: () => setCompletionTriggered(false),
+                },
+              );
             },
-          );
+            onError: (error) => {
+              setCompletionTriggered(false);
+              toast.error(
+                error instanceof Error
+                  ? error.message
+                  : "Failed to clean up tutorial replay.",
+              );
+            },
+          });
           return;
         }
 
-        if (!updateTutorialStatus.isPending && userId) {
-          updateTutorialStatus.mutate(
-            { userId, tutorial_completed: true },
-            {
-              onSuccess: () => updateSession(null),
-              onError: () => setCompletionTriggered(false),
-            },
-          );
-        }
+        updateTutorialStatus.mutate(
+          {
+            userId,
+            tutorialCompleted: true,
+            tutorialState: "complete",
+            tutorialMode: null,
+            tutorialStep,
+            tutorialMedicationType: medicationType,
+            tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
+          },
+          {
+            onSuccess: () => window.location.assign("/"),
+            onError: () => setCompletionTriggered(false),
+          },
+        );
         return;
       }
 
-      updateSession((current) =>
-        current
-          ? {
-              ...current,
-              step: Math.min(nextStep, dialogues.length - 1),
-            }
-          : current,
-      );
+      const persistedStep = Math.min(nextStep, dialogues.length - 1);
+      setTutorialStep(persistedStep);
+
+      if (!userId || !tutorialStatus?.tutorialMode) {
+        return;
+      }
+
+      updateTutorialStatus.mutate({
+        userId,
+        tutorialState,
+        tutorialMode: tutorialStatus.tutorialMode,
+        tutorialStep: persistedStep,
+        tutorialMedicationType: medicationType,
+        tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
+      });
     };
 
     window.addEventListener("keydown", handleKeyPress);
@@ -513,10 +398,12 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     isActive,
     isReplay,
     portion,
+    medicationType,
     resetTutorial,
-    step,
-    session?.originalPetState,
-    updateSession,
+    shouldShowMedicationDrag,
+    tutorialState,
+    tutorialStep,
+    tutorialStatus?.tutorialMode,
     updateTutorialStatus,
     userId,
   ]);
@@ -530,7 +417,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       if (buttonType === "store") {
         return (
           portion === TUTORIAL_PORTIONS.FOOD_TUTORIAL &&
-          step ===
+          tutorialStep ===
             TUTORIAL_DIALOGUES[TUTORIAL_PORTIONS.FOOD_TUTORIAL].length - 1
         );
       }
@@ -538,50 +425,58 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       if (buttonType === "log") {
         return (
           portion === TUTORIAL_PORTIONS.LOG_TUTORIAL &&
-          step === TUTORIAL_DIALOGUES[TUTORIAL_PORTIONS.LOG_TUTORIAL].length - 1
+          tutorialStep ===
+            TUTORIAL_DIALOGUES[TUTORIAL_PORTIONS.LOG_TUTORIAL].length - 1
         );
       }
 
       return false;
     },
-    [isActive, portion, step],
+    [isActive, portion, tutorialStep],
   );
 
   const completeTutorialMedicationStep = useCallback(
     (nextMedicationType: "Pill" | "Syrup" | "Shot" = "Pill") => {
-      if (!isActive) {
+      if (!isActive || tutorialState !== "medication") {
         return;
       }
 
-      updateSession((current) =>
-        current
-          ? {
-              ...current,
-              medicationType: nextMedicationType,
-              shouldShowMedicationDrag: true,
-              step: 0,
-            }
-          : current,
-      );
+      setMedicationType(nextMedicationType);
+      setShouldShowMedicationDrag(true);
+      setTutorialStep(0);
+
+      if (!userId || !tutorialStatus?.tutorialMode) {
+        return;
+      }
+
+      updateTutorialStatus.mutate({
+        userId,
+        tutorialState: "medication",
+        tutorialMode: tutorialStatus.tutorialMode,
+        tutorialStep: 0,
+        tutorialMedicationType: nextMedicationType,
+        tutorialShouldShowMedicationDrag: true,
+      });
     },
-    [isActive, updateSession],
+    [isActive, tutorialState, tutorialStatus, updateTutorialStatus, userId],
   );
 
   const markFoodPurchased = useCallback(() => {
-    if (!isActive || portion !== TUTORIAL_PORTIONS.FOOD_TUTORIAL) {
+    if (!isActive || !userId || tutorialState !== "food") {
       return;
     }
 
+    const nextMode = isReplay ? "replay" : "initial";
+
     if (isReplay) {
-      updateSession((current) =>
-        current
-          ? {
-              ...current,
-              portion: TUTORIAL_PORTIONS.LOG_TUTORIAL,
-              step: 0,
-            }
-          : current,
-      );
+      updateTutorialStatus.mutate({
+        userId,
+        tutorialState: "medication",
+        tutorialMode: nextMode,
+        tutorialStep: 0,
+        tutorialMedicationType: null,
+        tutorialShouldShowMedicationDrag: false,
+      });
       return;
     }
 
@@ -591,16 +486,15 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
     setupTutorialMedication.mutate(undefined, {
       onSuccess: (tutorialMedication) => {
-        updateSession((current) =>
-          current
-            ? {
-                ...current,
-                practiceDose: tutorialMedication,
-                portion: TUTORIAL_PORTIONS.LOG_TUTORIAL,
-                step: 0,
-              }
-            : current,
-        );
+        setPracticeDose(tutorialMedication);
+        updateTutorialStatus.mutate({
+          userId,
+          tutorialState: "medication",
+          tutorialMode: "initial",
+          tutorialStep: 0,
+          tutorialMedicationType: null,
+          tutorialShouldShowMedicationDrag: false,
+        });
       },
       onError: (error) => {
         toast.error(
@@ -610,62 +504,67 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         );
       },
     });
-  }, [isActive, isReplay, portion, setupTutorialMedication, updateSession]);
+  }, [
+    isActive,
+    isReplay,
+    setupTutorialMedication,
+    tutorialState,
+    updateTutorialStatus,
+    userId,
+  ]);
 
   const markMedicationDragComplete = useCallback(() => {
     if (
       !isActive ||
-      portion !== TUTORIAL_PORTIONS.LOG_TUTORIAL ||
+      !userId ||
+      tutorialState !== "medication" ||
       !shouldShowMedicationDrag
     ) {
       return;
     }
 
-    updateSession((current) =>
-      current
-        ? {
-            ...current,
-            practiceDose: null,
-            portion: TUTORIAL_PORTIONS.FEED_TUTORIAL,
-            step: 0,
-            medicationType: null,
-            shouldShowMedicationDrag: false,
-          }
-        : current,
-    );
-  }, [isActive, portion, shouldShowMedicationDrag, updateSession]);
+    setPracticeDose(null);
+    setMedicationType(null);
+    setShouldShowMedicationDrag(false);
+    updateTutorialStatus.mutate({
+      userId,
+      tutorialState: "feed",
+      tutorialMode: isReplay ? "replay" : "initial",
+      tutorialStep: 0,
+      tutorialMedicationType: null,
+      tutorialShouldShowMedicationDrag: false,
+    });
+  }, [
+    isActive,
+    isReplay,
+    shouldShowMedicationDrag,
+    tutorialState,
+    updateTutorialStatus,
+    userId,
+  ]);
 
   const markPetFed = useCallback(() => {
-    if (!isActive || portion !== TUTORIAL_PORTIONS.FEED_TUTORIAL) {
+    if (!isActive || !userId || tutorialState !== "feed") {
       return;
     }
 
-    updateSession((current) =>
-      current
-        ? {
-            ...current,
-            portion: TUTORIAL_PORTIONS.END_TUTORIAL,
-            step: 0,
-            replayXpLevel:
-              current.replay &&
-              current.replayXpGained + TUTORIAL_REPLAY_XP_GAIN >=
-                calculateXPForLevel(current.replayXpLevel)
-                ? current.replayXpLevel + 1
-                : current.replayXpLevel,
-            replayXpGained:
-              current.replay &&
-              current.replayXpGained + TUTORIAL_REPLAY_XP_GAIN >=
-                calculateXPForLevel(current.replayXpLevel)
-                ? current.replayXpGained +
-                  TUTORIAL_REPLAY_XP_GAIN -
-                  calculateXPForLevel(current.replayXpLevel)
-                : current.replay
-                  ? current.replayXpGained + TUTORIAL_REPLAY_XP_GAIN
-                  : current.replayXpGained,
-          }
-        : current,
-    );
-  }, [isActive, portion, updateSession]);
+    if (isReplay) {
+      setReplaySession((current) =>
+        current
+          ? applyReplayFeedProgress(current)
+          : createReplaySession("complete"),
+      );
+    }
+
+    updateTutorialStatus.mutate({
+      userId,
+      tutorialState: "complete",
+      tutorialMode: isReplay ? "replay" : "initial",
+      tutorialStep: 0,
+      tutorialMedicationType: null,
+      tutorialShouldShowMedicationDrag: false,
+    });
+  }, [isActive, isReplay, tutorialState, updateTutorialStatus, userId]);
 
   const purchaseReplayFood = useCallback(
     (foodName: string, cost: number) => {
@@ -673,24 +572,23 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      updateSession((current) => {
-        if (!current || !current.replay) {
-          return current;
-        }
-
-        const currentCoins = current.replayCoins ?? 0;
-        if (currentCoins < cost || current.replayFoods.includes(foodName)) {
-          return current;
+      setReplaySession((current) => {
+        const activeSession = current ?? createReplaySession("food");
+        if (
+          activeSession.replayCoins < cost ||
+          activeSession.replayFoods.includes(foodName)
+        ) {
+          return activeSession;
         }
 
         return {
-          ...current,
-          replayCoins: currentCoins - cost,
-          replayFoods: [...current.replayFoods, foodName],
+          ...activeSession,
+          replayCoins: activeSession.replayCoins - cost,
+          replayFoods: [...activeSession.replayFoods, foodName],
         };
       });
     },
-    [isReplay, updateSession],
+    [isReplay],
   );
 
   const consumeReplayFood = useCallback(
@@ -699,53 +597,40 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         return;
       }
 
-      updateSession((current) => {
-        if (!current || !current.replay) {
-          return current;
-        }
-
+      setReplaySession((current) => {
+        const activeSession = current ?? createReplaySession("feed");
         return {
-          ...current,
-          replayFoods: current.replayFoods.filter((food) => food !== foodName),
+          ...activeSession,
+          replayFoods: activeSession.replayFoods.filter(
+            (food) => food !== foodName,
+          ),
         };
       });
     },
-    [isReplay, updateSession],
+    [isReplay],
   );
 
   const startReplay = useCallback(async () => {
-    persistSuppressAutoStart(false);
-    setSuppressAutoStart(false);
-
-    const replayStartingCoins =
-      session?.replay && originalCoins !== null
-        ? originalCoins
-        : (realPet?.coins ?? 0);
-    const replayStartingPetState: ReplayPetSnapshot | null =
-      session?.replay && session.originalPetState !== null
-        ? session.originalPetState
-        : realPet
-          ? {
-              coins: realPet.coins,
-              xpGained: realPet.xpGained,
-              xpLevel: realPet.xpLevel,
-              food: realPet.food,
-              lastFedAt: realPet.lastFedAt,
-            }
-          : null;
+    if (!userId) {
+      return;
+    }
 
     try {
       await resetTutorial.mutateAsync(undefined);
-
-      const replaySession = createDefaultSession(
-        true,
-        replayStartingCoins,
-        replayStartingPetState,
-        100,
+      setReplaySession(createReplaySession("food"));
+      updateTutorialStatus.mutate(
+        {
+          userId,
+          tutorialState: "food",
+          tutorialMode: "replay",
+          tutorialStep: 0,
+          tutorialMedicationType: null,
+          tutorialShouldShowMedicationDrag: false,
+        },
+        {
+          onSuccess: () => window.location.assign("/"),
+        },
       );
-
-      persistAndSetSession(setSession, replaySession);
-      window.location.assign("/");
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -753,13 +638,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
           : "Failed to reset tutorial progress.",
       );
     }
-  }, [
-    originalCoins,
-    realPet,
-    resetTutorial,
-    session?.originalPetState,
-    session?.replay,
-  ]);
+  }, [resetTutorial, updateTutorialStatus, userId]);
 
   const getTutorialText = useCallback(() => {
     if (shouldShowMedicationDrag) {
@@ -767,21 +646,21 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     const dialogues = TUTORIAL_DIALOGUES[portion];
-    if (!dialogues || step >= dialogues.length) {
+    if (!dialogues || tutorialStep >= dialogues.length) {
       return undefined;
     }
 
     const userName = userProfile?.name?.trim() || "Friend";
     const petName = realPet?.name?.trim() || "Paws";
 
-    return dialogues[step]
+    return dialogues[tutorialStep]
       .replace("{userName}", userName)
       .replace("{petName}", petName);
   }, [
     portion,
     realPet?.name,
     shouldShowMedicationDrag,
-    step,
+    tutorialStep,
     userProfile?.name,
   ]);
 
@@ -789,13 +668,13 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     () => ({
       isActive,
       isReplay,
-      replayCoins,
-      replayXpLevel,
-      replayXpGained,
-      replayFoods,
+      replayCoins: replaySession?.replayCoins ?? null,
+      replayXpLevel: replaySession?.replayXpLevel ?? 0,
+      replayXpGained: replaySession?.replayXpGained ?? 0,
+      replayFoods: replaySession?.replayFoods ?? [],
       practiceDose,
       tutorialPortion: portion,
-      tutorialStep: step,
+      tutorialStep,
       getTutorialText,
       shouldEnlargeButton,
       medicationType,
@@ -810,27 +689,24 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       isStartingReplay: resetTutorial.isPending,
     }),
     [
+      completeTutorialMedicationStep,
+      consumeReplayFood,
       getTutorialText,
       isActive,
       isReplay,
-      replayCoins,
-      replayXpGained,
-      replayXpLevel,
-      replayFoods,
-      practiceDose,
       markFoodPurchased,
       markMedicationDragComplete,
       markPetFed,
-      completeTutorialMedicationStep,
-      purchaseReplayFood,
-      consumeReplayFood,
       medicationType,
       portion,
+      practiceDose,
+      purchaseReplayFood,
+      replaySession,
       resetTutorial.isPending,
       shouldEnlargeButton,
       shouldShowMedicationDrag,
       startReplay,
-      step,
+      tutorialStep,
     ],
   );
 

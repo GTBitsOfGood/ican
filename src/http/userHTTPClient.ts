@@ -1,4 +1,14 @@
 import fetchHTTPClient from "./fetchHTTPClient";
+import { TutorialStatus } from "@/types/user";
+
+export interface UpdateTutorialStatusBody {
+  tutorialCompleted?: boolean;
+  tutorialState: TutorialStatus["tutorialState"];
+  tutorialMode: TutorialStatus["tutorialMode"];
+  tutorialStep?: TutorialStatus["tutorialStep"];
+  tutorialMedicationType?: TutorialStatus["tutorialMedicationType"];
+  tutorialShouldShowMedicationDrag?: TutorialStatus["tutorialShouldShowMedicationDrag"];
+}
 
 export default class UserHTTPClient {
   static async deleteAccount(userId: string): Promise<void> {
@@ -31,9 +41,7 @@ export default class UserHTTPClient {
     });
   }
 
-  static async getTutorialStatus(
-    userId: string,
-  ): Promise<{ tutorial_completed: boolean }> {
+  static async getTutorialStatus(userId: string): Promise<TutorialStatus> {
     return await fetchHTTPClient(`/users/${userId}/tutorial-status`, {
       method: "GET",
       credentials: "include",
@@ -42,7 +50,7 @@ export default class UserHTTPClient {
 
   static async updateTutorialStatus(
     userId: string,
-    tutorial_completed: boolean,
+    body: UpdateTutorialStatusBody,
   ): Promise<{ success: boolean }> {
     return await fetchHTTPClient(`/users/${userId}/tutorial-status`, {
       method: "PUT",
@@ -50,7 +58,7 @@ export default class UserHTTPClient {
         "Content-Type": "application/json",
       },
       credentials: "include",
-      body: JSON.stringify({ tutorial_completed }),
+      body: JSON.stringify(body),
     });
   }
 
