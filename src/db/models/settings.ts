@@ -1,11 +1,13 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import { NOTIFICATION_TYPES, NotificationType } from "./notification";
+import { NOTIFICATION_TYPES } from "@/types/notifications";
+import type { NotificationType } from "@/types/notifications";
 
 export interface NotificationPreferences {
   types: NotificationType[];
   earlyWindow: number;
   emailEnabled: boolean;
   realTimeEnabled: boolean;
+  use24HourTime: boolean;
 }
 
 export interface Settings {
@@ -31,6 +33,7 @@ const notificationPreferencesSchema = new Schema(
     earlyWindow: { type: Number, default: 15 },
     emailEnabled: { type: Boolean, default: true },
     realTimeEnabled: { type: Boolean, default: true },
+    use24HourTime: { type: Boolean, default: false },
   },
   { _id: false },
 );
@@ -55,6 +58,7 @@ const settingsSchema = new Schema<SettingsDocument>(
         earlyWindow: 15,
         emailEnabled: true,
         realTimeEnabled: true,
+        use24HourTime: false,
       }),
     },
   },

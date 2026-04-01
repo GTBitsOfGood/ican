@@ -2,9 +2,9 @@ import { HydratedDocument, Types } from "mongoose";
 import NotificationModel, {
   Notification,
   NotificationDocument,
-  NotificationType,
 } from "../models/notification";
 import dbConnect from "../dbConnect";
+import type { NotificationType } from "@/types/notifications";
 
 export default class NotificationDAO {
   static async create(

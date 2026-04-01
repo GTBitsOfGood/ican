@@ -20,6 +20,8 @@ function flattenNotificationPreferences(
     flat["notificationPreferences.emailEnabled"] = prefs.emailEnabled;
   if (prefs.realTimeEnabled !== undefined)
     flat["notificationPreferences.realTimeEnabled"] = prefs.realTimeEnabled;
+  if (prefs.use24HourTime !== undefined)
+    flat["notificationPreferences.use24HourTime"] = prefs.use24HourTime;
   return flat;
 }
 
