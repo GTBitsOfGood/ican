@@ -167,7 +167,7 @@ export default function BirdGame({
               const hitsBottom = birdBottom > pipe.gapY + PIPE_GAP;
               if (hitsTop || hitsBottom) {
                 setGameState(GameState.LOSS);
-                return prevY;
+                return newY;
               }
             }
           }
