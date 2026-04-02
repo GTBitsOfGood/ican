@@ -24,6 +24,11 @@ export default function GamesIndex() {
       icon: "/icons/Star.svg",
       href: "/games/trivia",
     },
+    {
+      name: "Bird Game",
+      icon: "/icons/Star.svg",
+      href: "/games/bird",
+    },
   ];
 
   return (
