@@ -7,15 +7,15 @@ type Pipe = {
   gapY: number; //where gap starts from top
 };
 
-const BIRD_SIZE = 40;
-const BIRD_X = 80;
-const GRAVITY = 0.6;
-const FLAP_STRENGTH = -8;
+const BIRD_SIZE = 30;
+const BIRD_X = 60;
+const GRAVITY = 0.35;
+const FLAP_STRENGTH = -6;
 const TICK_MS = 16;
-const PIPE_WIDTH = 55;
-const PIPE_GAP = 140;
-const PIPE_SPEED = 4;
-const PIPE_SPAWN = 50;
+const PIPE_WIDTH = 50;
+const PIPE_GAP = 175;
+const PIPE_SPEED = 3;
+const PIPE_SPAWN = 120;
 
 export default function BirdGame({
   setSpeechText,
