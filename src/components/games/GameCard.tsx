@@ -55,14 +55,14 @@ export default function GameCard({ name, banner, href, stats }: GameCardProps) {
             <StatItem
               icon="/games/streak.png"
               label="Current Streak"
-              value={String(stats.currentWinStreak)}
+              value={String(stats.currentStreak)}
               sublabel="Days"
             />
             <StatItem
               icon="/games/best_streak.png"
               label="Best Streak"
-              value={String(stats.bestWinStreak)}
-              sublabel="Week"
+              value={String(stats.bestStreak)}
+              sublabel="Days"
             />
             <StatItem
               icon="/games/win_rate.png"

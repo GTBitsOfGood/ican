@@ -6,6 +6,19 @@ import { useUserProfile } from "@/components/hooks/useAuth";
 type Board = (string | null)[];
 type Difficulty = "normal" | "expert";
 
+function makeRandomMove(currentBoard: Board): Board {
+  const emptySquares = currentBoard
+    .map((val, idx) => (val === null ? idx : null))
+    .filter((val) => val !== null) as number[];
+
+  if (emptySquares.length === 0) return currentBoard;
+
+  const randomIndex = Math.floor(Math.random() * emptySquares.length);
+  const newBoard = [...currentBoard];
+  newBoard[emptySquares[randomIndex]] = "O";
+  return newBoard;
+}
+
 export default function TicTacToe({
   setSpeechText,
   gameState,
@@ -17,7 +30,7 @@ export default function TicTacToe({
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [aiIsThinking, setAiIsThinking] = useState(false);
-  const [prevGameState, setPrevGameState] = useState<GameState>(gameState);
+  const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
 
   useEffect(() => {
@@ -38,16 +51,17 @@ export default function TicTacToe({
   }, [showInformationModal, setGameState]);
 
   useEffect(() => {
+    const prev = prevGameStateRef.current;
+    prevGameStateRef.current = gameState;
     if (
       gameState === GameState.PLAYING &&
-      (prevGameState === GameState.WON ||
-        prevGameState === GameState.LOSS ||
-        prevGameState === GameState.TIE)
+      (prev === GameState.WON ||
+        prev === GameState.LOSS ||
+        prev === GameState.TIE)
     ) {
-      setBoard(Array(9).fill(null));
+      queueMicrotask(() => setBoard(Array(9).fill(null)));
     }
-    setPrevGameState(gameState);
-  }, [gameState, prevGameState]);
+  }, [gameState]);
 
   useEffect(() => {
     if (gameState === GameState.START) {
@@ -168,19 +182,6 @@ export default function TicTacToe({
       }
     }
     return bestMove;
-  };
-
-  const makeRandomMove = (currentBoard: Board): Board => {
-    const emptySquares = currentBoard
-      .map((val, idx) => (val === null ? idx : null))
-      .filter((val) => val !== null) as number[];
-
-    if (emptySquares.length === 0) return currentBoard;
-
-    const randomIndex = Math.floor(Math.random() * emptySquares.length);
-    const newBoard = [...currentBoard];
-    newBoard[emptySquares[randomIndex]] = "O";
-    return newBoard;
   };
 
   const makeAIMove = (currentBoard: Board): Board => {

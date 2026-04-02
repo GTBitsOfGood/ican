@@ -54,11 +54,10 @@ export default function FlowermanGame({
     });
   }, [startNewWord, showInformationModal, setSpeechText, setGameState]);
 
-  // Show instruction card immediately when game loads
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true;
-      handleStart();
+      queueMicrotask(() => handleStart());
     }
   }, [gameState, handleStart]);
 

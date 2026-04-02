@@ -44,8 +44,9 @@ const userSchema = new Schema<UserDocument>(
           wins: { type: Number, default: 0 },
           losses: { type: Number, default: 0 },
           draws: { type: Number, default: 0 },
-          bestWinStreak: { type: Number, default: 0 },
-          currentWinStreak: { type: Number, default: 0 },
+          currentStreak: { type: Number, default: 0 },
+          bestStreak: { type: Number, default: 0 },
+          lastPlayedDate: { type: String, default: null },
           lastTenResults: {
             type: [{ type: String, enum: Object.values(GameResult) }],
             default: [],

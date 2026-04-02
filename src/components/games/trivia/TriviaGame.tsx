@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
-import { TriviaQuestion } from "@/types/games";
+import { GameResult, TriviaQuestion } from "@/types/games";
 
 function generateRoundQuestions(): TriviaQuestion[] {
   const shuffled = [...triviaQuestions];
@@ -19,6 +19,7 @@ export default function TriviaGame({
   gameState,
   setGameState,
   showInformationModal,
+  recordResult,
 }: GameWrapperControls) {
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
   const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>([]);
@@ -50,15 +51,17 @@ export default function TriviaGame({
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true;
-      handleStart();
+      queueMicrotask(() => handleStart());
     }
     if (gameState === GameState.PLAYING) {
-      const newQuestions = generateRoundQuestions();
-      setCurrQuestionIdx(0);
-      setRoundQuestions(newQuestions);
-      setIsSubmitted(false);
-      setSelectedChoiceIdx(null);
-      setSpeechText(newQuestions[0].prompt);
+      queueMicrotask(() => {
+        const newQuestions = generateRoundQuestions();
+        setCurrQuestionIdx(0);
+        setRoundQuestions(newQuestions);
+        setIsSubmitted(false);
+        setSelectedChoiceIdx(null);
+        setSpeechText(newQuestions[0].prompt);
+      });
     }
   }, [gameState, handleStart, setSpeechText]);
 
@@ -79,6 +82,8 @@ export default function TriviaGame({
     const correctLetter = ["A", "B", "C", "D"][
       roundQuestions[currQuestionIdx].answerIdx
     ];
+
+    recordResult?.(isCorrect ? GameResult.WIN : GameResult.LOSS);
 
     if (isLastQuestion) {
       setGameState(GameState.WON);

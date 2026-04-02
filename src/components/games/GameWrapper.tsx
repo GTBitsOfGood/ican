@@ -40,6 +40,7 @@ export interface GameWrapperControls {
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
   setPetEmotion?: (emotion: PetEmotion | null) => void;
+  recordResult?: (result: GameResult) => void;
 }
 
 export default function GameWrapper({
@@ -47,6 +48,7 @@ export default function GameWrapper({
   gameName,
   initialSpeechText = "",
   showGameAreaFrame = true,
+  manualRecording = false,
   gameAreaClassName,
   whiteboardSrc = "/games/whiteboard.png",
   whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
@@ -57,6 +59,7 @@ export default function GameWrapper({
   initialSpeechText?: string;
   speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
+  manualRecording?: boolean;
   gameAreaClassName?: string;
   whiteboardSrc?: string;
   whiteboardContainerClassName?: string;
@@ -85,7 +88,7 @@ export default function GameWrapper({
   const showCoinLimitModal = atCoinLimit && !coinLimitDismissed;
 
   useEffect(() => {
-    if (!gameName || !userId) return;
+    if (manualRecording || !gameName || !userId) return;
     if (gameState === GameState.START || gameState === GameState.PLAYING) {
       hasRecordedRef.current = false;
       return;
@@ -102,7 +105,16 @@ export default function GameWrapper({
     if (result) {
       recordGameResult.mutate({ userId, gameName, result });
     }
-  }, [gameState, gameName, userId, recordGameResult]);
+  }, [gameState, gameName, userId, recordGameResult, manualRecording]);
+
+  const handleRecordResult = useCallback(
+    (result: GameResult) => {
+      if (gameName && userId) {
+        recordGameResult.mutate({ userId, gameName, result });
+      }
+    },
+    [gameName, userId, recordGameResult],
+  );
 
   const derivedSpeechText =
     initialSpeechText && gameState === GameState.START
@@ -212,6 +224,7 @@ export default function GameWrapper({
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}
+                recordResult={handleRecordResult}
               />
             </div>
           </div>

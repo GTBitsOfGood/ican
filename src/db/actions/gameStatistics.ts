@@ -88,8 +88,30 @@ export default class GameStatisticsDAO {
     const isLoss = result === GameResult.LOSS;
     const isDraw = result === GameResult.DRAW;
     const fieldRef = `$gameStatistics.${gameName}`;
+    const today = new Date().toDateString();
 
-    const updateResult = await UserModel.updateOne(
+    const user = await UserModel.findById(_id).select(
+      `gameStatistics.${gameName}`,
+    );
+    if (!user) {
+      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
+    }
+
+    const existing = user.gameStatistics?.get(gameName);
+    const lastPlayed = existing?.lastPlayedDate;
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+
+    let currentStreak: number;
+    if (lastPlayed === today) {
+      currentStreak = existing?.currentStreak ?? 1;
+    } else if (lastPlayed === yesterday) {
+      currentStreak = (existing?.currentStreak ?? 0) + 1;
+    } else {
+      currentStreak = 1;
+    }
+    const bestStreak = Math.max(currentStreak, existing?.bestStreak ?? 0);
+
+    await UserModel.updateOne(
       { _id },
       [
         {
@@ -103,24 +125,9 @@ export default class GameStatisticsDAO {
             [`gameStatistics.${gameName}.draws`]: {
               $add: [{ $ifNull: [`${fieldRef}.draws`, 0] }, isDraw ? 1 : 0],
             },
-            [`gameStatistics.${gameName}.currentWinStreak`]: isWin
-              ? { $add: [{ $ifNull: [`${fieldRef}.currentWinStreak`, 0] }, 1] }
-              : isDraw
-                ? { $ifNull: [`${fieldRef}.currentWinStreak`, 0] }
-                : 0,
-            [`gameStatistics.${gameName}.bestWinStreak`]: isWin
-              ? {
-                  $max: [
-                    { $ifNull: [`${fieldRef}.bestWinStreak`, 0] },
-                    {
-                      $add: [
-                        { $ifNull: [`${fieldRef}.currentWinStreak`, 0] },
-                        1,
-                      ],
-                    },
-                  ],
-                }
-              : { $ifNull: [`${fieldRef}.bestWinStreak`, 0] },
+            [`gameStatistics.${gameName}.currentStreak`]: currentStreak,
+            [`gameStatistics.${gameName}.bestStreak`]: bestStreak,
+            [`gameStatistics.${gameName}.lastPlayedDate`]: today,
             [`gameStatistics.${gameName}.lastTenResults`]: {
               $slice: [
                 {
@@ -137,9 +144,5 @@ export default class GameStatisticsDAO {
       ],
       { updatePipeline: true },
     );
-
-    if (updateResult.matchedCount === 0) {
-      throw new NotFoundError(ERRORS.USER.NOT_FOUND);
-    }
   }
 }

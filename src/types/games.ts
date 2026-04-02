@@ -23,8 +23,9 @@ export interface GameStats {
   wins: number;
   losses: number;
   draws: number;
-  bestWinStreak: number;
-  currentWinStreak: number;
+  currentStreak: number;
+  bestStreak: number;
+  lastPlayedDate: string | null;
   lastTenResults: GameResult[];
 }
 
