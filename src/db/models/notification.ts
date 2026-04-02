@@ -1,17 +1,6 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import {
-  REGULAR_NOTIFICATION_TYPES,
-  RegularNotificationType,
-} from "@/utils/constants";
-
-export { REGULAR_NOTIFICATION_TYPES };
-export type { RegularNotificationType };
-
-export const NOTIFICATION_TYPES = [
-  ...REGULAR_NOTIFICATION_TYPES,
-  "streak_warning",
-] as const;
-export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+import { NOTIFICATION_TYPES } from "@/types/notifications";
+import type { NotificationType } from "@/types/notifications";
 
 export interface Notification {
   userId: Types.ObjectId;
@@ -66,4 +55,6 @@ const NotificationModel =
   models.Notification ||
   model<NotificationDocument>("Notification", notificationSchema);
 
+export { NOTIFICATION_TYPES };
+export type { NotificationType };
 export default NotificationModel;

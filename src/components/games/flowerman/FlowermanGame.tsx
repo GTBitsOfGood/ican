@@ -9,6 +9,10 @@ import FlowermanWordWithFlower from "@/components/games/flowerman/FlowermanWordW
 import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
 import MistakesLeft from "@/components/games/MistakesLeft";
 import { PetEmotion } from "@/types/pet";
+import { useUser } from "@/components/UserContext";
+import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
+import GameRewardsService from "@/services/gameRewards";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 export default function FlowermanGame({
   setSpeechText,
@@ -17,10 +21,13 @@ export default function FlowermanGame({
   showInformationModal,
   setPetBoardX,
   setPetEmotion,
+  setWinRewardDetails,
 }: GameWrapperControls) {
+  const { userId } = useUser();
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [lives, setLives] = useState<number>(START_LIVES);
+  const [isProcessingWin, setIsProcessingWin] = useState(false);
   const pendingHintRef = useRef<string>("");
   const pendingWordLengthRef = useRef<number>(0);
   const hasAutoStartedRef = useRef(false);
@@ -99,6 +106,53 @@ export default function FlowermanGame({
     });
   };
 
+  const handleGameWin = async () => {
+    if (!userId || isProcessingWin) return;
+
+    setIsProcessingWin(true);
+    setWinRewardDetails?.(null);
+
+    try {
+      const stats = await GameStatsHTTPClient.getGameStats(userId);
+      const streakInDays = stats.streakInDays;
+      const coinsAlreadyEarned = stats.coinsEarnedToday;
+
+      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
+      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
+        coinsToPay,
+        coinsAlreadyEarned,
+      );
+
+      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
+
+      const updatedDailyCoins = Math.min(
+        coinsAlreadyEarned + actualCoinsEarned,
+        GAMES_DAILY_COIN_LIMIT,
+      );
+
+      setWinRewardDetails?.({
+        coinsEarned: actualCoinsEarned,
+        dailyCoinsTotal: updatedDailyCoins,
+        maxCoinsPerDay: GAMES_DAILY_COIN_LIMIT,
+        maxReached: actualCoinsEarned === 0,
+      });
+
+      setGameState(GameState.WON);
+    } catch (error) {
+      console.error("Error processing game win:", error);
+      setWinRewardDetails?.(null);
+      showInformationModal({
+        title: "YOU WIN!",
+        message: "Congratulations! You won!",
+        onClose: () => {
+          setGameState(GameState.WON);
+        },
+      });
+    } finally {
+      setIsProcessingWin(false);
+    }
+  };
+
   const handleLetterGuess = (letter: string) => {
     if (gameState !== GameState.PLAYING || guessedLetters.has(letter)) return;
 
@@ -108,8 +162,8 @@ export default function FlowermanGame({
     if (word.includes(letter)) {
       const isWon = [...word].every((char) => newGuessed.has(char));
       if (isWon) {
-        setGameState(GameState.WON);
         setSpeechText(`Congratulations! You won!`);
+        handleGameWin();
       } else {
         setSpeechText(`Nice guess! ${letter} is in the word.`);
       }

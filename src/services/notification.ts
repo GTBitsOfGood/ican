@@ -2,50 +2,25 @@ import NotificationDAO from "@/db/actions/notification";
 import MedicationDAO from "@/db/actions/medication";
 import SettingsDAO from "@/db/actions/settings";
 import PetDAO from "@/db/actions/pets";
-import { RegularNotificationType } from "@/db/models/notification";
+import type { NotificationPreferences } from "@/db/models/settings";
 import { publishToUser } from "@/lib/ably";
 import {
   shouldScheduleMedication,
   processDoseTime,
 } from "@/utils/serviceUtils/medicationUtil";
+import {
+  buildMedicationNotificationMessage,
+  buildStreakWarningMessage,
+  getPreferredNotificationName,
+  MISSED_NOTIFICATION_DELAY_MINUTES,
+  type MedicationNotificationType,
+} from "@/utils/notificationMessages";
 import { WithId } from "@/types/models";
 import { Medication } from "@/db/models/medication";
 import UserDAO from "@/db/actions/user";
 import { hasActiveStreak } from "@/services/streak";
 import { MedicationLogDocument } from "@/db/models/medicationLog";
 import { HydratedDocument } from "mongoose";
-
-function formatTime(doseTime: string, use24HourTime: boolean): string {
-  if (use24HourTime) return doseTime;
-  const [hours, minutes] = doseTime.split(":").map(Number);
-  const period = hours >= 12 ? "pm" : "am";
-  const displayHours = hours % 12 || 12;
-  return `${displayHours}:${String(minutes).padStart(2, "0")}${period}`;
-}
-
-function buildMessage(
-  type: RegularNotificationType,
-  medicationName: string,
-  doseTime: string,
-  use24HourTime: boolean,
-): string {
-  const formattedTime = formatTime(doseTime, use24HourTime);
-  switch (type) {
-    case "early":
-      return `Heads up! Your medication ${medicationName} is coming up at ${formattedTime}.`;
-    case "on_time":
-      return `Time to take your medication ${medicationName}!`;
-    case "missed":
-      return `You missed your ${medicationName} dose scheduled at ${formattedTime}.`;
-  }
-}
-
-function buildStreakWarningMessage(
-  streakDays: number,
-  medicationName: string,
-): string {
-  return `Your ${streakDays}-day streak is at risk! Take ${medicationName} before midnight to keep it going.`;
-}
 
 function parseDoseTimeToDate(doseTime: string, now: Date): Date {
   const [hours, minutes] = doseTime.split(":").map(Number);
@@ -81,10 +56,12 @@ export default class NotificationService {
       const medications = await MedicationDAO.getMedicationsByUserId(userId);
       if (medications.length === 0) continue;
 
+      const user = await UserDAO.getUserFromId(userId);
+      const notificationName = getPreferredNotificationName(user?.name);
+
       const now = new Date();
       const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const use24HourTime = prefs.use24HourTime ?? false;
 
       const logsCache = new Map<
         string,
@@ -160,7 +137,7 @@ export default class NotificationService {
           if (status === "taken") continue;
 
           const typesToCheck: {
-            type: RegularNotificationType;
+            type: MedicationNotificationType;
             condition: boolean;
           }[] = [
             {
@@ -175,7 +152,9 @@ export default class NotificationService {
             },
             {
               type: "missed",
-              condition: diffMinutes >= 15 && diffMinutes < 16,
+              condition:
+                diffMinutes >= MISSED_NOTIFICATION_DELAY_MINUTES &&
+                diffMinutes < MISSED_NOTIFICATION_DELAY_MINUTES + 1,
             },
           ];
 
@@ -190,12 +169,12 @@ export default class NotificationService {
             );
             if (alreadyExists) continue;
 
-            const message = buildMessage(
+            const message = buildMedicationNotificationMessage({
               type,
-              medication.customMedicationId,
-              doseTime,
-              use24HourTime,
-            );
+              userName: notificationName,
+              medicationName: medication.customMedicationId,
+              earlyWindowMinutes: prefs.earlyWindow,
+            });
 
             const notification = await NotificationDAO.create({
               userId: medication.userId,
@@ -222,7 +201,12 @@ export default class NotificationService {
             const isLastDose =
               med._id === lastMedicationId && doseTime === lastDoseTimeStr;
 
-            if (shouldCheckStreak && isLastDose && petWithId) {
+            if (
+              shouldCheckStreak &&
+              isLastDose &&
+              petWithId &&
+              prefs.types.includes("streak_warning")
+            ) {
               const streakWarningExists = await NotificationDAO.exists(
                 med._id,
                 scheduledDate,
@@ -230,10 +214,7 @@ export default class NotificationService {
               );
 
               if (!streakWarningExists) {
-                const streakMessage = buildStreakWarningMessage(
-                  petWithId.currentStreak,
-                  medication.customMedicationId,
-                );
+                const streakMessage = buildStreakWarningMessage();
 
                 const streakNotification = await NotificationDAO.create({
                   userId: medication.userId,
@@ -252,7 +233,6 @@ export default class NotificationService {
                     medicationName: medication.customMedicationId,
                     message: streakMessage,
                     scheduledTime: scheduledDate.toISOString(),
-                    streakDays: petWithId.currentStreak,
                   });
                 }
 

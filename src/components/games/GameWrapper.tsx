@@ -5,17 +5,9 @@ import LoadingScreen from "@/components/loadingScreen";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import Bubble from "@/components/ui/Bubble";
 import { usePet } from "@/components/hooks/usePet";
-import {
-  useGameStatistics,
-  useRecordGameResult,
-} from "@/components/hooks/useGameStatistics";
-import { useUser } from "@/components/UserContext";
-import CoinLimitModal from "@/components/games/CoinLimitModal";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
-import gameConfig from "@/lib/gameConfig";
 import { PetEmotion } from "@/types/pet";
-import { DAILY_COIN_LIMIT, GameName, GameResult } from "@/types/games";
 
 export enum GameState {
   START,
@@ -33,6 +25,13 @@ type InformationModalOptions = {
   onClose?: () => void;
 };
 
+type WinRewardDetails = {
+  coinsEarned: number;
+  dailyCoinsTotal: number;
+  maxCoinsPerDay: number;
+  maxReached: boolean;
+};
+
 export interface GameWrapperControls {
   setSpeechText: (text: string) => void;
   gameState: GameState;
@@ -40,26 +39,22 @@ export interface GameWrapperControls {
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
   setPetEmotion?: (emotion: PetEmotion | null) => void;
-  recordResult?: (result: GameResult) => void;
+  setWinRewardDetails?: (details: WinRewardDetails | null) => void;
 }
 
 export default function GameWrapper({
   GameComponent,
-  gameName,
   initialSpeechText = "",
   showGameAreaFrame = true,
-  manualRecording = false,
   gameAreaClassName,
   whiteboardSrc = "/games/whiteboard.png",
   whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
   gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
-  gameName?: GameName;
+  gameName?: string;
   initialSpeechText?: string;
-  speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
-  manualRecording?: boolean;
   gameAreaClassName?: string;
   whiteboardSrc?: string;
   whiteboardContainerClassName?: string;
@@ -67,66 +62,58 @@ export default function GameWrapper({
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
-  const { userId } = useUser();
-  const recordGameResult = useRecordGameResult();
-  const { data: statsData } = useGameStatistics(userId);
-  const [gameState, setGameState] = useState(GameState.START);
+  const [gameState, setInternalGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [coinLimitDismissed, setCoinLimitDismissed] = useState(false);
   const [informationModal, setInformationModal] =
     useState<InformationModalOptions | null>(null);
   const [petBoardX, setPetBoardX] = useState<number | null>(null);
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
-  const hasRecordedRef = useRef(false);
+  const [winRewardDetails, setWinRewardDetails] =
+    useState<WinRewardDetails | null>(null);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const coinsEarnedToday = statsData?.coinsEarnedToday ?? 0;
-  const atCoinLimit = coinsEarnedToday >= DAILY_COIN_LIMIT;
-  const displayName =
-    gameConfig.find((g) => g.gameName === gameName)?.name ?? "";
-
-  const showCoinLimitModal = atCoinLimit && !coinLimitDismissed;
-
-  useEffect(() => {
-    if (manualRecording || !gameName || !userId) return;
-    if (gameState === GameState.START || gameState === GameState.PLAYING) {
-      hasRecordedRef.current = false;
-      return;
+  const resetSuccessState = useCallback(() => {
+    if (successTimerRef.current) {
+      clearTimeout(successTimerRef.current);
+      successTimerRef.current = null;
     }
-    if (hasRecordedRef.current) return;
-    hasRecordedRef.current = true;
+    setShowSuccess(false);
+  }, []);
 
-    const resultMap: Record<number, GameResult> = {
-      [GameState.WON]: GameResult.WIN,
-      [GameState.LOSS]: GameResult.LOSS,
-      [GameState.TIE]: GameResult.DRAW,
-    };
-    const result = resultMap[gameState];
-    if (result) {
-      recordGameResult.mutate({ userId, gameName, result });
-    }
-  }, [gameState, gameName, userId, recordGameResult, manualRecording]);
+  const handleGameStateChange = useCallback(
+    (state: GameState) => {
+      setInternalGameState(state);
 
-  const handleRecordResult = useCallback(
-    (result: GameResult) => {
-      if (gameName && userId) {
-        recordGameResult.mutate({ userId, gameName, result });
+      if (state === GameState.START && initialSpeechText) {
+        setSpeechText(initialSpeechText);
+      }
+
+      if (state === GameState.WON) {
+        setShowSuccess(true);
+        if (successTimerRef.current) {
+          clearTimeout(successTimerRef.current);
+        }
+        successTimerRef.current = setTimeout(() => {
+          setShowSuccess(false);
+          successTimerRef.current = null;
+        }, 5000);
+      } else {
+        resetSuccessState();
+        if (winRewardDetails !== null) {
+          setWinRewardDetails(null);
+        }
       }
     },
-    [gameName, userId, recordGameResult],
+    [initialSpeechText, resetSuccessState, winRewardDetails],
   );
 
-  const derivedSpeechText =
-    initialSpeechText && gameState === GameState.START
-      ? initialSpeechText
-      : speechText;
-
-  const handleSetGameState = useCallback((state: GameState) => {
-    setGameState(state);
-    if (state === GameState.WON) {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 5000);
-    }
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) {
+        clearTimeout(successTimerRef.current);
+      }
+    };
   }, []);
 
   const closeModal = () => {
@@ -163,9 +150,9 @@ export default function GameWrapper({
           {petBoardX === null && (
             <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
               <div className="relative">
-                {derivedSpeechText && (
+                {speechText && (
                   <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
-                    <Bubble text={derivedSpeechText} />
+                    <Bubble text={speechText} />
                   </div>
                 )}
                 <PetAppearance
@@ -220,26 +207,47 @@ export default function GameWrapper({
               <GameComponent
                 setSpeechText={setSpeechText}
                 gameState={gameState}
-                setGameState={handleSetGameState}
+                setGameState={handleGameStateChange}
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}
-                recordResult={handleRecordResult}
+                setWinRewardDetails={setWinRewardDetails}
               />
             </div>
           </div>
 
-          {/* Success overlay — shown for 5 seconds on win */}
+          {/* Success overlay on win */}
           {showSuccess && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center cursor-pointer"
-              onClick={() => setShowSuccess(false)}
-            >
-              <img
-                src="/assets/CongratulationsBackdrop.svg"
-                alt="Success!"
-                className="w-[900px] max-w-[80vw] h-auto"
-              />
+            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <div className="relative w-full max-w-6xl px-4">
+                <img
+                  src="/assets/CongratulationsBackdrop.svg"
+                  alt="Success!"
+                  className="w-full h-auto"
+                />
+                {winRewardDetails && (
+                  <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
+                    {winRewardDetails.maxReached ? (
+                      <p className="font-quantico text-3xl uppercase tracking-wide text-icanBlue-300">
+                        Max coins reached
+                      </p>
+                    ) : (
+                      <>
+                        <img
+                          src="/icons/Coin.svg"
+                          alt="Coins"
+                          className="h-12 w-12"
+                          draggable={false}
+                        />
+                        <p className="font-quantico text-3xl uppercase text-icanBlue-300 whitespace-nowrap">
+                          Daily Coins: {winRewardDetails.dailyCoinsTotal}/
+                          {winRewardDetails.maxCoinsPerDay}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -251,14 +259,6 @@ export default function GameWrapper({
           >
             <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
           </button>
-
-          {showCoinLimitModal && (
-            <CoinLimitModal
-              gameName={displayName}
-              onGoBack={() => router.push("/games")}
-              onPlay={() => setCoinLimitDismissed(true)}
-            />
-          )}
 
           {informationModal && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">

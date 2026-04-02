@@ -7,7 +7,6 @@ export default function TriviaGamePage() {
     <GameWrapper
       GameComponent={TriviaGame}
       gameName={GameName.TRIVIA}
-      manualRecording
       gameAreaClassName="right-[12%]"
     />
   );

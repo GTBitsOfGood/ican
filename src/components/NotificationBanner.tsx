@@ -1,6 +1,6 @@
 import React from "react";
 import toast, { Toast } from "react-hot-toast";
-import { NotificationType } from "@/db/models/notification";
+import type { NotificationType } from "@/types/notifications";
 
 interface NotificationBannerProps {
   t: Toast;
@@ -13,40 +13,32 @@ export default function NotificationBanner({
   type,
   message,
 }: NotificationBannerProps) {
-  const isStreak = type === "streak_warning";
-
   return (
     <div
-      className={`flex flex-col font-quantico transition-opacity ${
+      className={`font-quantico transition-opacity ${
         t.visible ? "opacity-100" : "opacity-0"
       }`}
     >
-      {isStreak && (
-        <p className="text-[1.1rem] mb-1 leading-none text-[var(--color-teal)]">
-          broken streak
-        </p>
-      )}
+      <div className="flex w-[min(34rem,calc(100vw-2rem))] overflow-hidden border border-[#aeb2e6] bg-[#c3c6f7] text-[var(--color-navy)] shadow-[0_4px_14px_rgba(44,49,104,0.28)]">
+        <div className="w-3 shrink-0 bg-[#7278b5]" />
+        <div className="flex min-w-0 flex-1 items-start gap-4 px-4 py-3.5">
+          <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#7d83bc] text-[11px] font-bold leading-none text-[#eef0ff]">
+            i
+          </span>
 
-      <div
-        className={`flex gap-2.5 px-3 py-2.5 w-80 bg-[var(--color-lavender)] border border-solid border-[var(--color-lavender-border)] text-[var(--color-navy)] ${
-          isStreak ? "items-start" : "items-center"
-        }`}
-      >
-        <span className="text-sm shrink-0 leading-tight text-icanBlue-200">
-          ⓘ
-        </span>
-
-        <div className="flex-1 min-w-0 text-xs leading-tight">
-          {formatContent(type, message)}
+          <div className="min-w-0 flex-1">{formatContent(type, message)}</div>
         </div>
 
-        <button
-          onClick={() => toast.dismiss(t.id)}
-          aria-label="Dismiss"
-          className="shrink-0 text-xs leading-tight hover:opacity-60 text-[var(--color-navy)]"
-        >
-          ×
-        </button>
+        <div className="my-3 w-px shrink-0 bg-[#b1b5ea]" />
+        <div className="flex items-center px-4">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            aria-label="Dismiss"
+            className="shrink-0 text-[2rem] leading-none text-[var(--color-navy)] hover:opacity-60"
+          >
+            ×
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -57,36 +49,28 @@ function formatContent(
   message: string,
 ): React.ReactNode {
   if (type === "streak_warning") {
-    const splitIdx = message.indexOf("! ");
-    const title = splitIdx !== -1 ? message.slice(0, splitIdx + 1) : message;
-    const subtitle = splitIdx !== -1 ? message.slice(splitIdx + 2) : null;
     return (
       <>
-        <p className="font-bold text-xs">{title}</p>
-        {subtitle && (
-          <p className="text-[1.1rem] mt-0.5 opacity-75">{subtitle}</p>
-        )}
+        <p className="text-[1.15rem] font-bold leading-tight">
+          Your medication streak is going to end
+        </p>
+        <p className="mt-1 text-[0.98rem] leading-tight">
+          Take your next dose to not lose it
+        </p>
       </>
     );
   }
 
   switch (type) {
-    case "early": {
-      const match = message.match(/^(.+medication\s)(.+?)(\sis coming up.+)$/);
-      if (!match) return <p className="text-xs">{message}</p>;
-      return (
-        <p className="text-xs">
-          {match[1]}
-          <strong>{match[2]}</strong>
-          {match[3]}
-        </p>
-      );
-    }
+    case "early":
     case "on_time": {
-      const match = message.match(/^(.+medication\s)(.+?)(!)$/);
-      if (!match) return <p className="text-xs">{message}</p>;
+      const match = message.match(
+        /^(Hi .+! Time for your )(.+?)( in \d+ minutes?)?$/,
+      );
+      if (!match)
+        return <p className="text-[1.08rem] leading-snug">{message}</p>;
       return (
-        <p className="text-xs">
+        <p className="text-[1.08rem] leading-snug">
           {match[1]}
           <strong>{match[2]}</strong>
           {match[3]}
@@ -94,15 +78,19 @@ function formatContent(
       );
     }
     case "missed": {
-      const match = message.match(/^(.+)(missed)(.+\s)(.+?)(\sdose.+)$/);
-      if (!match) return <p className="text-xs">{message}</p>;
+      const match = message.match(
+        /^(Looks like you )(missed your )(.+?)( \d+ minutes? ago)$/,
+      );
+      if (!match)
+        return <p className="text-[1.08rem] leading-snug">{message}</p>;
       return (
-        <p className="text-xs">
+        <p className="text-[1.08rem] leading-snug">
           {match[1]}
-          <strong>{match[2]}</strong>
-          {match[3]}
-          <strong>{match[4]}</strong>
-          {match[5]}
+          <strong>
+            {match[2]}
+            {match[3]}
+          </strong>
+          {match[4]}
         </p>
       );
     }

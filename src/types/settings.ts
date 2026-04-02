@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { NotificationType } from "@/db/models/notification";
+import type { NotificationType } from "@/types/notifications";
 
 export interface UpdateNotificationPreferencesBody {
   types?: NotificationType[];
