@@ -3,7 +3,14 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 // Probably move the types into a folder
-type ButtonType = "bag" | "help" | "log" | "settings" | "store" | "feed";
+type ButtonType =
+  | "bag"
+  | "games"
+  | "help"
+  | "log"
+  | "settings"
+  | "store"
+  | "feed";
 
 interface ButtonProps {
   buttonType?: ButtonType;
@@ -23,7 +30,8 @@ const Button: React.FC<ButtonProps> = ({
   const router = useRouter();
   const capitalizedType =
     buttonType.charAt(0).toUpperCase() + buttonType.slice(1);
-  const iconURL = `/icons/${capitalizedType}.svg`;
+  const iconExt = buttonType === "games" ? "png" : "svg";
+  const iconURL = `/icons/${capitalizedType}.${iconExt}`;
 
   const handleClick = () => {
     if (onClick) {
@@ -68,7 +76,7 @@ const Button: React.FC<ButtonProps> = ({
             />
           </div>
           {drawButton && (
-            <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center mt-1 ml-3">
+            <div className="mobile:hidden tablet:inline-flex h-fit z-10 justify-center items-center mt-1 ml-1">
               <span className="font-quantico text-center text-white mobile:text-3xl largeDesktop:text-4xl 4xl:text-5xl font-bold leading-9 text-stroke-4 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui">
                 {buttonType.toUpperCase()}
               </span>

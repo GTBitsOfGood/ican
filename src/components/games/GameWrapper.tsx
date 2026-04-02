@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import Bubble from "@/components/ui/Bubble";
 import { usePet } from "@/components/hooks/usePet";
+import { useRecordGameResult } from "@/components/hooks/useGameStatistics";
+import { useUser } from "@/components/UserContext";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
 import { PetEmotion } from "@/types/pet";
+import { GameName, GameResult } from "@/types/games";
 
 export enum GameState {
   START,
@@ -36,6 +39,7 @@ export interface GameWrapperControls {
 
 export default function GameWrapper({
   GameComponent,
+  gameName,
   initialSpeechText = "",
   showGameAreaFrame = true,
   gameAreaClassName,
@@ -44,6 +48,7 @@ export default function GameWrapper({
   gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
+  gameName?: GameName;
   initialSpeechText?: string;
   speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
@@ -54,6 +59,8 @@ export default function GameWrapper({
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
+  const { userId } = useUser();
+  const recordGameResult = useRecordGameResult();
   const [gameState, setGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -61,21 +68,40 @@ export default function GameWrapper({
     useState<InformationModalOptions | null>(null);
   const [petBoardX, setPetBoardX] = useState<number | null>(null);
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
+  const hasRecordedRef = useRef(false);
 
   useEffect(() => {
-    if (initialSpeechText && gameState === GameState.START) {
-      setSpeechText(initialSpeechText);
+    if (!gameName || !userId) return;
+    if (gameState === GameState.START || gameState === GameState.PLAYING) {
+      hasRecordedRef.current = false;
+      return;
     }
-  }, [gameState, initialSpeechText]);
+    if (hasRecordedRef.current) return;
+    hasRecordedRef.current = true;
 
-  // Show success overlay for 5 seconds on win
-  useEffect(() => {
-    if (gameState === GameState.WON) {
+    const resultMap: Record<number, GameResult> = {
+      [GameState.WON]: GameResult.WIN,
+      [GameState.LOSS]: GameResult.LOSS,
+      [GameState.TIE]: GameResult.DRAW,
+    };
+    const result = resultMap[gameState];
+    if (result) {
+      recordGameResult.mutate({ userId, gameName, result });
+    }
+  }, [gameState, gameName, userId, recordGameResult]);
+
+  const derivedSpeechText =
+    initialSpeechText && gameState === GameState.START
+      ? initialSpeechText
+      : speechText;
+
+  const handleSetGameState = useCallback((state: GameState) => {
+    setGameState(state);
+    if (state === GameState.WON) {
       setShowSuccess(true);
-      const timer = setTimeout(() => setShowSuccess(false), 5000);
-      return () => clearTimeout(timer);
+      setTimeout(() => setShowSuccess(false), 5000);
     }
-  }, [gameState]);
+  }, []);
 
   const closeModal = () => {
     const onClose = informationModal?.onClose;
@@ -111,9 +137,9 @@ export default function GameWrapper({
           {petBoardX === null && (
             <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
               <div className="relative">
-                {speechText && (
+                {derivedSpeechText && (
                   <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
-                    <Bubble text={speechText} />
+                    <Bubble text={derivedSpeechText} />
                   </div>
                 )}
                 <PetAppearance
@@ -168,7 +194,7 @@ export default function GameWrapper({
               <GameComponent
                 setSpeechText={setSpeechText}
                 gameState={gameState}
-                setGameState={setGameState}
+                setGameState={handleSetGameState}
                 showInformationModal={setInformationModal}
                 setPetBoardX={setPetBoardX}
                 setPetEmotion={setPetEmotion}

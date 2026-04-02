@@ -1,73 +1,59 @@
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
+import DailyCoinLimit from "@/components/games/DailyCoinLimit";
+import GameCard from "@/components/games/GameCard";
+import gameConfig from "@/lib/gameConfig";
+import { useUser } from "@/components/UserContext";
+import { useGameStatistics } from "@/components/hooks/useGameStatistics";
 
 export default function GamesIndex() {
-  const games = [
-    {
-      name: "Sample Game",
-      icon: "/icons/Star.svg",
-      href: "/games/sample",
-    },
-    {
-      name: "Flowerman",
-      icon: "/icons/Star.svg",
-      href: "/games/flowerman",
-    },
-    {
-      name: "Tic Tac Toe",
-      icon: "/icons/Star.svg",
-      href: "/games/tictactoe",
-    },
-    {
-      name: "Trivia",
-      icon: "/icons/Star.svg",
-      href: "/games/trivia",
-    },
-  ];
+  const router = useRouter();
+  const { userId } = useUser();
+  const { data: stats } = useGameStatistics(userId);
 
   return (
     <AuthorizedRoute>
-      <div
-        className="min-h-screen bg-no-repeat px-6 py-8 tablet:px-10 tablet:py-10"
-        style={{
-          backgroundImage: 'url("/bg-home.svg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center bottom",
-        }}
-      >
-        <h1 className="mb-8 font-quantico text-4xl text-white">Games</h1>
-        <ul className="flex flex-wrap gap-6">
-          {games.map((game) => (
-            <li key={game.href}>
-              <Link
+      <div className="min-h-screen bg-icanBlue-200 flex flex-col">
+        <div className="flex items-center justify-between px-6 pt-6 pb-2">
+          <div className="w-10" />
+          <h1 className="font-quantico text-4xl font-bold text-white">Games</h1>
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="hover:opacity-80 transition-opacity"
+            aria-label="Close"
+          >
+            <svg
+              width="31"
+              height="31"
+              viewBox="0 0 31 31"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M0 25.5V18H5.6V12.5H11.3V10.3H5.6V4.8H0V0H8.1V5.5H13.8V10.9H17V5.5H22.6V0H30.8V4.8H25.1V10.3H19.5V12.5H25.1V18H30.8V25.5H22.6V20H17V14.5H13.8V20H8.1V25.5H0Z"
+                fill="#98D03B"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <DailyCoinLimit />
+
+        <div className="flex-1 overflow-y-auto scrollbar-custom px-6 py-6">
+          <div className="grid grid-cols-1 gap-6 tablet:grid-cols-2 desktop:grid-cols-3">
+            {gameConfig.map((game) => (
+              <GameCard
+                key={game.gameName}
+                name={game.name}
+                gameName={game.gameName}
+                banner={game.banner}
                 href={game.href}
-                className="group flex flex-col items-center"
-              >
-                <div className="relative h-[6rem] w-[6rem] desktop:h-[7rem] desktop:w-[7rem]">
-                  <Image
-                    src="/misc/NavButton.svg"
-                    alt=""
-                    fill
-                    className="pointer-events-none object-fill"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center pb-2">
-                    <Image
-                      src={game.icon}
-                      alt={game.name}
-                      width={56}
-                      height={56}
-                      className="h-[58%] w-[58%] object-contain"
-                    />
-                  </div>
-                </div>
-                <p className="mt-1 font-quantico text-lg text-white transition group-hover:opacity-80">
-                  {game.name}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                stats={stats?.[game.gameName]}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </AuthorizedRoute>
   );

@@ -10,6 +10,7 @@ export enum GameName {
   HANGMAN = "HANGMAN",
   TRIVIA = "TRIVIA",
   TIC_TAC_TOE = "TIC_TAC_TOE",
+  FLAPPY_BIRD = "FLAPPY_BIRD",
 }
 
 export enum GameResult {
