@@ -4,7 +4,8 @@ import { GameState, type GameWrapperControls } from "../GameWrapper";
 type Pipe = {
   id: number;
   x: number;
-  gapY: number; //where gap starts from top
+  gapY: number; // where gap starts from top
+  scored: boolean; // true once the bird has passed this pipe
 };
 
 const BIRD_SIZE = 30;
@@ -29,6 +30,7 @@ export default function BirdGame({
   const [birdY, setBirdY] = useState<number>(0);
   const [, setBirdVelocity] = useState<number>(0);
   const [pipes, setPipes] = useState<Pipe[]>([]);
+  const [score, setScore] = useState(0);
 
   const resetGame = (height = boardHeight) => {
     if (height > 0) {
@@ -36,6 +38,7 @@ export default function BirdGame({
     }
     setBirdVelocity(0);
     setPipes([]);
+    setScore(0);
     spawnCounter.current = 0;
   };
 
@@ -53,6 +56,7 @@ export default function BirdGame({
       id: Date.now(),
       x: boardRef.current?.clientWidth || 400,
       gapY,
+      scored: false,
     };
 
     setPipes((prev) => [...prev, newPipe]);
@@ -63,6 +67,7 @@ export default function BirdGame({
       setBirdY(boardHeight * 0.25);
       setBirdVelocity(0);
       setPipes([]);
+      setScore(0);
       spawnCounter.current = 0;
     }
   }, [gameState, boardHeight]);
@@ -105,15 +110,26 @@ export default function BirdGame({
     if (gameState !== GameState.PLAYING || boardHeight === 0) return;
 
     const intervalId = window.setInterval(() => {
-      setPipes(
-        (prevPipes) =>
-          prevPipes
-            .map((pipe) => ({
-              ...pipe,
-              x: pipe.x - PIPE_SPEED,
-            }))
-            .filter((pipe) => pipe.x + PIPE_WIDTH > 0), // remove off screen
-      );
+      // Move pipes, check scoring; capture updated positions for collision below
+      let movedPipes: Pipe[] = [];
+      setPipes((prevPipes) => {
+        let pointScored = false;
+
+        const updated = prevPipes
+          .map((pipe) => {
+            const newX = pipe.x - PIPE_SPEED;
+            const justPassed =
+              !pipe.scored && BIRD_X > pipe.x + PIPE_WIDTH - PIPE_SPEED;
+            if (justPassed) pointScored = true;
+            return { ...pipe, x: newX, scored: pipe.scored || justPassed };
+          })
+          .filter((pipe) => pipe.x + PIPE_WIDTH > 0);
+
+        if (pointScored) setScore((s) => s + 1);
+
+        movedPipes = updated;
+        return updated;
+      });
 
       spawnCounter.current += 1;
       if (spawnCounter.current >= PIPE_SPAWN) {
@@ -135,6 +151,25 @@ export default function BirdGame({
           if (newY + BIRD_SIZE >= boardHeight) {
             setGameState(GameState.LOSS);
             return boardHeight - BIRD_SIZE;
+          }
+
+          // Collision: check bird AABB against each pipe using true current positions
+          const birdLeft = BIRD_X;
+          const birdRight = BIRD_X + BIRD_SIZE;
+          const birdTop = newY;
+          const birdBottom = newY + BIRD_SIZE;
+
+          for (const pipe of movedPipes) {
+            const horizontalOverlap =
+              birdRight > pipe.x && birdLeft < pipe.x + PIPE_WIDTH;
+            if (horizontalOverlap) {
+              const hitsTop = birdTop < pipe.gapY;
+              const hitsBottom = birdBottom > pipe.gapY + PIPE_GAP;
+              if (hitsTop || hitsBottom) {
+                setGameState(GameState.LOSS);
+                return prevY;
+              }
+            }
           }
 
           return newY;
@@ -171,8 +206,14 @@ export default function BirdGame({
     <div className="h-full w-full">
       <div
         ref={boardRef}
-        className="relative h-full w-full overflow-hidden rounded-2xl bg-sky-100"
+        className="relative h-full w-full overflow-hidden bg-sky-100"
       >
+        {gameState === GameState.PLAYING && (
+          <div className="absolute top-3 right-4 z-10 font-quantico text-2xl font-bold text-icanBlue-300 select-none">
+            {score}
+          </div>
+        )}
+
         {/* Bird */}
         <div
           className="absolute rounded-full bg-yellow-400"
