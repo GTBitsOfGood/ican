@@ -1,10 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { GameStats, GameName } from "@/types/games";
+import { GameStats } from "@/types/games";
 
 interface GameCardProps {
   name: string;
-  gameName: GameName;
   banner: string;
   href: string;
   stats?: GameStats;

@@ -29,3 +29,10 @@ export interface GameStats {
 }
 
 export type GameStatistics = Partial<Record<GameName, GameStats>>;
+
+export const DAILY_COIN_LIMIT = 100;
+
+export interface GameStatisticsResponse {
+  stats: GameStatistics;
+  coinsEarnedToday: number;
+}

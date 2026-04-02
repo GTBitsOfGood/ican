@@ -1,8 +1,10 @@
 import fetchHTTPClient from "./fetchHTTPClient";
-import { GameName, GameResult, GameStatistics } from "@/types/games";
+import { GameName, GameResult, GameStatisticsResponse } from "@/types/games";
 
 export default class GameStatisticsHTTPClient {
-  static async getGameStatistics(userId: string): Promise<GameStatistics> {
+  static async getGameStatistics(
+    userId: string,
+  ): Promise<GameStatisticsResponse> {
     return await fetchHTTPClient(`/users/${userId}/game-statistics`, {
       method: "GET",
       credentials: "include",
@@ -13,7 +15,7 @@ export default class GameStatisticsHTTPClient {
     userId: string,
     gameName: GameName,
     result: GameResult,
-  ): Promise<void> {
+  ): Promise<{ coinsEarnedToday: number }> {
     return await fetchHTTPClient(`/users/${userId}/game-statistics/record`, {
       method: "POST",
       credentials: "include",

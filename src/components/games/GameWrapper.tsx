@@ -5,12 +5,17 @@ import LoadingScreen from "@/components/loadingScreen";
 import PetAppearance from "@/components/inventory/PetAppearance";
 import Bubble from "@/components/ui/Bubble";
 import { usePet } from "@/components/hooks/usePet";
-import { useRecordGameResult } from "@/components/hooks/useGameStatistics";
+import {
+  useGameStatistics,
+  useRecordGameResult,
+} from "@/components/hooks/useGameStatistics";
 import { useUser } from "@/components/UserContext";
+import CoinLimitModal from "@/components/games/CoinLimitModal";
 import storeItems from "@/lib/storeItems";
 import { cn } from "@/lib/utils";
+import gameConfig from "@/lib/gameConfig";
 import { PetEmotion } from "@/types/pet";
-import { GameName, GameResult } from "@/types/games";
+import { DAILY_COIN_LIMIT, GameName, GameResult } from "@/types/games";
 
 export enum GameState {
   START,
@@ -61,14 +66,23 @@ export default function GameWrapper({
   const { data: pet } = usePet();
   const { userId } = useUser();
   const recordGameResult = useRecordGameResult();
+  const { data: statsData } = useGameStatistics(userId);
   const [gameState, setGameState] = useState(GameState.START);
   const [speechText, setSpeechText] = useState(initialSpeechText);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [coinLimitDismissed, setCoinLimitDismissed] = useState(false);
   const [informationModal, setInformationModal] =
     useState<InformationModalOptions | null>(null);
   const [petBoardX, setPetBoardX] = useState<number | null>(null);
   const [petEmotion, setPetEmotion] = useState<PetEmotion | null>(null);
   const hasRecordedRef = useRef(false);
+
+  const coinsEarnedToday = statsData?.coinsEarnedToday ?? 0;
+  const atCoinLimit = coinsEarnedToday >= DAILY_COIN_LIMIT;
+  const displayName =
+    gameConfig.find((g) => g.gameName === gameName)?.name ?? "";
+
+  const showCoinLimitModal = atCoinLimit && !coinLimitDismissed;
 
   useEffect(() => {
     if (!gameName || !userId) return;
@@ -224,6 +238,14 @@ export default function GameWrapper({
           >
             <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
           </button>
+
+          {showCoinLimitModal && (
+            <CoinLimitModal
+              gameName={displayName}
+              onGoBack={() => router.push("/games")}
+              onPlay={() => setCoinLimitDismissed(true)}
+            />
+          )}
 
           {informationModal && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">

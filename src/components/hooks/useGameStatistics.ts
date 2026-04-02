@@ -1,13 +1,14 @@
 import GameStatisticsHTTPClient from "@/http/gameStatisticsHTTPClient";
-import { GameName, GameResult, GameStatistics } from "@/types/games";
+import { GameName, GameResult, GameStatisticsResponse } from "@/types/games";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { PET_QUERY_KEYS } from "@/components/hooks/usePet";
 
 export const GAME_STATS_QUERY_KEYS = {
   statistics: (userId: string) => ["game-statistics", userId] as const,
 } as const;
 
 export const useGameStatistics = (userId: string | null) => {
-  return useQuery<GameStatistics>({
+  return useQuery<GameStatisticsResponse>({
     queryKey: GAME_STATS_QUERY_KEYS.statistics(userId || ""),
     queryFn: () => GameStatisticsHTTPClient.getGameStatistics(userId!),
     enabled: !!userId,
@@ -37,6 +38,9 @@ export const useRecordGameResult = () => {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: GAME_STATS_QUERY_KEYS.statistics(variables.userId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PET_QUERY_KEYS.pet(variables.userId),
       });
     },
   });

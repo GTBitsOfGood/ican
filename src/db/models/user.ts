@@ -12,6 +12,8 @@ export interface User {
   isOnboarded?: boolean;
   tutorial_completed?: boolean;
   gameStatistics?: Map<string, GameStats>;
+  gameCoinsEarnedToday?: number;
+  gameCoinsLastResetDate?: Date;
 }
 
 export interface UserDocument extends User, Document {
@@ -33,6 +35,8 @@ const userSchema = new Schema<UserDocument>(
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
     tutorial_completed: { type: Boolean, required: false, default: false },
+    gameCoinsEarnedToday: { type: Number, default: 0 },
+    gameCoinsLastResetDate: { type: Date, default: null },
     gameStatistics: {
       type: Map,
       of: new Schema<GameStats>(

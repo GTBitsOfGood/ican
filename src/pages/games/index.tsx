@@ -9,7 +9,9 @@ import { useGameStatistics } from "@/components/hooks/useGameStatistics";
 export default function GamesIndex() {
   const router = useRouter();
   const { userId } = useUser();
-  const { data: stats } = useGameStatistics(userId);
+  const { data } = useGameStatistics(userId);
+  const stats = data?.stats;
+  const coinsEarnedToday = data?.coinsEarnedToday ?? 0;
 
   return (
     <AuthorizedRoute>
@@ -38,7 +40,7 @@ export default function GamesIndex() {
           </button>
         </div>
 
-        <DailyCoinLimit />
+        <DailyCoinLimit coinsEarnedToday={coinsEarnedToday} />
 
         <div className="flex-1 overflow-y-auto scrollbar-custom px-6 py-6">
           <div className="grid grid-cols-1 gap-6 tablet:grid-cols-2 desktop:grid-cols-3">
@@ -46,7 +48,6 @@ export default function GamesIndex() {
               <GameCard
                 key={game.gameName}
                 name={game.name}
-                gameName={game.gameName}
                 banner={game.banner}
                 href={game.href}
                 stats={stats?.[game.gameName]}
