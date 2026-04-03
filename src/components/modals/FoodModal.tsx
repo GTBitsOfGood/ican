@@ -13,7 +13,13 @@ import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
 import { cn } from "@/lib/utils";
 
-export default function FoodModal({ foods }: { foods: string[] }) {
+export default function FoodModal({
+  foods,
+  foodCount,
+}: {
+  foods: string[];
+  foodCount?: number;
+}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { setSelectedFood } = useFood();
@@ -21,7 +27,7 @@ export default function FoodModal({ foods }: { foods: string[] }) {
   const [clickedFood, setClickedFood] = useState<string>("");
 
   const baseImageUrl = "/foods";
-  const totalFood = foods.length;
+  const totalFood = foodCount ?? foods.length;
 
   const handleClose = () => {
     onClose();

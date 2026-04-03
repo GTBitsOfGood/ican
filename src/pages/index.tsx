@@ -31,6 +31,7 @@ import { usePetFoods } from "@/components/hooks/useInventory";
 interface HomeProps {
   activeModal: string;
   foods?: string[];
+  foodCount?: number;
 }
 
 const TUTORIAL_XP_GAIN = 20;
@@ -38,6 +39,7 @@ const TUTORIAL_XP_GAIN = 20;
 export default function Home({
   activeModal = "",
   foods = undefined,
+  foodCount = undefined,
 }: HomeProps) {
   const router = useRouter();
   const tutorial = useTutorial();
@@ -400,7 +402,9 @@ export default function Home({
       {activeModal === "change-pin" && <ChangePinModal />}
       {activeModal === "change-child-login" && <ChangeChildLoginModal />}
       {activeModal === "forgot-pin" && <ForgotPinModal />}
-      {activeModal === "food" && foods && <FoodModal foods={foods} />}
+      {activeModal === "food" && foods && (
+        <FoodModal foods={foods} foodCount={foodCount} />
+      )}
       {showLevelUpModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
