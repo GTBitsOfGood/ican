@@ -62,7 +62,7 @@ export default class SettingsDAO {
     }
 
     const result = await SettingsModel.updateOne({ userId }, { $set: setObj });
-    if (result.modifiedCount == 0) {
+    if (result.matchedCount == 0) {
       throw new Error(ERRORS.SETTINGS.FAILURE.UPDATE);
     }
   }

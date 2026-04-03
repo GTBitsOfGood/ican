@@ -88,7 +88,7 @@ export default function Store() {
       {effectivePet && petBag ? (
         <Inventory
           topView={
-            <div className="flex justify-center items-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-2xl tablet:text-3xl desktop:text-4xl bg-[#E6E8F9] border-[3px] border-black">
+            <div className="flex items-center justify-center border-[3px] border-black bg-[#E6E8F9] p-2 font-quantico text-center text-2xl font-bold text-black tablet:text-3xl desktop:text-4xl">
               Balance:
               <Image
                 src="/icons/Coin.svg"

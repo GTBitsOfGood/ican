@@ -30,6 +30,12 @@ export default class StoreService {
       throw new InvalidArgumentsError("This pet already owns this item.");
     }
 
+    if (pet.xpLevel < item.level) {
+      throw new InvalidArgumentsError(
+        `This item unlocks at level ${item.level}. Current level: ${pet.xpLevel}.`,
+      );
+    }
+
     if (item.isStreakLocked) {
       const requiredStreak = item.streakRequirement || 3;
       if (pet.currentStreak < requiredStreak) {

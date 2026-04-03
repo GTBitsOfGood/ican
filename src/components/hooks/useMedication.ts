@@ -186,9 +186,9 @@ export const useUpcomingMedication = () => {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   const dateStr = `${year}-${month}-${day}`;
-  const localTimeStr = now.toLocaleString();
+  const currentTimestamp = now.toISOString();
 
-  const { data: schedule } = useMedicationSchedule(dateStr, localTimeStr);
+  const { data: schedule } = useMedicationSchedule(dateStr, currentTimestamp);
   const visibleMedications = tutorial.isActive
     ? (schedule?.medications ?? [])
     : (schedule?.medications ?? []).filter(

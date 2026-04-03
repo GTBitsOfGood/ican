@@ -49,9 +49,14 @@ interface TutorialContextType {
   shouldEnlargeButton: (buttonType: "store" | "log") => boolean;
   medicationType: "Pill" | "Syrup" | "Shot" | null;
   shouldShowMedicationDrag: boolean;
+  pendingMedicationRewardType: "Pill" | "Syrup" | "Shot" | null;
   completeTutorialMedicationStep: (
     medicationType?: "Pill" | "Syrup" | "Shot",
   ) => void;
+  queueTutorialMedicationReward: (
+    medicationType: "Pill" | "Syrup" | "Shot",
+  ) => void;
+  clearTutorialMedicationReward: () => void;
   startTutorialMedicationDrag: () => void;
   markFoodPurchased: () => void;
   markMedicationDragComplete: () => void;
@@ -138,7 +143,7 @@ const createReplaySession = (
   if (tutorialStage === "food") {
     return {
       replayCoins: 100,
-      replayXpLevel: 0,
+      replayXpLevel: 1,
       replayXpGained: 0,
       replayFoods: [],
     };
@@ -147,7 +152,7 @@ const createReplaySession = (
   if (tutorialStage === "medication" || tutorialStage === "feed") {
     return {
       replayCoins: 100,
-      replayXpLevel: 0,
+      replayXpLevel: 1,
       replayXpGained: 0,
       replayFoods: [],
     };
@@ -155,7 +160,7 @@ const createReplaySession = (
 
   return {
     replayCoins: 100,
-    replayXpLevel: 0,
+    replayXpLevel: 1,
     replayXpGained: 0,
     replayFoods: [],
   };
@@ -180,6 +185,8 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   const [medicationType, setMedicationType] = useState<
     "Pill" | "Syrup" | "Shot" | null
   >(null);
+  const [pendingMedicationRewardType, setPendingMedicationRewardType] =
+    useState<"Pill" | "Syrup" | "Shot" | null>(null);
   const [shouldShowMedicationDrag, setShouldShowMedicationDrag] =
     useState(false);
   const [completionTriggered, setCompletionTriggered] = useState(false);
@@ -426,11 +433,27 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setMedicationType(nextMedicationType);
-      setShouldShowMedicationDrag(false);
+      setPendingMedicationRewardType(null);
+      setShouldShowMedicationDrag(true);
       setTutorialStep(0);
     },
     [isActive, tutorialStage],
   );
+
+  const queueTutorialMedicationReward = useCallback(
+    (nextMedicationType: "Pill" | "Syrup" | "Shot") => {
+      if (!isActive || tutorialStage !== "medication") {
+        return;
+      }
+
+      setPendingMedicationRewardType(nextMedicationType);
+    },
+    [isActive, tutorialStage],
+  );
+
+  const clearTutorialMedicationReward = useCallback(() => {
+    setPendingMedicationRewardType(null);
+  }, []);
 
   const startTutorialMedicationDrag = useCallback(() => {
     if (
@@ -600,6 +623,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       setReplayStage("food");
       setTutorialStep(0);
       setMedicationType(null);
+      setPendingMedicationRewardType(null);
       setShouldShowMedicationDrag(false);
       router.push("/");
     } catch (error) {
@@ -646,7 +670,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       isActive,
       isReplay,
       replayCoins: replaySession?.replayCoins ?? null,
-      replayXpLevel: replaySession?.replayXpLevel ?? 0,
+      replayXpLevel: replaySession?.replayXpLevel ?? 1,
       replayXpGained: replaySession?.replayXpGained ?? 0,
       replayFoods: replaySession?.replayFoods ?? [],
       practiceDose,
@@ -656,7 +680,10 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       shouldEnlargeButton,
       medicationType,
       shouldShowMedicationDrag,
+      pendingMedicationRewardType,
       completeTutorialMedicationStep,
+      queueTutorialMedicationReward,
+      clearTutorialMedicationReward,
       startTutorialMedicationDrag,
       markFoodPurchased,
       markMedicationDragComplete,
@@ -676,6 +703,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       markMedicationDragComplete,
       markPetFed,
       medicationType,
+      pendingMedicationRewardType,
       portion,
       practiceDose,
       purchaseReplayFood,
@@ -683,6 +711,8 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       resetTutorial.isPending,
       shouldEnlargeButton,
       shouldShowMedicationDrag,
+      queueTutorialMedicationReward,
+      clearTutorialMedicationReward,
       startTutorialMedicationDrag,
       startReplay,
       tutorialStep,

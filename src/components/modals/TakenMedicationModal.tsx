@@ -1,11 +1,4 @@
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/react";
-import { useEffect } from "react";
+import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 
 interface TakenModalProps {
   name: string;
@@ -18,12 +11,6 @@ export default function MedicationTakenModal({
   setChangeModalVisible,
   handleTakenAction,
 }: TakenModalProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    onOpen();
-  }, [onOpen]);
-
   const handleTakenLogic = () => {
     handleTakenAction();
     handleClose();
@@ -31,7 +18,6 @@ export default function MedicationTakenModal({
 
   const handleClose = () => {
     setChangeModalVisible(false);
-    onClose();
   };
 
   return (
@@ -45,11 +31,11 @@ export default function MedicationTakenModal({
         body: "items-center justify-between",
       }}
       className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[55%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
-      isOpen={isOpen}
-      onClose={onClose}
+      isOpen={true}
+      onClose={handleClose}
       radius="sm"
       placement="center"
-      closeButton={<></>}
+      hideCloseButton={true}
       isDismissable={false}
     >
       <ModalContent>

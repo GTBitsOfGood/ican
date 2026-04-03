@@ -34,6 +34,7 @@ export default function Food() {
     <Home
       activeModal="food"
       foods={shouldUseReplayFoods ? tutorial.replayFoods : foods || []}
+      foodCount={shouldUseReplayFoods ? tutorial.replayFoods.length : pet?.food}
     />
   );
 }

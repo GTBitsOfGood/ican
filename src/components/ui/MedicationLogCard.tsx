@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
-import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
@@ -41,6 +40,8 @@ export default function MedicationLogCard({
     (tutorial.shouldShowMedicationDrag ||
       tutorial.tutorialPortion > TUTORIAL_PORTIONS.LOG_TUTORIAL);
   const shouldUseTutorialFlow = tutorial.isActive && isTutorialMedication;
+  const shouldUseReplayTutorialFlow =
+    shouldUseTutorialFlow && tutorial.isReplay;
   const shouldBypassTutorialTiming =
     shouldUseTutorialFlow && !tutorialMedicationAlreadyTaken;
   const { userId } = useUser();
@@ -53,7 +54,6 @@ export default function MedicationLogCard({
     onClose: closePasswordModal,
   } = useDisclosure(); //for managing pin modal
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const medicationCheckInMutation = useMedicationCheckIn();
   const medicationLogMutation = useMedicationLog();
@@ -103,23 +103,28 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = () => {
+    if (shouldUseReplayTutorialFlow) {
+      setShowConfirmModal(false);
+      tutorial.queueTutorialMedicationReward(formOfMedication);
+      router.push("/");
+      return;
+    }
+
     if (shouldUseTutorialFlow) {
       medicationLogMutation.mutate(
         {
           userId: userId!,
           medicationId: id,
-          localTime: new Date().toLocaleString("en-us"),
+          localTime: new Date().toISOString(),
         },
         {
           onSuccess: () => {
             setShowConfirmModal(false);
-            router.push({
-              pathname: "/",
-              query: {
-                tutorialMedicationLogged: "true",
-                tutorialMedicationType: formOfMedication,
-              },
-            });
+            if (shouldUseTutorialFlow) {
+              tutorial.queueTutorialMedicationReward(formOfMedication);
+              router.push("/");
+              return;
+            }
           },
           onError: (error) => {
             toast.error(
@@ -137,23 +142,34 @@ export default function MedicationLogCard({
       {
         userId: userId!,
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {
           setShowConfirmModal(false);
-          setShowSuccessModal(true);
+          router.push({
+            pathname: "/",
+            query: {
+              medicationReward: "true",
+              medicationType: formOfMedication,
+            },
+          });
         },
       },
     );
   };
 
   const handleMedicationCheckIn = () => {
+    if (shouldUseReplayTutorialFlow) {
+      setShowConfirmModal(true);
+      return;
+    }
+
     medicationCheckInMutation.mutate(
       {
         userId: userId!,
         medicationId: id,
-        localTime: new Date().toLocaleString(undefined),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {
@@ -228,22 +244,6 @@ export default function MedicationLogCard({
           name={name}
           setChangeModalVisible={toggleConfirmModal}
           handleTakenAction={handleTakeMedicationAction}
-        />
-      )}
-      {showSuccessModal && (
-        <SuccessMedicationModal
-          medicationType={formOfMedication}
-          onModalClose={() => {
-            setShowSuccessModal(false);
-            router.push({
-              pathname: "/",
-              query: {
-                medicationFlow: "true",
-                medicationType: formOfMedication,
-                medicationStage: "intro",
-              },
-            });
-          }}
         />
       )}
       <div className="flex flex-col gap-y-6">

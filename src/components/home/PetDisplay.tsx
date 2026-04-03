@@ -18,11 +18,11 @@ interface PetDisplayProps {
   selectedFood: string | null;
   bubbleText?: string;
   bubbleAnimation?: "jump" | "none";
-  onFoodDrop?: () => void;
+  onFoodDrop?: (distance: number | null) => void;
   onDrag?: (distance: number | null) => void;
   medicationType?: "Pill" | "Syrup" | "Shot" | null;
   shouldShowMedicationDrag?: boolean;
-  onMedicationDrop?: () => void;
+  onMedicationDrop?: (distance: number | null) => void;
   onMedicationDrag?: (distance: number | null) => void;
 }
 
@@ -44,31 +44,38 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
   const foodRef = useRef<HTMLDivElement>(null);
   const medicationRef = useRef<HTMLDivElement>(null);
 
+  const getDistanceFromLeft = (element: HTMLDivElement | null) => {
+    const constraintsRect = constraintsRef.current?.getBoundingClientRect();
+    const elementRect = element?.getBoundingClientRect();
+
+    if (!constraintsRect || !elementRect) {
+      return null;
+    }
+
+    const elementCenterX = elementRect.left + elementRect.width / 2;
+    return elementCenterX - constraintsRect.left;
+  };
+
   const handleDrag = () => {
     if (!onDrag) return;
-    if (constraintsRef.current) {
-      const constraintsRect = constraintsRef?.current?.getBoundingClientRect();
-      const foodRect = foodRef?.current?.getBoundingClientRect();
-      if (constraintsRect && foodRect) {
-        const foodCenterX = foodRect.left + foodRect.width / 2;
-        const distanceFromLeft = foodCenterX - constraintsRect.left;
-        onDrag(distanceFromLeft);
-      }
-    }
+    onDrag(getDistanceFromLeft(foodRef.current));
+  };
+
+  const handleFoodDragEnd = () => {
+    const distance = getDistanceFromLeft(foodRef.current);
+    onDrag?.(distance);
+    onFoodDrop?.(distance);
   };
 
   const handleMedicationDrag = () => {
     if (!onMedicationDrag) return;
-    if (constraintsRef.current) {
-      const constraintsRect = constraintsRef?.current?.getBoundingClientRect();
-      const medicationRect = medicationRef?.current?.getBoundingClientRect();
-      if (constraintsRect && medicationRect) {
-        const medicationCenterX =
-          medicationRect.left + medicationRect.width / 2;
-        const distanceFromLeft = medicationCenterX - constraintsRect.left;
-        onMedicationDrag(distanceFromLeft);
-      }
-    }
+    onMedicationDrag(getDistanceFromLeft(medicationRef.current));
+  };
+
+  const handleMedicationDragEnd = () => {
+    const distance = getDistanceFromLeft(medicationRef.current);
+    onMedicationDrag?.(distance);
+    onMedicationDrop?.(distance);
   };
 
   const getMedicationIcon = (type: "Pill" | "Syrup" | "Shot") => {
@@ -131,8 +138,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
               cursor: "grab",
             }}
             onDrag={handleDrag}
-            onMouseUp={onFoodDrop}
-            onMouseLeave={onFoodDrop}
+            onDragEnd={handleFoodDragEnd}
           >
             <Image
               src={`/foods/${selectedFood.toLowerCase()}.svg`}
@@ -158,8 +164,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
               cursor: "grab",
             }}
             onDrag={handleMedicationDrag}
-            onMouseUp={onMedicationDrop}
-            onMouseLeave={onMedicationDrop}
+            onDragEnd={handleMedicationDragEnd}
           >
             <div style={{ pointerEvents: "none" }}>
               {getMedicationIcon(medicationType)}

@@ -36,6 +36,7 @@ export default function TriviaGame({
   const [selectedChoiceIdx, setSelectedChoiceIdx] = useState<number | null>(
     null,
   );
+  const [correctAnswers, setCorrectAnswers] = useState(0);
   const [isProcessingWin, setIsProcessingWin] = useState(false);
 
   const [showXpPopup, setShowXpPopup] = useState(false);
@@ -62,17 +63,16 @@ export default function TriviaGame({
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true;
-      queueMicrotask(() => handleStart());
+      handleStart();
     }
     if (gameState === GameState.PLAYING) {
-      queueMicrotask(() => {
-        const newQuestions = generateRoundQuestions();
-        setCurrQuestionIdx(0);
-        setRoundQuestions(newQuestions);
-        setIsSubmitted(false);
-        setSelectedChoiceIdx(null);
-        setSpeechText(newQuestions[0].prompt);
-      });
+      const newQuestions = generateRoundQuestions();
+      setCurrQuestionIdx(0);
+      setRoundQuestions(newQuestions);
+      setIsSubmitted(false);
+      setSelectedChoiceIdx(null);
+      setCorrectAnswers(0);
+      setSpeechText(newQuestions[0].prompt);
     }
   }, [gameState, handleStart, setSpeechText]);
 
@@ -90,6 +90,7 @@ export default function TriviaGame({
 
     const isCorrect =
       selectedChoiceIdx === roundQuestions[currQuestionIdx].answerIdx;
+    const nextCorrectAnswers = correctAnswers + (isCorrect ? 1 : 0);
     const correctLetter = ["A", "B", "C", "D"][
       roundQuestions[currQuestionIdx].answerIdx
     ];
@@ -101,20 +102,30 @@ export default function TriviaGame({
     );
 
     if (isCorrect) {
+      setCorrectAnswers(nextCorrectAnswers);
       setShowXpPopup(true);
       if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
       xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
-
-      if (isLastQuestion) {
-        handleGameWin();
-        setIsSubmitted(true);
-        return;
-      }
     }
 
     if (isLastQuestion) {
-      setGameState(GameState.WON);
-      setSpeechText("That was fun! I loved playing with you!");
+      if (nextCorrectAnswers >= 3) {
+        handleGameWin();
+      } else {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.TRIVIA,
+            result: GameResult.LOSS,
+          });
+        }
+        setGameState(GameState.LOSS);
+        setSpeechText(
+          `You got ${nextCorrectAnswers}/5 correct. Let's try again!`,
+        );
+      }
+      setIsSubmitted(true);
+      return;
     }
 
     setIsSubmitted(true);
@@ -213,27 +224,28 @@ export default function TriviaGame({
             </button>
           </>
         )}
-        {gameState === GameState.WON && roundQuestions.length > 0 && (
-          <>
-            <div className="mt-8 flex flex-col items-center">
-              <QuestionCard
-                question={roundQuestions[currQuestionIdx]}
-                onAnswer={() => {}}
-                isAnswered={true}
-                selectedChoiceIdx={selectedChoiceIdx}
-                currentQuestionNumber={currQuestionIdx + 1}
-              />
-            </div>
+        {(gameState === GameState.WON || gameState === GameState.LOSS) &&
+          roundQuestions.length > 0 && (
+            <>
+              <div className="mt-8 flex flex-col items-center">
+                <QuestionCard
+                  question={roundQuestions[currQuestionIdx]}
+                  onAnswer={() => {}}
+                  isAnswered={true}
+                  selectedChoiceIdx={selectedChoiceIdx}
+                  currentQuestionNumber={currQuestionIdx + 1}
+                />
+              </div>
 
-            <button
-              type="button"
-              onClick={handlePlayAgain}
-              className={buttonClassName}
-            >
-              Play Again
-            </button>
-          </>
-        )}
+              <button
+                type="button"
+                onClick={handlePlayAgain}
+                className={buttonClassName}
+              >
+                Play Again
+              </button>
+            </>
+          )}
       </div>
     </div>
   );

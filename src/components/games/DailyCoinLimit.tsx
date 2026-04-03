@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { DAILY_COIN_LIMIT } from "@/types/games";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 interface DailyCoinLimitProps {
   coinsEarnedToday: number;
@@ -8,9 +8,11 @@ interface DailyCoinLimitProps {
 export default function DailyCoinLimit({
   coinsEarnedToday,
 }: DailyCoinLimitProps) {
-  const coinsLeft = DAILY_COIN_LIMIT - coinsEarnedToday;
-  const remainingPercent = (coinsLeft / DAILY_COIN_LIMIT) * 100;
+  const coinsLeft = GAMES_DAILY_COIN_LIMIT - coinsEarnedToday;
+  const remainingPercent = (coinsLeft / GAMES_DAILY_COIN_LIMIT) * 100;
   const reached = coinsLeft <= 0;
+  const lowRemaining = remainingPercent <= 20;
+  const mediumRemaining = remainingPercent <= 50;
 
   let title: string;
   let message: string;
@@ -20,20 +22,20 @@ export default function DailyCoinLimit({
     title = "You\u2019ve reached today\u2019s coin limit";
     message = "You can still play, but you won\u2019t earn more coins today.";
     barColor = "bg-[#6b5c4c]";
-  } else if (coinsLeft <= 20) {
+  } else if (lowRemaining) {
     title = "You\u2019ve almost reached today\u2019s coin limit";
     message = "You can still play, but you\u2019ll stop earning coins soon.";
     barColor = "bg-red-400";
-  } else if (coinsLeft <= 50) {
+  } else if (mediumRemaining) {
     title = "Daily Coin Limit";
-    message = `You\u2019ve earned ${coinsEarnedToday} of ${DAILY_COIN_LIMIT} coins today. You can keep playing and earning coins.`;
+    message = `You\u2019ve earned ${coinsEarnedToday} of ${GAMES_DAILY_COIN_LIMIT} coins today. You can keep playing and earning coins.`;
     barColor = "bg-yellow-400";
   } else {
     title = "Daily Coin Limit";
     message =
       coinsEarnedToday > 0
-        ? `You\u2019ve earned ${coinsEarnedToday} of ${DAILY_COIN_LIMIT} coins today. You can keep playing and earning coins.`
-        : `You can earn up to ${DAILY_COIN_LIMIT} coins from games today.`;
+        ? `You\u2019ve earned ${coinsEarnedToday} of ${GAMES_DAILY_COIN_LIMIT} coins today. You can keep playing and earning coins.`
+        : `You can earn up to ${GAMES_DAILY_COIN_LIMIT} coins from games today.`;
     barColor = "bg-icanGreen-300";
   }
 

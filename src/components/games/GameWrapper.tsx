@@ -146,6 +146,11 @@ export default function GameWrapper({
             backgroundPosition: "center bottom",
           }}
         >
+          <div
+            className="pointer-events-none absolute inset-0 bg-black/60"
+            aria-hidden="true"
+          />
+
           {/* Pet at default home position with speech bubble */}
           {petBoardX === null && (
             <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
@@ -250,6 +255,19 @@ export default function GameWrapper({
               </div>
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
+            aria-label="Restart game"
+          >
+            <img
+              src="/games/flowerman/restart.svg"
+              alt=""
+              className="h-14 w-auto"
+            />
+          </button>
 
           <button
             type="button"

@@ -114,8 +114,13 @@ export default class MedicationHTTPClient {
     date: string,
     localTime: string,
   ): Promise<{ date: string; medications: LogType[] }> {
+    const params = new URLSearchParams({
+      date,
+      localTime,
+    });
+
     return fetchHTTPClient<{ date: string; medications: LogType[] }>(
-      `/users/${userId}/medications/schedule?date=${date}&localTime=${localTime}`,
+      `/users/${userId}/medications/schedule?${params.toString()}`,
       {
         method: "GET",
         credentials: "include",
