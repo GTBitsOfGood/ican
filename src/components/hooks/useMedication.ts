@@ -12,8 +12,8 @@ export const MEDICATION_QUERY_KEYS = {
   allMedications: (userId: string) => ["medications", userId] as const,
   medication: (medicationId: string) => ["medication", medicationId] as const,
   allSchedules: (userId: string) => ["medicationSchedule", userId] as const,
-  schedule: (userId: string, date: string) =>
-    ["medicationSchedule", userId, date] as const,
+  schedule: (userId: string, date: string, timezoneOffsetMinutes: number) =>
+    ["medicationSchedule", userId, date, timezoneOffsetMinutes] as const,
 } as const;
 
 export const useUserMedications = () => {
@@ -48,9 +48,14 @@ export const useMedication = (medicationId: string | undefined) => {
 
 export const useMedicationSchedule = (date: string, localTime: string) => {
   const { userId } = useUser();
+  const timezoneOffsetMinutes = new Date().getTimezoneOffset();
 
   return useQuery({
-    queryKey: MEDICATION_QUERY_KEYS.schedule(userId || "", date),
+    queryKey: MEDICATION_QUERY_KEYS.schedule(
+      userId || "",
+      date,
+      timezoneOffsetMinutes,
+    ),
     queryFn: () => {
       if (!userId) throw new Error("User ID required");
 
@@ -58,6 +63,7 @@ export const useMedicationSchedule = (date: string, localTime: string) => {
         userId,
         date,
         localTime,
+        timezoneOffsetMinutes,
       );
     },
     enabled: !!userId && !!date,
@@ -137,6 +143,7 @@ export const useMedicationCheckIn = () => {
       userId: string;
       medicationId: string;
       localTime: string;
+      timezoneOffsetMinutes: number;
     }) => MedicationHTTPClient.medicationCheckIn(variables),
     onSettled: () => {
       if (userId) {
@@ -157,6 +164,7 @@ export const useMedicationLog = () => {
       userId: string;
       medicationId: string;
       localTime: string;
+      timezoneOffsetMinutes: number;
     }) => MedicationHTTPClient.medicationLog(variables),
     onSettled: () => {
       if (userId) {

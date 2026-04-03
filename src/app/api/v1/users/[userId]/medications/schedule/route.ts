@@ -19,9 +19,17 @@ export const GET = withAuth<{ userId: string }>(
     const { searchParams } = new URL(req.url);
     const date = searchParams.get("date") as string;
     const localTime = searchParams.get("localTime") as string;
+    const timezoneOffsetMinutes = Number(
+      searchParams.get("timezoneOffsetMinutes") ?? "0",
+    );
 
     const schedule: MedicationSchedule =
-      await MedicationService.getMedicationsSchedule(userId, date, localTime);
+      await MedicationService.getMedicationsSchedule(
+        userId,
+        date,
+        localTime,
+        timezoneOffsetMinutes,
+      );
 
     const headers = cacheControlMiddleware(req);
     return NextResponse.json(schedule, { status: 200, headers });

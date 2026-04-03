@@ -13,8 +13,12 @@ export const POST = withAuth<{ userId: string; medicationId: string }>(
     const { medicationId } = params;
     await verifyMedication(tokenUser, medicationId);
 
-    const { localTime } = await req.json();
-    await MedicationService.createMedicationCheckIn(medicationId, localTime);
+    const { localTime, timezoneOffsetMinutes } = await req.json();
+    await MedicationService.createMedicationCheckIn(
+      medicationId,
+      localTime,
+      timezoneOffsetMinutes,
+    );
 
     return NextResponse.json({}, { status: 201 });
   },

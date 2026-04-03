@@ -417,33 +417,39 @@ export function processDoseTime(
   date: string,
   medicationLogs: MedicationLogDocument[],
   localTime: string,
+  timezoneOffsetMinutes: number = 0,
 ) {
   const [hours, minutes] = time.split(":").map(Number);
   let status: "pending" | "taken" | "missed" = "pending";
   let canCheckIn = false;
 
-  // Parse date string as local date (YYYY-MM-DD format)
-  // If date is "2025-11-17", we want Nov 17 at the given time in LOCAL timezone
+  const now = new Date(localTime);
+  if (Number.isNaN(now.getTime())) {
+    return {
+      status,
+      canCheckIn,
+    };
+  }
+
+  const clientLocalNow = new Date(
+    now.getTime() - timezoneOffsetMinutes * 60 * 1000,
+  );
+
   const dateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
   const doseTime = dateMatch
     ? new Date(
-        parseInt(dateMatch[1]),
-        parseInt(dateMatch[2]) - 1, // Month is 0-indexed
-        parseInt(dateMatch[3]),
-        hours,
-        minutes,
-        0,
-        0,
+        Date.UTC(
+          parseInt(dateMatch[1]),
+          parseInt(dateMatch[2]) - 1,
+          parseInt(dateMatch[3]),
+          hours,
+          minutes,
+          0,
+          0,
+        ) +
+          timezoneOffsetMinutes * 60 * 1000,
       )
-    : new Date(date); // Fallback to original parsing if not in expected format
-
-  // If fallback was used and date was an ISO string, we need to adjust
-  if (!dateMatch) {
-    const offsetMinutes = doseTime.getTimezoneOffset();
-    const utcHour = hours + Math.floor((minutes + offsetMinutes) / 60);
-    const utcMinute = (minutes + offsetMinutes) % 60;
-    doseTime.setUTCHours(utcHour, utcMinute, 0, 0);
-  }
+    : new Date(date);
 
   const matchingLog = medicationLogs.find((log) => {
     const logDate = new Date(log.dateTaken);
@@ -453,17 +459,24 @@ export function processDoseTime(
   if (matchingLog) {
     status = "taken";
   } else {
-    const now = new Date(localTime);
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
+    const currentDate = Date.UTC(
+      clientLocalNow.getUTCFullYear(),
+      clientLocalNow.getUTCMonth(),
+      clientLocalNow.getUTCDate(),
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
+    const givenDate = dateMatch
+      ? Date.UTC(
+          parseInt(dateMatch[1]),
+          parseInt(dateMatch[2]) - 1,
+          parseInt(dateMatch[3]),
+        )
+      : Date.UTC(
+          doseTime.getUTCFullYear(),
+          doseTime.getUTCMonth(),
+          doseTime.getUTCDate(),
+        );
 
-    const givenDate = new Date(date);
-
-    if (currentDate.getTime() === givenDate.getTime()) {
+    if (currentDate === givenDate) {
       canCheckIn =
         Math.abs(now.getTime() - doseTime.getTime()) <= 15 * 60 * 1000;
     }
@@ -483,27 +496,48 @@ export function processUntimedDose(
   date: string,
   medicationLogs: MedicationLogDocument[],
   localTime: string,
+  timezoneOffsetMinutes: number = 0,
 ) {
   const dateMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  const targetDate = dateMatch
-    ? new Date(
+  const now = new Date(localTime);
+  if (Number.isNaN(now.getTime())) {
+    return {
+      status: "pending" as const,
+      canCheckIn: false,
+    };
+  }
+
+  const clientLocalNow = new Date(
+    now.getTime() - timezoneOffsetMinutes * 60 * 1000,
+  );
+  const targetDateNormalized = dateMatch
+    ? Date.UTC(
         parseInt(dateMatch[1]),
         parseInt(dateMatch[2]) - 1,
         parseInt(dateMatch[3]),
-        0,
-        0,
-        0,
-        0,
       )
-    : normalizeToLocalMidnight(new Date(date));
-
-  const targetDateNormalized = normalizeToLocalMidnight(targetDate);
-  const now = new Date(localTime);
-  const todayNormalized = normalizeToLocalMidnight(now);
+    : Date.UTC(
+        clientLocalNow.getUTCFullYear(),
+        clientLocalNow.getUTCMonth(),
+        clientLocalNow.getUTCDate(),
+      );
+  const todayNormalized = Date.UTC(
+    clientLocalNow.getUTCFullYear(),
+    clientLocalNow.getUTCMonth(),
+    clientLocalNow.getUTCDate(),
+  );
 
   const matchingLog = medicationLogs.find((log) => {
-    const logDate = normalizeToLocalMidnight(new Date(log.dateTaken));
-    return logDate.getTime() === targetDateNormalized.getTime();
+    const logDate = new Date(log.dateTaken);
+    const clientLocalLogDate = new Date(
+      logDate.getTime() - timezoneOffsetMinutes * 60 * 1000,
+    );
+    const normalizedLogDate = Date.UTC(
+      clientLocalLogDate.getUTCFullYear(),
+      clientLocalLogDate.getUTCMonth(),
+      clientLocalLogDate.getUTCDate(),
+    );
+    return normalizedLogDate === targetDateNormalized;
   });
 
   if (matchingLog) {
@@ -513,14 +547,14 @@ export function processUntimedDose(
     };
   }
 
-  if (targetDateNormalized.getTime() < todayNormalized.getTime()) {
+  if (targetDateNormalized < todayNormalized) {
     return {
       status: "missed" as const,
       canCheckIn: false,
     };
   }
 
-  if (targetDateNormalized.getTime() > todayNormalized.getTime()) {
+  if (targetDateNormalized > todayNormalized) {
     return {
       status: "pending" as const,
       canCheckIn: false,

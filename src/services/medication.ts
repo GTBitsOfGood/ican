@@ -95,6 +95,7 @@ export default class MedicationService {
   static async createMedicationCheckIn(
     medicationId: string,
     localTime: string,
+    timezoneOffsetMinutes: number = 0,
   ) {
     // Validate parameters
     validateParams({ id: medicationId });
@@ -115,14 +116,10 @@ export default class MedicationService {
     if (Number.isNaN(now.getTime())) {
       throw new IllegalOperationError("Invalid medication timestamp.");
     }
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
+    const clientLocalNow = new Date(
+      now.getTime() - timezoneOffsetMinutes * 60 * 1000,
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
-
-    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const dateString = `${clientLocalNow.getUTCFullYear()}-${String(clientLocalNow.getUTCMonth() + 1).padStart(2, "0")}-${String(clientLocalNow.getUTCDate()).padStart(2, "0")}`;
 
     const canCheckIn =
       existingMedication.includeTimes && existingMedication.doseTimes.length > 0
@@ -132,11 +129,17 @@ export default class MedicationService {
               dateString,
               medicationLogs,
               localTime,
+              timezoneOffsetMinutes,
             );
 
             return canCheckIn;
           })
-        : processUntimedDose(dateString, medicationLogs, localTime).canCheckIn;
+        : processUntimedDose(
+            dateString,
+            medicationLogs,
+            localTime,
+            timezoneOffsetMinutes,
+          ).canCheckIn;
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
@@ -156,7 +159,11 @@ export default class MedicationService {
     MedicationDAO.createMedicationCheckIn(medicationId);
   }
 
-  static async createMedicationLog(medicationId: string, localTime: string) {
+  static async createMedicationLog(
+    medicationId: string,
+    localTime: string,
+    timezoneOffsetMinutes: number = 0,
+  ) {
     // Validate parameters
     validateParams({ id: medicationId });
 
@@ -193,14 +200,10 @@ export default class MedicationService {
     if (Number.isNaN(now.getTime())) {
       throw new IllegalOperationError("Invalid medication timestamp.");
     }
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
+    const clientLocalNow = new Date(
+      now.getTime() - timezoneOffsetMinutes * 60 * 1000,
     );
-    currentDate.setUTCHours(0, 0, 0, 0);
-
-    const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const dateString = `${clientLocalNow.getUTCFullYear()}-${String(clientLocalNow.getUTCMonth() + 1).padStart(2, "0")}-${String(clientLocalNow.getUTCDate()).padStart(2, "0")}`;
 
     const canCheckIn =
       existingMedication.includeTimes && existingMedication.doseTimes.length > 0
@@ -210,11 +213,17 @@ export default class MedicationService {
               dateString,
               medicationLogs,
               localTime,
+              timezoneOffsetMinutes,
             );
 
             return canCheckIn;
           })
-        : processUntimedDose(dateString, medicationLogs, localTime).canCheckIn;
+        : processUntimedDose(
+            dateString,
+            medicationLogs,
+            localTime,
+            timezoneOffsetMinutes,
+          ).canCheckIn;
 
     await MedicationDAO.deleteMedicationCheckIn(medicationId);
 
@@ -257,6 +266,7 @@ export default class MedicationService {
     userId: string,
     date: string,
     localTime: string,
+    timezoneOffsetMinutes: number = 0,
   ) {
     validateGetMedicationsSchedule({ userId, date });
 
@@ -270,14 +280,6 @@ export default class MedicationService {
     if (Number.isNaN(now.getTime())) {
       throw new IllegalOperationError("Invalid medication timestamp.");
     }
-    const currentDate = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-
-    currentDate.setUTCHours(0, 0, 0, 0);
-
     const dateParts = date.split("-");
     const givenDate = new Date(
       parseInt(dateParts[0]),
@@ -310,6 +312,7 @@ export default class MedicationService {
               date,
               medicationLogs,
               localTime,
+              timezoneOffsetMinutes,
             );
 
             allDoses.push({
@@ -332,6 +335,7 @@ export default class MedicationService {
             date,
             medicationLogs,
             localTime,
+            timezoneOffsetMinutes,
           );
           allDoses.push({
             id: medication._id,

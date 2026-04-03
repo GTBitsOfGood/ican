@@ -71,16 +71,18 @@ export default class MedicationHTTPClient {
     userId,
     medicationId,
     localTime,
+    timezoneOffsetMinutes,
   }: {
     userId: string;
     medicationId: string;
     localTime: string;
+    timezoneOffsetMinutes: number;
   }): Promise<void> {
     return fetchHTTPClient<void>(
       `/users/${userId}/medications/${medicationId}/check-in`,
       {
         method: "POST",
-        body: JSON.stringify({ localTime }),
+        body: JSON.stringify({ localTime, timezoneOffsetMinutes }),
         credentials: "include",
       },
     );
@@ -90,13 +92,16 @@ export default class MedicationHTTPClient {
     userId,
     medicationId,
     localTime,
+    timezoneOffsetMinutes,
   }: {
     userId: string;
     medicationId: string;
     localTime: string;
+    timezoneOffsetMinutes: number;
   }): Promise<void> {
     const medicationLogBody = {
       localTime,
+      timezoneOffsetMinutes,
     };
 
     return fetchHTTPClient<void>(
@@ -113,10 +118,12 @@ export default class MedicationHTTPClient {
     userId: string,
     date: string,
     localTime: string,
+    timezoneOffsetMinutes: number,
   ): Promise<{ date: string; medications: LogType[] }> {
     const params = new URLSearchParams({
       date,
       localTime,
+      timezoneOffsetMinutes: String(timezoneOffsetMinutes),
     });
 
     return fetchHTTPClient<{ date: string; medications: LogType[] }>(

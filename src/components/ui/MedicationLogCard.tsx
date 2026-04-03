@@ -61,6 +61,7 @@ export default function MedicationLogCard({
   const isSubmittingTutorialDose =
     shouldUseTutorialFlow &&
     (medicationCheckInMutation.isPending || medicationLogMutation.isPending);
+  const timezoneOffsetMinutes = new Date().getTimezoneOffset();
 
   const hasParentalControls = !!settings?.pin;
 
@@ -116,6 +117,7 @@ export default function MedicationLogCard({
           userId: userId!,
           medicationId: id,
           localTime: new Date().toISOString(),
+          timezoneOffsetMinutes,
         },
         {
           onSuccess: () => {
@@ -143,6 +145,7 @@ export default function MedicationLogCard({
         userId: userId!,
         medicationId: id,
         localTime: new Date().toISOString(),
+        timezoneOffsetMinutes,
       },
       {
         onSuccess: () => {
@@ -170,6 +173,7 @@ export default function MedicationLogCard({
         userId: userId!,
         medicationId: id,
         localTime: new Date().toISOString(),
+        timezoneOffsetMinutes,
       },
       {
         onSuccess: () => {
