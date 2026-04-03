@@ -328,7 +328,22 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
-    const handleKeyPress = () => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.repeat) {
+        return;
+      }
+
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName;
+      if (
+        tagName === "INPUT" ||
+        tagName === "TEXTAREA" ||
+        tagName === "SELECT" ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+
       const dialogues = TUTORIAL_DIALOGUES[portion];
       if (!dialogues?.length) {
         return;
