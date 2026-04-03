@@ -10,6 +10,7 @@ export enum GameName {
   HANGMAN = "HANGMAN",
   TRIVIA = "TRIVIA",
   TIC_TAC_TOE = "TIC_TAC_TOE",
+  FLAPPY_BIRD = "FLAPPY_BIRD",
 }
 
 export enum GameResult {
@@ -22,9 +23,17 @@ export interface GameStats {
   wins: number;
   losses: number;
   draws: number;
-  bestWinStreak: number;
-  currentWinStreak: number;
+  currentStreak: number;
+  bestStreak: number;
+  lastPlayedDate: string | null;
   lastTenResults: GameResult[];
 }
 
 export type GameStatistics = Partial<Record<GameName, GameStats>>;
+
+export const DAILY_COIN_LIMIT = 100;
+
+export interface GameStatisticsResponse {
+  stats: GameStatistics;
+  coinsEarnedToday: number;
+}

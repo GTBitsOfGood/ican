@@ -11,9 +11,8 @@ export interface User {
   provider: string;
   isOnboarded?: boolean;
   tutorial_completed?: boolean;
-  gameStreakDays?: number;
   gameCoinsEarnedToday?: number;
-  gameLastPlayDate?: Date | null;
+  gameCoinsLastResetDate?: Date | null;
   gameStatistics?: Map<string, GameStats>;
 }
 
@@ -36,9 +35,8 @@ const userSchema = new Schema<UserDocument>(
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
     tutorial_completed: { type: Boolean, required: false, default: false },
-    gameStreakDays: { type: Number, required: false, default: 0 },
     gameCoinsEarnedToday: { type: Number, required: false, default: 0 },
-    gameLastPlayDate: { type: Date, required: false, default: null },
+    gameCoinsLastResetDate: { type: Date, required: false, default: null },
     gameStatistics: {
       type: Map,
       of: new Schema<GameStats>(
@@ -46,8 +44,9 @@ const userSchema = new Schema<UserDocument>(
           wins: { type: Number, default: 0 },
           losses: { type: Number, default: 0 },
           draws: { type: Number, default: 0 },
-          bestWinStreak: { type: Number, default: 0 },
-          currentWinStreak: { type: Number, default: 0 },
+          currentStreak: { type: Number, default: 0 },
+          bestStreak: { type: Number, default: 0 },
+          lastPlayedDate: { type: String, default: null },
           lastTenResults: {
             type: [{ type: String, enum: Object.values(GameResult) }],
             default: [],
