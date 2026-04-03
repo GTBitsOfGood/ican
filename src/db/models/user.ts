@@ -1,11 +1,8 @@
 import { Document, model, models, Schema, Types } from "mongoose";
 import {
   ChildPasswordType,
-  TUTORIAL_MODES,
-  TUTORIAL_STATES,
-  TutorialMedicationType,
-  TutorialMode,
-  TutorialState,
+  INITIAL_TUTORIAL_STAGES,
+  InitialTutorialStage,
 } from "@/types/user";
 import { GameResult, GameStats } from "@/types/games";
 
@@ -17,12 +14,7 @@ export interface User {
   childPasswordType?: ChildPasswordType;
   provider: string;
   isOnboarded?: boolean;
-  tutorial_completed?: boolean;
-  tutorialState?: TutorialState;
-  tutorialMode?: TutorialMode | null;
-  tutorialStep?: number;
-  tutorialMedicationType?: TutorialMedicationType | null;
-  tutorialShouldShowMedicationDrag?: boolean;
+  initialTutorialStage?: InitialTutorialStage;
   gameStreakDays?: number;
   gameCoinsEarnedToday?: number;
   gameLastPlayDate?: Date | null;
@@ -47,30 +39,11 @@ const userSchema = new Schema<UserDocument>(
     },
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
-    tutorial_completed: { type: Boolean, required: false, default: false },
-    tutorialState: {
+    initialTutorialStage: {
       type: String,
       required: false,
       default: "food",
-      enum: TUTORIAL_STATES,
-    },
-    tutorialMode: {
-      type: String,
-      required: false,
-      default: "initial",
-      enum: [...TUTORIAL_MODES, null],
-    },
-    tutorialStep: { type: Number, required: false, default: 0 },
-    tutorialMedicationType: {
-      type: String,
-      required: false,
-      default: null,
-      enum: ["Pill", "Syrup", "Shot", null],
-    },
-    tutorialShouldShowMedicationDrag: {
-      type: Boolean,
-      required: false,
-      default: false,
+      enum: INITIAL_TUTORIAL_STAGES,
     },
     gameStreakDays: { type: Number, required: false, default: 0 },
     gameCoinsEarnedToday: { type: Number, required: false, default: 0 },

@@ -65,7 +65,7 @@ export default class PetService {
     await validateGetPet({ userId });
     const existingPet = await PetDAO.getPetByUserId(userId);
     if (!existingPet) {
-      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
+      return null;
     }
     return { ...existingPet.toObject(), _id: existingPet._id.toString() };
   }

@@ -4,7 +4,7 @@ import ERRORS from "@/utils/errorMessages";
 import { verifyUser } from "@/utils/auth";
 import { withAuth } from "@/utils/withAuth";
 import { UserDocument } from "@/db/models/user";
-import { TUTORIAL_MODES, TUTORIAL_STATES } from "@/types/user";
+import { INITIAL_TUTORIAL_STAGES } from "@/types/user";
 
 export const GET = withAuth<{ userId: string }>(
   async (
@@ -29,87 +29,17 @@ export const PUT = withAuth<{ userId: string }>(
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.USER.NOT_FOUND);
 
-    const {
-      tutorialCompleted,
-      tutorialState,
-      tutorialMode,
-      tutorialStep,
-      tutorialMedicationType,
-      tutorialShouldShowMedicationDrag,
-    } = await req.json();
+    const { initialTutorialStage } = await req.json();
 
-    if (!TUTORIAL_STATES.includes(tutorialState)) {
+    if (!INITIAL_TUTORIAL_STAGES.includes(initialTutorialStage)) {
       return NextResponse.json(
-        { error: "tutorialState must be a valid tutorial stage" },
-        { status: 400 },
-      );
-    }
-
-    if (tutorialMode !== null && !TUTORIAL_MODES.includes(tutorialMode)) {
-      return NextResponse.json(
-        { error: "tutorialMode must be initial, replay, or null" },
-        { status: 400 },
-      );
-    }
-
-    if (
-      tutorialCompleted !== undefined &&
-      typeof tutorialCompleted !== "boolean"
-    ) {
-      return NextResponse.json(
-        { error: "tutorialCompleted must be a boolean when provided" },
-        { status: 400 },
-      );
-    }
-
-    if (tutorialStep !== undefined) {
-      if (
-        typeof tutorialStep !== "number" ||
-        !Number.isInteger(tutorialStep) ||
-        tutorialStep < 0
-      ) {
-        return NextResponse.json(
-          {
-            error: "tutorialStep must be a non-negative integer when provided",
-          },
-          { status: 400 },
-        );
-      }
-    }
-
-    if (
-      tutorialMedicationType !== undefined &&
-      tutorialMedicationType !== null &&
-      tutorialMedicationType !== "Pill" &&
-      tutorialMedicationType !== "Syrup" &&
-      tutorialMedicationType !== "Shot"
-    ) {
-      return NextResponse.json(
-        { error: "tutorialMedicationType must be Pill, Syrup, Shot, or null" },
-        { status: 400 },
-      );
-    }
-
-    if (
-      tutorialShouldShowMedicationDrag !== undefined &&
-      typeof tutorialShouldShowMedicationDrag !== "boolean"
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "tutorialShouldShowMedicationDrag must be a boolean when provided",
-        },
+        { error: "initialTutorialStage must be a valid tutorial stage" },
         { status: 400 },
       );
     }
 
     await UserService.updateTutorialStatus(userId, {
-      tutorialCompleted,
-      tutorialState,
-      tutorialMode,
-      tutorialStep,
-      tutorialMedicationType,
-      tutorialShouldShowMedicationDrag,
+      initialTutorialStage,
     });
     return NextResponse.json({ success: true }, { status: 200 });
   },

@@ -2,12 +2,7 @@ import fetchHTTPClient from "./fetchHTTPClient";
 import { TutorialStatus } from "@/types/user";
 
 export interface UpdateTutorialStatusBody {
-  tutorialCompleted?: boolean;
-  tutorialState: TutorialStatus["tutorialState"];
-  tutorialMode: TutorialStatus["tutorialMode"];
-  tutorialStep?: TutorialStatus["tutorialStep"];
-  tutorialMedicationType?: TutorialStatus["tutorialMedicationType"];
-  tutorialShouldShowMedicationDrag?: TutorialStatus["tutorialShouldShowMedicationDrag"];
+  initialTutorialStage: TutorialStatus["initialTutorialStage"];
 }
 
 export default class UserHTTPClient {

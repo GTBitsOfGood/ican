@@ -16,28 +16,18 @@ export enum LoginType {
   CHILD = "child",
 }
 
-export const TUTORIAL_STATES = [
+export const INITIAL_TUTORIAL_STAGES = [
   "food",
   "medication",
   "feed",
+  "end",
   "complete",
 ] as const;
 
-export type TutorialState = (typeof TUTORIAL_STATES)[number];
-
-export const TUTORIAL_MODES = ["initial", "replay"] as const;
-
-export type TutorialMode = (typeof TUTORIAL_MODES)[number];
-
-export type TutorialMedicationType = "Pill" | "Syrup" | "Shot";
+export type InitialTutorialStage = (typeof INITIAL_TUTORIAL_STAGES)[number];
 
 export interface TutorialStatus {
-  tutorialCompleted: boolean;
-  tutorialState: TutorialState;
-  tutorialMode: TutorialMode | null;
-  tutorialStep: number;
-  tutorialMedicationType: TutorialMedicationType | null;
-  tutorialShouldShowMedicationDrag: boolean;
+  initialTutorialStage: InitialTutorialStage;
 }
 
 export const isPatternChildPasswordType = (

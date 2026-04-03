@@ -181,6 +181,7 @@ export const useMedicationLog = () => {
 export const useUpcomingMedication = () => {
   const tutorial = useTutorial();
   const now = new Date();
+  const nowTime = now.getTime();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
@@ -201,7 +202,7 @@ export const useUpcomingMedication = () => {
   const recentlyTakenMedication = visibleMedications.find((med) => {
     if (med.status !== "taken" || !med.lastTaken) return false;
     const takenTime = new Date(med.lastTaken).getTime();
-    const timeThreshold = Date.now() - 2 * 60 * 1000; // show ts for 2 minutes
+    const timeThreshold = nowTime - 2 * 60 * 1000; // show ts for 2 minutes
     return takenTime > timeThreshold;
   });
 

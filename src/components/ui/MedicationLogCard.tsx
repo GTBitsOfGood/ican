@@ -113,8 +113,13 @@ export default function MedicationLogCard({
         {
           onSuccess: () => {
             setShowConfirmModal(false);
-            tutorial.completeTutorialMedicationStep(formOfMedication);
-            router.push("/");
+            router.push({
+              pathname: "/",
+              query: {
+                tutorialMedicationLogged: "true",
+                tutorialMedicationType: formOfMedication,
+              },
+            });
           },
           onError: (error) => {
             toast.error(
@@ -144,11 +149,6 @@ export default function MedicationLogCard({
   };
 
   const handleMedicationCheckIn = () => {
-    if (shouldUseTutorialFlow) {
-      handleTakeMedicationAction();
-      return;
-    }
-
     medicationCheckInMutation.mutate(
       {
         userId: userId!,

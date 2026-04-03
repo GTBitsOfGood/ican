@@ -9,12 +9,7 @@ import SettingsDAO from "@/db/actions/settings";
 import NotificationDAO from "@/db/actions/notification";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
 import TutorialService from "./tutorial";
-import {
-  TutorialMedicationType,
-  TutorialMode,
-  TutorialState,
-  TutorialStatus,
-} from "@/types/user";
+import { InitialTutorialStage, TutorialStatus } from "@/types/user";
 
 export default class UserService {
   static async deleteUser(userId: string) {
@@ -72,17 +67,12 @@ export default class UserService {
   static async updateTutorialStatus(
     userId: string,
     status: {
-      tutorialCompleted?: boolean;
-      tutorialState: TutorialState;
-      tutorialMode: TutorialMode | null;
-      tutorialStep?: number;
-      tutorialMedicationType?: TutorialMedicationType | null;
-      tutorialShouldShowMedicationDrag?: boolean;
+      initialTutorialStage: InitialTutorialStage;
     },
   ): Promise<void> {
     await UserDAO.updateTutorialStatus(userId, status);
 
-    if (status.tutorialState === "complete" && status.tutorialMode === null) {
+    if (status.initialTutorialStage === "complete") {
       await TutorialService.resetTutorialArtifacts(userId);
     }
   }

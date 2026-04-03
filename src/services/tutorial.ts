@@ -160,7 +160,7 @@ export default class TutorialService {
     hasFedPet: boolean;
   }> {
     const tutorialStatus = await UserDAO.getTutorialStatus(userId);
-    if (tutorialStatus.tutorialCompleted) {
+    if (tutorialStatus.initialTutorialStage === "complete") {
       return {
         hasPurchasedFood: true,
         hasTakenTutorialMedication: true,
@@ -170,7 +170,11 @@ export default class TutorialService {
 
     const petDocument = await PetDAO.getPetByUserId(userId);
     if (!petDocument) {
-      throw new NotFoundError(ERRORS.PET.NOT_FOUND);
+      return {
+        hasPurchasedFood: false,
+        hasTakenTutorialMedication: false,
+        hasFedPet: false,
+      };
     }
 
     const petId = petDocument._id.toString();

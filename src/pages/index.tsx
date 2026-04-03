@@ -84,6 +84,10 @@ export default function Home({
     useState<boolean>(false);
   const [showMedicationSuccessModal, setShowMedicationSuccessModal] =
     useState<boolean>(false);
+  const [showTutorialFoodRewardModal, setShowTutorialFoodRewardModal] =
+    useState<boolean>(false);
+  const [tutorialMedicationRewardType, setTutorialMedicationRewardType] =
+    useState<"Pill" | "Syrup" | "Shot" | null>(null);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
@@ -103,6 +107,13 @@ export default function Home({
       router.query.medicationType === "Syrup" ||
       router.query.medicationType === "Shot")
       ? router.query.medicationType
+      : null;
+  const tutorialLoggedMedicationType =
+    router.query.tutorialMedicationLogged === "true" &&
+    (router.query.tutorialMedicationType === "Pill" ||
+      router.query.tutorialMedicationType === "Syrup" ||
+      router.query.tutorialMedicationType === "Shot")
+      ? router.query.tutorialMedicationType
       : null;
   const [completedMedicationFlow, setCompletedMedicationFlow] =
     useState<boolean>(false);
@@ -162,6 +173,42 @@ export default function Home({
 
     return () => window.clearTimeout(timer);
   }, [activeMedicationFlowStage, activeMedicationFlowType, isTutorial, router]);
+
+  useEffect(() => {
+    if (!tutorialLoggedMedicationType) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setTutorialMedicationRewardType(tutorialLoggedMedicationType);
+      router.replace("/", undefined, { shallow: true });
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [router, tutorialLoggedMedicationType]);
+
+  useEffect(() => {
+    if (
+      !isTutorial ||
+      tutorial.tutorialPortion !== TUTORIAL_PORTIONS.LOG_TUTORIAL ||
+      tutorial.medicationType === null ||
+      tutorial.shouldShowMedicationDrag
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      tutorial.startTutorialMedicationDrag();
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    isTutorial,
+    tutorial.medicationType,
+    tutorial.shouldShowMedicationDrag,
+    tutorial.tutorialPortion,
+    tutorial.startTutorialMedicationDrag,
+  ]);
 
   useEffect(() => {
     if (!completedMedicationFlow) {
@@ -266,8 +313,11 @@ export default function Home({
     if (!pet) return;
 
     if (isTutorial) {
-      setShowMedicationSuccessModal(true);
-      tutorial.markMedicationDragComplete();
+      setCompletedMedicationFlow(true);
+      setMedicationDistance(null);
+      window.setTimeout(() => {
+        setShowTutorialFoodRewardModal(true);
+      }, 2000);
       return;
     }
 
@@ -307,6 +357,27 @@ export default function Home({
         <SuccessMedicationLogModal
           onModalClose={() => {
             setShowMedicationSuccessModal(false);
+          }}
+        />
+      )}
+      {tutorialMedicationRewardType && (
+        <SuccessMedicationLogModal
+          medicationType={tutorialMedicationRewardType}
+          onModalClose={() => {
+            tutorial.completeTutorialMedicationStep(
+              tutorialMedicationRewardType,
+            );
+            setTutorialMedicationRewardType(null);
+          }}
+        />
+      )}
+      {showTutorialFoodRewardModal && (
+        <SuccessMedicationLogModal
+          message="You have gained food to feed your pet!"
+          onModalClose={() => {
+            setShowTutorialFoodRewardModal(false);
+            setCompletedMedicationFlow(false);
+            tutorial.markMedicationDragComplete();
           }}
         />
       )}
@@ -373,7 +444,7 @@ export default function Home({
             }
             shouldShowMedicationDrag={
               isTutorial
-                ? tutorial.shouldShowMedicationDrag
+                ? tutorial.shouldShowMedicationDrag && !completedMedicationFlow
                 : !!activeMedicationFlowType
             }
             onMedicationDrop={handleMedicationDrop}

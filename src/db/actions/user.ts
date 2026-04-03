@@ -5,58 +5,15 @@ import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
 import {
   ChildPasswordType,
-  TutorialMedicationType,
-  TutorialMode,
-  TutorialState,
+  InitialTutorialStage,
   TutorialStatus,
 } from "@/types/user";
 
 const normalizeTutorialStatus = (
-  user: Pick<
-    User,
-    | "tutorial_completed"
-    | "tutorialState"
-    | "tutorialMode"
-    | "tutorialStep"
-    | "tutorialMedicationType"
-    | "tutorialShouldShowMedicationDrag"
-  >,
+  user: Pick<User, "initialTutorialStage">,
 ): TutorialStatus => {
-  const tutorialCompleted = user.tutorial_completed ?? false;
-  const tutorialStep = user.tutorialStep ?? 0;
-  const tutorialMedicationType = user.tutorialMedicationType ?? null;
-  const tutorialShouldShowMedicationDrag =
-    user.tutorialShouldShowMedicationDrag ?? false;
-
-  if (user.tutorialMode === "replay") {
-    return {
-      tutorialCompleted,
-      tutorialState: user.tutorialState ?? "food",
-      tutorialMode: "replay",
-      tutorialStep,
-      tutorialMedicationType,
-      tutorialShouldShowMedicationDrag,
-    };
-  }
-
-  if (tutorialCompleted) {
-    return {
-      tutorialCompleted: true,
-      tutorialState: "complete",
-      tutorialMode: null,
-      tutorialStep,
-      tutorialMedicationType,
-      tutorialShouldShowMedicationDrag,
-    };
-  }
-
   return {
-    tutorialCompleted: false,
-    tutorialState: user.tutorialState ?? "food",
-    tutorialMode: user.tutorialMode ?? "initial",
-    tutorialStep,
-    tutorialMedicationType,
-    tutorialShouldShowMedicationDrag,
+    initialTutorialStage: user.initialTutorialStage ?? "food",
   };
 };
 
@@ -174,35 +131,15 @@ export default class UserDAO {
   static async updateTutorialStatus(
     id: string | Types.ObjectId,
     status: {
-      tutorialCompleted?: boolean;
-      tutorialState: TutorialState;
-      tutorialMode: TutorialMode | null;
-      tutorialStep?: number;
-      tutorialMedicationType?: TutorialMedicationType | null;
-      tutorialShouldShowMedicationDrag?: boolean;
+      initialTutorialStage: InitialTutorialStage;
     },
   ): Promise<void> {
-    const currentStatus = await this.getTutorialStatus(id);
-    const tutorialCompleted =
-      typeof status.tutorialCompleted === "boolean"
-        ? status.tutorialCompleted
-        : currentStatus.tutorialCompleted;
     const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
     const result = await UserModel.updateOne(
       { _id: _id },
       {
-        tutorial_completed: tutorialCompleted,
-        tutorialState: status.tutorialState,
-        tutorialMode: status.tutorialMode,
-        tutorialStep: status.tutorialStep ?? currentStatus.tutorialStep,
-        tutorialMedicationType:
-          status.tutorialMedicationType !== undefined
-            ? status.tutorialMedicationType
-            : currentStatus.tutorialMedicationType,
-        tutorialShouldShowMedicationDrag:
-          status.tutorialShouldShowMedicationDrag ??
-          currentStatus.tutorialShouldShowMedicationDrag,
+        initialTutorialStage: status.initialTutorialStage,
       },
     );
     if (result.matchedCount === 0) {
@@ -235,9 +172,9 @@ export default class UserDAO {
   ): Promise<TutorialStatus> {
     const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
     await dbConnect();
-    const user = await UserModel.findById(_id).select(
-      "tutorial_completed tutorialState tutorialMode tutorialStep tutorialMedicationType tutorialShouldShowMedicationDrag",
-    );
+    const user = await UserModel.findById(_id)
+      .select("initialTutorialStage")
+      .lean<Pick<User, "initialTutorialStage"> | null>();
     if (!user) {
       throw new Error(ERRORS.USER.NOT_FOUND);
     }

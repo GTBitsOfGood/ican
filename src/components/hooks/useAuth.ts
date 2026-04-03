@@ -169,18 +169,7 @@ export const useUpdateTutorialStatus = () => {
         queryClient.setQueryData<TutorialStatus>(
           USER_QUERY_KEYS.tutorialStatus(userId),
           {
-            tutorialCompleted:
-              status.tutorialCompleted ?? previousStatus.tutorialCompleted,
-            tutorialState: status.tutorialState,
-            tutorialMode: status.tutorialMode,
-            tutorialStep: status.tutorialStep ?? previousStatus.tutorialStep,
-            tutorialMedicationType:
-              status.tutorialMedicationType !== undefined
-                ? status.tutorialMedicationType
-                : previousStatus.tutorialMedicationType,
-            tutorialShouldShowMedicationDrag:
-              status.tutorialShouldShowMedicationDrag ??
-              previousStatus.tutorialShouldShowMedicationDrag,
+            initialTutorialStage: status.initialTutorialStage,
           },
         );
       }

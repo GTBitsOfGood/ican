@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 import { usePet } from "./hooks/usePet";
 import {
   useTutorialStatus,
@@ -23,7 +24,7 @@ import {
   useTutorialProgress,
 } from "./hooks/useTutorial";
 import { calculateXPForLevel } from "@/utils/constants";
-import { TutorialState } from "@/types/user";
+import { InitialTutorialStage } from "@/types/user";
 
 const TUTORIAL_REPLAY_XP_GAIN = 20;
 
@@ -51,6 +52,7 @@ interface TutorialContextType {
   completeTutorialMedicationStep: (
     medicationType?: "Pill" | "Syrup" | "Shot",
   ) => void;
+  startTutorialMedicationDrag: () => void;
   markFoodPurchased: () => void;
   markMedicationDragComplete: () => void;
   markPetFed: () => void;
@@ -60,30 +62,32 @@ interface TutorialContextType {
   isStartingReplay: boolean;
 }
 
-const getStateRank = (tutorialState: TutorialState): number => {
-  switch (tutorialState) {
+const getStateRank = (tutorialStage: InitialTutorialStage): number => {
+  switch (tutorialStage) {
     case "food":
       return 0;
     case "medication":
       return 1;
     case "feed":
       return 2;
-    case "complete":
+    case "end":
       return 3;
+    case "complete":
+      return 4;
   }
 };
 
-const getProgressState = (progress: {
+const getProgressStage = (progress: {
   hasPurchasedFood: boolean;
   hasTakenTutorialMedication: boolean;
   hasFedPet: boolean;
-}): TutorialState => {
+}): InitialTutorialStage => {
   if (progress.hasFedPet) {
-    return "complete";
+    return "end";
   }
 
   if (progress.hasTakenTutorialMedication) {
-    return "feed";
+    return "medication";
   }
 
   if (progress.hasPurchasedFood) {
@@ -93,14 +97,16 @@ const getProgressState = (progress: {
   return "food";
 };
 
-const getPortionForState = (tutorialState: TutorialState): number => {
-  switch (tutorialState) {
+const getPortionForStage = (tutorialStage: InitialTutorialStage): number => {
+  switch (tutorialStage) {
     case "food":
       return TUTORIAL_PORTIONS.FOOD_TUTORIAL;
     case "medication":
       return TUTORIAL_PORTIONS.LOG_TUTORIAL;
     case "feed":
       return TUTORIAL_PORTIONS.FEED_TUTORIAL;
+    case "end":
+      return TUTORIAL_PORTIONS.END_TUTORIAL;
     case "complete":
       return TUTORIAL_PORTIONS.END_TUTORIAL;
   }
@@ -126,8 +132,10 @@ const applyReplayFeedProgress = (session: ReplaySession): ReplaySession => {
   };
 };
 
-const createReplaySession = (tutorialState: TutorialState): ReplaySession => {
-  if (tutorialState === "food") {
+const createReplaySession = (
+  tutorialStage: InitialTutorialStage = "food",
+): ReplaySession => {
+  if (tutorialStage === "food") {
     return {
       replayCoins: 100,
       replayXpLevel: 0,
@@ -136,7 +144,7 @@ const createReplaySession = (tutorialState: TutorialState): ReplaySession => {
     };
   }
 
-  if (tutorialState === "medication" || tutorialState === "feed") {
+  if (tutorialStage === "medication" || tutorialStage === "feed") {
     return {
       replayCoins: 100,
       replayXpLevel: 0,
@@ -160,6 +168,7 @@ const TutorialContext = createContext<TutorialContextType | undefined>(
 export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const router = useRouter();
   const { userId } = useUser();
   const { data: tutorialStatus, isSuccess: tutorialStatusLoaded } =
     useTutorialStatus(userId);
@@ -177,99 +186,103 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   const [replaySession, setReplaySession] = useState<ReplaySession | null>(
     null,
   );
+  const [replayStage, setReplayStage] = useState<InitialTutorialStage | null>(
+    null,
+  );
   const previousStatusKeyRef = useRef<string | null>(null);
+  const pendingInitialStageRef = useRef<InitialTutorialStage | null>(null);
   const updateTutorialStatus = useUpdateTutorialStatus();
   const setupTutorialMedication = useSetupTutorialMedication();
   const resetTutorial = useResetTutorial();
 
+  const initialTutorialStage = tutorialStatus?.initialTutorialStage ?? "food";
+  const isReplay = replayStage !== null;
+  const tutorialStage = replayStage ?? initialTutorialStage;
   const shouldHoldFinalScreen = completionTriggered;
   const isPersistedActive =
-    tutorialStatusLoaded && tutorialStatus.tutorialMode !== null;
-  const isActive = isPersistedActive || shouldHoldFinalScreen;
-  const isReplay = tutorialStatus?.tutorialMode === "replay";
-  const tutorialState = tutorialStatus?.tutorialState ?? "food";
+    tutorialStatusLoaded && initialTutorialStage !== "complete" && !isReplay;
+  const isActive = isReplay || isPersistedActive || shouldHoldFinalScreen;
   const portion = shouldHoldFinalScreen
     ? TUTORIAL_PORTIONS.END_TUTORIAL
-    : getPortionForState(tutorialState);
+    : getPortionForStage(tutorialStage);
 
   useEffect(() => {
-    if (!tutorialStatusLoaded || !tutorialStatus) {
+    if (!tutorialStatusLoaded || !tutorialStatus || isReplay) {
       return;
     }
 
-    if (completionTriggered && tutorialStatus.tutorialMode === null) {
+    if (completionTriggered && tutorialStage === "complete") {
       return;
     }
 
-    const statusKey = [
-      tutorialStatus.tutorialMode ?? "none",
-      tutorialStatus.tutorialState,
-      tutorialStatus.tutorialStep,
-      tutorialStatus.tutorialMedicationType ?? "none",
-      tutorialStatus.tutorialShouldShowMedicationDrag ? "drag" : "nodrag",
-    ].join(":");
+    const statusKey = tutorialStatus.initialTutorialStage;
     if (previousStatusKeyRef.current === statusKey) {
       return;
     }
 
     previousStatusKeyRef.current = statusKey;
-    setTutorialStep(tutorialStatus.tutorialStep);
-    setCompletionTriggered(false);
-    setMedicationType(tutorialStatus.tutorialMedicationType);
-    setShouldShowMedicationDrag(
-      tutorialStatus.tutorialShouldShowMedicationDrag,
-    );
-    setPracticeDose(null);
+    const timeoutId = window.setTimeout(() => {
+      setTutorialStep(0);
+      setCompletionTriggered(false);
+      setMedicationType(null);
+      setShouldShowMedicationDrag(false);
+      setPracticeDose(null);
+    }, 0);
 
-    if (tutorialStatus.tutorialMode === "replay") {
-      setReplaySession((current) => {
-        if (current) {
-          return current;
-        }
-
-        return createReplaySession(tutorialStatus.tutorialState);
-      });
-      return;
-    }
-
-    setReplaySession(null);
-  }, [completionTriggered, tutorialStatus, tutorialStatusLoaded]);
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    completionTriggered,
+    isReplay,
+    tutorialStage,
+    tutorialStatus,
+    tutorialStatusLoaded,
+  ]);
 
   const isInitialTutorial =
-    tutorialStatusLoaded && tutorialStatus.tutorialMode === "initial";
+    tutorialStatusLoaded && initialTutorialStage !== "complete" && !isReplay;
 
-  const { data: tutorialProgress } = useTutorialProgress(
-    isInitialTutorial && tutorialState !== "complete",
-  );
+  const { data: tutorialProgress } = useTutorialProgress(isInitialTutorial);
+
+  useEffect(() => {
+    if (
+      pendingInitialStageRef.current !== null &&
+      tutorialStatus?.initialTutorialStage === pendingInitialStageRef.current
+    ) {
+      pendingInitialStageRef.current = null;
+    }
+  }, [tutorialStatus?.initialTutorialStage]);
 
   useEffect(() => {
     if (
       !userId ||
       !tutorialStatusLoaded ||
       !tutorialStatus ||
-      tutorialStatus.tutorialMode !== "initial" ||
+      isReplay ||
       !tutorialProgress ||
       updateTutorialStatus.isPending
     ) {
       return;
     }
 
-    const targetState = getProgressState(tutorialProgress);
+    const targetStage = getProgressStage(tutorialProgress);
     if (
-      getStateRank(targetState) <= getStateRank(tutorialStatus.tutorialState)
+      getStateRank(targetStage) <=
+      getStateRank(tutorialStatus.initialTutorialStage)
     ) {
       return;
     }
 
+    if (pendingInitialStageRef.current === targetStage) {
+      return;
+    }
+
+    pendingInitialStageRef.current = targetStage;
     updateTutorialStatus.mutate({
       userId,
-      tutorialState: targetState,
-      tutorialMode: "initial",
-      tutorialStep: 0,
-      tutorialMedicationType: null,
-      tutorialShouldShowMedicationDrag: false,
+      initialTutorialStage: targetStage,
     });
   }, [
+    isReplay,
     tutorialProgress,
     tutorialStatus,
     tutorialStatusLoaded,
@@ -280,7 +293,8 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (
       !isActive ||
-      tutorialState !== "medication" ||
+      tutorialStage !== "medication" ||
+      medicationType !== null ||
       shouldShowMedicationDrag ||
       practiceDose ||
       setupTutorialMedication.isPending
@@ -295,14 +309,15 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, [
     isActive,
+    medicationType,
     practiceDose,
     setupTutorialMedication,
     shouldShowMedicationDrag,
-    tutorialState,
+    tutorialStage,
   ]);
 
   useEffect(() => {
-    if (!isActive) {
+    if (!isActive || medicationType !== null || shouldShowMedicationDrag) {
       return;
     }
 
@@ -326,23 +341,11 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         if (isReplay) {
           resetTutorial.mutate(undefined, {
             onSuccess: () => {
-              updateTutorialStatus.mutate(
-                {
-                  userId,
-                  tutorialState: "complete",
-                  tutorialMode: null,
-                  tutorialStep,
-                  tutorialMedicationType: medicationType,
-                  tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
-                },
-                {
-                  onSuccess: () => {
-                    setReplaySession(null);
-                    window.location.assign("/");
-                  },
-                  onError: () => setCompletionTriggered(false),
-                },
-              );
+              setReplaySession(null);
+              setReplayStage(null);
+              setMedicationType(null);
+              setShouldShowMedicationDrag(false);
+              window.location.assign("/");
             },
             onError: (error) => {
               setCompletionTriggered(false);
@@ -359,12 +362,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
         updateTutorialStatus.mutate(
           {
             userId,
-            tutorialCompleted: true,
-            tutorialState: "complete",
-            tutorialMode: null,
-            tutorialStep,
-            tutorialMedicationType: medicationType,
-            tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
+            initialTutorialStage: "complete",
           },
           {
             onSuccess: () => window.location.assign("/"),
@@ -376,19 +374,6 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const persistedStep = Math.min(nextStep, dialogues.length - 1);
       setTutorialStep(persistedStep);
-
-      if (!userId || !tutorialStatus?.tutorialMode) {
-        return;
-      }
-
-      updateTutorialStatus.mutate({
-        userId,
-        tutorialState,
-        tutorialMode: tutorialStatus.tutorialMode,
-        tutorialStep: persistedStep,
-        tutorialMedicationType: medicationType,
-        tutorialShouldShowMedicationDrag: shouldShowMedicationDrag,
-      });
     };
 
     window.addEventListener("keydown", handleKeyPress);
@@ -397,13 +382,12 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     completionTriggered,
     isActive,
     isReplay,
-    portion,
     medicationType,
+    portion,
     resetTutorial,
     shouldShowMedicationDrag,
-    tutorialState,
+    tutorialStage,
     tutorialStep,
-    tutorialStatus?.tutorialMode,
     updateTutorialStatus,
     userId,
   ]);
@@ -437,87 +421,62 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const completeTutorialMedicationStep = useCallback(
     (nextMedicationType: "Pill" | "Syrup" | "Shot" = "Pill") => {
-      if (!isActive || tutorialState !== "medication") {
+      if (!isActive || tutorialStage !== "medication") {
         return;
       }
 
       setMedicationType(nextMedicationType);
-      setShouldShowMedicationDrag(true);
+      setShouldShowMedicationDrag(false);
       setTutorialStep(0);
-
-      if (!userId || !tutorialStatus?.tutorialMode) {
-        return;
-      }
-
-      updateTutorialStatus.mutate({
-        userId,
-        tutorialState: "medication",
-        tutorialMode: tutorialStatus.tutorialMode,
-        tutorialStep: 0,
-        tutorialMedicationType: nextMedicationType,
-        tutorialShouldShowMedicationDrag: true,
-      });
     },
-    [isActive, tutorialState, tutorialStatus, updateTutorialStatus, userId],
+    [isActive, tutorialStage],
   );
 
-  const markFoodPurchased = useCallback(() => {
-    if (!isActive || !userId || tutorialState !== "food") {
+  const startTutorialMedicationDrag = useCallback(() => {
+    if (
+      !isActive ||
+      tutorialStage !== "medication" ||
+      medicationType === null ||
+      shouldShowMedicationDrag
+    ) {
       return;
     }
 
-    const nextMode = isReplay ? "replay" : "initial";
+    setShouldShowMedicationDrag(true);
+  }, [isActive, medicationType, shouldShowMedicationDrag, tutorialStage]);
+
+  const markFoodPurchased = useCallback(() => {
+    if (!isActive || tutorialStage !== "food") {
+      return;
+    }
 
     if (isReplay) {
-      updateTutorialStatus.mutate({
-        userId,
-        tutorialState: "medication",
-        tutorialMode: nextMode,
-        tutorialStep: 0,
-        tutorialMedicationType: null,
-        tutorialShouldShowMedicationDrag: false,
-      });
+      setReplayStage("medication");
+      setTutorialStep(0);
+      setMedicationType(null);
+      setShouldShowMedicationDrag(false);
       return;
     }
 
-    if (setupTutorialMedication.isPending) {
+    if (!userId) {
       return;
     }
 
-    setupTutorialMedication.mutate(undefined, {
-      onSuccess: (tutorialMedication) => {
-        setPracticeDose(tutorialMedication);
-        updateTutorialStatus.mutate({
-          userId,
-          tutorialState: "medication",
-          tutorialMode: "initial",
-          tutorialStep: 0,
-          tutorialMedicationType: null,
-          tutorialShouldShowMedicationDrag: false,
-        });
-      },
-      onError: (error) => {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Failed to prepare the tutorial practice dose.",
-        );
-      },
+    if (pendingInitialStageRef.current === "medication") {
+      return;
+    }
+
+    pendingInitialStageRef.current = "medication";
+    updateTutorialStatus.mutate({
+      userId,
+      initialTutorialStage: "medication",
     });
-  }, [
-    isActive,
-    isReplay,
-    setupTutorialMedication,
-    tutorialState,
-    updateTutorialStatus,
-    userId,
-  ]);
+  }, [isActive, isReplay, tutorialStage, updateTutorialStatus, userId]);
 
   const markMedicationDragComplete = useCallback(() => {
     if (
       !isActive ||
-      !userId ||
-      tutorialState !== "medication" ||
+      tutorialStage !== "medication" ||
       !shouldShowMedicationDrag
     ) {
       return;
@@ -526,45 +485,65 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     setPracticeDose(null);
     setMedicationType(null);
     setShouldShowMedicationDrag(false);
+    setTutorialStep(0);
+
+    if (isReplay) {
+      setReplayStage("feed");
+      return;
+    }
+
+    if (!userId) {
+      return;
+    }
+
+    if (pendingInitialStageRef.current === "feed") {
+      return;
+    }
+
+    pendingInitialStageRef.current = "feed";
     updateTutorialStatus.mutate({
       userId,
-      tutorialState: "feed",
-      tutorialMode: isReplay ? "replay" : "initial",
-      tutorialStep: 0,
-      tutorialMedicationType: null,
-      tutorialShouldShowMedicationDrag: false,
+      initialTutorialStage: "feed",
     });
   }, [
     isActive,
     isReplay,
     shouldShowMedicationDrag,
-    tutorialState,
+    tutorialStage,
     updateTutorialStatus,
     userId,
   ]);
 
   const markPetFed = useCallback(() => {
-    if (!isActive || !userId || tutorialState !== "feed") {
+    if (!isActive || tutorialStage !== "feed") {
       return;
     }
 
     if (isReplay) {
       setReplaySession((current) =>
-        current
-          ? applyReplayFeedProgress(current)
-          : createReplaySession("complete"),
+        current ? applyReplayFeedProgress(current) : createReplaySession("end"),
       );
+      setReplayStage("end");
+      setTutorialStep(0);
+      setMedicationType(null);
+      setShouldShowMedicationDrag(false);
+      return;
     }
 
+    if (!userId) {
+      return;
+    }
+
+    if (pendingInitialStageRef.current === "end") {
+      return;
+    }
+
+    pendingInitialStageRef.current = "end";
     updateTutorialStatus.mutate({
       userId,
-      tutorialState: "complete",
-      tutorialMode: isReplay ? "replay" : "initial",
-      tutorialStep: 0,
-      tutorialMedicationType: null,
-      tutorialShouldShowMedicationDrag: false,
+      initialTutorialStage: "end",
     });
-  }, [isActive, isReplay, tutorialState, updateTutorialStatus, userId]);
+  }, [isActive, isReplay, tutorialStage, updateTutorialStatus, userId]);
 
   const purchaseReplayFood = useCallback(
     (foodName: string, cost: number) => {
@@ -618,19 +597,11 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       await resetTutorial.mutateAsync(undefined);
       setReplaySession(createReplaySession("food"));
-      updateTutorialStatus.mutate(
-        {
-          userId,
-          tutorialState: "food",
-          tutorialMode: "replay",
-          tutorialStep: 0,
-          tutorialMedicationType: null,
-          tutorialShouldShowMedicationDrag: false,
-        },
-        {
-          onSuccess: () => window.location.assign("/"),
-        },
-      );
+      setReplayStage("food");
+      setTutorialStep(0);
+      setMedicationType(null);
+      setShouldShowMedicationDrag(false);
+      router.push("/");
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -638,11 +609,15 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
           : "Failed to reset tutorial progress.",
       );
     }
-  }, [resetTutorial, updateTutorialStatus, userId]);
+  }, [resetTutorial, router, userId]);
 
   const getTutorialText = useCallback(() => {
     if (shouldShowMedicationDrag) {
       return "Feed me the medicine!";
+    }
+
+    if (tutorialStage === "medication" && medicationType) {
+      return "Great job taking your medication {userName}! Now it's time for mine!";
     }
 
     const dialogues = TUTORIAL_DIALOGUES[portion];
@@ -660,6 +635,8 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     portion,
     realPet?.name,
     shouldShowMedicationDrag,
+    medicationType,
+    tutorialStage,
     tutorialStep,
     userProfile?.name,
   ]);
@@ -680,6 +657,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       medicationType,
       shouldShowMedicationDrag,
       completeTutorialMedicationStep,
+      startTutorialMedicationDrag,
       markFoodPurchased,
       markMedicationDragComplete,
       markPetFed,
@@ -705,6 +683,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       resetTutorial.isPending,
       shouldEnlargeButton,
       shouldShowMedicationDrag,
+      startTutorialMedicationDrag,
       startReplay,
       tutorialStep,
     ],
