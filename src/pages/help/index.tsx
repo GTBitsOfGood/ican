@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { Plus, Minus } from "lucide-react";
 import Image from "next/image";
+import { useTutorial } from "@/components/TutorialContext";
 
 export default function HelpPage() {
   const [openIndices, setOpenIndices] = useState<number[]>([]);
 
   const router = useRouter();
+  const tutorial = useTutorial();
   const handleBackIcon = () => {
     router.push("/");
   };
@@ -80,7 +82,17 @@ export default function HelpPage() {
               onClick={handleBackIcon}
             />
           </button>
-          <h1 className="text-white text-6xl font-bold">Help</h1>
+          <div className="flex flex-1 items-center justify-between gap-4">
+            <h1 className="text-white text-6xl font-bold">Help</h1>
+            <button
+              type="button"
+              onClick={tutorial.startReplay}
+              disabled={tutorial.isStartingReplay}
+              className="bg-[#2d3461] px-6 py-4 text-2xl font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {tutorial.isStartingReplay ? "Starting..." : "Replay Tutorial"}
+            </button>
+          </div>
         </div>
 
         <div className="bg-[#c5cde8] border-8 border-[#7177AC] rounded-none overflow-hidden">

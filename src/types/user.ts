@@ -16,6 +16,20 @@ export enum LoginType {
   CHILD = "child",
 }
 
+export const INITIAL_TUTORIAL_STAGES = [
+  "food",
+  "medication",
+  "feed",
+  "end",
+  "complete",
+] as const;
+
+export type InitialTutorialStage = (typeof INITIAL_TUTORIAL_STAGES)[number];
+
+export interface TutorialStatus {
+  initialTutorialStage: InitialTutorialStage;
+}
+
 export const isPatternChildPasswordType = (
   value: ChildPasswordType | null | undefined,
 ): value is

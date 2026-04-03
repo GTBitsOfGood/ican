@@ -39,17 +39,20 @@ export default function Onboard() {
   useEffect(() => {
     if (router.isReady) {
       const { step, userType: urlUserType } = router.query;
+      const timeoutId = window.setTimeout(() => {
+        if (
+          typeof step === "string" &&
+          Object.values(OnboardingStep).includes(step as OnboardingStep)
+        ) {
+          setCurrentStep(step as OnboardingStep);
+        }
 
-      if (
-        typeof step === "string" &&
-        Object.values(OnboardingStep).includes(step as OnboardingStep)
-      ) {
-        setCurrentStep(step as OnboardingStep);
-      }
+        if (urlUserType === "parent" || urlUserType === "child") {
+          setUserType(urlUserType);
+        }
+      }, 0);
 
-      if (urlUserType === "parent" || urlUserType === "child") {
-        setUserType(urlUserType);
-      }
+      return () => window.clearTimeout(timeoutId);
     }
   }, [router.isReady, router.query]);
 

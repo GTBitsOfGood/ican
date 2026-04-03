@@ -11,16 +11,31 @@ export default class GameStatisticsService {
     gameName: GameName,
     result: GameResult,
     score?: number,
-  ): Promise<void> {
+  ): Promise<{ coinsEarnedToday: number }> {
     validateRecordGameResult({ userId, gameName, result, score });
 
     await GameStatisticsDAO.recordGameResult(userId, gameName, result, score);
+
+    const coinsEarnedToday =
+      result === GameResult.WIN
+        ? await GameStatisticsDAO.awardGameCoins(userId)
+        : await GameStatisticsDAO.getDailyCoinsEarned(userId);
+
+    return { coinsEarnedToday };
   }
 
-  static async getGameStatistics(userId: string): Promise<GameStatistics> {
+  static async getGameStatistics(
+    userId: string,
+  ): Promise<{ stats: GameStatistics; coinsEarnedToday: number }> {
     validateGetGameStatistics({ userId });
 
     const statsMap = await GameStatisticsDAO.getGameStatistics(userId);
-    return Object.fromEntries(statsMap) as GameStatistics;
+    const coinsEarnedToday =
+      await GameStatisticsDAO.getDailyCoinsEarned(userId);
+
+    return {
+      stats: Object.fromEntries(statsMap) as GameStatistics,
+      coinsEarnedToday,
+    };
   }
 }

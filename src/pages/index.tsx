@@ -18,8 +18,6 @@ import LevelUpModal from "@/components/modals/LevelUpModal";
 import SuccessMedicationLogModal from "@/components/modals/SuccessMedicationLogModal";
 import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
-import { useTutorialStatus } from "@/components/hooks/useAuth";
-import { useUser } from "@/components/UserContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import storeItems from "@/lib/storeItems";
 import { useEnsureStarterKit } from "@/components/hooks/useTutorial";
@@ -27,28 +25,57 @@ import { useUpcomingMedication } from "@/components/hooks/useMedication";
 import { usePetEmotion } from "@/components/hooks/usePetEmotion";
 import { formatMedicationTime } from "@/utils/medicationDisplay";
 import { useRouter } from "next/router";
+import { usePetFoods } from "@/components/hooks/useInventory";
 
 interface HomeProps {
   activeModal: string;
   foods?: string[];
 }
 
+const TUTORIAL_XP_GAIN = 20;
+
 export default function Home({
   activeModal = "",
   foods = undefined,
 }: HomeProps) {
   const router = useRouter();
-  const { userId } = useUser();
-  const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const isTutorial = !tutorialCompleted;
+  const tutorial = useTutorial();
+  const isTutorial = tutorial.isActive;
+  const initialTutorialDisplayExp =
+    isTutorial &&
+    !tutorial.isReplay &&
+    tutorial.tutorialPortion >= TUTORIAL_PORTIONS.END_TUTORIAL
+      ? TUTORIAL_XP_GAIN
+      : 0;
 
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
-  const tutorial = useTutorial();
   const ensureStarterKitMutation = useEnsureStarterKit();
 
   const pet = realPetData.data;
+  const displayCoins =
+    pet && isTutorial && tutorial.isReplay
+      ? (tutorial.replayCoins ?? 100)
+      : (pet?.coins ?? 0);
+  const displayLevel =
+    pet && isTutorial
+      ? tutorial.isReplay
+        ? tutorial.replayXpLevel
+        : 0
+      : (pet?.xpLevel ?? 0);
+  const displayCurrentExp =
+    pet && isTutorial
+      ? tutorial.isReplay
+        ? tutorial.replayXpGained
+        : initialTutorialDisplayExp
+      : (pet?.xpGained ?? 0);
   const feedPetMutation = realFeedPet;
+  const { data: tutorialBagFoods = [] } = usePetFoods(
+    pet && isTutorial && !tutorial.isReplay ? pet._id : undefined,
+  );
+  const tutorialFoods = tutorial.isReplay
+    ? tutorial.replayFoods
+    : tutorialBagFoods;
   const petEmotion = usePetEmotion(pet?.lastFedAt);
 
   const [showLevelUpModalVisible, setShowLevelUpModalVisible] =
@@ -57,6 +84,10 @@ export default function Home({
     useState<boolean>(false);
   const [showMedicationSuccessModal, setShowMedicationSuccessModal] =
     useState<boolean>(false);
+  const [showTutorialFoodRewardModal, setShowTutorialFoodRewardModal] =
+    useState<boolean>(false);
+  const [tutorialMedicationRewardType, setTutorialMedicationRewardType] =
+    useState<"Pill" | "Syrup" | "Shot" | null>(null);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
@@ -76,6 +107,13 @@ export default function Home({
       router.query.medicationType === "Syrup" ||
       router.query.medicationType === "Shot")
       ? router.query.medicationType
+      : null;
+  const tutorialLoggedMedicationType =
+    router.query.tutorialMedicationLogged === "true" &&
+    (router.query.tutorialMedicationType === "Pill" ||
+      router.query.tutorialMedicationType === "Syrup" ||
+      router.query.tutorialMedicationType === "Shot")
+      ? router.query.tutorialMedicationType
       : null;
   const [completedMedicationFlow, setCompletedMedicationFlow] =
     useState<boolean>(false);
@@ -137,6 +175,42 @@ export default function Home({
   }, [activeMedicationFlowStage, activeMedicationFlowType, isTutorial, router]);
 
   useEffect(() => {
+    if (!tutorialLoggedMedicationType) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setTutorialMedicationRewardType(tutorialLoggedMedicationType);
+      router.replace("/", undefined, { shallow: true });
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [router, tutorialLoggedMedicationType]);
+
+  useEffect(() => {
+    if (
+      !isTutorial ||
+      tutorial.tutorialPortion !== TUTORIAL_PORTIONS.LOG_TUTORIAL ||
+      tutorial.medicationType === null ||
+      tutorial.shouldShowMedicationDrag
+    ) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      tutorial.startTutorialMedicationDrag();
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    isTutorial,
+    tutorial.medicationType,
+    tutorial.shouldShowMedicationDrag,
+    tutorial.tutorialPortion,
+    tutorial.startTutorialMedicationDrag,
+  ]);
+
+  useEffect(() => {
     if (!completedMedicationFlow) {
       return;
     }
@@ -150,6 +224,21 @@ export default function Home({
 
   const handleFoodDrop = async () => {
     if (!pet) return;
+
+    if (isTutorial) {
+      if (tutorial.isReplay && selectedFood) {
+        tutorial.consumeReplayFood(selectedFood);
+      }
+      tutorial.markPetFed();
+      setHearts(true);
+      setTimeout(() => {
+        setHearts(false);
+        setShowSuccessModalVisible(true);
+      }, 2000);
+      setSelectedFood("");
+      return;
+    }
+
     if (distance == null || distance > 150) return;
     if (feeding) return;
 
@@ -222,14 +311,17 @@ export default function Home({
 
   const handleMedicationDrop = async () => {
     if (!pet) return;
-    if (medicationDistance == null || medicationDistance > 150) return;
 
     if (isTutorial) {
-      setShowMedicationSuccessModal(true);
-      tutorial.clearMedicationDrag();
-      tutorial.advanceToPortion(TUTORIAL_PORTIONS.FEED_TUTORIAL);
+      setCompletedMedicationFlow(true);
+      setMedicationDistance(null);
+      window.setTimeout(() => {
+        setShowTutorialFoodRewardModal(true);
+      }, 2000);
       return;
     }
+
+    if (medicationDistance == null || medicationDistance > 150) return;
 
     if (!activeMedicationFlowType) return;
 
@@ -248,16 +340,16 @@ export default function Home({
       {showLevelUpModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
-          level={pet?.xpLevel}
-          xp={pet?.xpGained}
+          level={displayLevel}
+          xp={displayCurrentExp}
           levelChanged={true}
         />
       )}
       {showSuccessModalVisible && (
         <LevelUpModal
           setVisible={setShowLevelUpModalVisible}
-          level={pet?.xpLevel}
-          xp={pet?.xpGained}
+          level={displayLevel}
+          xp={displayCurrentExp}
           levelChanged={false}
         />
       )}
@@ -265,6 +357,27 @@ export default function Home({
         <SuccessMedicationLogModal
           onModalClose={() => {
             setShowMedicationSuccessModal(false);
+          }}
+        />
+      )}
+      {tutorialMedicationRewardType && (
+        <SuccessMedicationLogModal
+          medicationType={tutorialMedicationRewardType}
+          onModalClose={() => {
+            tutorial.completeTutorialMedicationStep(
+              tutorialMedicationRewardType,
+            );
+            setTutorialMedicationRewardType(null);
+          }}
+        />
+      )}
+      {showTutorialFoodRewardModal && (
+        <SuccessMedicationLogModal
+          message="You have gained food to feed your pet!"
+          onModalClose={() => {
+            setShowTutorialFoodRewardModal(false);
+            setCompletedMedicationFlow(false);
+            tutorial.markMedicationDragComplete();
           }}
         />
       )}
@@ -281,9 +394,9 @@ export default function Home({
             {/* Profile */}
             <ProfileHeader
               petType={pet.petType}
-              level={pet.xpLevel}
-              coins={pet.coins}
-              currentExp={pet.xpGained}
+              level={displayLevel}
+              coins={displayCoins}
+              currentExp={displayCurrentExp}
             />
             {/* Side Bar */}
             <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
@@ -297,6 +410,7 @@ export default function Home({
           </div>
           {/* Navbar - VH Scaling */}
           <Navbar>
+            <NavButton buttonType="games" />
             <NavButton
               buttonType="store"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}
@@ -306,7 +420,15 @@ export default function Home({
               buttonType="log"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
             />
-            <FeedButton active={pet.food > 0} />
+            <FeedButton
+              active={
+                isTutorial
+                  ? tutorial.tutorialPortion ===
+                      TUTORIAL_PORTIONS.FEED_TUTORIAL &&
+                    tutorialFoods.length > 0
+                  : pet.food > 0
+              }
+            />
           </Navbar>
           {/* Character, speech bubble and food image is made relative to the image */}
           <PetDisplay
@@ -323,7 +445,7 @@ export default function Home({
             }
             shouldShowMedicationDrag={
               isTutorial
-                ? tutorial.shouldShowMedicationDrag
+                ? tutorial.shouldShowMedicationDrag && !completedMedicationFlow
                 : !!activeMedicationFlowType
             }
             onMedicationDrop={handleMedicationDrop}

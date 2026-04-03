@@ -8,6 +8,19 @@ export interface TutorialProgress {
   hasFedPet: boolean;
 }
 
+export interface ResetTutorialBody {
+  restorePetState?: Pick<
+    Pet,
+    "coins" | "xpGained" | "xpLevel" | "food" | "lastFedAt"
+  > | null;
+  setCoins?: number | null;
+}
+
+export interface TutorialMedicationSetup {
+  medicationId: string;
+  scheduledDoseTime: string;
+}
+
 export default class TutorialHTTPClient {
   static async getTutorialProgress(): Promise<TutorialProgress> {
     return fetchHTTPClient<TutorialProgress>("/tutorial/progress", {
@@ -16,8 +29,8 @@ export default class TutorialHTTPClient {
     });
   }
 
-  static async setupTutorialMedication(): Promise<{ medicationId: string }> {
-    return fetchHTTPClient<{ medicationId: string }>("/tutorial/medication", {
+  static async setupTutorialMedication(): Promise<TutorialMedicationSetup> {
+    return fetchHTTPClient<TutorialMedicationSetup>("/tutorial/medication", {
       method: "PUT",
       credentials: "include",
       body: JSON.stringify({}),
@@ -29,6 +42,16 @@ export default class TutorialHTTPClient {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({}),
+    });
+  }
+
+  static async resetTutorial(
+    body: ResetTutorialBody = {},
+  ): Promise<{ success: boolean }> {
+    return fetchHTTPClient<{ success: boolean }>("/tutorial/reset", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(body),
     });
   }
 }

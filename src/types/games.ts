@@ -23,10 +23,18 @@ export interface GameStats {
   wins: number;
   losses: number;
   draws: number;
-  bestWinStreak: number;
-  currentWinStreak: number;
+  currentStreak: number;
+  bestStreak: number;
+  lastPlayedDate: string | null;
   lastTenResults: GameResult[];
   highScore?: number; // flappy bird is score-based
 }
 
 export type GameStatistics = Partial<Record<GameName, GameStats>>;
+
+export const DAILY_COIN_LIMIT = 100;
+
+export interface GameStatisticsResponse {
+  stats: GameStatistics;
+  coinsEarnedToday: number;
+}

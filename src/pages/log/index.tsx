@@ -2,16 +2,21 @@ import AuthorizedRoute from "@/components/AuthorizedRoute";
 import BackButton from "@/components/ui/BackButton";
 import { useMedicationSchedule } from "@/components/hooks/useMedication";
 import MedicationLogCard from "@/components/ui/MedicationLogCard";
+import { useTutorial } from "@/components/TutorialContext";
 import { LogType } from "@/types/log";
 import { humanizeDate, humanizeDateComparison } from "@/utils/date";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { isNextDay, isPastDay, isSameDay, standardizeTime } from "@/utils/time";
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
+const TUTORIAL_MEDICATION_NAME = "PRACTICE DOSE";
+
 export default function Log() {
   const [currDate, setCurrDate] = useState<Date>(new Date());
   const router = useRouter();
+  const tutorial = useTutorial();
 
   const getDateString = (date: Date, offset: number) => {
     const newDate = new Date(date);
@@ -23,27 +28,52 @@ export default function Log() {
   };
 
   const localTime = new Date().toLocaleString();
+  const activeDate = getDateString(currDate, 0);
 
-  const { data: yesterdayData } = useMedicationSchedule(
-    getDateString(currDate, -1),
-    localTime,
-  );
+  const { data: scheduleData } = useMedicationSchedule(activeDate, localTime);
+  const currentDayData = scheduleData || { date: "", medications: [] };
 
-  const { data: todayData } = useMedicationSchedule(
-    getDateString(currDate, 0),
-    localTime,
-  );
+  const normalTodayMeds = tutorial.isActive
+    ? currentDayData.medications
+    : currentDayData.medications.filter(
+        (med) => med.name !== TUTORIAL_MEDICATION_NAME,
+      );
 
-  const { data: tomorrowData } = useMedicationSchedule(
-    getDateString(currDate, 1),
-    localTime,
-  );
+  const fallbackPracticeDose =
+    tutorial.isActive &&
+    isSameDay(currDate) &&
+    tutorial.tutorialPortion === TUTORIAL_PORTIONS.LOG_TUTORIAL &&
+    !tutorial.shouldShowMedicationDrag &&
+    tutorial.practiceDose
+      ? [
+          {
+            id: tutorial.practiceDose.medicationId,
+            name: TUTORIAL_MEDICATION_NAME,
+            formOfMedication: "Pill" as const,
+            dosage: "0 pills",
+            notes: "practice dose",
+            scheduledDoseTime: tutorial.practiceDose.scheduledDoseTime,
+            includeTimes: true,
+            canCheckIn: true,
+            status: "pending" as const,
+            lastTaken: "",
+            repeatUnit: "days" as const,
+            repeatInterval: 1,
+          },
+        ]
+      : [];
 
-  const data = {
-    yesterday: yesterdayData || { date: "", medications: [] },
-    today: todayData || { date: "", medications: [] },
-    tomorrow: tomorrowData || { date: "", medications: [] },
-  };
+  const tutorialOnlyTodayMeds =
+    tutorial.isActive &&
+    currDate.toDateString() === new Date().toDateString() &&
+    tutorial.tutorialPortion >= TUTORIAL_PORTIONS.LOG_TUTORIAL
+      ? (() => {
+          const tutorialMeds = currentDayData.medications.filter(
+            (med) => med.name === TUTORIAL_MEDICATION_NAME,
+          );
+          return tutorialMeds.length > 0 ? tutorialMeds : fallbackPracticeDose;
+        })()
+      : normalTodayMeds;
 
   const handlePrev = () => {
     const newDate = new Date(currDate);
@@ -57,10 +87,8 @@ export default function Log() {
     setCurrDate(newDate);
   };
 
-  const sortLogs = (day: "yesterday" | "today" | "tomorrow") => {
-    if (!data[day]) return [];
-
-    return [...data[day].medications].sort((a, b) => {
+  const sortLogs = (medications: LogType[]) => {
+    return [...medications].sort((a, b) => {
       const aTime = standardizeTime(a.scheduledDoseTime);
       const bTime = standardizeTime(b.scheduledDoseTime);
 
@@ -71,10 +99,8 @@ export default function Log() {
     });
   };
 
-  const filterPastDoses = (day: "yesterday" | "today" | "tomorrow") => {
-    if (!data[day]) return [];
-
-    const pastDoses = data[day].medications.filter((med) => {
+  const filterPastDoses = (medications: LogType[]) => {
+    const pastDoses = medications.filter((med) => {
       if (med.status === "missed" || med.status === "taken") {
         return true;
       }
@@ -84,10 +110,8 @@ export default function Log() {
     return pastDoses;
   };
 
-  const filterFutureDoses = (day: "yesterday" | "today" | "tomorrow") => {
-    if (!data[day]) return [];
-
-    const futureDoses = data[day].medications.filter((med) => {
+  const filterFutureDoses = (medications: LogType[]) => {
+    const futureDoses = medications.filter((med) => {
       if (med.status === "pending") {
         return true;
       }
@@ -139,7 +163,7 @@ export default function Log() {
             {isSameDay(currDate) ? (
               <>
                 <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                  {filterFutureDoses("today")?.map(
+                  {filterFutureDoses(tutorialOnlyTodayMeds)?.map(
                     (log: LogType, idx: number) => {
                       return <MedicationLogCard {...log} key={idx} />;
                     },
@@ -150,7 +174,7 @@ export default function Log() {
                     Previous Doses
                   </h1>
                   <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                    {filterPastDoses("today")?.map(
+                    {filterPastDoses(tutorialOnlyTodayMeds)?.map(
                       (log: LogType, idx: number) => {
                         return <MedicationLogCard {...log} key={idx} />;
                       },
@@ -160,25 +184,33 @@ export default function Log() {
               </>
             ) : isNextDay(currDate) ? (
               <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                {sortLogs("tomorrow")?.map((log: LogType, idx: number) => {
-                  // if next day should not be allowed to check in
-                  return (
-                    <MedicationLogCard
-                      {...log}
-                      key={idx}
-                      status="pending"
-                      canCheckIn={false}
-                    />
-                  );
-                })}
+                {sortLogs(currentDayData.medications)?.map(
+                  (log: LogType, idx: number) => {
+                    // if next day should not be allowed to check in
+                    return (
+                      <MedicationLogCard
+                        {...log}
+                        key={idx}
+                        status="pending"
+                        canCheckIn={false}
+                      />
+                    );
+                  },
+                )}
               </div>
             ) : (
               <div className="flex flex-wrap justify-center largeDesktop:justify-start gap-8">
-                {sortLogs("yesterday")?.map((log: LogType, idx: number) => {
-                  return (
-                    <MedicationLogCard {...log} key={idx} canCheckIn={false} />
-                  );
-                })}
+                {sortLogs(currentDayData.medications)?.map(
+                  (log: LogType, idx: number) => {
+                    return (
+                      <MedicationLogCard
+                        {...log}
+                        key={idx}
+                        canCheckIn={false}
+                      />
+                    );
+                  },
+                )}
               </div>
             )}
           </div>

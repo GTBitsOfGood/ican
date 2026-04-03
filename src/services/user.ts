@@ -8,8 +8,8 @@ import BagDAO from "@/db/actions/bag";
 import SettingsDAO from "@/db/actions/settings";
 import NotificationDAO from "@/db/actions/notification";
 import ForgotPasswordCodeDAO from "@/db/actions/forgotPasswordCodes";
-
-const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
+import TutorialService from "./tutorial";
+import { InitialTutorialStage, TutorialStatus } from "@/types/user";
 
 export default class UserService {
   static async deleteUser(userId: string) {
@@ -60,26 +60,20 @@ export default class UserService {
     await UserDAO.updateOnboardingStatus(userId, isOnboarded);
   }
 
-  static async getTutorialStatus(userId: string): Promise<boolean> {
+  static async getTutorialStatus(userId: string): Promise<TutorialStatus> {
     return await UserDAO.getTutorialStatus(userId);
   }
 
   static async updateTutorialStatus(
     userId: string,
-    tutorial_completed: boolean,
+    status: {
+      initialTutorialStage: InitialTutorialStage;
+    },
   ): Promise<void> {
-    await UserDAO.updateTutorialStatus(userId, tutorial_completed);
+    await UserDAO.updateTutorialStatus(userId, status);
 
-    if (tutorial_completed) {
-      const tutorialMedication =
-        await MedicationDAO.getUserMedicationByCustomMedicationId(
-          TUTORIAL_MEDICATION_ID,
-          userId,
-        );
-
-      if (tutorialMedication) {
-        await MedicationDAO.deleteMedicationById(tutorialMedication._id);
-      }
+    if (status.initialTutorialStage === "complete") {
+      await TutorialService.resetTutorialArtifacts(userId);
     }
   }
 

@@ -1,5 +1,9 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import { ChildPasswordType } from "@/types/user";
+import {
+  ChildPasswordType,
+  INITIAL_TUTORIAL_STAGES,
+  InitialTutorialStage,
+} from "@/types/user";
 import { GameResult, GameStats } from "@/types/games";
 
 export interface User {
@@ -10,10 +14,9 @@ export interface User {
   childPasswordType?: ChildPasswordType;
   provider: string;
   isOnboarded?: boolean;
-  tutorial_completed?: boolean;
-  gameStreakDays?: number;
+  initialTutorialStage?: InitialTutorialStage;
   gameCoinsEarnedToday?: number;
-  gameLastPlayDate?: Date | null;
+  gameCoinsLastResetDate?: Date | null;
   gameStatistics?: Map<string, GameStats>;
 }
 
@@ -35,10 +38,14 @@ const userSchema = new Schema<UserDocument>(
     },
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
-    tutorial_completed: { type: Boolean, required: false, default: false },
-    gameStreakDays: { type: Number, required: false, default: 0 },
+    initialTutorialStage: {
+      type: String,
+      required: false,
+      default: "food",
+      enum: INITIAL_TUTORIAL_STAGES,
+    },
     gameCoinsEarnedToday: { type: Number, required: false, default: 0 },
-    gameLastPlayDate: { type: Date, required: false, default: null },
+    gameCoinsLastResetDate: { type: Date, required: false, default: null },
     gameStatistics: {
       type: Map,
       of: new Schema<GameStats>(
@@ -46,8 +53,9 @@ const userSchema = new Schema<UserDocument>(
           wins: { type: Number, default: 0 },
           losses: { type: Number, default: 0 },
           draws: { type: Number, default: 0 },
-          bestWinStreak: { type: Number, default: 0 },
-          currentWinStreak: { type: Number, default: 0 },
+          currentStreak: { type: Number, default: 0 },
+          bestStreak: { type: Number, default: 0 },
+          lastPlayedDate: { type: String, default: null },
           lastTenResults: {
             type: [{ type: String, enum: Object.values(GameResult) }],
             default: [],

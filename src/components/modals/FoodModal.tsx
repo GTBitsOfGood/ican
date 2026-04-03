@@ -11,19 +11,17 @@ import ModalCloseButton from "./ModalCloseButton";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useFood } from "../FoodContext";
-import { usePet } from "../hooks/usePet";
 import { cn } from "@/lib/utils";
 
 export default function FoodModal({ foods }: { foods: string[] }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const router = useRouter();
   const { setSelectedFood } = useFood();
-  const { data: pet } = usePet();
 
   const [clickedFood, setClickedFood] = useState<string>("");
 
   const baseImageUrl = "/foods";
-  const totalFood = pet?.food ?? 0;
+  const totalFood = foods.length;
 
   const handleSelectFood = () => {
     setSelectedFood(clickedFood);

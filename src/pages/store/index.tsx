@@ -12,16 +12,23 @@ import Inventory from "@/components/inventory/Inventory";
 import { SavedOutfit } from "@/db/models/pet";
 import Image from "next/image";
 import { usePetBag, usePurchaseItem } from "@/components/hooks/useInventory";
-import { useTutorialStatus } from "@/components/hooks/useAuth";
-import { useUser } from "@/components/UserContext";
+import { useTutorial } from "@/components/TutorialContext";
 
 export default function Store() {
-  const { userId } = useUser();
-  const { data: tutorialCompleted } = useTutorialStatus(userId);
-  const isTutorial = !tutorialCompleted;
+  const tutorial = useTutorial();
+  const isTutorial = tutorial.isActive;
+  const isReplay = tutorial.isReplay;
 
   const { data: realPet } = usePet();
   const pet = realPet;
+  const effectivePet =
+    pet && isTutorial
+      ? {
+          ...pet,
+          xpLevel: Math.max(pet.xpLevel ?? 0, 1),
+          coins: isReplay ? (tutorial.replayCoins ?? 100) : pet.coins,
+        }
+      : pet;
 
   const { data: realBag } = usePetBag(pet?._id);
   const petBag = realBag;
@@ -48,6 +55,14 @@ export default function Store() {
     if (!pet || !selectedItem || "clothing" in selectedItem) return;
 
     const item = selectedItem as InventoryItem;
+
+    if (isReplay) {
+      tutorial.purchaseReplayFood(item.displayName, item.cost);
+      setShowPurchasedScreen(true);
+      tutorial.markFoodPurchased();
+      return;
+    }
+
     const itemData = {
       petId: pet._id,
       name: item.name,
@@ -58,6 +73,7 @@ export default function Store() {
     purchaseItemMutation.mutate(itemData, {
       onSuccess: () => {
         setShowPurchasedScreen(true);
+        tutorial.markFoodPurchased();
       },
       onError: (error) => {
         console.error("Error purchasing item", error);
@@ -69,7 +85,7 @@ export default function Store() {
 
   return (
     <AuthorizedRoute>
-      {pet && petBag ? (
+      {effectivePet && petBag ? (
         <Inventory
           topView={
             <div className="flex justify-center items-center ml-[31px] p-2 mt-[40px] font-quantico text-black font-bold text-center text-2xl tablet:text-3xl desktop:text-4xl bg-[#E6E8F9] border-[3px] border-black">
@@ -83,7 +99,7 @@ export default function Store() {
                 draggable={false}
                 className="ml-2 w-6 h-6 desktop:w-[38px] desktop:h-[38px] select-none object-contain"
               />
-              <div className="pl-1">{pet.coins}</div>
+              <div className="pl-1">{effectivePet.coins}</div>
             </div>
           }
           outsideClick={(e) => {
@@ -105,7 +121,7 @@ export default function Store() {
           }
           leftPanel={
             <InventoryLeftPanel
-              petData={pet}
+              petData={effectivePet}
               selectedItem={selectedItem}
               button={
                 selectedItem && (
@@ -114,15 +130,16 @@ export default function Store() {
                     disabled={
                       isPurchasing ||
                       !selectedItem ||
-                      pet.coins < (selectedItem as InventoryItem).cost
+                      effectivePet.coins < (selectedItem as InventoryItem).cost
                     }
-                    className={`font-quantico ${selectedItem && pet.coins >= (selectedItem as InventoryItem).cost ? "hover:bg-icanGreen-200" : "!bg-iCAN-error"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
+                    className={`font-quantico ${selectedItem && effectivePet.coins >= (selectedItem as InventoryItem).cost ? "hover:bg-icanGreen-200" : "!bg-iCAN-error"} px-6 py-6 mb-4 desktop:text-4xl tablet:text-3xl font-bold text-white bg-icanBlue-300`}
                     type="button"
                   >
                     {isPurchasing
                       ? "Purchasing..."
                       : selectedItem &&
-                          pet.coins >= (selectedItem as InventoryItem).cost
+                          effectivePet.coins >=
+                            (selectedItem as InventoryItem).cost
                         ? "Purchase"
                         : "Insufficient Funds"}
                   </button>
@@ -133,7 +150,7 @@ export default function Store() {
           tabContainer={
             <InventoryTabContainer
               type="Store"
-              petData={pet}
+              petData={effectivePet}
               data={[
                 ensureValuesArray(storeItems.clothing),
                 ensureValuesArray({
@@ -151,7 +168,11 @@ export default function Store() {
                   .flat()
                   .map((i) => i),
                 petBag?.background || [],
-                petBag?.food || [],
+                isReplay
+                  ? ensureValuesArray(storeItems.food).filter((item) =>
+                      tutorial.replayFoods.includes(item.displayName),
+                    )
+                  : petBag?.food || [],
               ]}
               onSelectTab={() => setSelectedItem(null)}
               selectedItem={selectedItem as InventoryItem}

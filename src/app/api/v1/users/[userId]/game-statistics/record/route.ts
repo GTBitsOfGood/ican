@@ -15,12 +15,12 @@ export const POST = withAuth<{ userId: string }>(
     verifyUser(tokenUser, userId, ERRORS.GAME_STATISTICS.UNAUTHORIZED);
     const { gameName, result, score } = await req.json();
 
-    await GameStatisticsService.recordGameResult(
+    const data = await GameStatisticsService.recordGameResult(
       userId,
       gameName,
       result,
       score,
     );
-    return NextResponse.json({}, { status: 201 });
+    return NextResponse.json(data, { status: 201 });
   },
 );

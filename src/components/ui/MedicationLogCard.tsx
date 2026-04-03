@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
@@ -9,6 +10,7 @@ import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
 import { useTutorial } from "@/components/TutorialContext";
+import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
 import { useMedicationCheckIn, useMedicationLog } from "../hooks/useMedication";
 import { useSettings } from "../hooks/useSettings";
 import { useUser } from "@/components/UserContext";
@@ -23,6 +25,7 @@ export default function MedicationLogCard({
   dosage,
   notes,
   scheduledDoseTime,
+  includeTimes = true,
   canCheckIn,
   status,
   // date as a string
@@ -32,6 +35,14 @@ export default function MedicationLogCard({
   const router = useRouter();
   const tutorial = useTutorial();
   const isTutorialMedication = name === TUTORIAL_MEDICATION_NAME;
+  const tutorialMedicationAlreadyTaken =
+    tutorial.isActive &&
+    isTutorialMedication &&
+    (tutorial.shouldShowMedicationDrag ||
+      tutorial.tutorialPortion > TUTORIAL_PORTIONS.LOG_TUTORIAL);
+  const shouldUseTutorialFlow = tutorial.isActive && isTutorialMedication;
+  const shouldBypassTutorialTiming =
+    shouldUseTutorialFlow && !tutorialMedicationAlreadyTaken;
   const { userId } = useUser();
 
   const [showMissedDoseModal, setShowMissedDoseModal] =
@@ -47,10 +58,17 @@ export default function MedicationLogCard({
   const medicationCheckInMutation = useMedicationCheckIn();
   const medicationLogMutation = useMedicationLog();
   const { data: settings } = useSettings();
+  const isSubmittingTutorialDose =
+    shouldUseTutorialFlow &&
+    (medicationCheckInMutation.isPending || medicationLogMutation.isPending);
 
   const hasParentalControls = !!settings?.pin;
 
   const now = new Date();
+  const effectiveStatus = tutorialMedicationAlreadyTaken ? "taken" : status;
+  const effectiveCanCheckIn =
+    shouldBypassTutorialTiming ||
+    (!tutorialMedicationAlreadyTaken && canCheckIn);
 
   // Create a Date object for today at the scheduled time
   const scheduled = new Date();
@@ -60,6 +78,9 @@ export default function MedicationLogCard({
     hour: "2-digit",
     minute: "2-digit",
   });
+  const displayScheduledTime = includeTimes
+    ? localizedScheduledTime
+    : "All Day";
 
   // Create a Date object for today at the last taken time
   const lastTakenDate = lastTaken ? new Date(lastTaken) : null;
@@ -82,12 +103,7 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = () => {
-    if (isTutorialMedication) {
-      setShowConfirmModal(false);
-      tutorial.handlePracticeDoseLog();
-      tutorial.completePracticeDoseLog();
-      router.push("/");
-    } else {
+    if (shouldUseTutorialFlow) {
       medicationLogMutation.mutate(
         {
           userId: userId!,
@@ -97,19 +113,42 @@ export default function MedicationLogCard({
         {
           onSuccess: () => {
             setShowConfirmModal(false);
-            setShowSuccessModal(true);
+            router.push({
+              pathname: "/",
+              query: {
+                tutorialMedicationLogged: "true",
+                tutorialMedicationType: formOfMedication,
+              },
+            });
+          },
+          onError: (error) => {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Failed to log the practice dose.",
+            );
           },
         },
       );
-    }
-  };
-
-  const handleMedicationCheckIn = () => {
-    if (isTutorialMedication) {
-      setShowConfirmModal(true);
       return;
     }
 
+    medicationLogMutation.mutate(
+      {
+        userId: userId!,
+        medicationId: id,
+        localTime: new Date().toLocaleString("en-us"),
+      },
+      {
+        onSuccess: () => {
+          setShowConfirmModal(false);
+          setShowSuccessModal(true);
+        },
+      },
+    );
+  };
+
+  const handleMedicationCheckIn = () => {
     medicationCheckInMutation.mutate(
       {
         userId: userId!,
@@ -168,7 +207,7 @@ export default function MedicationLogCard({
 
   return (
     <div
-      className={`p-5 flex flex-col justify-between gap-y-4 ${status === "pending" ? "bg-white" : status === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
+      className={`p-5 flex flex-col justify-between gap-y-4 ${effectiveStatus === "pending" ? "bg-white" : effectiveStatus === "taken" ? "bg-[#E6E6E6]" : "bg-[#FEEEEE]"} relative shadow-medicationCardShadow w-[480px] my-5`}
     >
       {showMissedDoseModal && (
         <MissedDoseModal
@@ -215,7 +254,7 @@ export default function MedicationLogCard({
         <div className="flex flex-col gap-y-[16px] font-quantico">
           <h2 className="font-semibold text-black text-3xl">
             Scheduled:{" "}
-            <span className="font-normal">{localizedScheduledTime}</span>
+            <span className="font-normal">{displayScheduledTime}</span>
           </h2>
           <h2 className="font-semibold text-black text-3xl">
             Dosage: <span className="font-normal">{dosage}</span>
@@ -223,7 +262,7 @@ export default function MedicationLogCard({
           <h2 className="font-semibold text-black text-3xl">
             Notes: <span className="font-normal">{notes}</span>
           </h2>
-          {status !== "taken" && (
+          {effectiveStatus !== "taken" && (
             <h2 className="text-icanBlue-200 text-3xl">
               Last Taken: {localizedLastTakenDate}
             </h2>
@@ -231,26 +270,33 @@ export default function MedicationLogCard({
         </div>
       </div>
       <div className="flex flex-col gap-y-2">
-        {status === "pending" && !canCheckIn && (
+        {effectiveStatus === "pending" && !effectiveCanCheckIn && (
           <div className="flex justify-center items-center font-quantico font-bold text-center text-5xl text-icanBlue-300">
             Upcoming
           </div>
         )}
-        {status === "pending" && canCheckIn && (
+        {effectiveStatus === "pending" && effectiveCanCheckIn && (
           <>
-            <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
-              <span className="underline ">{generateTimeLeftFormat()}</span>{" "}
-              Mins Left to Take Dose
-            </h1>
+            {includeTimes && !shouldBypassTutorialTiming ? (
+              <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
+                <span className="underline ">{generateTimeLeftFormat()}</span>{" "}
+                Mins Left to Take Dose
+              </h1>
+            ) : (
+              <h1 className="text-icanBlue-200 font-quantico text-[28px] font-bold">
+                Available Now
+              </h1>
+            )}
             <button
               className="bg-icanGreen-200 border-2 border-solid border-black py-2 w-full text-black font-bold font-quantico text-4xl"
               onClick={handleMedicationCheckIn}
+              disabled={isSubmittingTutorialDose}
             >
-              Take
+              {isSubmittingTutorialDose ? "Taking..." : "Take"}
             </button>
           </>
         )}
-        {status === "missed" && (
+        {effectiveStatus === "missed" && (
           <button
             className="bg-deleteRed border-2 border-solid border-black py-2 w-full text-white font-bold font-quantico text-4xl"
             onClick={toggleMissedDoseModal}
@@ -258,7 +304,7 @@ export default function MedicationLogCard({
             Missed Dose
           </button>
         )}
-        {status === "taken" && (
+        {effectiveStatus === "taken" && (
           <>
             <h3 className="text-[26px] font-quantico text-icanBlue-200 text-center">
               Thanks for taking your medication!
@@ -269,7 +315,7 @@ export default function MedicationLogCard({
           </>
         )}
       </div>
-      {status === "taken" && (
+      {effectiveStatus === "taken" && (
         <Image
           src={"/misc/CheckMark.svg"}
           alt=""
@@ -278,7 +324,7 @@ export default function MedicationLogCard({
           className="absolute right-5 top-12"
         />
       )}
-      {status === "missed" && (
+      {effectiveStatus === "missed" && (
         <Image
           src={"/misc/CrossMark.svg"}
           alt=""

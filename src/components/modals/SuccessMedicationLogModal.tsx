@@ -16,11 +16,13 @@ import {
 interface SuccessMedicationModalProps {
   onModalClose?: () => void;
   medicationType?: "Pill" | "Syrup" | "Shot";
+  message?: string;
 }
 
 export default function SuccessMedicationModal({
   onModalClose,
   medicationType = "Pill",
+  message = "You have gained medicine to give to your pet!",
 }: SuccessMedicationModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -69,7 +71,7 @@ export default function SuccessMedicationModal({
             {medicationIcon}
           </div>
           <div className="flex justify-center text-center text-3xl font-medium font-quantico">
-            You have gained medicine to give to your pet!
+            {message}
           </div>
         </ModalBody>
       </ModalContent>

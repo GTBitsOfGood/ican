@@ -2,10 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { triviaQuestions } from "@/lib/triviaQuestions";
 import QuestionCard from "./QuestionCard";
-import { TriviaQuestion } from "@/types/games";
+import { GameName, GameResult, TriviaQuestion } from "@/types/games";
 import { useUser } from "@/components/UserContext";
-import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
-import GameRewardsService from "@/services/gameRewards";
+import {
+  useGameStatistics,
+  useRecordGameResult,
+} from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 function generateRoundQuestions(): TriviaQuestion[] {
@@ -26,6 +28,8 @@ export default function TriviaGame({
   setWinRewardDetails,
 }: GameWrapperControls) {
   const { userId } = useUser();
+  const { data: gameStatistics } = useGameStatistics(userId);
+  const recordGameResult = useRecordGameResult();
   const [currQuestionIdx, setCurrQuestionIdx] = useState<number>(0);
   const [roundQuestions, setRoundQuestions] = useState<TriviaQuestion[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -58,15 +62,17 @@ export default function TriviaGame({
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true;
-      handleStart();
+      queueMicrotask(() => handleStart());
     }
     if (gameState === GameState.PLAYING) {
-      const newQuestions = generateRoundQuestions();
-      setCurrQuestionIdx(0);
-      setRoundQuestions(newQuestions);
-      setIsSubmitted(false);
-      setSelectedChoiceIdx(null);
-      setSpeechText(newQuestions[0].prompt);
+      queueMicrotask(() => {
+        const newQuestions = generateRoundQuestions();
+        setCurrQuestionIdx(0);
+        setRoundQuestions(newQuestions);
+        setIsSubmitted(false);
+        setSelectedChoiceIdx(null);
+        setSpeechText(newQuestions[0].prompt);
+      });
     }
   }, [gameState, handleStart, setSpeechText]);
 
@@ -99,7 +105,6 @@ export default function TriviaGame({
       if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
       xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
 
-      // If last question and correct, process win with rewards
       if (isLastQuestion) {
         handleGameWin();
         setIsSubmitted(true);
@@ -110,18 +115,6 @@ export default function TriviaGame({
     if (isLastQuestion) {
       setGameState(GameState.WON);
       setSpeechText("That was fun! I loved playing with you!");
-    } else {
-      setSpeechText(
-        isCorrect
-          ? "Great job!"
-          : `Nice try! The correct answer was ${correctLetter}.`,
-      );
-
-      if (isCorrect) {
-        setShowXpPopup(true);
-        if (xpTimerRef.current) clearTimeout(xpTimerRef.current);
-        xpTimerRef.current = setTimeout(() => setShowXpPopup(false), 1200);
-      }
     }
 
     setIsSubmitted(true);
@@ -134,22 +127,21 @@ export default function TriviaGame({
     setWinRewardDetails?.(null);
 
     try {
-      const stats = await GameStatsHTTPClient.getGameStats(userId);
-      const streakInDays = stats.streakInDays;
-      const coinsAlreadyEarned = stats.coinsEarnedToday;
-
-      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
-      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
-        coinsToPay,
-        coinsAlreadyEarned,
+      const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
+      const stats = await recordGameResult.mutateAsync({
+        userId,
+        gameName: GameName.TRIVIA,
+        result: GameResult.WIN,
+      });
+      const actualCoinsEarned = Math.max(
+        0,
+        stats.coinsEarnedToday - coinsAlreadyEarned,
       );
-
-      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
 
       setGameState(GameState.WON);
 
       const updatedDailyCoins = Math.min(
-        coinsAlreadyEarned + actualCoinsEarned,
+        stats.coinsEarnedToday,
         GAMES_DAILY_COIN_LIMIT,
       );
 
