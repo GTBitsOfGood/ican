@@ -17,20 +17,11 @@ export default function TutorialRewardOverlay({
   message = "You have gained medicine to give to your pet!",
 }: TutorialRewardOverlayProps) {
   useEffect(() => {
-    console.log("[tutorial-medication] overlay mounted", {
-      medicationType,
-    });
     const timeoutId = window.setTimeout(() => {
-      console.log("[tutorial-medication] overlay auto dismiss timeout", {
-        medicationType,
-      });
       onDismiss();
     }, 5000);
 
     return () => {
-      console.log("[tutorial-medication] overlay unmounted", {
-        medicationType,
-      });
       window.clearTimeout(timeoutId);
     };
   }, [medicationType, onDismiss]);
@@ -47,11 +38,7 @@ export default function TutorialRewardOverlay({
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-[#292f46]/50 px-6"
-      onClick={() => {
-        console.log("[tutorial-medication] overlay backdrop click ignored", {
-          medicationType,
-        });
-      }}
+      onClick={() => {}}
       role="presentation"
     >
       <div

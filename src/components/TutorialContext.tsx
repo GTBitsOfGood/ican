@@ -443,28 +443,15 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
   const queueTutorialMedicationReward = useCallback(
     (nextMedicationType: "Pill" | "Syrup" | "Shot") => {
       if (!isActive || tutorialStage !== "medication") {
-        console.log(
-          "[tutorial-medication] skipped queueTutorialMedicationReward",
-          {
-            nextMedicationType,
-            isActive,
-            tutorialStage,
-          },
-        );
         return;
       }
 
-      console.log("[tutorial-medication] queueTutorialMedicationReward", {
-        nextMedicationType,
-        tutorialStage,
-      });
       setPendingMedicationRewardType(nextMedicationType);
     },
     [isActive, tutorialStage],
   );
 
   const clearTutorialMedicationReward = useCallback(() => {
-    console.log("[tutorial-medication] clearTutorialMedicationReward");
     setPendingMedicationRewardType(null);
   }, []);
 
@@ -475,19 +462,9 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       medicationType === null ||
       shouldShowMedicationDrag
     ) {
-      console.log("[tutorial-medication] skipped startTutorialMedicationDrag", {
-        isActive,
-        tutorialStage,
-        medicationType,
-        shouldShowMedicationDrag,
-      });
       return;
     }
 
-    console.log("[tutorial-medication] startTutorialMedicationDrag", {
-      medicationType,
-      tutorialStage,
-    });
     setShouldShowMedicationDrag(true);
   }, [isActive, medicationType, shouldShowMedicationDrag, tutorialStage]);
 

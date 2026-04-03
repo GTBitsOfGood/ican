@@ -112,18 +112,7 @@ export default function MedicationLogCard({
           onSuccess: () => {
             setShowConfirmModal(false);
             if (shouldUseTutorialFlow) {
-              console.log("[tutorial-medication] log success", {
-                medicationId: id,
-                formOfMedication,
-                shouldUseTutorialFlow,
-              });
               tutorial.queueTutorialMedicationReward(formOfMedication);
-              console.log(
-                "[tutorial-medication] queued reward, navigating home",
-                {
-                  formOfMedication,
-                },
-              );
               router.push("/");
               return;
             }

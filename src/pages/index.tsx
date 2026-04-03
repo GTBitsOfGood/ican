@@ -210,14 +210,7 @@ export default function Home({
       tutorial.pendingMedicationRewardType &&
       latchedTutorialRewardType === null
     ) {
-      console.log("[tutorial-medication] home saw pending reward", {
-        pendingMedicationRewardType: tutorial.pendingMedicationRewardType,
-        latchedTutorialRewardType,
-      });
       const timeoutId = window.setTimeout(() => {
-        console.log("[tutorial-medication] latching tutorial reward on home", {
-          pendingMedicationRewardType: tutorial.pendingMedicationRewardType,
-        });
         setLatchedTutorialRewardType(tutorial.pendingMedicationRewardType);
       }, 0);
 
@@ -253,24 +246,6 @@ export default function Home({
       return () => window.clearTimeout(timeoutId);
     }
   }, [hasHandledMedicationRewardQuery, medicationRewardType]);
-
-  useEffect(() => {
-    console.log("[tutorial-medication] home render state", {
-      tutorialPendingRewardType: tutorial.pendingMedicationRewardType,
-      latchedTutorialRewardType,
-      tutorialMedicationType: tutorial.medicationType,
-      tutorialShouldShowMedicationDrag: tutorial.shouldShowMedicationDrag,
-      tutorialPortion: tutorial.tutorialPortion,
-      isTutorial,
-    });
-  }, [
-    isTutorial,
-    latchedTutorialRewardType,
-    tutorial.medicationType,
-    tutorial.pendingMedicationRewardType,
-    tutorial.shouldShowMedicationDrag,
-    tutorial.tutorialPortion,
-  ]);
 
   useEffect(() => {
     if (!completedMedicationFlow) {
@@ -466,12 +441,6 @@ export default function Home({
         <TutorialRewardOverlay
           medicationType={latchedTutorialRewardType}
           onDismiss={() => {
-            console.log(
-              "[tutorial-medication] dismissing tutorial reward overlay",
-              {
-                latchedTutorialRewardType,
-              },
-            );
             tutorial.completeTutorialMedicationStep(latchedTutorialRewardType);
             setLatchedTutorialRewardType(null);
             tutorial.clearTutorialMedicationReward();
