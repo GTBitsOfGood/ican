@@ -10,10 +10,11 @@ export default class GameStatisticsService {
     userId: string,
     gameName: GameName,
     result: GameResult,
+    score?: number,
   ): Promise<void> {
-    validateRecordGameResult({ userId, gameName, result });
+    validateRecordGameResult({ userId, gameName, result, score });
 
-    await GameStatisticsDAO.recordGameResult(userId, gameName, result);
+    await GameStatisticsDAO.recordGameResult(userId, gameName, result, score);
   }
 
   static async getGameStatistics(userId: string): Promise<GameStatistics> {

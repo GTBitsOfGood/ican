@@ -4,7 +4,7 @@ import {
   getRandomWordWithHint,
   INSTRUCTIONS,
   LIVES as START_LIVES,
-} from "@/constant/flowermanConstants";
+} from "@/constants/flowermanConstants";
 import FlowermanWordWithFlower from "@/components/games/flowerman/FlowermanWordWithFlower";
 import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
 import MistakesLeft from "@/components/games/MistakesLeft";

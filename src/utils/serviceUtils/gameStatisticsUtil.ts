@@ -6,6 +6,7 @@ export const recordGameResultSchema = z.object({
   userId: objectIdSchema("UserId"),
   gameName: z.nativeEnum(GameName),
   result: z.nativeEnum(GameResult),
+  score: z.number().int().nonnegative().optional(),
 });
 
 export const getGameStatisticsSchema = z.object({

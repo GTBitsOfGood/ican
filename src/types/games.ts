@@ -10,6 +10,7 @@ export enum GameName {
   HANGMAN = "HANGMAN",
   TRIVIA = "TRIVIA",
   TIC_TAC_TOE = "TIC_TAC_TOE",
+  FLAPPY_BIRD = "FLAPPY_BIRD",
 }
 
 export enum GameResult {
@@ -25,6 +26,7 @@ export interface GameStats {
   bestWinStreak: number;
   currentWinStreak: number;
   lastTenResults: GameResult[];
+  highScore?: number; // flappy bird is score-based
 }
 
 export type GameStatistics = Partial<Record<GameName, GameStats>>;
