@@ -410,6 +410,7 @@ export default function Home({
           </div>
           {/* Navbar - VH Scaling */}
           <Navbar>
+            <NavButton buttonType="games" />
             <NavButton
               buttonType="store"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}

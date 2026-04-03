@@ -2,12 +2,28 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { useUser } from "@/components/UserContext";
 import { useUserProfile } from "@/components/hooks/useAuth";
-import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
-import GameRewardsService from "@/services/gameRewards";
+import {
+  useGameStatistics,
+  useRecordGameResult,
+} from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { GameName, GameResult } from "@/types/games";
 
 type Board = (string | null)[];
 type Difficulty = "normal" | "expert";
+
+function makeRandomMove(currentBoard: Board): Board {
+  const emptySquares = currentBoard
+    .map((val, idx) => (val === null ? idx : null))
+    .filter((val) => val !== null) as number[];
+
+  if (emptySquares.length === 0) return currentBoard;
+
+  const randomIndex = Math.floor(Math.random() * emptySquares.length);
+  const newBoard = [...currentBoard];
+  newBoard[emptySquares[randomIndex]] = "O";
+  return newBoard;
+}
 
 export default function TicTacToe({
   setSpeechText,
@@ -18,10 +34,12 @@ export default function TicTacToe({
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
+  const { data: gameStatistics } = useGameStatistics(userId);
+  const recordGameResult = useRecordGameResult();
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [aiIsThinking, setAiIsThinking] = useState(false);
-  const [prevGameState, setPrevGameState] = useState<GameState>(gameState);
+  const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
   const [isProcessingWin, setIsProcessingWin] = useState(false);
 
@@ -43,16 +61,17 @@ export default function TicTacToe({
   }, [showInformationModal, setGameState]);
 
   useEffect(() => {
+    const prev = prevGameStateRef.current;
+    prevGameStateRef.current = gameState;
     if (
       gameState === GameState.PLAYING &&
-      (prevGameState === GameState.WON ||
-        prevGameState === GameState.LOSS ||
-        prevGameState === GameState.TIE)
+      (prev === GameState.WON ||
+        prev === GameState.LOSS ||
+        prev === GameState.TIE)
     ) {
-      setBoard(Array(9).fill(null));
+      queueMicrotask(() => setBoard(Array(9).fill(null)));
     }
-    setPrevGameState(gameState);
-  }, [gameState, prevGameState]);
+  }, [gameState]);
 
   useEffect(() => {
     if (gameState === GameState.START) {
@@ -175,19 +194,6 @@ export default function TicTacToe({
     return bestMove;
   };
 
-  const makeRandomMove = (currentBoard: Board): Board => {
-    const emptySquares = currentBoard
-      .map((val, idx) => (val === null ? idx : null))
-      .filter((val) => val !== null) as number[];
-
-    if (emptySquares.length === 0) return currentBoard;
-
-    const randomIndex = Math.floor(Math.random() * emptySquares.length);
-    const newBoard = [...currentBoard];
-    newBoard[emptySquares[randomIndex]] = "O";
-    return newBoard;
-  };
-
   const makeAIMove = (currentBoard: Board): Board => {
     if (difficulty === "expert") {
       const bestMove = getBestMove(currentBoard);
@@ -206,20 +212,19 @@ export default function TicTacToe({
     setWinRewardDetails?.(null);
 
     try {
-      const stats = await GameStatsHTTPClient.getGameStats(userId);
-      const streakInDays = stats.streakInDays;
-      const coinsAlreadyEarned = stats.coinsEarnedToday;
-
-      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
-      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
-        coinsToPay,
-        coinsAlreadyEarned,
+      const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
+      const stats = await recordGameResult.mutateAsync({
+        userId,
+        gameName: GameName.TIC_TAC_TOE,
+        result: GameResult.WIN,
+      });
+      const actualCoinsEarned = Math.max(
+        0,
+        stats.coinsEarnedToday - coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
-
       const updatedDailyCoins = Math.min(
-        coinsAlreadyEarned + actualCoinsEarned,
+        stats.coinsEarnedToday,
         GAMES_DAILY_COIN_LIMIT,
       );
 
@@ -262,6 +267,13 @@ export default function TicTacToe({
 
     const emptySquares = newBoard.filter((val) => val === null).length;
     if (emptySquares === 0) {
+      if (userId) {
+        void recordGameResult.mutateAsync({
+          userId,
+          gameName: GameName.TIC_TAC_TOE,
+          result: GameResult.DRAW,
+        });
+      }
       setGameState(GameState.TIE);
       setBoard(newBoard);
       return;
@@ -275,6 +287,13 @@ export default function TicTacToe({
       const aiBoard = makeAIMove(newBoard);
       const aiWinner = calculateWinner(aiBoard);
       if (aiWinner === "O") {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.TIC_TAC_TOE,
+            result: GameResult.LOSS,
+          });
+        }
         setGameState(GameState.LOSS);
         setBoard(aiBoard);
         setAiIsThinking(false);
@@ -283,6 +302,13 @@ export default function TicTacToe({
 
       const emptySquaresAfterAI = aiBoard.filter((val) => val === null).length;
       if (emptySquaresAfterAI === 0) {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.TIC_TAC_TOE,
+            result: GameResult.DRAW,
+          });
+        }
         setGameState(GameState.TIE);
         setBoard(aiBoard);
         setAiIsThinking(false);

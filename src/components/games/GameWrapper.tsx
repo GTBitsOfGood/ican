@@ -52,8 +52,8 @@ export default function GameWrapper({
   gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
+  gameName?: string;
   initialSpeechText?: string;
-  speechByState?: Partial<Record<GameState, string>>;
   showGameAreaFrame?: boolean;
   gameAreaClassName?: string;
   whiteboardSrc?: string;

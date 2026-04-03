@@ -14,7 +14,7 @@ export const GET = withAuth<{ userId: string }>(
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.GAME_STATISTICS.UNAUTHORIZED);
 
-    const stats = await GameStatisticsService.getGameStatistics(userId);
-    return NextResponse.json(stats, { status: 200 });
+    const data = await GameStatisticsService.getGameStatistics(userId);
+    return NextResponse.json(data, { status: 200 });
   },
 );
