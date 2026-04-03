@@ -4,6 +4,7 @@ import ERRORS from "@/utils/errorMessages";
 import { verifyUser } from "@/utils/auth";
 import { withAuth } from "@/utils/withAuth";
 import { UserDocument } from "@/db/models/user";
+import { INITIAL_TUTORIAL_STAGES } from "@/types/user";
 
 export const GET = withAuth<{ userId: string }>(
   async (
@@ -14,8 +15,8 @@ export const GET = withAuth<{ userId: string }>(
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.USER.NOT_FOUND);
 
-    const tutorial_completed = await UserService.getTutorialStatus(userId);
-    return NextResponse.json({ tutorial_completed }, { status: 200 });
+    const tutorialStatus = await UserService.getTutorialStatus(userId);
+    return NextResponse.json(tutorialStatus, { status: 200 });
   },
 );
 
@@ -28,16 +29,18 @@ export const PUT = withAuth<{ userId: string }>(
     const { userId } = params;
     verifyUser(tokenUser, userId, ERRORS.USER.NOT_FOUND);
 
-    const { tutorial_completed } = await req.json();
+    const { initialTutorialStage } = await req.json();
 
-    if (typeof tutorial_completed !== "boolean") {
+    if (!INITIAL_TUTORIAL_STAGES.includes(initialTutorialStage)) {
       return NextResponse.json(
-        { error: "tutorial_completed must be a boolean" },
+        { error: "initialTutorialStage must be a valid tutorial stage" },
         { status: 400 },
       );
     }
 
-    await UserService.updateTutorialStatus(userId, tutorial_completed);
+    await UserService.updateTutorialStatus(userId, {
+      initialTutorialStage,
+    });
     return NextResponse.json({ success: true }, { status: 200 });
   },
 );

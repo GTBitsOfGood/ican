@@ -9,9 +9,9 @@ export const PUT = withAuth(
     _context: { params: unknown },
     user: UserDocument,
   ) => {
-    const medicationId = await TutorialService.setupTutorialMedication(
+    const tutorialMedication = await TutorialService.setupTutorialMedication(
       user._id.toString(),
     );
-    return NextResponse.json({ medicationId }, { status: 200 });
+    return NextResponse.json(tutorialMedication, { status: 200 });
   },
 );

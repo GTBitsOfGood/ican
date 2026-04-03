@@ -1,10 +1,10 @@
 import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
-import nextTypeScript from "eslint-config-next/typescript";
+import nextTypescript from "eslint-config-next/typescript";
 import prettier from "eslint-config-prettier/flat";
 
 const config = [
   ...nextCoreWebVitals,
-  ...nextTypeScript,
+  ...nextTypescript,
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
     settings: {

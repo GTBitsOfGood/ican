@@ -2,7 +2,6 @@ import NotificationDAO from "@/db/actions/notification";
 import MedicationDAO from "@/db/actions/medication";
 import SettingsDAO from "@/db/actions/settings";
 import PetDAO from "@/db/actions/pets";
-import type { NotificationPreferences } from "@/db/models/settings";
 import { publishToUser } from "@/lib/ably";
 import {
   shouldScheduleMedication,

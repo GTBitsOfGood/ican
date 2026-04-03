@@ -45,6 +45,9 @@ export const usePurchaseItem = () => {
         queryClient.invalidateQueries({
           queryKey: INVENTORY_QUERY_KEYS.petBag(variables.petId),
         });
+        queryClient.invalidateQueries({
+          queryKey: INVENTORY_QUERY_KEYS.petFoods(variables.petId),
+        });
       }
     },
   });

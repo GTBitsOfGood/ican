@@ -16,6 +16,7 @@ import {
   validateUpdateMedication,
   shouldScheduleMedication,
   processDoseTime,
+  processUntimedDose,
 } from "@/utils/serviceUtils/medicationUtil";
 import { WithId } from "@/types/models";
 import ERRORS from "@/utils/errorMessages";
@@ -23,6 +24,8 @@ import { Medication } from "@/db/models/medication";
 import { Pet } from "@/db/models/pet";
 import { MedicationCheckInDocument } from "@/db/models/medicationCheckIn";
 import { calculateStreakUpdate } from "@/services/streak";
+
+const TUTORIAL_MEDICATION_ID = "PRACTICE DOSE";
 
 export default class MedicationService {
   static async createMedication(medication: Medication): Promise<string> {
@@ -104,6 +107,9 @@ export default class MedicationService {
       throw new NotFoundError("This medication does not exist");
     }
 
+    const isTutorialMedication =
+      existingMedication.customMedicationId === TUTORIAL_MEDICATION_ID;
+
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
     const now = new Date(localTime);
     const currentDate = new Date(
@@ -115,21 +121,24 @@ export default class MedicationService {
 
     const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
-      const { canCheckIn } = processDoseTime(
-        time,
-        dateString,
-        medicationLogs,
-        localTime,
-      );
+    const canCheckIn =
+      existingMedication.includeTimes && existingMedication.doseTimes.length > 0
+        ? existingMedication.doseTimes.some((time) => {
+            const { canCheckIn } = processDoseTime(
+              time,
+              dateString,
+              medicationLogs,
+              localTime,
+            );
 
-      return canCheckIn;
-    });
+            return canCheckIn;
+          })
+        : processUntimedDose(dateString, medicationLogs, localTime).canCheckIn;
 
     const existingMedicationCheckIn: MedicationCheckInDocument | null =
       await MedicationDAO.getMedicationCheckIn(medicationId);
 
-    if (!canCheckIn) {
+    if (!canCheckIn && !isTutorialMedication) {
       if (existingMedicationCheckIn) {
         await MedicationDAO.deleteMedicationCheckIn(medicationId);
       }
@@ -157,16 +166,23 @@ export default class MedicationService {
     }
 
     const userId = existingMedication.userId.toString();
+    const isTutorialMedication =
+      existingMedication.customMedicationId === TUTORIAL_MEDICATION_ID;
 
     // check if medication exists
 
-    const existingMedicationCheckIn =
+    let existingMedicationCheckIn =
       await MedicationDAO.getMedicationCheckIn(medicationId);
 
     if (!existingMedicationCheckIn) {
-      throw new NotFoundError(
-        "There is no check in associated with this medication for this user.",
-      );
+      if (!isTutorialMedication) {
+        throw new NotFoundError(
+          "There is no check in associated with this medication for this user.",
+        );
+      }
+
+      existingMedicationCheckIn =
+        await MedicationDAO.createMedicationCheckIn(medicationId);
     }
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
@@ -180,20 +196,23 @@ export default class MedicationService {
 
     const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const canCheckIn = existingMedication.doseTimes.some((time) => {
-      const { canCheckIn } = processDoseTime(
-        time,
-        dateString,
-        medicationLogs,
-        localTime,
-      );
+    const canCheckIn =
+      existingMedication.includeTimes && existingMedication.doseTimes.length > 0
+        ? existingMedication.doseTimes.some((time) => {
+            const { canCheckIn } = processDoseTime(
+              time,
+              dateString,
+              medicationLogs,
+              localTime,
+            );
 
-      return canCheckIn;
-    });
+            return canCheckIn;
+          })
+        : processUntimedDose(dateString, medicationLogs, localTime).canCheckIn;
 
     await MedicationDAO.deleteMedicationCheckIn(medicationId);
 
-    if (!canCheckIn) {
+    if (!canCheckIn && !isTutorialMedication) {
       throw new IllegalOperationError("Cannot log medication right now.");
     }
 
@@ -275,22 +294,45 @@ export default class MedicationService {
       );
 
       if (shouldSchedule) {
-        for (const time of medication.doseTimes) {
-          const doseResult = processDoseTime(
-            time,
+        if (medication.includeTimes && medication.doseTimes.length > 0) {
+          for (const time of medication.doseTimes) {
+            const doseResult = processDoseTime(
+              time,
+              date,
+              medicationLogs,
+              localTime,
+            );
+
+            allDoses.push({
+              id: medication._id,
+              name: medication.customMedicationId,
+              formOfMedication: medication.formOfMedication,
+              dosage: medication.dosageAmount,
+              notes: medication.notes,
+              includeTimes: true,
+              canCheckIn: doseResult.canCheckIn,
+              scheduledDoseTime: time,
+              status: doseResult.status,
+              lastTaken: lastTaken,
+              repeatUnit: medication.repeatUnit as string,
+              repeatInterval: medication.repeatInterval as number,
+            });
+          }
+        } else {
+          const doseResult = processUntimedDose(
             date,
             medicationLogs,
             localTime,
           );
-
           allDoses.push({
             id: medication._id,
             name: medication.customMedicationId,
             formOfMedication: medication.formOfMedication,
             dosage: medication.dosageAmount,
             notes: medication.notes,
+            includeTimes: false,
             canCheckIn: doseResult.canCheckIn,
-            scheduledDoseTime: time,
+            scheduledDoseTime: "00:00",
             status: doseResult.status,
             lastTaken: lastTaken,
             repeatUnit: medication.repeatUnit as string,

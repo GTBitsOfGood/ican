@@ -1,5 +1,9 @@
 import { Document, model, models, Schema, Types } from "mongoose";
-import { ChildPasswordType } from "@/types/user";
+import {
+  ChildPasswordType,
+  INITIAL_TUTORIAL_STAGES,
+  InitialTutorialStage,
+} from "@/types/user";
 import { GameResult, GameStats } from "@/types/games";
 
 export interface User {
@@ -10,7 +14,7 @@ export interface User {
   childPasswordType?: ChildPasswordType;
   provider: string;
   isOnboarded?: boolean;
-  tutorial_completed?: boolean;
+  initialTutorialStage?: InitialTutorialStage;
   gameCoinsEarnedToday?: number;
   gameCoinsLastResetDate?: Date | null;
   gameStatistics?: Map<string, GameStats>;
@@ -34,7 +38,12 @@ const userSchema = new Schema<UserDocument>(
     },
     provider: { type: String, required: true },
     isOnboarded: { type: Boolean, required: false, default: false },
-    tutorial_completed: { type: Boolean, required: false, default: false },
+    initialTutorialStage: {
+      type: String,
+      required: false,
+      default: "food",
+      enum: INITIAL_TUTORIAL_STAGES,
+    },
     gameCoinsEarnedToday: { type: Number, required: false, default: 0 },
     gameCoinsLastResetDate: { type: Date, required: false, default: null },
     gameStatistics: {

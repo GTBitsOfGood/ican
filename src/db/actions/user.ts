@@ -3,7 +3,19 @@ import UserModel, { User, UserDocument } from "../models/user";
 import { HydratedDocument, Types } from "mongoose";
 import dbConnect from "../dbConnect";
 import ERRORS from "@/utils/errorMessages";
-import { ChildPasswordType } from "@/types/user";
+import {
+  ChildPasswordType,
+  InitialTutorialStage,
+  TutorialStatus,
+} from "@/types/user";
+
+const normalizeTutorialStatus = (
+  user: Pick<User, "initialTutorialStage">,
+): TutorialStatus => {
+  return {
+    initialTutorialStage: user.initialTutorialStage ?? "food",
+  };
+};
 
 export default class UserDAO {
   static async createUser(
@@ -118,9 +130,21 @@ export default class UserDAO {
 
   static async updateTutorialStatus(
     id: string | Types.ObjectId,
-    tutorial_completed: boolean,
+    status: {
+      initialTutorialStage: InitialTutorialStage;
+    },
   ): Promise<void> {
-    await this.updateUserField(id, "tutorial_completed", tutorial_completed);
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const result = await UserModel.updateOne(
+      { _id: _id },
+      {
+        initialTutorialStage: status.initialTutorialStage,
+      },
+    );
+    if (result.matchedCount === 0) {
+      throw new Error("Failed to update tutorial status");
+    }
   }
 
   static async getUserField<K extends keyof User>(
@@ -145,9 +169,17 @@ export default class UserDAO {
 
   static async getTutorialStatus(
     id: string | Types.ObjectId,
-  ): Promise<boolean> {
-    const result = await this.getUserField(id, "tutorial_completed");
-    return result ?? false;
+  ): Promise<TutorialStatus> {
+    const _id = id instanceof Types.ObjectId ? id : new Types.ObjectId(id);
+    await dbConnect();
+    const user = await UserModel.findById(_id)
+      .select("initialTutorialStage")
+      .lean<Pick<User, "initialTutorialStage"> | null>();
+    if (!user) {
+      throw new Error(ERRORS.USER.NOT_FOUND);
+    }
+
+    return normalizeTutorialStatus(user);
   }
 
   static async getUserProfile(
