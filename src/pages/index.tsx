@@ -89,13 +89,7 @@ export default function Home({
     useState<boolean>(false);
   const [showNormalFoodRewardModal, setShowNormalFoodRewardModal] =
     useState<boolean>(false);
-  const [latchedTutorialRewardType, setLatchedTutorialRewardType] = useState<
-    "Pill" | "Syrup" | "Shot" | null
-  >(tutorial.pendingMedicationRewardType);
-  const [latchedMedicationRewardType, setLatchedMedicationRewardType] =
-    useState<"Pill" | "Syrup" | "Shot" | null>(null);
-  const [hasHandledMedicationRewardQuery, setHasHandledMedicationRewardQuery] =
-    useState(false);
+  const hasHandledMedicationRewardQueryRef = useRef(false);
   const [normalFeedPromptActive, setNormalFeedPromptActive] =
     useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
@@ -208,46 +202,10 @@ export default function Home({
   ]);
 
   useEffect(() => {
-    if (
-      tutorial.pendingMedicationRewardType &&
-      latchedTutorialRewardType === null
-    ) {
-      const timeoutId = window.setTimeout(() => {
-        setLatchedTutorialRewardType(tutorial.pendingMedicationRewardType);
-      }, 0);
-
-      return () => window.clearTimeout(timeoutId);
+    if (!medicationRewardType) {
+      hasHandledMedicationRewardQueryRef.current = false;
     }
-  }, [latchedTutorialRewardType, tutorial.pendingMedicationRewardType]);
-
-  useEffect(() => {
-    if (
-      medicationRewardType &&
-      latchedMedicationRewardType === null &&
-      !hasHandledMedicationRewardQuery
-    ) {
-      const timeoutId = window.setTimeout(() => {
-        setLatchedMedicationRewardType(medicationRewardType);
-        setHasHandledMedicationRewardQuery(true);
-      }, 0);
-
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [
-    hasHandledMedicationRewardQuery,
-    latchedMedicationRewardType,
-    medicationRewardType,
-  ]);
-
-  useEffect(() => {
-    if (!medicationRewardType && hasHandledMedicationRewardQuery) {
-      const timeoutId = window.setTimeout(() => {
-        setHasHandledMedicationRewardQuery(false);
-      }, 0);
-
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [hasHandledMedicationRewardQuery, medicationRewardType]);
+  }, [medicationRewardType]);
 
   useEffect(() => {
     if (!completedMedicationFlow) {
@@ -421,17 +379,17 @@ export default function Home({
           levelChanged={false}
         />
       )}
-      {latchedMedicationRewardType && (
+      {medicationRewardType && (
         <TutorialRewardOverlay
-          medicationType={latchedMedicationRewardType}
+          medicationType={medicationRewardType}
           onDismiss={() => {
-            setLatchedMedicationRewardType(null);
+            hasHandledMedicationRewardQueryRef.current = true;
             router.replace(
               {
                 pathname: "/",
                 query: {
                   medicationFlow: "true",
-                  medicationType: latchedMedicationRewardType,
+                  medicationType: medicationRewardType,
                   medicationStage: "intro",
                 },
               },
@@ -441,12 +399,14 @@ export default function Home({
           }}
         />
       )}
-      {latchedTutorialRewardType && (
+      {tutorial.pendingMedicationRewardType && (
         <TutorialRewardOverlay
-          medicationType={latchedTutorialRewardType}
+          medicationType={tutorial.pendingMedicationRewardType}
           onDismiss={() => {
-            tutorial.completeTutorialMedicationStep(latchedTutorialRewardType);
-            setLatchedTutorialRewardType(null);
+            const medicationType = tutorial.pendingMedicationRewardType;
+            if (medicationType) {
+              tutorial.completeTutorialMedicationStep(medicationType);
+            }
             tutorial.clearTutorialMedicationReward();
           }}
         />

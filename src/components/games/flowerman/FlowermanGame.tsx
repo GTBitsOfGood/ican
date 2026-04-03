@@ -69,7 +69,7 @@ export default function FlowermanGame({
   useEffect(() => {
     if (gameState === GameState.START && !hasAutoStartedRef.current) {
       hasAutoStartedRef.current = true;
-      queueMicrotask(() => handleStart());
+      handleStart();
     }
   }, [gameState, handleStart]);
 

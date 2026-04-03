@@ -42,6 +42,7 @@ export default function TicTacToe({
   const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
   const hasShownInstructionsRef = useRef(false);
+  const aiMoveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isProcessingWin, setIsProcessingWin] = useState(false);
 
   const handleStart = useCallback(() => {
@@ -64,10 +65,25 @@ export default function TicTacToe({
       hasShownInitialPlayingMessageRef.current = false;
       if (!hasShownInstructionsRef.current) {
         hasShownInstructionsRef.current = true;
-        queueMicrotask(() => showInstructions());
+        showInstructions();
       }
     }
   }, [gameState, setSpeechText, showInstructions]);
+
+  useEffect(() => {
+    return () => {
+      if (aiMoveTimeoutRef.current) {
+        clearTimeout(aiMoveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (gameState !== GameState.PLAYING && aiMoveTimeoutRef.current) {
+      clearTimeout(aiMoveTimeoutRef.current);
+      aiMoveTimeoutRef.current = null;
+    }
+  }, [gameState]);
 
   useEffect(() => {
     const prev = prevGameStateRef.current;
@@ -78,7 +94,7 @@ export default function TicTacToe({
         prev === GameState.LOSS ||
         prev === GameState.TIE)
     ) {
-      queueMicrotask(() => setBoard(Array(9).fill(null)));
+      setBoard(Array(9).fill(null));
     }
   }, [gameState]);
 
@@ -124,9 +140,15 @@ export default function TicTacToe({
   );
 
   useEffect(() => {
-    if (gameState === GameState.START && difficulty === "expert") {
-      setSpeechText("Looking for a challenge I see!");
+    if (gameState !== GameState.START) {
+      return;
     }
+
+    setSpeechText(
+      difficulty === "expert"
+        ? "Looking for a challenge I see!"
+        : "Yay lets start! It’s your turn first.",
+    );
   }, [difficulty, gameState, setSpeechText]);
 
   const calculateWinner = (squares: Board): string | null => {
@@ -245,8 +267,7 @@ export default function TicTacToe({
       });
 
       setGameState(GameState.WON);
-    } catch (error) {
-      console.error("Error processing game win:", error);
+    } catch {
       setWinRewardDetails?.(null);
       showInformationModal({
         title: "YOU WIN!",
@@ -292,7 +313,8 @@ export default function TicTacToe({
     setAiIsThinking(true);
 
     // 2 second delay
-    setTimeout(() => {
+    aiMoveTimeoutRef.current = setTimeout(() => {
+      aiMoveTimeoutRef.current = null;
       const aiBoard = makeAIMove(newBoard);
       const aiWinner = calculateWinner(aiBoard);
       if (aiWinner === "O") {
