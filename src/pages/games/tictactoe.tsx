@@ -1,5 +1,5 @@
 import GameWrapper from "@/components/games/GameWrapper";
-import TicTacToe from "@/components/games/TicTacToe";
+import TicTacToe from "@/components/games/tictactoe/TicTacToe";
 import { GameName } from "@/types/games";
 
 export default function TicTacToePage() {

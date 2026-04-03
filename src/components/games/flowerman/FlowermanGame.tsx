@@ -7,7 +7,7 @@ import {
 } from "@/constant/flowermanConstants";
 import FlowermanWordWithFlower from "@/components/games/flowerman/FlowermanWordWithFlower";
 import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
-import MistakesLeft from "@/components/games/MistakesLeft";
+import MistakesLeft from "@/components/games/flowerman/MistakesLeft";
 import { PetEmotion } from "@/types/pet";
 import { useUser } from "@/components/UserContext";
 import {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { GameState, type GameWrapperControls } from "./GameWrapper";
+import { GameState, type GameWrapperControls } from "../GameWrapper";
 import { useUser } from "@/components/UserContext";
 import { useUserProfile } from "@/components/hooks/useAuth";
 import {
