@@ -129,7 +129,12 @@ export default function Log() {
     <AuthorizedRoute>
       <div className="bg-icanBlue-200 p-16 min-h-screen">
         <div className="mb-[72px]">
-          <div className="flex justify-between">
+          <div className="flex items-start justify-between">
+            <div className="py-9">
+              <div className="h-16 w-16">
+                <BackButton onClick={handleBackClick} />
+              </div>
+            </div>
             <div className="flex justify-center items-center w-full">
               <button onClick={handlePrev}>
                 <Image
@@ -153,11 +158,7 @@ export default function Log() {
                 />
               </button>
             </div>
-            <div className="py-9">
-              <div className="w-16 h-16 [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
-                <BackButton onClick={handleBackClick} />
-              </div>
-            </div>
+            <div className="w-16" />
           </div>
           <div className="flex flex-col gap-y-[48px] w-full overflow-y-auto log-scrollbar">
             {isSameDay(currDate) ? (

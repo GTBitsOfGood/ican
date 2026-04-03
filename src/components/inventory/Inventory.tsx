@@ -34,13 +34,18 @@ export default function Inventory({
         {cloneElement(leftPanel as ReactElement<any>, { topView })}
       </div>
       <div className="flex flex-col w-full desktop:w-[74%] desktop:min-h-screen bg-[#4C539B] pb-7">
-        <div
-          className={`hidden desktop:flex ${topView != undefined ? "justify-between" : "justify-end"} items-center`}
-        >
-          {topView}
-          <div className="w-16 h-16 mt-[30px] mr-[60px] [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+        <div className="hidden desktop:flex items-center px-[31px] pt-[30px]">
+          <div className="h-20 w-20 shrink-0">
             <BackButton onClick={handleBackClick} />
           </div>
+          {topView ? (
+            <>
+              <div className="flex flex-1 justify-center">{topView}</div>
+              <div className="h-20 w-20 shrink-0" />
+            </>
+          ) : (
+            <div className="flex-1" />
+          )}
         </div>
         <div className="mt-5 mx-[31px] flex-grow">{tabContainer}</div>
       </div>

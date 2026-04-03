@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Plus, Minus } from "lucide-react";
-import Image from "next/image";
 import { useTutorial } from "@/components/TutorialContext";
+import BackButton from "@/components/ui/BackButton";
 
 export default function HelpPage() {
   const [openIndices, setOpenIndices] = useState<number[]>([]);
@@ -73,15 +73,9 @@ export default function HelpPage() {
     <div className="min-h-screen bg-icanBlue-200 p-8 font-quantico">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <button>
-            <Image
-              src={"/assets/LeftArrowIcon.svg"}
-              alt=""
-              width={60}
-              height={60}
-              onClick={handleBackIcon}
-            />
-          </button>
+          <div className="h-16 w-16">
+            <BackButton onClick={handleBackIcon} />
+          </div>
           <div className="flex flex-1 items-center justify-between gap-4">
             <h1 className="text-white text-6xl font-bold">Help</h1>
             <button

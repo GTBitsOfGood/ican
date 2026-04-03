@@ -23,7 +23,7 @@ export function PillIcon({ className }: IconProps) {
 }
 
 export function LiquidIcon({ className }: IconProps) {
-  return <MedicationSvgIcon className={className} src="/icons/Syringe.svg" />;
+  return <MedicationSvgIcon className={className} src="/icons/Syrup.svg" />;
 }
 
 export function InjectionIcon({ className }: IconProps) {

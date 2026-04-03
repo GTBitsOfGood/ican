@@ -41,13 +41,27 @@ const Bubble: React.FC<BubbleProps> = ({
     return (
       <>
         {parts[0]}
-        <Image
-          src="/misc/LogButton.png"
-          alt="Log"
-          width={70}
-          height={70}
-          className="inline-block mx-1 align-middle"
-        />
+        <span className="relative mx-1 inline-flex h-12 w-32 translate-y-1 items-center justify-center align-middle">
+          <Image
+            src="/misc/NavButton.svg"
+            alt=""
+            fill
+            className="pointer-events-none object-fill"
+          />
+          <span className="relative z-10 flex h-full w-full items-center justify-center gap-1.5 px-4">
+            <span className="relative translate-y-[-5px] h-[62%] w-auto aspect-square shrink-0">
+              <Image
+                src="/icons/Log.svg"
+                alt="Log"
+                fill
+                className="pointer-events-none object-contain"
+              />
+            </span>
+            <span className="translate-y-[-5px] font-quantico text-2xl font-bold leading-none text-white">
+              LOG
+            </span>
+          </span>
+        </span>
         {parts[1]}
       </>
     );

@@ -27,11 +27,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
       <div className="-mt-4 mb-12 w-full desktop:hidden">
         <div className="flex justify-between items-center">
           {topView}
-          <div
-            className="mt-[30px] pr-[30px] w-16 h-16
-            [&>a]:w-16 [&>a]:h-16
-            [&>a>button]:w-full [&>a>button]:h-full"
-          >
+          <div className="mt-[30px] pr-[30px] h-20 w-20">
             <BackButton onClick={() => router.push("/")} />
           </div>
         </div>
