@@ -23,6 +23,11 @@ export default function FoodModal({ foods }: { foods: string[] }) {
   const baseImageUrl = "/foods";
   const totalFood = foods.length;
 
+  const handleClose = () => {
+    onClose();
+    router.push("/");
+  };
+
   const handleSelectFood = () => {
     setSelectedFood(clickedFood);
     router.push("/");
@@ -46,20 +51,19 @@ export default function FoodModal({ foods }: { foods: string[] }) {
       }}
       className="font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
       isOpen={isOpen}
-      onClose={() => {
-        onClose();
-        router.push("/");
-      }}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      isDismissable={true}
+      shouldCloseOnInteractOutside={() => true}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader className="flex items-center gap-4 px-0">
           <h3 className="underline underline-offset-4 text-4xl">Foods</h3>
           <div className="flex items-center gap-3 bg-white px-4 py-2 border-4 border-black">
             <Image
-              src={`${baseImageUrl}/Pizza.svg`}
+              src={`${baseImageUrl}/pizza.svg`}
               alt={"food"}
               width={40}
               height={40}

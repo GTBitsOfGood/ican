@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import MissedDoseModal from "../modals/MissedDoseModal";
 import LogPasswordModal from "../modals/LogPasswordModal";
 import MedicationTakenModal from "../modals/TakenMedicationModal";
-import SuccessMedicationModal from "../modals/SuccessMedicationLogModal";
 import { standardizeTime } from "@/utils/time";
 import { LogType } from "@/types/log";
 import { useDisclosure } from "@heroui/react";
@@ -53,7 +52,6 @@ export default function MedicationLogCard({
     onClose: closePasswordModal,
   } = useDisclosure(); //for managing pin modal
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
 
   const medicationCheckInMutation = useMedicationCheckIn();
   const medicationLogMutation = useMedicationLog();
@@ -113,13 +111,22 @@ export default function MedicationLogCard({
         {
           onSuccess: () => {
             setShowConfirmModal(false);
-            router.push({
-              pathname: "/",
-              query: {
-                tutorialMedicationLogged: "true",
-                tutorialMedicationType: formOfMedication,
-              },
-            });
+            if (shouldUseTutorialFlow) {
+              console.log("[tutorial-medication] log success", {
+                medicationId: id,
+                formOfMedication,
+                shouldUseTutorialFlow,
+              });
+              tutorial.queueTutorialMedicationReward(formOfMedication);
+              console.log(
+                "[tutorial-medication] queued reward, navigating home",
+                {
+                  formOfMedication,
+                },
+              );
+              router.push("/");
+              return;
+            }
           },
           onError: (error) => {
             toast.error(
@@ -142,7 +149,13 @@ export default function MedicationLogCard({
       {
         onSuccess: () => {
           setShowConfirmModal(false);
-          setShowSuccessModal(true);
+          router.push({
+            pathname: "/",
+            query: {
+              medicationReward: "true",
+              medicationType: formOfMedication,
+            },
+          });
         },
       },
     );
@@ -228,22 +241,6 @@ export default function MedicationLogCard({
           name={name}
           setChangeModalVisible={toggleConfirmModal}
           handleTakenAction={handleTakeMedicationAction}
-        />
-      )}
-      {showSuccessModal && (
-        <SuccessMedicationModal
-          medicationType={formOfMedication}
-          onModalClose={() => {
-            setShowSuccessModal(false);
-            router.push({
-              pathname: "/",
-              query: {
-                medicationFlow: "true",
-                medicationType: formOfMedication,
-                medicationStage: "intro",
-              },
-            });
-          }}
         />
       )}
       <div className="flex flex-col gap-y-6">

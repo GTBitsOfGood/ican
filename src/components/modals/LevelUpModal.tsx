@@ -1,11 +1,4 @@
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  useDisclosure,
-} from "@heroui/react";
-import ModalCloseButton from "./ModalCloseButton";
+import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import { useEffect } from "react";
 import Image from "next/image";
 import ExpBar from "../ui/ExpBar";
@@ -23,15 +16,16 @@ export default function FoodModal({
   xp,
   levelChanged,
 }: LevelUpModalProps) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+    const timeoutId = window.setTimeout(() => {
+      setVisible(false);
+    }, 5000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [setVisible]);
 
   const handleClose = () => {
     setVisible(false);
-    onClose();
   };
 
   return (
@@ -42,15 +36,16 @@ export default function FoodModal({
         base: "bg-icanBlue-200 text-[#a8b0d3] overflow-hidden",
         header:
           "mobile:text-3xl tablet:text-4xl largeDesktop:text-5xl tiny:text-2xl minimized:text-3xl small:text-4xl items-center",
-        closeButton: "top-[0.5rem]",
         footer: "items-center justify-center",
       }}
       className="w-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={handleClose} />}
+      isDismissable={true}
+      shouldCloseOnInteractOutside={() => true}
+      hideCloseButton={true}
     >
       <ModalContent>
         <ModalHeader>{levelChanged ? "Level Up!" : ""}</ModalHeader>

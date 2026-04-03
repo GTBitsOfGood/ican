@@ -26,7 +26,9 @@ const Bubble: React.FC<BubbleProps> = ({
             repeatDelay: 2,
           },
         }
-      : {};
+      : {
+          rotate: 0,
+        };
 
   const processText = () => {
     let processedText = text;

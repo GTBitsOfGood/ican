@@ -16,6 +16,7 @@ import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
 import SuccessMedicationLogModal from "@/components/modals/SuccessMedicationLogModal";
+import TutorialRewardOverlay from "@/components/modals/TutorialRewardOverlay";
 import { useState, useEffect, useRef } from "react";
 import { useTutorial } from "@/components/TutorialContext";
 import { TUTORIAL_PORTIONS } from "@/constants/tutorial";
@@ -82,12 +83,19 @@ export default function Home({
     useState<boolean>(false);
   const [showSuccessModalVisible, setShowSuccessModalVisible] =
     useState<boolean>(false);
-  const [showMedicationSuccessModal, setShowMedicationSuccessModal] =
-    useState<boolean>(false);
   const [showTutorialFoodRewardModal, setShowTutorialFoodRewardModal] =
     useState<boolean>(false);
-  const [tutorialMedicationRewardType, setTutorialMedicationRewardType] =
+  const [showNormalFoodRewardModal, setShowNormalFoodRewardModal] =
+    useState<boolean>(false);
+  const [latchedTutorialRewardType, setLatchedTutorialRewardType] = useState<
+    "Pill" | "Syrup" | "Shot" | null
+  >(tutorial.pendingMedicationRewardType);
+  const [latchedMedicationRewardType, setLatchedMedicationRewardType] =
     useState<"Pill" | "Syrup" | "Shot" | null>(null);
+  const [hasHandledMedicationRewardQuery, setHasHandledMedicationRewardQuery] =
+    useState(false);
+  const [normalFeedPromptActive, setNormalFeedPromptActive] =
+    useState<boolean>(false);
   const { selectedFood, setSelectedFood } = useFood();
   const [distance, setDistance] = useState<number | null>(null);
   const hasEnsuredStarterKit = useRef(false);
@@ -108,12 +116,12 @@ export default function Home({
       router.query.medicationType === "Shot")
       ? router.query.medicationType
       : null;
-  const tutorialLoggedMedicationType =
-    router.query.tutorialMedicationLogged === "true" &&
-    (router.query.tutorialMedicationType === "Pill" ||
-      router.query.tutorialMedicationType === "Syrup" ||
-      router.query.tutorialMedicationType === "Shot")
-      ? router.query.tutorialMedicationType
+  const medicationRewardType =
+    router.query.medicationReward === "true" &&
+    (router.query.medicationType === "Pill" ||
+      router.query.medicationType === "Syrup" ||
+      router.query.medicationType === "Shot")
+      ? router.query.medicationType
       : null;
   const [completedMedicationFlow, setCompletedMedicationFlow] =
     useState<boolean>(false);
@@ -175,19 +183,6 @@ export default function Home({
   }, [activeMedicationFlowStage, activeMedicationFlowType, isTutorial, router]);
 
   useEffect(() => {
-    if (!tutorialLoggedMedicationType) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setTutorialMedicationRewardType(tutorialLoggedMedicationType);
-      router.replace("/", undefined, { shallow: true });
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [router, tutorialLoggedMedicationType]);
-
-  useEffect(() => {
     if (
       !isTutorial ||
       tutorial.tutorialPortion !== TUTORIAL_PORTIONS.LOG_TUTORIAL ||
@@ -211,6 +206,73 @@ export default function Home({
   ]);
 
   useEffect(() => {
+    if (
+      tutorial.pendingMedicationRewardType &&
+      latchedTutorialRewardType === null
+    ) {
+      console.log("[tutorial-medication] home saw pending reward", {
+        pendingMedicationRewardType: tutorial.pendingMedicationRewardType,
+        latchedTutorialRewardType,
+      });
+      const timeoutId = window.setTimeout(() => {
+        console.log("[tutorial-medication] latching tutorial reward on home", {
+          pendingMedicationRewardType: tutorial.pendingMedicationRewardType,
+        });
+        setLatchedTutorialRewardType(tutorial.pendingMedicationRewardType);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [latchedTutorialRewardType, tutorial.pendingMedicationRewardType]);
+
+  useEffect(() => {
+    if (
+      medicationRewardType &&
+      latchedMedicationRewardType === null &&
+      !hasHandledMedicationRewardQuery
+    ) {
+      const timeoutId = window.setTimeout(() => {
+        setLatchedMedicationRewardType(medicationRewardType);
+        setHasHandledMedicationRewardQuery(true);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [
+    hasHandledMedicationRewardQuery,
+    latchedMedicationRewardType,
+    medicationRewardType,
+  ]);
+
+  useEffect(() => {
+    if (!medicationRewardType && hasHandledMedicationRewardQuery) {
+      const timeoutId = window.setTimeout(() => {
+        setHasHandledMedicationRewardQuery(false);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+  }, [hasHandledMedicationRewardQuery, medicationRewardType]);
+
+  useEffect(() => {
+    console.log("[tutorial-medication] home render state", {
+      tutorialPendingRewardType: tutorial.pendingMedicationRewardType,
+      latchedTutorialRewardType,
+      tutorialMedicationType: tutorial.medicationType,
+      tutorialShouldShowMedicationDrag: tutorial.shouldShowMedicationDrag,
+      tutorialPortion: tutorial.tutorialPortion,
+      isTutorial,
+    });
+  }, [
+    isTutorial,
+    latchedTutorialRewardType,
+    tutorial.medicationType,
+    tutorial.pendingMedicationRewardType,
+    tutorial.shouldShowMedicationDrag,
+    tutorial.tutorialPortion,
+  ]);
+
+  useEffect(() => {
     if (!completedMedicationFlow) {
       return;
     }
@@ -222,8 +284,22 @@ export default function Home({
     return () => window.clearTimeout(timer);
   }, [completedMedicationFlow]);
 
-  const handleFoodDrop = async () => {
+  useEffect(() => {
+    if (!normalFeedPromptActive) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setNormalFeedPromptActive(false);
+    }, 10000);
+
+    return () => window.clearTimeout(timer);
+  }, [normalFeedPromptActive]);
+
+  const handleFoodDrop = async (distanceOverride?: number | null) => {
     if (!pet) return;
+
+    const finalDistance = distanceOverride ?? distance;
 
     if (isTutorial) {
       if (tutorial.isReplay && selectedFood) {
@@ -239,7 +315,7 @@ export default function Home({
       return;
     }
 
-    if (distance == null || distance > 150) return;
+    if (finalDistance == null || finalDistance > 150) return;
     if (feeding) return;
 
     const previousLevel = pet.xpLevel ?? 0;
@@ -276,14 +352,17 @@ export default function Home({
     if (isTutorial) {
       return tutorial.getTutorialText();
     }
+    if (normalFeedPromptActive) {
+      return "I'm hungry, can you feed me some food please?";
+    }
+    if (completedMedicationFlow) {
+      return "I feel great! Thank you for helping me, {userName}!";
+    }
     if (activeMedicationFlowType && activeMedicationFlowStage === "intro") {
       return "Great job taking your medication {userName}! Now it's time for mine!";
     }
     if (activeMedicationFlowType && activeMedicationFlowStage === "drag") {
       return "Drag the medication into the correct place to medicate me!";
-    }
-    if (completedMedicationFlow) {
-      return "I feel great! Thank you for helping me, {userName}!";
     }
     if (recentlyTaken) {
       return "Great job taking your medication {userName}!";
@@ -298,8 +377,9 @@ export default function Home({
   };
 
   const getBubbleAnimation = () => {
-    if (activeMedicationFlowType || completedMedicationFlow)
-      return "none" as const;
+    if (normalFeedPromptActive) return "none" as const;
+    if (completedMedicationFlow) return "none" as const;
+    if (activeMedicationFlowType) return "none" as const;
     if (isTutorial) return "none" as const;
     if (hasMedication && !recentlyTaken) return "jump" as const;
     return "none" as const;
@@ -309,25 +389,34 @@ export default function Home({
     setMedicationDistance(dist);
   };
 
-  const handleMedicationDrop = async () => {
+  const handleMedicationDrop = async (distanceOverride?: number | null) => {
     if (!pet) return;
+
+    const finalDistance = distanceOverride ?? medicationDistance;
 
     if (isTutorial) {
       setCompletedMedicationFlow(true);
       setMedicationDistance(null);
+      setHearts(true);
       window.setTimeout(() => {
+        setHearts(false);
         setShowTutorialFoodRewardModal(true);
       }, 2000);
       return;
     }
 
-    if (medicationDistance == null || medicationDistance > 150) return;
+    if (finalDistance == null || finalDistance > 150) return;
 
     if (!activeMedicationFlowType) return;
 
+    router.replace("/", undefined, { shallow: true });
     setCompletedMedicationFlow(true);
     setMedicationDistance(null);
-    router.replace("/", undefined, { shallow: true });
+    setHearts(true);
+    window.setTimeout(() => {
+      setHearts(false);
+      setShowNormalFoodRewardModal(true);
+    }, 2000);
   };
 
   return (
@@ -347,37 +436,69 @@ export default function Home({
       )}
       {showSuccessModalVisible && (
         <LevelUpModal
-          setVisible={setShowLevelUpModalVisible}
+          setVisible={setShowSuccessModalVisible}
           level={displayLevel}
           xp={displayCurrentExp}
           levelChanged={false}
         />
       )}
-      {showMedicationSuccessModal && (
-        <SuccessMedicationLogModal
-          onModalClose={() => {
-            setShowMedicationSuccessModal(false);
+      {latchedMedicationRewardType && (
+        <TutorialRewardOverlay
+          medicationType={latchedMedicationRewardType}
+          onDismiss={() => {
+            setLatchedMedicationRewardType(null);
+            router.replace(
+              {
+                pathname: "/",
+                query: {
+                  medicationFlow: "true",
+                  medicationType: latchedMedicationRewardType,
+                  medicationStage: "intro",
+                },
+              },
+              undefined,
+              { shallow: true },
+            );
           }}
         />
       )}
-      {tutorialMedicationRewardType && (
-        <SuccessMedicationLogModal
-          medicationType={tutorialMedicationRewardType}
-          onModalClose={() => {
-            tutorial.completeTutorialMedicationStep(
-              tutorialMedicationRewardType,
+      {latchedTutorialRewardType && (
+        <TutorialRewardOverlay
+          medicationType={latchedTutorialRewardType}
+          onDismiss={() => {
+            console.log(
+              "[tutorial-medication] dismissing tutorial reward overlay",
+              {
+                latchedTutorialRewardType,
+              },
             );
-            setTutorialMedicationRewardType(null);
+            tutorial.completeTutorialMedicationStep(latchedTutorialRewardType);
+            setLatchedTutorialRewardType(null);
+            tutorial.clearTutorialMedicationReward();
           }}
         />
       )}
       {showTutorialFoodRewardModal && (
         <SuccessMedicationLogModal
+          imageSrc="/foods/pizza.svg"
+          imageAlt="Food reward"
           message="You have gained food to feed your pet!"
           onModalClose={() => {
             setShowTutorialFoodRewardModal(false);
             setCompletedMedicationFlow(false);
             tutorial.markMedicationDragComplete();
+          }}
+        />
+      )}
+      {showNormalFoodRewardModal && (
+        <SuccessMedicationLogModal
+          imageSrc="/foods/pizza.svg"
+          imageAlt="Food reward"
+          message="Congratulations! You have earned food to feed your pet!"
+          onModalClose={() => {
+            setShowNormalFoodRewardModal(false);
+            setCompletedMedicationFlow(false);
+            setNormalFeedPromptActive(true);
           }}
         />
       )}

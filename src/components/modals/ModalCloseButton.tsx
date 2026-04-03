@@ -8,14 +8,14 @@ interface ModalCloseButtonProps {
 
 export default function ModalCloseButton({
   onClose,
-  link = "/",
+  link,
 }: ModalCloseButtonProps) {
   const router = useRouter();
 
   const handleClick = () => {
     onClose();
 
-    if (link && link !== "#") {
+    if (link) {
       void router.push(link);
     }
   };
