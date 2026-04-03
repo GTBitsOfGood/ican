@@ -13,12 +13,11 @@ export default class GameStatisticsService {
   ): Promise<{ coinsEarnedToday: number }> {
     validateRecordGameResult({ userId, gameName, result });
 
-    await GameStatisticsDAO.recordGameResult(userId, gameName, result);
-
-    const coinsEarnedToday =
-      result === GameResult.WIN
-        ? await GameStatisticsDAO.awardGameCoins(userId)
-        : await GameStatisticsDAO.getDailyCoinsEarned(userId);
+    const coinsEarnedToday = await GameStatisticsDAO.recordGameResult(
+      userId,
+      gameName,
+      result,
+    );
 
     return { coinsEarnedToday };
   }
