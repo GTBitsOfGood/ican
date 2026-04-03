@@ -10,9 +10,12 @@ import FlowermanKeyboard from "@/components/games/flowerman/FlowermanKeyboard";
 import MistakesLeft from "@/components/games/MistakesLeft";
 import { PetEmotion } from "@/types/pet";
 import { useUser } from "@/components/UserContext";
-import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
-import GameRewardsService from "@/services/gameRewards";
+import {
+  useGameStatistics,
+  useRecordGameResult,
+} from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { GameName, GameResult } from "@/types/games";
 
 export default function FlowermanGame({
   setSpeechText,
@@ -24,6 +27,8 @@ export default function FlowermanGame({
   setWinRewardDetails,
 }: GameWrapperControls) {
   const { userId } = useUser();
+  const { data: gameStatistics } = useGameStatistics(userId);
+  const recordGameResult = useRecordGameResult();
   const [word, setWord] = useState<string>("");
   const [guessedLetters, setGuessedLetters] = useState<Set<string>>(new Set());
   const [lives, setLives] = useState<number>(START_LIVES);
@@ -113,20 +118,19 @@ export default function FlowermanGame({
     setWinRewardDetails?.(null);
 
     try {
-      const stats = await GameStatsHTTPClient.getGameStats(userId);
-      const streakInDays = stats.streakInDays;
-      const coinsAlreadyEarned = stats.coinsEarnedToday;
-
-      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
-      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
-        coinsToPay,
-        coinsAlreadyEarned,
+      const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
+      const stats = await recordGameResult.mutateAsync({
+        userId,
+        gameName: GameName.HANGMAN,
+        result: GameResult.WIN,
+      });
+      const actualCoinsEarned = Math.max(
+        0,
+        stats.coinsEarnedToday - coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
-
       const updatedDailyCoins = Math.min(
-        coinsAlreadyEarned + actualCoinsEarned,
+        stats.coinsEarnedToday,
         GAMES_DAILY_COIN_LIMIT,
       );
 
@@ -172,6 +176,13 @@ export default function FlowermanGame({
       setLives(newLives);
       triggerWriting();
       if (newLives === 0) {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.HANGMAN,
+            result: GameResult.LOSS,
+          });
+        }
         setGameState(GameState.LOSS);
         setSpeechText(`Game over! The word was "${word}".`);
       } else {

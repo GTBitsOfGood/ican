@@ -2,9 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { GameState, type GameWrapperControls } from "./GameWrapper";
 import { useUser } from "@/components/UserContext";
 import { useUserProfile } from "@/components/hooks/useAuth";
-import GameStatsHTTPClient from "@/http/gameStatsHTTPClient";
-import GameRewardsService from "@/services/gameRewards";
+import {
+  useGameStatistics,
+  useRecordGameResult,
+} from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { GameName, GameResult } from "@/types/games";
 
 type Board = (string | null)[];
 type Difficulty = "normal" | "expert";
@@ -31,6 +34,8 @@ export default function TicTacToe({
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
+  const { data: gameStatistics } = useGameStatistics(userId);
+  const recordGameResult = useRecordGameResult();
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [aiIsThinking, setAiIsThinking] = useState(false);
@@ -207,20 +212,19 @@ export default function TicTacToe({
     setWinRewardDetails?.(null);
 
     try {
-      const stats = await GameStatsHTTPClient.getGameStats(userId);
-      const streakInDays = stats.streakInDays;
-      const coinsAlreadyEarned = stats.coinsEarnedToday;
-
-      const coinsToPay = GameRewardsService.calculateGameCoins(streakInDays);
-      const actualCoinsEarned = GameRewardsService.getActualCoinsToEarn(
-        coinsToPay,
-        coinsAlreadyEarned,
+      const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
+      const stats = await recordGameResult.mutateAsync({
+        userId,
+        gameName: GameName.TIC_TAC_TOE,
+        result: GameResult.WIN,
+      });
+      const actualCoinsEarned = Math.max(
+        0,
+        stats.coinsEarnedToday - coinsAlreadyEarned,
       );
 
-      await GameStatsHTTPClient.recordGameWin(userId, actualCoinsEarned);
-
       const updatedDailyCoins = Math.min(
-        coinsAlreadyEarned + actualCoinsEarned,
+        stats.coinsEarnedToday,
         GAMES_DAILY_COIN_LIMIT,
       );
 
@@ -263,6 +267,13 @@ export default function TicTacToe({
 
     const emptySquares = newBoard.filter((val) => val === null).length;
     if (emptySquares === 0) {
+      if (userId) {
+        void recordGameResult.mutateAsync({
+          userId,
+          gameName: GameName.TIC_TAC_TOE,
+          result: GameResult.DRAW,
+        });
+      }
       setGameState(GameState.TIE);
       setBoard(newBoard);
       return;
@@ -276,6 +287,13 @@ export default function TicTacToe({
       const aiBoard = makeAIMove(newBoard);
       const aiWinner = calculateWinner(aiBoard);
       if (aiWinner === "O") {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.TIC_TAC_TOE,
+            result: GameResult.LOSS,
+          });
+        }
         setGameState(GameState.LOSS);
         setBoard(aiBoard);
         setAiIsThinking(false);
@@ -284,6 +302,13 @@ export default function TicTacToe({
 
       const emptySquaresAfterAI = aiBoard.filter((val) => val === null).length;
       if (emptySquaresAfterAI === 0) {
+        if (userId) {
+          void recordGameResult.mutateAsync({
+            userId,
+            gameName: GameName.TIC_TAC_TOE,
+            result: GameResult.DRAW,
+          });
+        }
         setGameState(GameState.TIE);
         setBoard(aiBoard);
         setAiIsThinking(false);
