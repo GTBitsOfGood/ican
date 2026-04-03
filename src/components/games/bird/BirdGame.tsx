@@ -26,22 +26,30 @@ export default function BirdGame({
   const boardRef = useRef<HTMLDivElement | null>(null);
   const spawnCounter = useRef(0);
 
-  const [boardHeight, setBoardHeight] = useState<number>(0);
-  const [boardWidth, setBoardWidth] = useState<number>(0);
-  const [birdY, setBirdY] = useState<number>(0);
-  const [, setBirdVelocity] = useState<number>(0);
+  // Physics refs are the authoritative source of truth for the game loop.
+  // React state is derived from them solely for rendering.
+  const birdYRef = useRef(0);
+  const birdVelocityRef = useRef(0);
+  const pipesRef = useRef<Pipe[]>([]);
+  const gameOverRef = useRef(false);
+
+  const [boardHeight, setBoardHeight] = useState(0);
+  const [boardWidth, setBoardWidth] = useState(0);
+  const [birdY, setBirdY] = useState(0);
   const [pipes, setPipes] = useState<Pipe[]>([]);
   const [score, setScore] = useState(0);
 
   const resetGame = useCallback(
     (height = boardHeight) => {
-      if (height > 0) {
-        setBirdY(height * 0.25);
-      }
-      setBirdVelocity(0);
+      const startY = height > 0 ? height * 0.25 : 0;
+      birdYRef.current = startY;
+      birdVelocityRef.current = 0;
+      pipesRef.current = [];
+      gameOverRef.current = false;
+      spawnCounter.current = 0;
+      setBirdY(startY);
       setPipes([]);
       setScore(0);
-      spawnCounter.current = 0;
     },
     [boardHeight],
   );
@@ -55,22 +63,6 @@ export default function BirdGame({
   const birdX = boardWidth * BIRD_X_RATIO;
   const pipeWidth = boardWidth * PIPE_WIDTH_RATIO;
   const pipeGap = boardHeight * PIPE_GAP_RATIO;
-
-  const spawnPipe = useCallback(() => {
-    const gap = boardHeight * PIPE_GAP_RATIO;
-    if (boardHeight <= gap) return;
-
-    const gapY = Math.random() * (boardHeight - gap);
-
-    const newPipe: Pipe = {
-      id: Date.now(),
-      x: boardRef.current?.clientWidth || 400,
-      gapY,
-      scored: false,
-    };
-
-    setPipes((prev) => [...prev, newPipe]);
-  }, [boardHeight]);
 
   useEffect(() => {
     if (gameState === GameState.START && boardHeight > 0) {
@@ -87,10 +79,7 @@ export default function BirdGame({
 
     measureBoard();
     window.addEventListener("resize", measureBoard);
-
-    return () => {
-      window.removeEventListener("resize", measureBoard);
-    };
+    return () => window.removeEventListener("resize", measureBoard);
   }, []);
 
   useEffect(() => {
@@ -98,17 +87,14 @@ export default function BirdGame({
       setSpeechText("Press start, then space to flap!");
       return;
     }
-
     if (gameState === GameState.PLAYING) {
       setSpeechText("Press space to flap!");
       return;
     }
-
     if (gameState === GameState.WON) {
       setSpeechText("Amazing! You have won!");
       return;
     }
-
     setSpeechText("Nice try!");
   }, [gameState, setSpeechText]);
 
@@ -121,97 +107,99 @@ export default function BirdGame({
     const activePipeGap = boardHeight * PIPE_GAP_RATIO;
 
     const intervalId = window.setInterval(() => {
-      // Move pipes, check scoring; capture updated positions for collision below
-      let movedPipes: Pipe[] = [];
-      setPipes((prevPipes) => {
-        let pointScored = false;
+      // Skip ticks that fire between setGameState(LOSS) and the cleanup running.
+      if (gameOverRef.current) return;
 
-        const updated = prevPipes
-          .map((pipe) => {
-            const newX = pipe.x - PIPE_SPEED;
-            const justPassed =
-              !pipe.scored &&
-              activeBirdX > pipe.x + activePipeWidth - PIPE_SPEED;
-            if (justPassed) pointScored = true;
-            return { ...pipe, x: newX, scored: pipe.scored || justPassed };
-          })
-          .filter((pipe) => pipe.x + activePipeWidth > 0);
+      // Advance pipes
+      let pointScored = false;
+      const movedPipes = pipesRef.current
+        .map((pipe) => {
+          const newX = pipe.x - PIPE_SPEED;
+          const justPassed =
+            !pipe.scored && activeBirdX > pipe.x + activePipeWidth - PIPE_SPEED;
+          if (justPassed) pointScored = true;
+          return { ...pipe, x: newX, scored: pipe.scored || justPassed };
+        })
+        .filter((pipe) => pipe.x + activePipeWidth > 0);
 
-        if (pointScored) setScore((s) => s + 1);
-
-        movedPipes = updated;
-        return updated;
-      });
-
+      // Spawn pipes
       spawnCounter.current += 1;
       if (spawnCounter.current >= PIPE_SPAWN) {
-        spawnPipe();
+        const gap = boardHeight * PIPE_GAP_RATIO;
+        if (boardHeight > gap) {
+          movedPipes.push({
+            id: Date.now(),
+            x: boardRef.current?.clientWidth ?? 400,
+            gapY: Math.random() * (boardHeight - gap),
+            scored: false,
+          });
+        }
         spawnCounter.current = 0;
       }
 
-      setBirdVelocity((prevVelocity) => {
-        const newVelocity = prevVelocity + GRAVITY;
+      pipesRef.current = movedPipes;
 
-        setBirdY((prevY) => {
-          const newY = prevY + newVelocity;
+      // Physics
+      const newVelocity = birdVelocityRef.current + GRAVITY;
+      const rawY = birdYRef.current + newVelocity;
 
-          if (newY <= 0) {
-            setGameState(GameState.LOSS);
-            return 0;
-          }
+      let collision = false;
+      let nextY = rawY;
 
-          if (newY + activeBirdSize >= boardHeight) {
-            setGameState(GameState.LOSS);
-            return boardHeight - activeBirdSize;
-          }
+      if (rawY <= 0) {
+        collision = true;
+        nextY = 0;
+      } else if (rawY + activeBirdSize >= boardHeight) {
+        collision = true;
+        nextY = boardHeight - activeBirdSize;
+      } else {
+        const birdLeft = activeBirdX;
+        const birdRight = activeBirdX + activeBirdSize;
+        const birdTop = rawY;
+        const birdBottom = rawY + activeBirdSize;
 
-          // Collision: check bird AABB against each pipe using true current positions
-          const birdLeft = activeBirdX;
-          const birdRight = activeBirdX + activeBirdSize;
-          const birdTop = newY;
-          const birdBottom = newY + activeBirdSize;
-
-          for (const pipe of movedPipes) {
-            const horizontalOverlap =
-              birdRight > pipe.x && birdLeft < pipe.x + activePipeWidth;
-            if (horizontalOverlap) {
-              const hitsTop = birdTop < pipe.gapY;
-              const hitsBottom = birdBottom > pipe.gapY + activePipeGap;
-              if (hitsTop || hitsBottom) {
-                setGameState(GameState.LOSS);
-                return newY;
-              }
+        for (const pipe of movedPipes) {
+          const horizontalOverlap =
+            birdRight > pipe.x && birdLeft < pipe.x + activePipeWidth;
+          if (horizontalOverlap) {
+            const hitsTop = birdTop < pipe.gapY;
+            const hitsBottom = birdBottom > pipe.gapY + activePipeGap;
+            if (hitsTop || hitsBottom) {
+              collision = true;
+              nextY = rawY;
+              break;
             }
           }
+        }
+      }
 
-          return newY;
-        });
+      birdVelocityRef.current = newVelocity;
+      birdYRef.current = nextY;
 
-        return newVelocity;
-      });
+      if (pointScored) setScore((s) => s + 1);
+      setBirdY(nextY);
+      setPipes([...movedPipes]);
+
+      if (collision) {
+        gameOverRef.current = true;
+        setGameState(GameState.LOSS);
+      }
     }, TICK_MS);
 
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, [gameState, boardHeight, boardWidth, setGameState, spawnPipe]);
+    return () => window.clearInterval(intervalId);
+  }, [gameState, boardHeight, boardWidth, setGameState]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code !== "Space") return;
-
       event.preventDefault();
-
       if (gameState === GameState.PLAYING) {
-        setBirdVelocity(FLAP_STRENGTH);
+        birdVelocityRef.current = FLAP_STRENGTH;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [gameState]);
 
   const isGameOver =
