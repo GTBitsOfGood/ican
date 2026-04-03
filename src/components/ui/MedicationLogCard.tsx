@@ -106,7 +106,7 @@ export default function MedicationLogCard({
         {
           userId: userId!,
           medicationId: id,
-          localTime: new Date().toLocaleString("en-us"),
+          localTime: new Date().toISOString(),
         },
         {
           onSuccess: () => {
@@ -133,7 +133,7 @@ export default function MedicationLogCard({
       {
         userId: userId!,
         medicationId: id,
-        localTime: new Date().toLocaleString("en-us"),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {
@@ -155,7 +155,7 @@ export default function MedicationLogCard({
       {
         userId: userId!,
         medicationId: id,
-        localTime: new Date().toLocaleString(undefined),
+        localTime: new Date().toISOString(),
       },
       {
         onSuccess: () => {

@@ -27,10 +27,13 @@ export default function Log() {
     return `${year}-${month}-${day}`;
   };
 
-  const localTime = new Date().toLocaleString();
+  const currentTimestamp = new Date().toISOString();
   const activeDate = getDateString(currDate, 0);
 
-  const { data: scheduleData } = useMedicationSchedule(activeDate, localTime);
+  const { data: scheduleData } = useMedicationSchedule(
+    activeDate,
+    currentTimestamp,
+  );
   const currentDayData = scheduleData || { date: "", medications: [] };
 
   const normalTodayMeds = tutorial.isActive

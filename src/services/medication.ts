@@ -112,6 +112,9 @@ export default class MedicationService {
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
     const now = new Date(localTime);
+    if (Number.isNaN(now.getTime())) {
+      throw new IllegalOperationError("Invalid medication timestamp.");
+    }
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -187,6 +190,9 @@ export default class MedicationService {
 
     const medicationLogs = await MedicationDAO.getMedicationLogs(medicationId);
     const now = new Date(localTime);
+    if (Number.isNaN(now.getTime())) {
+      throw new IllegalOperationError("Invalid medication timestamp.");
+    }
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
@@ -236,7 +242,7 @@ export default class MedicationService {
     });
 
     // create medication log in
-    await MedicationDAO.createMedicationLog(medicationId, new Date());
+    await MedicationDAO.createMedicationLog(medicationId, now);
 
     return {
       isPerfectWeek: streakUpdate.isPerfectWeek,
@@ -261,6 +267,9 @@ export default class MedicationService {
     }
 
     const now = new Date(localTime);
+    if (Number.isNaN(now.getTime())) {
+      throw new IllegalOperationError("Invalid medication timestamp.");
+    }
     const currentDate = new Date(
       now.getFullYear(),
       now.getMonth(),
