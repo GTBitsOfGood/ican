@@ -50,6 +50,11 @@ export default function SettingsModal() {
     onOpen();
   }, [onOpen]);
 
+  const handleClose = () => {
+    onClose();
+    router.push("/");
+  };
+
   const handleParentalControlsChange = (value: boolean) => {
     if (value) {
       router.push("/change-pin");
@@ -114,13 +119,10 @@ export default function SettingsModal() {
         }}
         className="w-[80%] font-quantico font-bold z-50 border-8 border-[#7177AC] text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
         isOpen={isOpen}
-        onClose={() => {
-          onClose();
-          router.push("/");
-        }}
+        onClose={handleClose}
         radius="lg"
         placement="center"
-        closeButton={<ModalCloseButton onClose={onClose} />}
+        closeButton={<ModalCloseButton onClose={handleClose} />}
       >
         <ModalContent>
           <ModalHeader>Settings</ModalHeader>
