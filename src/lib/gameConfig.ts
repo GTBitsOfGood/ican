@@ -26,12 +26,6 @@ const gameConfig: GameConfig[] = [
     banner: "/games/flowerman.png",
     href: "/games/flowerman",
   },
-  {
-    name: "Flappy Bird",
-    gameName: GameName.FLAPPY_BIRD,
-    banner: "/games/flappy_bird.png",
-    href: "/games/flappybird",
-  },
 ];
 
 export default gameConfig;

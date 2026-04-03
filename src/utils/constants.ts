@@ -6,6 +6,7 @@ export const XP_GAIN = 5;
 export const FOOD_INC = 1;
 
 // Game rewards constants
+export const COINS_PER_WIN = 10;
 export const GAMES_COINS_BASE = 5;
 export const GAMES_COINS_PER_STREAK = 1;
 export const GAMES_DAILY_COIN_LIMIT = 50;

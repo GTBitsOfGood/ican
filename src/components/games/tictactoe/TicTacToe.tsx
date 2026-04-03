@@ -41,24 +41,33 @@ export default function TicTacToe({
   const [aiIsThinking, setAiIsThinking] = useState(false);
   const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
+  const hasShownInstructionsRef = useRef(false);
   const [isProcessingWin, setIsProcessingWin] = useState(false);
 
-  useEffect(() => {
-    if (gameState === GameState.START) {
-      setSpeechText("Welcome!");
-      hasShownInitialPlayingMessageRef.current = false;
-    }
-  }, [gameState, setSpeechText]);
-
   const handleStart = useCallback(() => {
+    setGameState(GameState.PLAYING);
+  }, [setGameState]);
+
+  const showInstructions = useCallback(() => {
     showInformationModal({
       gameMode: "TIC-TAC-TOE",
       title: "INSTRUCTIONS",
       message:
         "Press a space on the board to place your tile. You and your pet will take turns placing tiles. Get three X's in a row to win!",
-      onClose: () => setGameState(GameState.PLAYING),
+      onClose: () => undefined,
     });
-  }, [showInformationModal, setGameState]);
+  }, [showInformationModal]);
+
+  useEffect(() => {
+    if (gameState === GameState.START) {
+      setSpeechText("Welcome!");
+      hasShownInitialPlayingMessageRef.current = false;
+      if (!hasShownInstructionsRef.current) {
+        hasShownInstructionsRef.current = true;
+        queueMicrotask(() => showInstructions());
+      }
+    }
+  }, [gameState, setSpeechText, showInstructions]);
 
   useEffect(() => {
     const prev = prevGameStateRef.current;
