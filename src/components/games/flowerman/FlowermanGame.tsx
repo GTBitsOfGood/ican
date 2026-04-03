@@ -99,18 +99,6 @@ export default function FlowermanGame({
     };
   }, []);
 
-  const handleRestart = () => {
-    const { hint, wordLength } = startNewWord();
-    setSpeechText("New word! It's your turn to guess a letter.");
-    showInformationModal({
-      gameMode: "FLOWERMAN",
-      title: "HINT",
-      message: hint,
-      letters: `${wordLength} LETTERS`,
-      onClose: () => setGameState(GameState.PLAYING),
-    });
-  };
-
   const handleGameWin = async () => {
     if (!userId || isProcessingWin) return;
 
@@ -205,21 +193,6 @@ export default function FlowermanGame({
           livesRemaining={lives}
         />
       </div>
-
-      {/* Restart button — always visible, fixed above the leave-game button */}
-      <button
-        type="button"
-        onClick={handleRestart}
-        className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
-        aria-label="Restart game"
-      >
-        <img
-          src="/games/flowerman/restart.svg"
-          alt=""
-          className="h-14 w-auto"
-        />
-      </button>
-
       {/* Keyboard — fixed across the full bottom of the screen; disabled until playing */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4">
         <FlowermanKeyboard

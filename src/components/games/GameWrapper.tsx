@@ -258,6 +258,19 @@ export default function GameWrapper({
 
           <button
             type="button"
+            onClick={() => window.location.reload()}
+            className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
+            aria-label="Restart game"
+          >
+            <img
+              src="/games/flowerman/restart.svg"
+              alt=""
+              className="h-14 w-auto"
+            />
+          </button>
+
+          <button
+            type="button"
             onClick={() => router.push("/games")}
             className="fixed top-[15px] right-[5px] z-[67] flex items-center justify-center"
             aria-label="Leave game"
