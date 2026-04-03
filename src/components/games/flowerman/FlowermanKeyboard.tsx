@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import FlowermanKey from "./FlowermanKey";
-import { ALPHABET } from "@/constant/flowermanConstants";
+import { ALPHABET } from "@/constants/flowermanConstants";
 
 const ROW1 = ALPHABET.slice(0, 13); // A-M
 const ROW2 = ALPHABET.slice(13, 26); // N-Z

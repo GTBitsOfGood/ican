@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { LIVES } from "@/constant/flowermanConstants";
+import { LIVES } from "@/constants/flowermanConstants";
 
 export default function FlowermanFlower({
   livesRemaining,

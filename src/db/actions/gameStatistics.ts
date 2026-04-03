@@ -80,6 +80,7 @@ export default class GameStatisticsDAO {
     userId: string,
     gameName: GameName,
     result: GameResult,
+    score?: number,
   ): Promise<void> {
     const _id = new Types.ObjectId(userId);
     await dbConnect();
@@ -139,6 +140,11 @@ export default class GameStatisticsDAO {
                 -10,
               ],
             },
+            ...(score !== undefined && {
+              [`gameStatistics.${gameName}.highScore`]: {
+                $max: [{ $ifNull: [`${fieldRef}.highScore`, 0] }, score],
+              },
+            }),
           },
         },
       ],

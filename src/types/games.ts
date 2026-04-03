@@ -27,6 +27,7 @@ export interface GameStats {
   bestStreak: number;
   lastPlayedDate: string | null;
   lastTenResults: GameResult[];
+  highScore?: number; // flappy bird is score-based
 }
 
 export type GameStatistics = Partial<Record<GameName, GameStats>>;
