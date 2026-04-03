@@ -40,6 +40,8 @@ export default function MedicationLogCard({
     (tutorial.shouldShowMedicationDrag ||
       tutorial.tutorialPortion > TUTORIAL_PORTIONS.LOG_TUTORIAL);
   const shouldUseTutorialFlow = tutorial.isActive && isTutorialMedication;
+  const shouldUseReplayTutorialFlow =
+    shouldUseTutorialFlow && tutorial.isReplay;
   const shouldBypassTutorialTiming =
     shouldUseTutorialFlow && !tutorialMedicationAlreadyTaken;
   const { userId } = useUser();
@@ -101,6 +103,13 @@ export default function MedicationLogCard({
   // this deals with that logic
   // it should use a backend service to do this though
   const handleTakeMedicationAction = () => {
+    if (shouldUseReplayTutorialFlow) {
+      setShowConfirmModal(false);
+      tutorial.queueTutorialMedicationReward(formOfMedication);
+      router.push("/");
+      return;
+    }
+
     if (shouldUseTutorialFlow) {
       medicationLogMutation.mutate(
         {
@@ -151,6 +160,11 @@ export default function MedicationLogCard({
   };
 
   const handleMedicationCheckIn = () => {
+    if (shouldUseReplayTutorialFlow) {
+      setShowConfirmModal(true);
+      return;
+    }
+
     medicationCheckInMutation.mutate(
       {
         userId: userId!,

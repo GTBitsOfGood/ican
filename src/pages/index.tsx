@@ -64,8 +64,8 @@ export default function Home({
     pet && isTutorial
       ? tutorial.isReplay
         ? tutorial.replayXpLevel
-        : 0
-      : (pet?.xpLevel ?? 0);
+        : 1
+      : Math.max(pet?.xpLevel ?? 1, 1);
   const displayCurrentExp =
     pet && isTutorial
       ? tutorial.isReplay

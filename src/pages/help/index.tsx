@@ -76,20 +76,24 @@ export default function HelpPage() {
           <div className="h-16 w-16">
             <BackButton onClick={handleBackIcon} />
           </div>
-          <div className="flex flex-1 items-center justify-between gap-4">
-            <h1 className="text-white text-6xl font-bold">Help</h1>
+          <h1 className="text-white text-6xl font-bold">Help</h1>
+        </div>
+
+        <div className="bg-[#c5cde8] border-8 border-[#7177AC] rounded-none overflow-hidden">
+          <div className="flex w-full items-center justify-between border-b-4 border-[#7177AC] bg-[#c5cde8] px-2 py-2">
+            <span className="text-[#2d3461] text-3xl font-bold">Tutorial</span>
             <button
               type="button"
               onClick={tutorial.startReplay}
               disabled={tutorial.isStartingReplay}
-              className="bg-[#2d3461] px-6 py-4 text-2xl font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="bg-[#2d3461] px-4 py-2 text-2xl font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {tutorial.isStartingReplay ? "Starting..." : "Replay Tutorial"}
+              {tutorial.isStartingReplay
+                ? "Starting..."
+                : "Click to Replay Tutorial"}
             </button>
           </div>
-        </div>
 
-        <div className="bg-[#c5cde8] border-8 border-[#7177AC] rounded-none overflow-hidden">
           {helpSections.map((section, index) => (
             <div
               key={index}

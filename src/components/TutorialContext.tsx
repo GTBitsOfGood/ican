@@ -143,7 +143,7 @@ const createReplaySession = (
   if (tutorialStage === "food") {
     return {
       replayCoins: 100,
-      replayXpLevel: 0,
+      replayXpLevel: 1,
       replayXpGained: 0,
       replayFoods: [],
     };
@@ -152,7 +152,7 @@ const createReplaySession = (
   if (tutorialStage === "medication" || tutorialStage === "feed") {
     return {
       replayCoins: 100,
-      replayXpLevel: 0,
+      replayXpLevel: 1,
       replayXpGained: 0,
       replayFoods: [],
     };
@@ -160,7 +160,7 @@ const createReplaySession = (
 
   return {
     replayCoins: 100,
-    replayXpLevel: 0,
+    replayXpLevel: 1,
     replayXpGained: 0,
     replayFoods: [],
   };
@@ -670,7 +670,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       isActive,
       isReplay,
       replayCoins: replaySession?.replayCoins ?? null,
-      replayXpLevel: replaySession?.replayXpLevel ?? 0,
+      replayXpLevel: replaySession?.replayXpLevel ?? 1,
       replayXpGained: replaySession?.replayXpGained ?? 0,
       replayFoods: replaySession?.replayFoods ?? [],
       practiceDose,
