@@ -34,8 +34,6 @@ interface HomeProps {
   foodCount?: number;
 }
 
-const TUTORIAL_XP_GAIN = 20;
-
 export default function Home({
   activeModal = "",
   foods = undefined,
@@ -44,12 +42,6 @@ export default function Home({
   const router = useRouter();
   const tutorial = useTutorial();
   const isTutorial = tutorial.isActive;
-  const initialTutorialDisplayExp =
-    isTutorial &&
-    !tutorial.isReplay &&
-    tutorial.tutorialPortion >= TUTORIAL_PORTIONS.END_TUTORIAL
-      ? TUTORIAL_XP_GAIN
-      : 0;
 
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
@@ -64,13 +56,13 @@ export default function Home({
     pet && isTutorial
       ? tutorial.isReplay
         ? tutorial.replayXpLevel
-        : 1
+        : Math.max(pet.xpLevel ?? 1, 1)
       : Math.max(pet?.xpLevel ?? 1, 1);
   const displayCurrentExp =
     pet && isTutorial
       ? tutorial.isReplay
         ? tutorial.replayXpGained
-        : initialTutorialDisplayExp
+        : (pet.xpGained ?? 0)
       : (pet?.xpGained ?? 0);
   const feedPetMutation = realFeedPet;
   const { data: tutorialBagFoods = [] } = usePetFoods(
@@ -236,8 +228,8 @@ export default function Home({
 
     const finalDistance = distanceOverride ?? distance;
 
-    if (isTutorial) {
-      if (tutorial.isReplay && selectedFood) {
+    if (tutorial.isReplay) {
+      if (selectedFood) {
         tutorial.consumeReplayFood(selectedFood);
       }
       tutorial.markPetFed();
@@ -258,6 +250,9 @@ export default function Home({
     feedPetMutation.mutate(pet._id, {
       onSuccess: (updatedPetData) => {
         const newLevel = updatedPetData?.xpLevel ?? 0;
+        if (isTutorial) {
+          tutorial.markPetFed();
+        }
 
         setHearts(true);
 

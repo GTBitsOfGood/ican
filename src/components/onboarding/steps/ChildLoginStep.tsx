@@ -45,11 +45,11 @@ export default function ChildLoginStep({
 
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      <div className="mobile:block desktop:hidden self-start [&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+      <div className="mobile:block desktop:hidden self-start [&>a]:h-16 [&>a]:w-16 [&>button]:h-16 [&>button]:w-16 [&>a>button]:h-full [&>a>button]:w-full">
         <BackButton onClick={onBack} />
       </div>
       <OnboardingCard>
-        <div className="mobile:hidden desktop:block [&>a]:w-24 [&>a]:h-24 [&>a>button]:w-full [&>a>button]:h-full">
+        <div className="mobile:hidden desktop:block [&>a]:h-24 [&>a]:w-24 [&>button]:h-24 [&>button]:w-24 [&>a>button]:h-full [&>a>button]:w-full">
           <BackButton onClick={onBack} />
         </div>
 

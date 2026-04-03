@@ -129,9 +129,11 @@ export const useFeedPet = () => {
 
   return useMutation({
     mutationFn: (petId: string) => PetHTTPClient.feedPet(userId!, petId),
-    onSettled: () => {
+    onSettled: (_, __, petId) => {
       if (userId) {
         queryClient.invalidateQueries({ queryKey: PET_QUERY_KEYS.pet(userId) });
+        queryClient.invalidateQueries({ queryKey: ["petFoods", petId] });
+        queryClient.invalidateQueries({ queryKey: ["petBag", petId] });
       }
     },
   });
