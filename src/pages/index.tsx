@@ -12,6 +12,7 @@ import ChangeChildLoginModal from "@/components/modals/ChangeChildLoginModal";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import LoadingScreen from "@/components/loadingScreen";
 import { useFeedPet, usePet } from "@/components/hooks/usePet";
+import { useSettings } from "@/components/hooks/useSettings";
 import FoodModal from "@/components/modals/FoodModal";
 import { useFood } from "@/components/FoodContext";
 import LevelUpModal from "@/components/modals/LevelUpModal";
@@ -47,6 +48,9 @@ export default function Home({
   const tutorial = useTutorial();
   const isTutorial = tutorial.isActive;
 
+  const { data: settings } = useSettings();
+  const use24HourTime =
+    settings?.notificationPreferences?.use24HourTime ?? false;
   const realPetData = usePet();
   const realFeedPet = useFeedPet();
   const ensureStarterKitMutation = useEnsureStarterKit();
@@ -304,7 +308,7 @@ export default function Home({
 
     if (upcomingMed) {
       const medicationTimeLabel = upcomingMed.includeTimes
-        ? formatMedicationTime(upcomingMed.scheduledDoseTime)
+        ? formatMedicationTime(upcomingMed.scheduledDoseTime, use24HourTime)
         : currentDateLabel;
       return `Hi, {userName}!\nIt's time to take your ${medicationTimeLabel} medication.\nClick {logButton} to check-in!`;
     }
@@ -459,21 +463,24 @@ export default function Home({
                 buttonType="help"
                 drawButton={false}
                 redirect="/help"
+                disabled={isTutorial}
               />
               <NavButton buttonType="settings" drawButton={false} />
             </div>
           </div>
           {/* Navbar - VH Scaling */}
           <Navbar>
-            <NavButton buttonType="games" />
+            <NavButton buttonType="games" disabled={isTutorial} />
             <NavButton
               buttonType="store"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}
+              disabled={isTutorial && !tutorial.shouldEnlargeButton("store")}
             />
-            <NavButton buttonType="bag" />
+            <NavButton buttonType="bag" disabled={isTutorial} />
             <NavButton
               buttonType="log"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
+              disabled={isTutorial && !tutorial.shouldEnlargeButton("log")}
             />
             <FeedButton
               active={

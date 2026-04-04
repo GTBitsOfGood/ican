@@ -3,7 +3,9 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useUser } from "./UserContext";
 import Image from "next/image";
-import { useValidateToken } from "./hooks/useAuth";
+import { useValidateToken, useOnboardingStatus } from "./hooks/useAuth";
+
+const ONBOARDING_ROUTES = ["/onboarding", "/first-pet", "/medications"];
 
 export default function AuthorizedRoute({
   children,
@@ -11,8 +13,13 @@ export default function AuthorizedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { setUserId } = useUser();
+  const { userId, setUserId } = useUser();
   const { data: token, isLoading, isError } = useValidateToken();
+  const isOnboardingRoute = ONBOARDING_ROUTES.some((route) =>
+    router.pathname.startsWith(route),
+  );
+  const { data: isOnboarded, isLoading: onboardingLoading } =
+    useOnboardingStatus(userId);
 
   useEffect(() => {
     if (!isLoading) {
@@ -27,6 +34,12 @@ export default function AuthorizedRoute({
       }
     }
   }, [isLoading, isError, token, router, setUserId]);
+
+  useEffect(() => {
+    if (!onboardingLoading && isOnboarded === false && !isOnboardingRoute) {
+      router.replace("/onboarding");
+    }
+  }, [onboardingLoading, isOnboarded, isOnboardingRoute, router]);
 
   if (isLoading) {
     return (
@@ -48,6 +61,10 @@ export default function AuthorizedRoute({
     !token?.isValid ||
     token?.decodedToken?.origin === "forgot-password"
   ) {
+    return null;
+  }
+
+  if (!onboardingLoading && isOnboarded === false && !isOnboardingRoute) {
     return null;
   }
 

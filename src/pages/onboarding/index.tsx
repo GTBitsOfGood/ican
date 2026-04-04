@@ -8,7 +8,6 @@ import CompletionStep from "@/components/onboarding/steps/CompletionStep";
 import ChildLoginStep from "@/components/onboarding/steps/ChildLoginStep";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import { useUser } from "@/components/UserContext";
-import { useUpdateOnboardingStatus } from "@/components/hooks/useAuth";
 import {
   useUpdateChildLogin,
   useUpdatePin,
@@ -31,7 +30,6 @@ export default function Onboard() {
   const [pinError, setPinError] = useState<string>("");
   const [hasSavedParentPin, setHasSavedParentPin] = useState<boolean>(false);
   const { userId } = useUser();
-  const updateOnboardingStatus = useUpdateOnboardingStatus();
   const updatePin = useUpdatePin();
   const updateChildLogin = useUpdateChildLogin();
 
@@ -188,19 +186,7 @@ export default function Onboard() {
   };
 
   const handleChoosePet = () => {
-    if (userId) {
-      updateOnboardingStatus.mutate(
-        { userId, isOnboarded: true },
-        {
-          onSuccess: () => {
-            router.push("/first-pet");
-          },
-          onError: (error) => {
-            console.error("Error updating onboarding status:", error);
-          },
-        },
-      );
-    }
+    router.push("/first-pet");
   };
 
   const handleBack = () => {

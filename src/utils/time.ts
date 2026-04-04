@@ -14,6 +14,17 @@ export function convertTo12Hour(
   });
 }
 
+export function formatDoseTime(
+  doseTime: string,
+  use24HourTime: boolean,
+): string {
+  if (use24HourTime) {
+    return doseTime;
+  }
+  const result = convertTo12Hour([doseTime])[0];
+  return `${result.time} ${result.period}`;
+}
+
 export function convertTo24Hour(
   doseTimes: { time: string; period: "AM" | "PM" }[],
 ): string[] {

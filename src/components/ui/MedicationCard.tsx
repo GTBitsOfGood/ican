@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import { Trash, PencilSimple } from "@phosphor-icons/react";
 import { Medication } from "@/db/models/medication";
 import { WithId } from "@/types/models";
-import { convertTo12Hour } from "@/utils/time";
+import { formatDoseTime } from "@/utils/time";
 import { getNextDosePhrase as calculateNextDosePhrase } from "@/lib/medicationDoseCalculator";
+import { useSettings } from "@/components/hooks/useSettings";
 import Link from "next/link";
 import {
   PillIcon,
@@ -24,16 +25,19 @@ export default function MedicationCard({
   setDeleteModalVisible,
   setClickedIndex,
 }: MedicationCardProps) {
+  const { data: settings } = useSettings();
+  const use24HourTime =
+    settings?.notificationPreferences?.use24HourTime ?? false;
+
   const nextDosePhrase = useMemo(() => {
     const result = calculateNextDosePhrase(medication);
 
     if (medication.doseTimes?.length && medication.includeTimes) {
-      const timeInfo = convertTo12Hour(medication.doseTimes)[0];
-      return `${result.phrase}, ${timeInfo.time} ${timeInfo.period}`;
+      return `${result.phrase}, ${formatDoseTime(medication.doseTimes[0], use24HourTime)}`;
     }
 
     return result.phrase;
-  }, [medication]);
+  }, [medication, use24HourTime]);
 
   const notificationFrequency =
     medication.notificationFrequency === "Every Dose"

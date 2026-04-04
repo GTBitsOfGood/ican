@@ -121,14 +121,6 @@ export default function NotificationSettingsModal({
                   onCommit={(v) => updatePref("earlyWindow", v)}
                 />
               </div>
-              <div className={TOGGLE_ROW_CLASS}>
-                <h5 className="text-2xl">24-Hour Time (e.g. 16:00)</h5>
-                <ModalSwitch
-                  className={NOTIFICATION_SWITCH_CLASS}
-                  state={prefs?.use24HourTime ?? false}
-                  setState={(v) => updatePref("use24HourTime", v)}
-                />
-              </div>
             </div>
           </div>
         </ModalBody>
