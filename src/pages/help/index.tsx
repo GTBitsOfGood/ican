@@ -3,8 +3,7 @@ import { useRouter } from "next/router";
 import { Plus, Minus } from "lucide-react";
 import { useTutorial } from "@/components/TutorialContext";
 import BackButton from "@/components/ui/BackButton";
-import { GAMES_COINS_BASE } from "@/utils/constants";
-import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { GAMES_COINS_BASE, GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 export default function HelpPage() {
   const [openIndices, setOpenIndices] = useState<number[]>([]);
