@@ -385,18 +385,18 @@ export default function GameWrapper({
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
                     {informationModal.gameMode && (
-                      <p className="font-quantico text-2xl uppercase mb-5 font-bold text-textBeige">
+                      <p className="font-quantico uppercase mb-5 font-bold text-textBeige text-sm smallTablet:text-2xl">
                         GAME MODE: {informationModal.gameMode}
                       </p>
                     )}
-                    <h2 className="font-quantico text-5xl font-bold uppercase mb-5 text-textBeige">
+                    <h2 className="font-quantico font-bold uppercase mb-5 text-textBeige text-xl smallTablet:text-5xl">
                       {informationModal.title}
                     </h2>
-                    <p className="font-quantico text-2xl font-bold leading-relaxed text-textBeige">
+                    <p className="font-quantico font-bold leading-relaxed text-textBeige text-xs smallTablet:text-2xl">
                       {informationModal.message}
                     </p>
                     {informationModal.letters && (
-                      <p className="font-quantico text-2xl font-bold mt-1 tracking-widest uppercase text-textBeige">
+                      <p className="font-quantico font-bold mt-1 tracking-widest uppercase text-textBeige text-xs smallTablet:text-2xl">
                         {informationModal.letters}
                       </p>
                     )}
