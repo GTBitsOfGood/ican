@@ -64,6 +64,7 @@ interface TutorialContextType {
   purchaseReplayFood: (foodName: string, cost: number) => void;
   consumeReplayFood: (foodName: string) => void;
   startReplay: () => void;
+  exitReplay: () => void;
   isStartingReplay: boolean;
 }
 
@@ -650,6 +651,20 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [resetTutorial, router, userId]);
 
+  const exitReplay = useCallback(() => {
+    if (!isReplay) return;
+
+    resetTutorial.mutate(undefined, {
+      onSuccess: () => {
+        setReplaySession(null);
+        setReplayStage(null);
+        setMedicationType(null);
+        setShouldShowMedicationDrag(false);
+        router.push("/");
+      },
+    });
+  }, [isReplay, resetTutorial, router]);
+
   const getTutorialText = useCallback(() => {
     if (shouldShowMedicationDrag) {
       return "Feed me the medicine!";
@@ -706,11 +721,13 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseReplayFood,
       consumeReplayFood,
       startReplay,
+      exitReplay,
       isStartingReplay: resetTutorial.isPending,
     }),
     [
       completeTutorialMedicationStep,
       consumeReplayFood,
+      exitReplay,
       getTutorialText,
       isActive,
       isReplay,
