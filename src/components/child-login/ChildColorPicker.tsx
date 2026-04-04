@@ -300,9 +300,22 @@ export default function ChildColorPicker({
         disabled={sequence.length === 0}
       >
         <span
-          className={`flex h-5 w-5 items-center justify-center rounded-full text-[14px] leading-none ${hasSequence ? clearActiveIconClass : "bg-loginDisabledBg text-white"}`}
+          className={`flex h-5 w-5 items-center justify-center rounded-full ${hasSequence ? clearActiveIconClass : "bg-loginDisabledBg text-white"}`}
         >
-          ×
+          <svg
+            viewBox="0 0 20 20"
+            className="h-3 w-3 shrink-0"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden
+          >
+            <path
+              d="M5 5l10 10M15 5l-10 10"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
         </span>
         <span>Clear Password</span>
       </button>
