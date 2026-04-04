@@ -5,7 +5,8 @@ import dbConnect from "../dbConnect";
 import { GameName, GameResult, GameStats } from "@/types/games";
 import { NotFoundError } from "@/types/exceptions";
 import ERRORS from "@/utils/errorMessages";
-import { COINS_PER_WIN, GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import GameRewardsService from "@/services/gameRewards";
 
 export default class GameStatisticsDAO {
   static async getGameStatistics(
@@ -71,6 +72,7 @@ export default class GameStatisticsDAO {
       currentStreak = 1;
     }
     const bestStreak = Math.max(currentStreak, existing?.bestStreak ?? 0);
+    const coinsPerWin = GameRewardsService.calculateGameCoins(currentStreak);
 
     const previousUser = await UserModel.findOneAndUpdate(
       { _id },
@@ -127,7 +129,7 @@ export default class GameStatisticsDAO {
                             0,
                           ],
                         },
-                        COINS_PER_WIN,
+                        coinsPerWin,
                       ],
                     },
                   ],
@@ -156,7 +158,7 @@ export default class GameStatisticsDAO {
         ? (previousUser.gameCoinsEarnedToday ?? 0)
         : 0;
     const coinsEarnedToday = isWin
-      ? Math.min(GAMES_DAILY_COIN_LIMIT, previousCoinsToday + COINS_PER_WIN)
+      ? Math.min(GAMES_DAILY_COIN_LIMIT, previousCoinsToday + coinsPerWin)
       : previousCoinsToday;
     const coinsToAward = Math.max(0, coinsEarnedToday - previousCoinsToday);
 
