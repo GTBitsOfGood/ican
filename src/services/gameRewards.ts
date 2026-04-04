@@ -8,11 +8,11 @@ import {
 export default class GameRewardsService {
   /**
    * Calculates coins accounting for streak and streak cap
-   * Formula: GAMES_COINS_BASE + (GAMES_COINS_PER_STREAK * cappedStreak)
    */
   static calculateGameCoins(streakInDays: number): number {
     const cappedStreak = Math.min(streakInDays, MAX_STREAK_DAYS);
-    return GAMES_COINS_BASE + GAMES_COINS_PER_STREAK * cappedStreak;
+    const streakBonus = Math.max(0, cappedStreak - 1);
+    return GAMES_COINS_BASE + GAMES_COINS_PER_STREAK * streakBonus;
   }
 
   static isWithinDailyLimit(
