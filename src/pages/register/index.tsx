@@ -160,7 +160,7 @@ export default function Home() {
             <>
               <form
                 onSubmit={handleSubmit}
-                className="flex flex-col items-center justify-between w-[80%] dektop:bg-white mobile:bg-transparent rounded-lg"
+                className="flex flex-col items-center justify-between w-[80%] desktop:bg-white mobile:bg-transparent rounded-lg"
               >
                 <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 minimized:mb-1 desktop:mb-2">
                   Sign Up

@@ -263,7 +263,7 @@ export default function Home() {
                 </button>
 
                 {!isChildPasswordStep && (
-                  <div className="mt-2 flex justify-start flex-row items-center gap-">
+                  <div className="mt-2 flex justify-start flex-row items-center">
                     <input
                       type="checkbox"
                       id="rememberMe"

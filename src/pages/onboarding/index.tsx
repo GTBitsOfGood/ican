@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import WelcomeSteps from "@/components/onboarding/steps/WelcomeSteps";
 import PinSteps from "@/components/onboarding/steps/PinSteps";
@@ -17,8 +17,8 @@ import { ChildPasswordType, isPatternChildPasswordType } from "@/types/user";
 
 export default function Onboard() {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(OnboardingStep.Welcome);
-  const [userType, setUserType] = useState<UserType>(null);
+  const [overrideStep, setCurrentStep] = useState<OnboardingStep | null>(null);
+  const [overrideUserType, setUserType] = useState<UserType>(null);
   const [pin, setPin] = useState<string>("");
   const [confirmPin, setConfirmPin] = useState<string>("");
   const [childPasswordType, setChildPasswordType] = useState<ChildPasswordType>(
@@ -33,26 +33,21 @@ export default function Onboard() {
   const updatePin = useUpdatePin();
   const updateChildLogin = useUpdateChildLogin();
 
-  // Handle URL step and userType parameters
-  useEffect(() => {
-    if (router.isReady) {
-      const { step, userType: urlUserType } = router.query;
-      const timeoutId = window.setTimeout(() => {
-        if (
-          typeof step === "string" &&
-          Object.values(OnboardingStep).includes(step as OnboardingStep)
-        ) {
-          setCurrentStep(step as OnboardingStep);
-        }
+  const stepFromUrl =
+    router.isReady &&
+    typeof router.query.step === "string" &&
+    Object.values(OnboardingStep).includes(router.query.step as OnboardingStep)
+      ? (router.query.step as OnboardingStep)
+      : null;
 
-        if (urlUserType === "parent" || urlUserType === "child") {
-          setUserType(urlUserType);
-        }
-      }, 0);
+  const userTypeFromUrl =
+    router.isReady &&
+    (router.query.userType === "parent" || router.query.userType === "child")
+      ? (router.query.userType as UserType)
+      : null;
 
-      return () => window.clearTimeout(timeoutId);
-    }
-  }, [router.isReady, router.query]);
+  const currentStep = overrideStep ?? stepFromUrl ?? OnboardingStep.Welcome;
+  const userType = overrideUserType ?? userTypeFromUrl;
 
   // Navigation functions
   const goToWelcome = () => setCurrentStep(OnboardingStep.Welcome);

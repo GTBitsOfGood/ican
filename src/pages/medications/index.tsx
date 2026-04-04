@@ -119,8 +119,7 @@ export default function MedicationsPage({
                       Click to add medications to your list.
                     </h2>
                     <h2 className="desktop:hidden font-quantico text-white text-xl mt-5">
-                      Touch to add <menu type="context"></menu>edications to
-                      your list.
+                      Touch to add medications to your list.
                     </h2>
                   </>
                 )}
