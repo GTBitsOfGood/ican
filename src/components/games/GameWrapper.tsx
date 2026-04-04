@@ -187,10 +187,10 @@ export default function GameWrapper({
 
             {/* Pet at default home position with speech bubble */}
             {petBoardX === null && (
-              <div className="absolute left-4 top-[55%] w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
+              <div className="absolute left-4 top-[55%] w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem] smallTablet:z-10 smallTablet:static smallTablet:top-0 smallTablet:mt-24 smallTablet:mb-4 smallTablet:mx-auto smallTablet:translate-y-0">
                 <div className="relative">
                   {speechText && (
-                    <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
+                    <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64] smallTablet:scale-[0.5] smallTablet:left-[55%]">
                       <Bubble text={speechText} />
                     </div>
                   )}
@@ -199,7 +199,7 @@ export default function GameWrapper({
                     selectedItem={null}
                     appearance={pet.appearance}
                     showBackground={false}
-                    className="h-[17rem] tablet:h-[22rem]"
+                    className="h-[17rem] tablet:h-[22rem] smallTablet:h-[12rem] smallTablet:w-auto smallTablet:mx-auto"
                     characterImageSize={340}
                   />
                 </div>
@@ -209,9 +209,9 @@ export default function GameWrapper({
             {/* Whiteboard — mobile layout (<1400px) */}
             {isMobile ? (
               <div
-                className="fixed bottom-0 left-1/2 -translate-x-1/2"
+                className="fixed bottom-0 left-1/2 -translate-x-1/2 smallTablet:relative smallTablet:bottom-auto smallTablet:left-0 smallTablet:translate-x-0 smallTablet:mx-auto"
                 style={{
-                  width: "min(100%, calc(65vh * 393 / 510))",
+                  width: "min(100%, calc(45vh * 393 / 510))",
                   aspectRatio: "393 / 510",
                 }}
               >
@@ -231,7 +231,7 @@ export default function GameWrapper({
                 >
                   <div
                     className={cn(
-                      "h-full w-full overflow-hidden border-2 border-red-500",
+                      "h-full w-full overflow-hidden",
                       gameAreaClassName,
                     )}
                   >
