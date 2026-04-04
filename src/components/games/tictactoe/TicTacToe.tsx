@@ -8,9 +8,10 @@ import {
 } from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 import { GameName, GameResult } from "@/types/games";
+import { TICTACTOE_MINIMAX_PROBABILITY } from "@/constant/tictactoeConstants";
 
 type Board = (string | null)[];
-type Difficulty = "normal" | "expert";
+type Difficulty = "easy" | "normal" | "expert";
 
 function makeRandomMove(currentBoard: Board): Board {
   const emptySquares = currentBoard
@@ -37,7 +38,7 @@ export default function TicTacToe({
   const { data: gameStatistics } = useGameStatistics(userId);
   const recordGameResult = useRecordGameResult();
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [aiIsThinking, setAiIsThinking] = useState(false);
   const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
@@ -144,11 +145,13 @@ export default function TicTacToe({
       return;
     }
 
-    setSpeechText(
-      difficulty === "expert"
-        ? "Looking for a challenge I see!"
-        : "Yay lets start! It’s your turn first.",
-    );
+    let message = "Yay lets start! It's your turn first.";
+    if (difficulty === "expert") {
+      message = "Looking for a challenge I see!";
+    } else if (difficulty === "normal") {
+      message = "Good choice! Let's have some fun!";
+    }
+    setSpeechText(message);
   }, [difficulty, gameState, setSpeechText]);
 
   const calculateWinner = (squares: Board): string | null => {
@@ -226,7 +229,10 @@ export default function TicTacToe({
   };
 
   const makeAIMove = (currentBoard: Board): Board => {
-    if (difficulty === "expert") {
+    const probability = TICTACTOE_MINIMAX_PROBABILITY[difficulty];
+    const useMinimmax = Math.random() < probability;
+
+    if (useMinimmax) {
       const bestMove = getBestMove(currentBoard);
       const newBoard = [...currentBoard];
       newBoard[bestMove] = "O";
@@ -412,6 +418,16 @@ export default function TicTacToe({
       <div className="mt-6 flex gap-3">
         {gameState === GameState.START && (
           <>
+            <button
+              onClick={() => setDifficulty("easy")}
+              className={`rounded-xl border-4 px-4 py-2 shadow-[0_4px_0_0_#7D83B2] font-quantico ${
+                difficulty === "easy"
+                  ? "border-icanBlue-200 bg-icanBlue-200 text-white"
+                  : "border-icanBlue-200 bg-white text-icanBlue-300"
+              }`}
+            >
+              Easy
+            </button>
             <button
               onClick={() => setDifficulty("normal")}
               className={`rounded-xl border-4 px-4 py-2 shadow-[0_4px_0_0_#7D83B2] font-quantico ${
