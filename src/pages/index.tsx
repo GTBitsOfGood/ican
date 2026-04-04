@@ -459,21 +459,24 @@ export default function Home({
                 buttonType="help"
                 drawButton={false}
                 redirect="/help"
+                disabled={isTutorial}
               />
               <NavButton buttonType="settings" drawButton={false} />
             </div>
           </div>
           {/* Navbar - VH Scaling */}
           <Navbar>
-            <NavButton buttonType="games" />
+            <NavButton buttonType="games" disabled={isTutorial} />
             <NavButton
               buttonType="store"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}
+              disabled={isTutorial && !tutorial.shouldEnlargeButton("store")}
             />
-            <NavButton buttonType="bag" />
+            <NavButton buttonType="bag" disabled={isTutorial} />
             <NavButton
               buttonType="log"
               enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
+              disabled={isTutorial && !tutorial.shouldEnlargeButton("log")}
             />
             <FeedButton
               active={

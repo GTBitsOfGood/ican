@@ -18,6 +18,7 @@ interface ButtonProps {
   redirect?: string;
   onClick?: () => void;
   enlarged?: boolean;
+  disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -26,6 +27,7 @@ const Button: React.FC<ButtonProps> = ({
   redirect,
   onClick,
   enlarged = false,
+  disabled = false,
 }) => {
   const router = useRouter();
   const capitalizedType =
@@ -50,16 +52,19 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={handleClick}
+      disabled={disabled}
       className={cn(
         "z-10 relative mobile:h-[3.1rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent",
         buttonClasses,
         enlarged && "scale-110",
+        disabled &&
+          "disabled:grayscale grayscale cursor-default pointer-events-none",
       )}
       type="button"
     >
       <div className="w-full h-full">
         <Image
-          src={"/misc/NavButton.svg"}
+          src={disabled ? "/misc/FeedButton.svg" : "/misc/NavButton.svg"}
           alt={buttonType}
           fill
           className="absolute inset-0 object-fill pointer-events-none"
