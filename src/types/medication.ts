@@ -35,6 +35,7 @@ export interface DoseObject {
   name: string;
   dosage: string;
   notes: string;
+  includeTimes: boolean;
   canCheckIn: boolean;
   scheduledDoseTime: string;
   status: "pending" | "taken" | "missed";
