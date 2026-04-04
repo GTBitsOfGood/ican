@@ -9,7 +9,7 @@ export default function FlowermanGamePage() {
       gameName={GameName.HANGMAN}
       whiteboardSrc="/games/flowerman/whiteboard_flowerman.svg"
       whiteboardContainerClassName="absolute right-20 top-0 w-[55%] aspect-[950/585]"
-      gameAreaFrameInsetClassName="bottom-[8%] left-[5%] right-[6%] top-[17.5%]"
+      gameAreaFrameInsetClassName="pt-[10.8%] pb-[5%] pl-[5.5%] pr-[5.5%]"
     />
   );
 }

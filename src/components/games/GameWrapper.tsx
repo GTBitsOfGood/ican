@@ -49,7 +49,8 @@ export default function GameWrapper({
   gameAreaClassName,
   whiteboardSrc = "/games/whiteboard.png",
   whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
-  gameAreaFrameInsetClassName = "bottom-[24%] left-[12%] right-[10%] top-[14%]",
+  /** Padding (pt/pb/pl/pr) that pushes in from the whiteboard image borders to the board interior. Equal pl/pr ensures horizontal centering. */
+  gameAreaFrameInsetClassName = "pt-[17%] pb-[15%] pl-[7%] pr-[9%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
   gameName?: string;
@@ -184,7 +185,6 @@ export default function GameWrapper({
                   aria-hidden="true"
                 />
               )}
-              {/* Pet overlaid on the board when an X translation is provided */}
               {petBoardX !== null && (
                 <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
                   <div
@@ -206,20 +206,26 @@ export default function GameWrapper({
               )}
               <div
                 className={cn(
-                  "absolute inset-0 overflow-hidden",
+                  "absolute inset-0 flex items-center justify-center",
                   showGameAreaFrame && gameAreaFrameInsetClassName,
-                  gameAreaClassName,
                 )}
               >
-                <GameComponent
-                  setSpeechText={setSpeechText}
-                  gameState={gameState}
-                  setGameState={handleGameStateChange}
-                  showInformationModal={setInformationModal}
-                  setPetBoardX={setPetBoardX}
-                  setPetEmotion={setPetEmotion}
-                  setWinRewardDetails={setWinRewardDetails}
-                />
+                <div
+                  className={cn(
+                    "h-full w-full overflow-hidden border-2 border-red-500",
+                    gameAreaClassName,
+                  )}
+                >
+                  <GameComponent
+                    setSpeechText={setSpeechText}
+                    gameState={gameState}
+                    setGameState={handleGameStateChange}
+                    showInformationModal={setInformationModal}
+                    setPetBoardX={setPetBoardX}
+                    setPetEmotion={setPetEmotion}
+                    setWinRewardDetails={setWinRewardDetails}
+                  />
+                </div>
               </div>
             </div>
 

@@ -77,7 +77,7 @@ export default function TriviaGame({
   }, [gameState, handleStart, setSpeechText]);
 
   const buttonClassName =
-    "fixed right-[6%] bottom-[18%] z-50 border-[3px] border-black bg-icanGreen-200 px-12 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50";
+    "w-full border-[3px] border-black bg-icanGreen-200 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50";
 
   const handleAnswer = (idx: number) => {
     if (isSubmitted) return;
@@ -199,12 +199,12 @@ export default function TriviaGame({
               <img
                 src="/games/trivia/Notification.svg"
                 alt="Correct XP +10"
-                className="pointer-events-none fixed left-[54%] top-[16%] z-50 w-[110px] animate-xpFloat"
+                className="pointer-events-none absolute right-[8%] top-[6%] z-20 w-[110px] animate-xpFloat"
                 draggable={false}
                 style={{ imageRendering: "pixelated" }}
               />
             )}
-            <div className="mt-8 flex flex-col items-center">
+            <div className="mt-8 flex w-full flex-col items-center gap-6">
               <QuestionCard
                 question={roundQuestions[currQuestionIdx]}
                 onAnswer={handleAnswer}
@@ -212,22 +212,21 @@ export default function TriviaGame({
                 selectedChoiceIdx={selectedChoiceIdx}
                 currentQuestionNumber={currQuestionIdx + 1}
               />
+              <button
+                type="button"
+                onClick={!isSubmitted ? handleSubmit : handleNextQuestion}
+                disabled={!isSubmitted && selectedChoiceIdx === null}
+                className={buttonClassName}
+              >
+                {!isSubmitted ? "Submit" : "Next"}
+              </button>
             </div>
-
-            <button
-              type="button"
-              onClick={!isSubmitted ? handleSubmit : handleNextQuestion}
-              disabled={!isSubmitted && selectedChoiceIdx === null}
-              className={buttonClassName}
-            >
-              {!isSubmitted ? "Submit" : "Next"}
-            </button>
           </>
         )}
         {(gameState === GameState.WON || gameState === GameState.LOSS) &&
           roundQuestions.length > 0 && (
             <>
-              <div className="mt-8 flex flex-col items-center">
+              <div className="mt-8 flex w-full flex-col items-center gap-6">
                 <QuestionCard
                   question={roundQuestions[currQuestionIdx]}
                   onAnswer={() => {}}
@@ -235,15 +234,14 @@ export default function TriviaGame({
                   selectedChoiceIdx={selectedChoiceIdx}
                   currentQuestionNumber={currQuestionIdx + 1}
                 />
+                <button
+                  type="button"
+                  onClick={handlePlayAgain}
+                  className={buttonClassName}
+                >
+                  Play Again
+                </button>
               </div>
-
-              <button
-                type="button"
-                onClick={handlePlayAgain}
-                className={buttonClassName}
-              >
-                Play Again
-              </button>
             </>
           )}
       </div>
