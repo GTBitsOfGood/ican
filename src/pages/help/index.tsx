@@ -3,6 +3,8 @@ import { useRouter } from "next/router";
 import { Plus, Minus } from "lucide-react";
 import { useTutorial } from "@/components/TutorialContext";
 import BackButton from "@/components/ui/BackButton";
+import { GAMES_COINS_BASE } from "@/utils/constants";
+import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 
 export default function HelpPage() {
   const [openIndices, setOpenIndices] = useState<number[]>([]);
@@ -44,6 +46,7 @@ export default function HelpPage() {
       content: [
         "Experience points, called “XP”, is gained every time the user feeds the pet.",
         "Gaining XP allows the user to level up. Leveling up gives the user coins and access to more items in the store.",
+        "Winning games also earns the player coins.",
         "Items purchased in the store are moved to the bag.",
       ],
     },
@@ -58,8 +61,13 @@ export default function HelpPage() {
       ],
     },
     {
-      title: "FAQ",
-      content: ["This will be completed after user-testing."],
+      title: "Games",
+      content: [
+        "Tic-Tac-Toe: The user and their pet take turns placing X and Os on a 3 by 3 grid. Getting 3 in a row earns the user a win.",
+        "Trivia: The pet will ask a series of questions. To win, the user needs to answer at least 3 out of 5 questions.",
+        "Flower Man: The pet has thought of a secret word. The user guesses letters that might be in the word, but on incorrect guesses, the pet starts drawing a flower. If the user guesses all the letters before the drawing is done, they win.",
+        `Users can earn ${GAMES_COINS_BASE} coin(s) in addition to a streak bonus from winning a game up to ${GAMES_DAILY_COIN_LIMIT} per day.`,
+      ],
     },
   ];
 
