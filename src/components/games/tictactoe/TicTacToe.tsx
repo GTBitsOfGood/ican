@@ -8,22 +8,12 @@ import {
 } from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
 import { GameName, GameResult } from "@/types/games";
-
-type Board = (string | null)[];
-type Difficulty = "normal" | "expert";
-
-function makeRandomMove(currentBoard: Board): Board {
-  const emptySquares = currentBoard
-    .map((val, idx) => (val === null ? idx : null))
-    .filter((val) => val !== null) as number[];
-
-  if (emptySquares.length === 0) return currentBoard;
-
-  const randomIndex = Math.floor(Math.random() * emptySquares.length);
-  const newBoard = [...currentBoard];
-  newBoard[emptySquares[randomIndex]] = "O";
-  return newBoard;
-}
+import {
+  calculateWinner,
+  makeAIMove,
+  type Board,
+  type Difficulty,
+} from "./tictactoeAI";
 
 export default function TicTacToe({
   setSpeechText,
@@ -37,7 +27,7 @@ export default function TicTacToe({
   const { data: gameStatistics } = useGameStatistics(userId);
   const recordGameResult = useRecordGameResult();
   const [board, setBoard] = useState<Board>(Array(9).fill(null));
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [aiIsThinking, setAiIsThinking] = useState(false);
   const prevGameStateRef = useRef<GameState>(gameState);
   const hasShownInitialPlayingMessageRef = useRef(false);
@@ -144,97 +134,14 @@ export default function TicTacToe({
       return;
     }
 
-    setSpeechText(
-      difficulty === "expert"
-        ? "Looking for a challenge I see!"
-        : "Yay lets start! It’s your turn first.",
-    );
-  }, [difficulty, gameState, setSpeechText]);
-
-  const calculateWinner = (squares: Board): string | null => {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (
-        squares[a] &&
-        squares[a] === squares[b] &&
-        squares[a] === squares[c]
-      ) {
-        return squares[a];
-      }
-    }
-    return null;
-  };
-
-  // for the expert ai
-  const minimax = (currentBoard: Board, isMaximizing: boolean): number => {
-    const winner = calculateWinner(currentBoard);
-    if (winner === "O") return 10;
-    if (winner === "X") return -10;
-    if (currentBoard.every((square) => square !== null)) return 0;
-
-    if (isMaximizing) {
-      let bestScore = -Infinity;
-      for (let i = 0; i < currentBoard.length; i++) {
-        if (currentBoard[i] === null) {
-          const newBoard = [...currentBoard];
-          newBoard[i] = "O";
-          const score = minimax(newBoard, false);
-          bestScore = Math.max(score, bestScore);
-        }
-      }
-      return bestScore;
-    } else {
-      let bestScore = Infinity;
-      for (let i = 0; i < currentBoard.length; i++) {
-        if (currentBoard[i] === null) {
-          const newBoard = [...currentBoard];
-          newBoard[i] = "X";
-          const score = minimax(newBoard, true);
-          bestScore = Math.min(score, bestScore);
-        }
-      }
-      return bestScore;
-    }
-  };
-
-  const getBestMove = (currentBoard: Board): number => {
-    let bestScore = -Infinity;
-    let bestMove = 0;
-
-    for (let i = 0; i < currentBoard.length; i++) {
-      if (currentBoard[i] === null) {
-        const newBoard = [...currentBoard];
-        newBoard[i] = "O";
-        const score = minimax(newBoard, false);
-        if (score > bestScore) {
-          bestScore = score;
-          bestMove = i;
-        }
-      }
-    }
-    return bestMove;
-  };
-
-  const makeAIMove = (currentBoard: Board): Board => {
+    let message = "Yay lets start! It's your turn first.";
     if (difficulty === "expert") {
-      const bestMove = getBestMove(currentBoard);
-      const newBoard = [...currentBoard];
-      newBoard[bestMove] = "O";
-      return newBoard;
-    } else {
-      return makeRandomMove(currentBoard);
+      message = "Looking for a challenge I see!";
+    } else if (difficulty === "normal") {
+      message = "Good choice! Let's have some fun!";
     }
-  };
+    setSpeechText(message);
+  }, [difficulty, gameState, setSpeechText]);
 
   const handleGameWin = async () => {
     if (!userId || isProcessingWin) return;
@@ -315,7 +222,7 @@ export default function TicTacToe({
     // 2 second delay
     aiMoveTimeoutRef.current = setTimeout(() => {
       aiMoveTimeoutRef.current = null;
-      const aiBoard = makeAIMove(newBoard);
+      const aiBoard = makeAIMove(newBoard, difficulty);
       const aiWinner = calculateWinner(aiBoard);
       if (aiWinner === "O") {
         if (userId) {
@@ -412,6 +319,16 @@ export default function TicTacToe({
       <div className="mt-6 flex gap-3">
         {gameState === GameState.START && (
           <>
+            <button
+              onClick={() => setDifficulty("easy")}
+              className={`rounded-xl border-4 px-4 py-2 shadow-[0_4px_0_0_#7D83B2] font-quantico ${
+                difficulty === "easy"
+                  ? "border-icanBlue-200 bg-icanBlue-200 text-white"
+                  : "border-icanBlue-200 bg-white text-icanBlue-300"
+              }`}
+            >
+              Easy
+            </button>
             <button
               onClick={() => setDifficulty("normal")}
               className={`rounded-xl border-4 px-4 py-2 shadow-[0_4px_0_0_#7D83B2] font-quantico ${
