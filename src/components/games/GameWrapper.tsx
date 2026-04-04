@@ -53,6 +53,7 @@ export default function GameWrapper({
   gameAreaFrameInsetClassName = "pt-[17%] pb-[15%] pl-[7%] pr-[9%]",
   mobileWhiteboardSrc = "/games/whiteboard_mobile.svg",
   mobileGameAreaFrameInsetClassName = "pt-[9%] pb-[16%] pl-[7%] pr-[9%]",
+  useFlowerGameControls = false,
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
   gameName?: string;
@@ -64,6 +65,7 @@ export default function GameWrapper({
   gameAreaFrameInsetClassName?: string;
   mobileWhiteboardSrc?: string;
   mobileGameAreaFrameInsetClassName?: string;
+  useFlowerGameControls?: boolean;
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
@@ -338,27 +340,40 @@ export default function GameWrapper({
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
-              aria-label="Restart game"
+            <div
+              className={cn(
+                "fixed right-4 z-[67] flex flex-col items-end gap-2 tablet:right-6",
+                useFlowerGameControls
+                  ? "bottom-4 tablet:bottom-6"
+                  : "top-4 tablet:top-6",
+              )}
             >
-              <img
-                src="/games/flowerman/restart.svg"
-                alt=""
-                className="h-14 w-auto"
-              />
-            </button>
+              <button
+                type="button"
+                onClick={() => router.push("/games")}
+                className="flex items-center justify-center"
+                aria-label="Leave game"
+              >
+                <img
+                  src="/games/leave_game_new.svg"
+                  alt=""
+                  className="w-32 h-auto"
+                />
+              </button>
 
-            <button
-              type="button"
-              onClick={() => router.push("/games")}
-              className="fixed top-[15px] right-[5px] z-[67] flex items-center justify-center"
-              aria-label="Leave game"
-            >
-              <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
-            </button>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="flex items-center justify-center"
+                aria-label="Restart game"
+              >
+                <img
+                  src="/games/restart_new.svg"
+                  alt=""
+                  className="w-32 h-auto"
+                />
+              </button>
+            </div>
 
             {informationModal && (
               <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
