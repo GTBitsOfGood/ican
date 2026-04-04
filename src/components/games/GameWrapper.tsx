@@ -44,6 +44,7 @@ export interface GameWrapperControls {
 
 export default function GameWrapper({
   GameComponent,
+  gameName,
   initialSpeechText = "",
   showGameAreaFrame = true,
   gameAreaClassName,
@@ -154,6 +155,21 @@ export default function GameWrapper({
           />
 
           <div className="relative z-10 min-h-screen">
+            {/* Mobile banner — visible only below the 1400px wideGame breakpoint */}
+            {gameName && (
+              <div
+                className="wideGame:hidden fixed top-0 left-0 right-0 z-50 flex items-center px-5 py-3 shadow-[0_6px_16px_4px_rgba(0,0,0,0.45)]"
+                style={{
+                  backgroundColor: "#2D336B",
+                  borderBottom: "1px solid #232540",
+                }}
+              >
+                <span className="font-quantico text-xl font-bold uppercase text-white">
+                  {gameName}
+                </span>
+              </div>
+            )}
+
             {/* Pet at default home position with speech bubble */}
             {petBoardX === null && (
               <div className="absolute left-4 top-[55%] w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
