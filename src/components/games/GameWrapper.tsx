@@ -138,58 +138,30 @@ export default function GameWrapper({
       {!pet ? (
         <LoadingScreen />
       ) : (
-        <div
-          className="relative min-h-screen overflow-hidden bg-no-repeat"
-          style={{
-            backgroundImage: `url("${equippedBackgroundImage}")`,
-            backgroundSize: "cover",
-            backgroundPosition: "center bottom",
-          }}
-        >
+        <div className="relative min-h-screen overflow-hidden">
           <div
-            className="pointer-events-none absolute inset-0 bg-black/60"
-            aria-hidden="true"
+            className="absolute inset-0 z-0 bg-cover bg-bottom bg-no-repeat"
+            style={{
+              backgroundImage: `url("${equippedBackgroundImage}")`,
+              backgroundPosition: "center bottom",
+            }}
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-black/55"
+            aria-hidden
           />
 
-          {/* Pet at default home position with speech bubble */}
-          {petBoardX === null && (
-            <div className="absolute left-4 top-[55%] z-10 w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
-              <div className="relative">
-                {speechText && (
-                  <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
-                    <Bubble text={speechText} />
-                  </div>
-                )}
-                <PetAppearance
-                  petType={pet.petType}
-                  selectedItem={null}
-                  appearance={pet.appearance}
-                  showBackground={false}
-                  className="h-[17rem] tablet:h-[22rem]"
-                  characterImageSize={340}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Whiteboard */}
-          <div className={whiteboardContainerClassName}>
-            {showGameAreaFrame && (
-              <img
-                src={whiteboardSrc}
-                className={"absolute inset-0 h-full w-full"}
-                alt=""
-                aria-hidden="true"
-              />
-            )}
-            {/* Pet overlaid on the board when an X translation is provided */}
-            {petBoardX !== null && (
-              <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
-                <div
-                  style={{
-                    transform: `translateX(${petBoardX}%)`,
-                  }}
-                >
+          <div className="relative z-10 min-h-screen">
+            {/* Pet at default home position with speech bubble */}
+            {petBoardX === null && (
+              <div className="absolute left-4 top-[55%] w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
+                <div className="relative">
+                  {speechText && (
+                    <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.5] tablet:scale-[0.64]">
+                      <Bubble text={speechText} />
+                    </div>
+                  )}
                   <PetAppearance
                     petType={pet.petType}
                     selectedItem={null}
@@ -197,131 +169,162 @@ export default function GameWrapper({
                     showBackground={false}
                     className="h-[17rem] tablet:h-[22rem]"
                     characterImageSize={340}
-                    emotion={petEmotion ?? PetEmotion.NEUTRAL}
                   />
                 </div>
               </div>
             )}
-            <div
-              className={cn(
-                "absolute inset-0 overflow-hidden",
-                showGameAreaFrame && gameAreaFrameInsetClassName,
-                gameAreaClassName,
-              )}
-            >
-              <GameComponent
-                setSpeechText={setSpeechText}
-                gameState={gameState}
-                setGameState={handleGameStateChange}
-                showInformationModal={setInformationModal}
-                setPetBoardX={setPetBoardX}
-                setPetEmotion={setPetEmotion}
-                setWinRewardDetails={setWinRewardDetails}
-              />
-            </div>
-          </div>
 
-          {/* Success overlay on win */}
-          {showSuccess && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-              <div className="relative w-full max-w-6xl px-4">
+            {/* Whiteboard */}
+            <div className={whiteboardContainerClassName}>
+              {showGameAreaFrame && (
                 <img
-                  src="/assets/CongratulationsBackdrop.svg"
-                  alt="Success!"
-                  className="w-full h-auto"
+                  src={whiteboardSrc}
+                  className={"absolute inset-0 h-full w-full"}
+                  alt=""
+                  aria-hidden="true"
                 />
-                {winRewardDetails && (
-                  <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
-                    {winRewardDetails.maxReached ? (
-                      <p className="font-quantico text-3xl uppercase tracking-wide text-icanBlue-300">
-                        Max coins reached
-                      </p>
-                    ) : (
-                      <>
-                        <img
-                          src="/icons/Coin.svg"
-                          alt="Coins"
-                          className="h-12 w-12"
-                          draggable={false}
-                        />
-                        <p className="font-quantico text-3xl uppercase text-icanBlue-300 whitespace-nowrap">
-                          Daily Coins: {winRewardDetails.dailyCoinsTotal}/
-                          {winRewardDetails.maxCoinsPerDay}
-                        </p>
-                      </>
-                    )}
+              )}
+              {/* Pet overlaid on the board when an X translation is provided */}
+              {petBoardX !== null && (
+                <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
+                  <div
+                    style={{
+                      transform: `translateX(${petBoardX}%)`,
+                    }}
+                  >
+                    <PetAppearance
+                      petType={pet.petType}
+                      selectedItem={null}
+                      appearance={pet.appearance}
+                      showBackground={false}
+                      className="h-[17rem] tablet:h-[22rem]"
+                      characterImageSize={340}
+                      emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                    />
                   </div>
+                </div>
+              )}
+              <div
+                className={cn(
+                  "absolute inset-0 overflow-hidden",
+                  showGameAreaFrame && gameAreaFrameInsetClassName,
+                  gameAreaClassName,
                 )}
+              >
+                <GameComponent
+                  setSpeechText={setSpeechText}
+                  gameState={gameState}
+                  setGameState={handleGameStateChange}
+                  showInformationModal={setInformationModal}
+                  setPetBoardX={setPetBoardX}
+                  setPetEmotion={setPetEmotion}
+                  setWinRewardDetails={setWinRewardDetails}
+                />
               </div>
             </div>
-          )}
 
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
-            aria-label="Restart game"
-          >
-            <img
-              src="/games/flowerman/restart.svg"
-              alt=""
-              className="h-14 w-auto"
-            />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push("/games")}
-            className="fixed top-[15px] right-[5px] z-[67] flex items-center justify-center"
-            aria-label="Leave game"
-          >
-            <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
-          </button>
-
-          {informationModal && (
-            <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
-              <div className="relative w-full max-w-2xl">
-                {/* Card background */}
-                <img
-                  src="/games/instruction_card.svg"
-                  alt=""
-                  className="w-full h-auto pointer-events-none select-none"
-                />
-                {/* X close button */}
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="absolute top-[6%] right-[4%] z-10 p-1"
-                  aria-label="Close"
-                >
+            {/* Success overlay on win */}
+            {showSuccess && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+                <div className="relative w-full max-w-6xl px-4">
                   <img
-                    src="/games/instruction_card_X.svg"
-                    alt="Close"
-                    className="h-7 w-auto"
+                    src="/assets/CongratulationsBackdrop.svg"
+                    alt="Success!"
+                    className="w-full h-auto"
                   />
-                </button>
-                {/* Content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
-                  {informationModal.gameMode && (
-                    <p className="font-quantico text-2xl uppercase mb-5 font-bold text-textBeige">
-                      GAME MODE: {informationModal.gameMode}
-                    </p>
-                  )}
-                  <h2 className="font-quantico text-5xl font-bold uppercase mb-5 text-textBeige">
-                    {informationModal.title}
-                  </h2>
-                  <p className="font-quantico text-2xl font-bold leading-relaxed text-textBeige">
-                    {informationModal.message}
-                  </p>
-                  {informationModal.letters && (
-                    <p className="font-quantico text-2xl font-bold mt-1 tracking-widest uppercase text-textBeige">
-                      {informationModal.letters}
-                    </p>
+                  {winRewardDetails && (
+                    <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
+                      {winRewardDetails.maxReached ? (
+                        <p className="font-quantico text-3xl uppercase tracking-wide text-icanBlue-300">
+                          Max coins reached
+                        </p>
+                      ) : (
+                        <>
+                          <img
+                            src="/icons/Coin.svg"
+                            alt="Coins"
+                            className="h-12 w-12"
+                            draggable={false}
+                          />
+                          <p className="font-quantico text-3xl uppercase text-icanBlue-300 whitespace-nowrap">
+                            Daily Coins: {winRewardDetails.dailyCoinsTotal}/
+                            {winRewardDetails.maxCoinsPerDay}
+                          </p>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
-          )}
+            )}
+
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="fixed top-[95px] right-[5px] z-[67] flex items-center justify-center"
+              aria-label="Restart game"
+            >
+              <img
+                src="/games/flowerman/restart.svg"
+                alt=""
+                className="h-14 w-auto"
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push("/games")}
+              className="fixed top-[15px] right-[5px] z-[67] flex items-center justify-center"
+              aria-label="Leave game"
+            >
+              <img src="/games/leave_game.svg" alt="" className="h-16 w-auto" />
+            </button>
+
+            {informationModal && (
+              <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
+                <div className="relative w-full max-w-2xl">
+                  {/* Card background */}
+                  <img
+                    src="/games/instruction_card.svg"
+                    alt=""
+                    className="w-full h-auto pointer-events-none select-none"
+                  />
+                  {/* X close button */}
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="absolute top-[6%] right-[4%] z-10 p-1"
+                    aria-label="Close"
+                  >
+                    <img
+                      src="/games/instruction_card_X.svg"
+                      alt="Close"
+                      className="h-7 w-auto"
+                    />
+                  </button>
+                  {/* Content */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
+                    {informationModal.gameMode && (
+                      <p className="font-quantico text-2xl uppercase mb-5 font-bold text-textBeige">
+                        GAME MODE: {informationModal.gameMode}
+                      </p>
+                    )}
+                    <h2 className="font-quantico text-5xl font-bold uppercase mb-5 text-textBeige">
+                      {informationModal.title}
+                    </h2>
+                    <p className="font-quantico text-2xl font-bold leading-relaxed text-textBeige">
+                      {informationModal.message}
+                    </p>
+                    {informationModal.letters && (
+                      <p className="font-quantico text-2xl font-bold mt-1 tracking-widest uppercase text-textBeige">
+                        {informationModal.letters}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </AuthorizedRoute>
