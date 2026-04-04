@@ -61,13 +61,14 @@ export default function AnswerChoiceBar({
 
       {/* Answer text */}
       <div
-        className="absolute flex items-center font-quantico text-black leading-none text-left"
+        className="absolute flex items-center font-quantico text-black leading-none text-left overflow-hidden"
         style={{
           left: "13.2%",
           right: "7.5%",
           top: "26%",
           bottom: "24%",
-          fontSize: "clamp(14px, 1.45vw, 20px)",
+          fontSize: "clamp(8px, 3.2vw, 20px)",
+          whiteSpace: "nowrap",
         }}
       >
         {children}
