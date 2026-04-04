@@ -12,7 +12,11 @@ import ModalNextButton from "./ModalNextButton";
 import LogPasswordModal from "./LogPasswordModal";
 import NotificationSettingsModal from "./NotificationSettingsModal";
 import { useUser } from "../UserContext";
-import { useSettings, useUpdatePin } from "../hooks/useSettings";
+import {
+  useSettings,
+  useUpdatePin,
+  useUpdateSettings,
+} from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -42,6 +46,7 @@ export default function SettingsModal() {
   } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
   const updatePinMutation = useUpdatePin();
+  const updateSettings = useUpdateSettings();
   const logoutMutation = useLogout();
   const deleteAccountMutation = useDeleteAccount();
   const router = useRouter();
@@ -135,6 +140,20 @@ export default function SettingsModal() {
                     <ModalSwitch
                       state={!!settings.pin}
                       setState={handleParentalControlsChange}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <h5 className="text-3xl">24-Hour Time</h5>
+                    <ModalSwitch
+                      state={
+                        settings?.notificationPreferences?.use24HourTime ??
+                        false
+                      }
+                      setState={(v) =>
+                        updateSettings.mutate({
+                          notificationPreferences: { use24HourTime: v },
+                        })
+                      }
                     />
                   </div>
                   <div className="flex justify-between items-center pl-4">
