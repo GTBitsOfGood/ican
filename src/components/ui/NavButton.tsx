@@ -57,8 +57,7 @@ const Button: React.FC<ButtonProps> = ({
         "z-10 relative mobile:h-[3.1rem] tablet:h-[3.25rem] desktop:h-[4.5rem] largeDesktop:h-[5.5rem] cursor-pointer border-none bg-transparent",
         buttonClasses,
         enlarged && "scale-110",
-        disabled &&
-          "disabled:grayscale grayscale cursor-default pointer-events-none",
+        disabled && "grayscale cursor-default pointer-events-none",
       )}
       type="button"
     >

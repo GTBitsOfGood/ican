@@ -4,6 +4,7 @@ import Image from "next/image";
 import { PET_CHARACTERS, PetCharacter } from "@/lib/petCharacters";
 import { useCreatePet } from "@/components/hooks/usePet";
 import { useUser } from "@/components/UserContext";
+import { useUpdateOnboardingStatus } from "@/components/hooks/useAuth";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
 import NavigationArrow from "@/components/ui/NavigationArrow";
 import BackButton from "@/components/ui/BackButton";
@@ -109,6 +110,7 @@ export default function FirstPetPage() {
   const { userId } = useUser();
   const router = useRouter();
   const createPetMutation = useCreatePet();
+  const updateOnboardingStatus = useUpdateOnboardingStatus();
 
   const selectedCharacter = PET_CHARACTERS[selectedCharacterIndex];
 
@@ -155,7 +157,10 @@ export default function FirstPetPage() {
       },
       {
         onSuccess: () => {
-          router.push("/");
+          updateOnboardingStatus.mutate(
+            { userId, isOnboarded: true },
+            { onSuccess: () => router.push("/") },
+          );
         },
       },
     );
