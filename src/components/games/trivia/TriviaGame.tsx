@@ -181,11 +181,16 @@ export default function TriviaGame({
   };
 
   const handleNextQuestion = () => {
+    const nextQuestionIdx = currQuestionIdx + 1;
+
+    if (nextQuestionIdx >= roundQuestions.length) {
+      return;
+    }
+
     setIsSubmitted(false);
     setSelectedChoiceIdx(null);
     setShowXpPopup(false);
 
-    const nextQuestionIdx = currQuestionIdx + 1;
     setCurrQuestionIdx(nextQuestionIdx);
     setSpeechText(roundQuestions[nextQuestionIdx].prompt);
   };

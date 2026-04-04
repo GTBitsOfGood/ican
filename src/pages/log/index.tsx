@@ -139,25 +139,25 @@ export default function Log() {
               </div>
             </div>
             <div className="flex justify-center items-center w-full">
-              <button onClick={handlePrev}>
+              <button onClick={handlePrev} disabled={tutorial.isActive}>
                 <Image
                   src={"/assets/LeftArrowIcon.svg"}
                   alt=""
                   width={106}
                   height={106}
-                  className={`${isPastDay(currDate) ? "hidden" : "visible"}`}
+                  className={`${isPastDay(currDate) || tutorial.isActive ? "hidden" : "visible"}`}
                 />
               </button>
               <h2 className="text-[32px] desktop:text-[48px] font-bold font-quantico text-white">
                 {humanizeDateComparison(currDate)}, {humanizeDate(currDate)}
               </h2>
-              <button onClick={handleNext}>
+              <button onClick={handleNext} disabled={tutorial.isActive}>
                 <Image
                   src={"/assets/RightArrowIcon.svg"}
                   alt=""
                   width={106}
                   height={106}
-                  className={`${isNextDay(currDate) ? "hidden" : "visible"}`}
+                  className={`${isNextDay(currDate) || tutorial.isActive ? "hidden" : "visible"}`}
                 />
               </button>
             </div>
