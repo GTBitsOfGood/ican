@@ -12,20 +12,20 @@ export default function TutorialOverlay() {
       {tutorial.isReplay && (
         <button
           onClick={tutorial.exitReplay}
-          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-[#B7BDEF] px-6 py-2 font-quantico font-bold text-xl text-[#1E2353] cursor-pointer border-4 border-[#4C539B] rounded-lg"
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-[10px] bg-[#8A8EAD] px-5 py-2 font-quantico text-[20px] font-bold leading-none text-black cursor-pointer"
         >
           <Image
             src="/assets/CloseIcon.svg"
             alt="Close"
             width={24}
             height={24}
-            className="brightness-0"
+            className="h-[24px] w-[24px] brightness-0"
           />
           Exit Tutorial
         </button>
       )}
       {!tutorial.isReplay && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[#B7BDEF] px-6 py-2 font-quantico font-bold text-xl text-[#1E2353] border-4 border-[#4C539B] rounded-lg">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-[10px] bg-[#8A8EAD] px-5 py-2 font-quantico text-[20px] font-bold leading-none text-black">
           Initial Tutorial
         </div>
       )}
