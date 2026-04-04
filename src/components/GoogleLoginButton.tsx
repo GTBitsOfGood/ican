@@ -51,7 +51,7 @@ const GoogleLoginButton = ({
           onClick={() => login()}
         >
           <Image
-            src="/assets/GoogleSocialIcon.svg"
+            src="/GoogleSocialIcon.svg"
             alt="Google Logo"
             className="mobile:w-[25px] mobile:h-[25px] desktop:w-[40px] desktop:h-[40px] tiny:w-[25px] tiny:h-[25px] short:w-[25px] short:h-[25px] tall:w-[40px] tall:h-[40px]"
             width={40}

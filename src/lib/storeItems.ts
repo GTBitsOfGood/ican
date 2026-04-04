@@ -362,6 +362,15 @@ const storeItems: Record<string, Record<string, InventoryItem>> = {
       level: 3,
       description: "Refreshing lemonade...",
     },
+    COOKIE: {
+      name: "COOKIE",
+      displayName: "Cookie",
+      type: ItemType.FOOD,
+      image: "/store/foods/Cookie.svg",
+      cost: ItemPrice.EXPENSIVE,
+      level: 5,
+      description: "Eat with milk...",
+    },
   },
 };
 
