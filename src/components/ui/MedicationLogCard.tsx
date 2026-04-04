@@ -75,9 +75,12 @@ export default function MedicationLogCard({
   const scheduled = new Date();
   const { hours, minutes } = standardizeTime(scheduledDoseTime);
   scheduled.setHours(hours, minutes, 0, 0);
+  const use24HourTime =
+    settings?.notificationPreferences?.use24HourTime ?? false;
   const localizedScheduledTime = scheduled.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
+    hour12: !use24HourTime,
   });
   const displayScheduledTime = includeTimes
     ? localizedScheduledTime
@@ -90,12 +93,14 @@ export default function MedicationLogCard({
     : lastTakenDate.toLocaleTimeString(undefined, {
         hour: "2-digit",
         minute: "2-digit",
+        hour12: !use24HourTime,
       });
   const localizedLastTakenDate = !lastTakenDate
     ? "N/A"
     : lastTakenDate.toLocaleString(undefined, {
         hour: "numeric",
         minute: "numeric",
+        hour12: !use24HourTime,
         month: "short",
         day: "numeric",
       });

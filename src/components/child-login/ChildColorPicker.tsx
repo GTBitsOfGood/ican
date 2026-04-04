@@ -162,7 +162,6 @@ export default function ChildColorPicker({
     content: string | undefined,
     fallbackIndex: number,
     selected: boolean,
-    patternDir: string,
   ) => {
     if (isShapeType) {
       return (
@@ -174,7 +173,19 @@ export default function ChildColorPicker({
 
     if (isPatternType) {
       const patternFile = PATTERN_IMAGE_MAP[token];
-      return patternFile ? (
+      if (!patternFile) return null;
+      // Match shape tiles: inactive → #000 (login: brightness-0 on patterns-blue); active → #2C3694
+      // (patterns-blue / icanBlue-300). Change view: patterns-white → patterns-blue like white → selected shape.
+      const patternDir =
+        view === "change"
+          ? selected
+            ? "patterns-blue"
+            : "patterns-white"
+          : "patterns-blue";
+      const patternInactiveClass =
+        view === "login" && !selected ? "brightness-0" : "";
+
+      return (
         <span
           className="absolute inset-0 z-10 overflow-hidden rounded-[4px]"
           style={{ lineHeight: 0 }}
@@ -183,10 +194,10 @@ export default function ChildColorPicker({
             src={`/child-login/${patternDir}/${patternFile}`}
             alt={token}
             fill
-            className="select-none pointer-events-none object-cover"
+            className={`select-none pointer-events-none object-cover ${patternInactiveClass}`}
           />
         </span>
-      ) : null;
+      );
     }
 
     if (isEmojiType) return content;
@@ -220,8 +231,6 @@ export default function ChildColorPicker({
       <div className="grid grid-cols-3 gap-3 w-fit mx-auto place-items-center">
         {tiles.map((tileOption, index) => {
           const isSelected = sequence.includes(tileOption.token);
-          const patternDir =
-            view === "change" ? "patterns-white" : "patterns-blue";
           const tileStyle =
             isPatternType && view === "change" ? undefined : tileOption.style;
           const tileBackgroundClass =
@@ -229,9 +238,7 @@ export default function ChildColorPicker({
           const tileBorderClass = isPatternType ? "" : SQUARE_BORDER_CLASS;
           const selectedClass = isSelected
             ? isPatternType
-              ? view === "change"
-                ? "ring-2 ring-white"
-                : "ring-2 ring-icanBlue-300"
+              ? "ring-2 ring-icanBlue-300"
               : "border-icanBlue-300 ring-1 ring-icanBlue-300"
             : "";
           return (
@@ -243,23 +250,22 @@ export default function ChildColorPicker({
               onClick={() => handleTileSelect(tileOption.token)}
               style={tileStyle}
             >
-              {isSelected && isVisualType && !isPatternType && (
-                <span className="absolute inset-0 z-0 rounded-[4px] bg-icanBlue-100 opacity-70" />
+              {isSelected && isVisualType && (
+                <span
+                  className={`pointer-events-none absolute inset-0 z-0 rounded-[4px] bg-icanBlue-100 opacity-70`}
+                />
               )}
               {getTileContent(
                 tileOption.token,
                 tileOption.content,
                 index,
                 isSelected,
-                patternDir,
               )}
               {isSelected && isPatternType && (
-                <span
-                  className={`pointer-events-none absolute inset-0 z-20 rounded-[4px] ring-2 ring-inset ${view === "change" ? "ring-white" : "ring-icanBlue-300"}`}
-                />
+                <span className="pointer-events-none absolute inset-0 z-20 rounded-[4px] ring-2 ring-inset ring-icanBlue-300" />
               )}
-              {isSelected && !isVisualType && (
-                <span className="absolute left-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-icanBlue-300 text-[12px] leading-none text-white">
+              {isSelected && (
+                <span className="pointer-events-none absolute left-2 top-2 z-30 flex h-5 w-5 items-center justify-center rounded-full bg-icanBlue-300 text-[12px] leading-none text-white">
                   ✓
                 </span>
               )}
@@ -300,9 +306,22 @@ export default function ChildColorPicker({
         disabled={sequence.length === 0}
       >
         <span
-          className={`flex h-5 w-5 items-center justify-center rounded-full text-[14px] leading-none ${hasSequence ? clearActiveIconClass : "bg-loginDisabledBg text-white"}`}
+          className={`flex h-5 w-5 items-center justify-center rounded-full ${hasSequence ? clearActiveIconClass : "bg-loginDisabledBg text-white"}`}
         >
-          ×
+          <svg
+            viewBox="0 0 20 20"
+            className="h-3 w-3 shrink-0"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden
+          >
+            <path
+              d="M5 5l10 10M15 5l-10 10"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
         </span>
         <span>Clear Password</span>
       </button>

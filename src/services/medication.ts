@@ -273,7 +273,7 @@ export default class MedicationService {
     const medications = await this.getMedications(userId);
 
     if (medications.length == 0) {
-      throw new NotFoundError(ERRORS.MEDICATION.NOT_FOUND_USER);
+      return { date: new Date(date), medications: [] };
     }
 
     const now = new Date(localTime);

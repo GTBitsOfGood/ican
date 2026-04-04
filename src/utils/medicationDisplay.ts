@@ -1,4 +1,7 @@
-export function formatMedicationTime(timeString: string): string {
+export function formatMedicationTime(
+  timeString: string,
+  use24HourTime = false,
+): string {
   let date: Date;
 
   if (timeString.includes("T") || timeString.includes("Z")) {
@@ -9,12 +12,16 @@ export function formatMedicationTime(timeString: string): string {
     date.setHours(hours, minutes, 0, 0);
   }
 
-  let hours = date.getHours();
+  const hours = date.getHours();
   const minutes = date.getMinutes();
-  const period = hours >= 12 ? "P.M." : "A.M.";
-
-  hours = hours % 12 || 12;
-
   const minutesStr = minutes.toString().padStart(2, "0");
-  return `${hours}:${minutesStr} ${period}`;
+
+  if (use24HourTime) {
+    const hoursStr = hours.toString().padStart(2, "0");
+    return `${hoursStr}:${minutesStr}`;
+  }
+
+  const period = hours >= 12 ? "P.M." : "A.M.";
+  const hours12 = hours % 12 || 12;
+  return `${hours12}:${minutesStr} ${period}`;
 }

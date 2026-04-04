@@ -12,7 +12,11 @@ import ModalNextButton from "./ModalNextButton";
 import LogPasswordModal from "./LogPasswordModal";
 import NotificationSettingsModal from "./NotificationSettingsModal";
 import { useUser } from "../UserContext";
-import { useSettings, useUpdatePin } from "../hooks/useSettings";
+import {
+  useSettings,
+  useUpdatePin,
+  useUpdateSettings,
+} from "../hooks/useSettings";
 import { useDeleteAccount, useLogout } from "../hooks/useAuth";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -42,6 +46,7 @@ export default function SettingsModal() {
   } = useDisclosure();
   const { data: settings, isLoading } = useSettings();
   const updatePinMutation = useUpdatePin();
+  const updateSettings = useUpdateSettings();
   const logoutMutation = useLogout();
   const deleteAccountMutation = useDeleteAccount();
   const router = useRouter();
@@ -131,13 +136,6 @@ export default function SettingsModal() {
               <div className="flex flex-col items-center desktop:flex-row w-full gap-8 border-8 border-[#7177AC] bg-[#B7BDEF] p-6 overflow-y-auto max-h-[50vh]">
                 <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
-                    <h5 className="text-3xl">Parental Control</h5>
-                    <ModalSwitch
-                      state={!!settings.pin}
-                      setState={handleParentalControlsChange}
-                    />
-                  </div>
-                  <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
                       {!!settings.pin && (
                         <Image
@@ -178,28 +176,6 @@ export default function SettingsModal() {
                           width={32}
                         />
                       )}
-                      <h5 className="text-3xl">Logout</h5>
-                    </div>
-                    <ModalNextButton
-                      link="settings"
-                      onClick={handleLogout}
-                      requirePin={!!settings.pin}
-                      preventNavigation={true}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col w-full md:w-1/2 gap-7">
-                  <div className="flex justify-between items-center pl-4">
-                    <div className="flex items-center gap-2">
-                      {!!settings.pin && (
-                        <Image
-                          src="/store/Lock.svg"
-                          alt="Locked"
-                          className="w-8 h-8 object-contain"
-                          height={32}
-                          width={32}
-                        />
-                      )}
                       <h5 className="text-3xl">Medications</h5>
                     </div>
                     <ModalNextButton
@@ -207,6 +183,29 @@ export default function SettingsModal() {
                       requirePin={!!settings.pin}
                     />
                   </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <h5 className="text-3xl">24-Hour Time</h5>
+                    <ModalSwitch
+                      state={
+                        settings?.notificationPreferences?.use24HourTime ??
+                        false
+                      }
+                      setState={(v) =>
+                        updateSettings.mutate({
+                          notificationPreferences: { use24HourTime: v },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <h5 className="text-3xl">Parental Control</h5>
+                    <ModalSwitch
+                      state={!!settings.pin}
+                      setState={handleParentalControlsChange}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col w-full md:w-1/2 gap-7">
                   <div className="flex justify-between items-center pl-4">
                     <div className="flex items-center gap-2">
                       {!!settings.pin && (
@@ -242,6 +241,26 @@ export default function SettingsModal() {
                     <ModalNextButton
                       link="change-child-login"
                       requirePin={!!settings.pin}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center pl-4">
+                    <div className="flex items-center gap-2">
+                      {!!settings.pin && (
+                        <Image
+                          src="/store/Lock.svg"
+                          alt="Locked"
+                          className="w-8 h-8 object-contain"
+                          height={32}
+                          width={32}
+                        />
+                      )}
+                      <h5 className="text-3xl">Logout</h5>
+                    </div>
+                    <ModalNextButton
+                      link="settings"
+                      onClick={handleLogout}
+                      requirePin={!!settings.pin}
+                      preventNavigation={true}
                     />
                   </div>
                   <div className="flex justify-between items-center pl-4">
