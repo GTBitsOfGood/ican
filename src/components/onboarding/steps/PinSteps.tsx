@@ -59,14 +59,14 @@ export default function PinSteps({
             value={pin}
             onChange={onPinChange}
             pattern={REGEXP_ONLY_DIGITS}
-            containerClassName="w-full gap-0 [&_input]:!w-full"
+            containerClassName="w-full"
           >
-            <InputOTPGroup className="w-full flex justify-between items-center h-20 desktop:h-40">
+            <InputOTPGroup className="w-full flex items-center gap-2 desktop:gap-4">
               {[0, 1, 2, 3].map((index) => (
                 <InputOTPSlot
                   key={index}
                   index={index}
-                  className="h-full w-auto aspect-square border border-black text-2xl desktop:text-6xl font-bold font-quantico bg-neutral-300 text-black [&.ring-1]:bg-white [&.ring-1]:outline [&.ring-1]:outline-2 desktop:[&.ring-1]:outline-4 [&.ring-1]:outline-offset-[-2px] desktop:[&.ring-1]:outline-offset-[-4px] [&.ring-1]:outline-Blue-1000 [&.ring-1]:text-Blue-1000 [&.ring-1]:border-none"
+                  className="flex-1 h-16 desktop:h-auto desktop:aspect-square min-w-0 border border-black rounded-none bg-neutral-300 text-black text-3xl desktop:text-5xl font-bold font-quantico [&.ring-1]:bg-white [&.ring-1]:outline [&.ring-1]:outline-2 desktop:[&.ring-1]:outline-4 [&.ring-1]:outline-offset-[-2px] desktop:[&.ring-1]:outline-offset-[-4px] [&.ring-1]:outline-Blue-1000 [&.ring-1]:text-Blue-1000 [&.ring-1]:border-none"
                 />
               ))}
             </InputOTPGroup>

@@ -110,23 +110,39 @@ export default function MedicationsPage({
               </h1>
             ) : (
               <div>
-                <h1 className="font-quantico font-bold text-white text-5xl desktop:text-6xl">
+                <h1 className="font-quantico font-bold text-white text-4xl desktop:text-6xl">
                   Enter Medications
                 </h1>
-                <h2 className="font-quantico font-bold text-white text-3xl desktop:text-4xl mt-5">
-                  Click to add Medications to your list.
-                </h2>
+                {medications.length === 0 && (
+                  <>
+                    <h2 className="mobile:hidden desktop:block font-quantico font-bold text-white text-4xl mt-5">
+                      Click to add medications to your list.
+                    </h2>
+                    <h2 className="desktop:hidden font-quantico text-white text-xl mt-5">
+                      Touch to add medications to your list.
+                    </h2>
+                  </>
+                )}
               </div>
             )}
-            {medications.length !== 0 && <AddMedicationButton />}
+            {medications.length !== 0 && (
+              <div className="mobile:hidden tablet:block">
+                <AddMedicationButton />
+              </div>
+            )}
           </div>
+          {medications.length !== 0 && (
+            <div className="tablet:hidden flex justify-end">
+              <AddMedicationButton />
+            </div>
+          )}
           <div className="grid mobile:grid-cols-1 tablet:grid-cols-3 largeDesktop:grid-cols-4 overflow-y-auto tiny:max-h-[40vh] minimized:max-h-[60vh] max-h-[71vh] gap-12 list-scrollbar">
             {medications.length === 0 ? (
               <Link
                 href="/medications/add"
-                className="mobile:w-full mobile:mx-auto desktop:col-span-1 tablet:col-span-1 largeDesktop:col-span-1 bg-icanBlue-200 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white shadow-medicationCardShadow mobile:!min-h-[200px] desktop:!min-h-[400px]"
+                className="mobile:w-full mobile:mx-auto desktop:col-span-1 tablet:col-span-1 largeDesktop:col-span-1 bg-icanBlue-200 text-white flex flex-col justify-center items-center cursor-pointer relative border-2 border-white border-dashed shadow-medicationCardShadow mobile:!min-h-[200px] desktop:!min-h-[400px]"
               >
-                <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white">
+                <h2 className="font-quantico mobile:text-xl tablet:text-2xl desktop:text-3xl largeDesktop:text-4xl font-bold underline text-center text-white rounded-2xl">
                   + ADD NEW
                 </h2>
               </Link>
