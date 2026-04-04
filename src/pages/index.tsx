@@ -4,6 +4,7 @@ import NavButton from "@/components/ui/NavButton";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import PetDisplay from "@/components/home/PetDisplay";
 import Hearts from "@/components/ui/Heart";
+import TutorialOverlay from "@/components/ui/TutorialOverlay";
 
 import SettingsModal from "@/components/modals/SettingsModal";
 import ChangePinModal from "@/components/modals/ChangePinModal";
@@ -515,6 +516,7 @@ export default function Home({
           />
 
           {showHearts && <Hearts />}
+          <TutorialOverlay />
         </div>
       ) : (
         <LoadingScreen />

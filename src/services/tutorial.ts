@@ -67,7 +67,7 @@ export default class TutorialService {
       dosesUnit: "Doses" as const,
       notificationFrequency: "Every Dose" as const,
       includeTimes: true,
-      notes: "practice dose",
+      notes: "This is for the tutorial!",
       createdAt: createdAt,
       updatedAt: new Date(),
     });

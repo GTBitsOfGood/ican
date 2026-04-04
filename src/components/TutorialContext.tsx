@@ -64,6 +64,7 @@ interface TutorialContextType {
   purchaseReplayFood: (foodName: string, cost: number) => void;
   consumeReplayFood: (foodName: string) => void;
   startReplay: () => void;
+  exitReplay: () => void;
   isStartingReplay: boolean;
 }
 
@@ -137,27 +138,7 @@ const applyReplayFeedProgress = (session: ReplaySession): ReplaySession => {
   };
 };
 
-const createReplaySession = (
-  tutorialStage: InitialTutorialStage = "food",
-): ReplaySession => {
-  if (tutorialStage === "food") {
-    return {
-      replayCoins: 100,
-      replayXpLevel: 1,
-      replayXpGained: 0,
-      replayFoods: [],
-    };
-  }
-
-  if (tutorialStage === "medication" || tutorialStage === "feed") {
-    return {
-      replayCoins: 100,
-      replayXpLevel: 1,
-      replayXpGained: 0,
-      replayFoods: [],
-    };
-  }
-
+const createReplaySession = (): ReplaySession => {
   return {
     replayCoins: 100,
     replayXpLevel: 1,
@@ -228,15 +209,23 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     previousStatusKeyRef.current = statusKey;
-    const timeoutId = window.setTimeout(() => {
+
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) {
+        return;
+      }
+
       setTutorialStep(0);
       setCompletionTriggered(false);
       setMedicationType(null);
       setShouldShowMedicationDrag(false);
       setPracticeDose(null);
-    }, 0);
+    });
 
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      cancelled = true;
+    };
   }, [
     completionTriggered,
     isReplay,
@@ -559,7 +548,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (isReplay) {
       setReplaySession((current) =>
-        current ? applyReplayFeedProgress(current) : createReplaySession("end"),
+        current ? applyReplayFeedProgress(current) : createReplaySession(),
       );
       setReplayStage("end");
       setTutorialStep(0);
@@ -590,7 +579,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setReplaySession((current) => {
-        const activeSession = current ?? createReplaySession("food");
+        const activeSession = current ?? createReplaySession();
         if (
           activeSession.replayCoins < cost ||
           activeSession.replayFoods.includes(foodName)
@@ -615,7 +604,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setReplaySession((current) => {
-        const activeSession = current ?? createReplaySession("feed");
+        const activeSession = current ?? createReplaySession();
         return {
           ...activeSession,
           replayFoods: activeSession.replayFoods.filter(
@@ -634,7 +623,7 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
 
     try {
       await resetTutorial.mutateAsync(undefined);
-      setReplaySession(createReplaySession("food"));
+      setReplaySession(createReplaySession());
       setReplayStage("food");
       setTutorialStep(0);
       setMedicationType(null);
@@ -650,22 +639,39 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [resetTutorial, router, userId]);
 
+  const exitReplay = useCallback(() => {
+    if (!isReplay) return;
+
+    resetTutorial.mutate(undefined, {
+      onSuccess: () => {
+        setReplaySession(null);
+        setReplayStage(null);
+        setMedicationType(null);
+        setShouldShowMedicationDrag(false);
+        router.push("/");
+      },
+    });
+  }, [isReplay, resetTutorial, router]);
+
   const getTutorialText = useCallback(() => {
+    const userName = userProfile?.name?.trim() || "Friend";
+    const petName = realPet?.name?.trim() || "Paws";
+
     if (shouldShowMedicationDrag) {
       return "Feed me the medicine!";
     }
 
     if (tutorialStage === "medication" && medicationType) {
-      return "Great job taking your medication {userName}! Now it's time for mine!";
+      return "Great job taking your medication {userName}! Now it's time for mine!".replace(
+        "{userName}",
+        userName,
+      );
     }
 
     const dialogues = TUTORIAL_DIALOGUES[portion];
     if (!dialogues || tutorialStep >= dialogues.length) {
       return undefined;
     }
-
-    const userName = userProfile?.name?.trim() || "Friend";
-    const petName = realPet?.name?.trim() || "Paws";
 
     return dialogues[tutorialStep]
       .replace("{userName}", userName)
@@ -706,11 +712,13 @@ export const TutorialProvider: React.FC<{ children: React.ReactNode }> = ({
       purchaseReplayFood,
       consumeReplayFood,
       startReplay,
+      exitReplay,
       isStartingReplay: resetTutorial.isPending,
     }),
     [
       completeTutorialMedicationStep,
       consumeReplayFood,
+      exitReplay,
       getTutorialText,
       isActive,
       isReplay,

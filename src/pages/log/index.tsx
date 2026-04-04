@@ -54,7 +54,7 @@ export default function Log() {
             name: TUTORIAL_MEDICATION_NAME,
             formOfMedication: "Pill" as const,
             dosage: "0 pills",
-            notes: "practice dose",
+            notes: "This is for the tutorial!",
             scheduledDoseTime: tutorial.practiceDose.scheduledDoseTime,
             includeTimes: true,
             canCheckIn: true,
