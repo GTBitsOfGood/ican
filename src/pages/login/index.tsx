@@ -163,16 +163,23 @@ export default function Home() {
   return (
     <UnauthorizedRoute>
       <div className="flex min-h-screen overflow-y-auto font-quantico bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
-        <div className="self-center flex flex-col items-center justify-center rounded-[64px] mobile:w-[85%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] bg-white h-auto mx-auto my-auto mobile:pt-3 mobile:pb-2 desktop:pt-4 desktop:pb-3">
+        <div className="self-start flex flex-col items-center justify-center desktop:rounded-[64px] mobile:rounded-[10px] mobile:w-[92%] minimized:w-[65%] short:w-[55%] tablet:w-[65%] largeDesktop:w-[50%] desktop:bg-white mobile:bg-icanBlue-200/80 mobile:backdrop-blur-[2px] h-auto mx-auto mt-16 mb-auto mobile:pt-3 mobile:pb-2 desktop:pt-4 desktop:pb-3">
           <Image
-            className="desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[220px] desktop:h-[148px]"
+            className="hidden mobile:block desktop:hidden desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px]"
+            src="/icanLogoWhite.svg"
+            alt="Logo"
+            width={248}
+            height={167}
+          />
+          <Image
+            className="mobile:hidden desktop:block desktop:mb-2 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[220px] desktop:h-[148px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
             height={167}
           />
           {!loggingIn && (
-            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-3 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[26px] font-bold leading-[36px] tracking-[-1.44px]">
+            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-3 text-center mobile:text-white desktop:text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[26px] font-bold leading-[36px] tracking-[-1.44px]">
               Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
             </div>
           )}
@@ -192,7 +199,7 @@ export default function Home() {
               <form
                 id="login-form"
                 onSubmit={handleSubmit}
-                className="flex flex-col items-center justify-center w-[80%] bg-white rounded-lg"
+                className="flex flex-col items-center justify-center w-[80%] rounded-lg"
               >
                 {generalError && (
                   <div className="self-start w-full mb-2">
@@ -202,7 +209,7 @@ export default function Home() {
                 <div className="w-full mb-2 flex border-2 border-borderGrey">
                   <button
                     type="button"
-                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.PARENT ? "bg-loginGreen text-black" : "bg-white text-textGrey"}`}
+                    className={`w-1/2 py-2 text-lg ${loginType === LoginType.PARENT ? "bg-loginBlue text-white" : "bg-white text-textGrey"}`}
                     onClick={() => handleLoginTypeChange(LoginType.PARENT)}
                   >
                     Parent Login
@@ -239,7 +246,7 @@ export default function Home() {
                 ) : null}
                 <ErrorBox message={passwordError} />
                 {!isChildLogin && (
-                  <p className="text-textGrey self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
+                  <p className="desktop:text-textGrey mobile:text-white self-start font-berlin-sans text-[20px] font-normal decoration-solid mb-2 [text-decoration-skip-ink:none]">
                     <Link
                       className=" desktop:text-xl mobile:text-lg short:text-lg tiny:text-[16px] underline"
                       href="/forgot-password"
@@ -256,7 +263,7 @@ export default function Home() {
                 </button>
 
                 {!isChildPasswordStep && (
-                  <div className="mt-2 flex justify-start flex-row">
+                  <div className="mt-2 flex justify-start flex-row items-center gap-">
                     <input
                       type="checkbox"
                       id="rememberMe"
@@ -264,7 +271,10 @@ export default function Home() {
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4"
                     />
-                    <label htmlFor="rememberMe" className="text-textGrey">
+                    <label
+                      htmlFor="rememberMe"
+                      className="desktop:text-textGrey mobile:text-white"
+                    >
                       Remember me
                     </label>
                   </div>
@@ -273,14 +283,16 @@ export default function Home() {
               {!isChildLogin && (
                 <div className="mt-3 flex flex-col mobile:gap-y-2 short:gap-y-2 desktop:gap-y-6 w-[80%]">
                   <div className="flex items-center justify-center w-full">
-                    <div className="border border-textGrey w-full" />
-                    <div className="text-textGrey px-4">or</div>
-                    <div className="border border-textGrey w-full" />
+                    <div className="border desktop:border-textGrey mobile:border-white w-full" />
+                    <div className="desktop:text-textGrey mobile:text-white px-4">
+                      or
+                    </div>
+                    <div className="border desktop:border-textGrey mobile:border-white w-full" />
                   </div>
                   <GoogleLoginButton setError={setGeneralError} />
                 </div>
               )}
-              <div className="mt-2 mb-2 text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
+              <div className="mt-2 mb-2 desktop:text-textGrey mobile:text-white mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                 Don&apos;t have an account?{" "}
                 <Link className="underline" href="/register">
                   Sign up

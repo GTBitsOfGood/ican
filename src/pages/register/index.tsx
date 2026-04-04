@@ -121,12 +121,19 @@ export default function Home() {
 
   return (
     <UnauthorizedRoute>
-      <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2 overflow-hidden">
+      <div className="flex min-h-screen overflow-y-auto bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] py-2">
         <div
-          className={`self-center flex flex-col font-quantico items-center justify-center rounded-[64px] mobile:w-[85%] tiny:w-[80%] minimized:w-[65%] short:w-[55%] desktop:w-[50%] bg-white ${registering ? "h-auto" : "h-full"} mx-auto overflow-auto`}
+          className={`self-start flex flex-col font-quantico items-center justify-center mobile:rounded-[10px] desktop:rounded-[64px] mobile:w-[85%] tiny:w-[80%] minimized:w-[65%] short:w-[55%] desktop:w-[50%] mobile:bg-icanBlue-200/80 desktop:bg-white h-auto mx-auto mt-16 mb-auto mobile:pt-3 mobile:pb-2 desktop:pt-4 desktop:pb-3`}
         >
           <Image
-            className="desktop:mb-1 mobile:mb-0 minimized:mb-0 mobile:w-[165px] mobile:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[248px] desktop:h-[167px]"
+            className="hidden mobile:block desktop:hidden desktop:mb-2 mobile:mb-0 minimized:mb-0 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px]"
+            src="/icanLogoWhite.svg"
+            alt="Logo"
+            width={248}
+            height={167}
+          />
+          <Image
+            className="mobile:hidden desktop:block desktop:mb-2 tablet:w-[165px] tablet:h-[111px] minimized:w-[165px] minimized:h-[111px] tiny:w-[83px] tiny:h-[56px] desktop:w-[220px] desktop:h-[148px]"
             src="/icanLogo.svg"
             alt="Logo"
             width={248}
@@ -134,7 +141,7 @@ export default function Home() {
           />
 
           {!registering && (
-            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
+            <div className="self-center w-[80%] mobile:my-1 minimized:mb-1 desktop:my-4 text-center mobile:text-white desktop:text-black mobile:text-xl tiny:text-lg minimized:text-xl tablet:text-[28px] font-bold leading-[36px] tracking-[-1.44px]">
               Adopt & Care for a Supportive Pet Pal for Your Medication Journey!
             </div>
           )}
@@ -153,7 +160,7 @@ export default function Home() {
             <>
               <form
                 onSubmit={handleSubmit}
-                className="flex flex-col items-center justify-between w-[80%] bg-white rounded-lg"
+                className="flex flex-col items-center justify-between w-[80%] dektop:bg-white mobile:bg-transparent rounded-lg"
               >
                 <div className="text-white self-start mobile:text-3xl tiny:text-xl minimized:text-3xl desktop:text-[32px]/[40px] font-bold text-shadow-default mobile:text-stroke-1 minimized:text-stroke-1 desktop:text-stroke-2 text-stroke-default mobile:mb-2 minimized:mb-1 desktop:mb-2">
                   Sign Up
@@ -207,13 +214,15 @@ export default function Home() {
                 </button>
                 <div className="flex flex-col mobile:gap-y-1 short:gap-y-1 tablet:gap-y-3 w-[80%]">
                   <div className="flex items-center justify-center w-full">
-                    <div className="border border-textGrey w-full" />
-                    <div className="text-textGrey px-4">or</div>
-                    <div className="border border-textGrey w-full" />
+                    <div className="border desktop:border-textGrey mobile:border-white w-full" />
+                    <div className="desktop:text-textGrey mobile:text-white px-4">
+                      or
+                    </div>
+                    <div className="border desktop:border-textGrey mobile:border-white w-full" />
                   </div>
                   <GoogleLoginButton setError={setGeneralError} />
                 </div>
-                <div className="text-textGrey mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
+                <div className="desktop:text-textGrey mobile:text-white mobile:text-lg short:text-lg tiny:text-[16px] desktop:text-[20px] short:text-lg">
                   Have an account?{" "}
                   <Link className="underline font-quantico" href="/login">
                     Login

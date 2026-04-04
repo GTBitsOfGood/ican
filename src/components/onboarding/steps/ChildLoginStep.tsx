@@ -44,8 +44,8 @@ export default function ChildLoginStep({
     : colorSequence.length < 4;
 
   return (
-    <div className="w-full flex flex-col items-center gap-4">
-      <div className="mobile:block desktop:hidden self-start [&>a]:h-16 [&>a]:w-16 [&>button]:h-16 [&>button]:w-16 [&>a>button]:h-full [&>a>button]:w-full">
+    <div className="w-full flex flex-col items-center gap-4 mb-8">
+      <div className="mobile:block desktop:hidden self-start [&>a]:h-16 [&>a]:w-16 [&>button]:h-8 [&>button]:w-8 [&>a>button]:h-full [&>a>button]:w-full">
         <BackButton onClick={onBack} />
       </div>
       <OnboardingCard>
@@ -87,22 +87,25 @@ export default function ChildLoginStep({
             <p className="text-white/80 text-base desktop:text-xl">
               Enter a 4-digit pin below
             </p>
-            <InputOTP
-              maxLength={4}
-              value={password}
-              onChange={onPasswordChange}
-              pattern={REGEXP_ONLY_DIGITS}
-            >
-              <InputOTPGroup className="flex items-center gap-3">
-                {[0, 1, 2, 3].map((index) => (
-                  <InputOTPSlot
-                    key={index}
-                    index={index}
-                    className="h-[120px] w-[120px] rounded-[4px] border border-black/10 bg-tilePreviewBg text-5xl text-black first:rounded-[4px] first:border last:rounded-[4px]"
-                  />
-                ))}
-              </InputOTPGroup>
-            </InputOTP>
+            <div className="w-full mb-4 desktop:mb-0">
+              <InputOTP
+                maxLength={4}
+                value={password}
+                onChange={onPasswordChange}
+                pattern={REGEXP_ONLY_DIGITS}
+                containerClassName="w-full"
+              >
+                <InputOTPGroup className="w-full flex items-center gap-2 desktop:gap-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <InputOTPSlot
+                      key={index}
+                      index={index}
+                      className="flex-1 h-16 desktop:h-auto desktop:aspect-square min-w-0 border border-black rounded-none bg-neutral-300 text-black text-3xl desktop:text-5xl font-bold font-quantico [&.ring-1]:bg-white [&.ring-1]:outline [&.ring-1]:outline-2 desktop:[&.ring-1]:outline-4 [&.ring-1]:outline-offset-[-2px] desktop:[&.ring-1]:outline-offset-[-4px] [&.ring-1]:outline-Blue-1000 [&.ring-1]:text-Blue-1000 [&.ring-1]:border-none"
+                    />
+                  ))}
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col">

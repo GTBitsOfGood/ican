@@ -3,10 +3,10 @@ import React from "react";
 export default function AddMedicationButton() {
   return (
     <a
-      className="flex bg-transparent h-full w-auto justify-center items-stretch"
+      className="flex bg-icanGreen-100 w-auto justify-center items-stretch rounded-xl border border-black overflow-hidden"
       href={"/medications/add"}
     >
-      <button className="border-2 border-black border-solid p-2 pb-[0.75rem] bg-icanGreen-100 w-full h-full flex justify-center items-center">
+      <button className="px-4 py-1.5 w-full flex justify-center items-center">
         <span className="font-quantico text-black mobile:text-lg desktop:text-xl">
           <span className="mobile:hidden desktop:inline">ADD NEW </span>
           <span className="font-quantico font-bold mobile:text-2xl desktop:text-3xl">

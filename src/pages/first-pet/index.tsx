@@ -203,7 +203,7 @@ export default function FirstPetPage() {
         </div>
 
         <div className="desktop:hidden w-full min-h-screen bg-icanBlue-200 flex flex-col px-4 pt-4 pb-6">
-          <div className="[&>a]:w-16 [&>a]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
+          <div className="[&>a]:w-16 [&>a]:h-16 [&>button]:w-16 [&>button]:h-16 [&>a>button]:w-full [&>a>button]:h-full">
             <BackButton onClick={() => router.back()} />
           </div>
           <div className="w-full max-w-md mx-auto">
@@ -218,7 +218,7 @@ export default function FirstPetPage() {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-start min-h-0 pt-0 pb-0">
-            <div className="w-full max-w-md bg-icanBlue-100 rounded-lg p-6 flex flex-col items-center justify-between gap-2 h-full min-h-[50vh] max-h-[65vh]">
+            <div className="w-full max-w-md bg-icanBlue-100 rounded-lg p-6 pb-8 flex flex-col items-center gap-4">
               <h2 className="text-white font-quantico font-bold mobile:text-4xl desktop:text-5xl text-center mt-4">
                 {selectedCharacter.name}
               </h2>
@@ -227,7 +227,7 @@ export default function FirstPetPage() {
                 {selectedCharacter.description}
               </p>
 
-              <div className="relative w-full flex items-center justify-center flex-1 min-h-[250px] mb-2">
+              <div className="relative w-full flex items-center justify-center min-h-[250px]">
                 {selectedCharacterIndex > 0 && (
                   <NavigationArrow
                     direction="left"
@@ -259,7 +259,7 @@ export default function FirstPetPage() {
                 onClick={handleSelectPet}
                 disabled={createPetMutation.isPending}
                 className={cn(
-                  "w-full py-4 text-black font-quantico font-bold mobile:text-xl desktop:text-2xl transition-all duration-200 mb-0 mt-2",
+                  "w-full py-1 text-black font-quantico font-bold mobile:text-xl desktop:text-2xl transition-all duration-200",
                   "bg-loginGreen",
                   createPetMutation.isPending
                     ? "opacity-50 cursor-not-allowed"

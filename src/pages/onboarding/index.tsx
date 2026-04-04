@@ -360,7 +360,7 @@ export default function Onboard() {
 
   return (
     <AuthorizedRoute>
-      <div className="flex h-screen bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2 pt-8 desktop:pt-2 items-start desktop:items-center justify-center">
+      <div className="flex min-h-screen overflow-y-auto bg-cover bg-no-repeat bg-[url('/LoginBackground.svg')] p-2 pt-8 desktop:pt-8 items-start justify-center">
         {renderCurrentStep()}
       </div>
     </AuthorizedRoute>
