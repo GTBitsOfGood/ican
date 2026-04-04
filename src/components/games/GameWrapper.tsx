@@ -38,7 +38,7 @@ export interface GameWrapperControls {
   setGameState: (state: GameState) => void;
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
-  setPetEmotion?: (emotion: PetEmotion | null) => void;
+  setPetEmotion: (emotion: PetEmotion | null) => void;
   setWinRewardDetails?: (details: WinRewardDetails | null) => void;
 }
 
@@ -167,6 +167,7 @@ export default function GameWrapper({
                   showBackground={false}
                   className="h-[17rem] tablet:h-[22rem]"
                   characterImageSize={340}
+                  emotion={petEmotion ?? PetEmotion.NEUTRAL}
                 />
               </div>
             </div>
