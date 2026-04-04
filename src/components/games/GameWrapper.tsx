@@ -44,13 +44,15 @@ export interface GameWrapperControls {
 
 export default function GameWrapper({
   GameComponent,
+  gameName,
   initialSpeechText = "",
   showGameAreaFrame = true,
   gameAreaClassName,
   whiteboardSrc = "/games/whiteboard.png",
   whiteboardContainerClassName = "absolute right-20 top-0 aspect-square w-[50%]",
-  /** Padding (pt/pb/pl/pr) that pushes in from the whiteboard image borders to the board interior. Equal pl/pr ensures horizontal centering. */
   gameAreaFrameInsetClassName = "pt-[17%] pb-[15%] pl-[7%] pr-[9%]",
+  mobileWhiteboardSrc = "/games/whiteboard_mobile.svg",
+  mobileGameAreaFrameInsetClassName = "pt-[9%] pb-[16%] pl-[7%] pr-[9%]",
 }: {
   GameComponent: React.ComponentType<GameWrapperControls>;
   gameName?: string;
@@ -60,6 +62,8 @@ export default function GameWrapper({
   whiteboardSrc?: string;
   whiteboardContainerClassName?: string;
   gameAreaFrameInsetClassName?: string;
+  mobileWhiteboardSrc?: string;
+  mobileGameAreaFrameInsetClassName?: string;
 }) {
   const router = useRouter();
   const { data: pet } = usePet();
@@ -73,6 +77,18 @@ export default function GameWrapper({
   const [winRewardDetails, setWinRewardDetails] =
     useState<WinRewardDetails | null>(null);
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isMobile, setIsMobile] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 1400px)").matches,
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 1400px)");
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const resetSuccessState = useCallback(() => {
     if (successTimerRef.current) {
@@ -154,6 +170,21 @@ export default function GameWrapper({
           />
 
           <div className="relative z-10 min-h-screen">
+            {/* Mobile banner — visible only below the 1400px wideGame breakpoint */}
+            {gameName && (
+              <div
+                className="wideGame:hidden fixed top-0 left-0 right-0 z-50 flex items-center px-5 py-3 shadow-[0_6px_16px_4px_rgba(0,0,0,0.45)]"
+                style={{
+                  backgroundColor: "#2D336B",
+                  borderBottom: "1px solid #232540",
+                }}
+              >
+                <span className="font-quantico text-xl font-bold uppercase text-white">
+                  {gameName}
+                </span>
+              </div>
+            )}
+
             {/* Pet at default home position with speech bubble */}
             {petBoardX === null && (
               <div className="absolute left-4 top-[55%] w-[17rem] -translate-y-1/2 tablet:left-8 tablet:w-[22rem]">
@@ -175,59 +206,102 @@ export default function GameWrapper({
               </div>
             )}
 
-            {/* Whiteboard */}
-            <div className={whiteboardContainerClassName}>
-              {showGameAreaFrame && (
-                <img
-                  src={whiteboardSrc}
-                  className={"absolute inset-0 h-full w-full"}
-                  alt=""
-                  aria-hidden="true"
-                />
-              )}
-              {petBoardX !== null && (
-                <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
+            {/* Whiteboard — mobile layout (<1400px) */}
+            {isMobile ? (
+              <div
+                className="fixed bottom-0 left-1/2 -translate-x-1/2"
+                style={{
+                  width: "min(100%, calc(65vh * 393 / 510))",
+                  aspectRatio: "393 / 510",
+                }}
+              >
+                {showGameAreaFrame && (
+                  <img
+                    src={mobileWhiteboardSrc}
+                    className="absolute inset-0 h-full w-full"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                )}
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center justify-center ",
+                    showGameAreaFrame && mobileGameAreaFrameInsetClassName,
+                  )}
+                >
                   <div
-                    style={{
-                      transform: `translateX(${petBoardX}%)`,
-                    }}
+                    className={cn(
+                      "h-full w-full overflow-hidden border-2 border-red-500",
+                      gameAreaClassName,
+                    )}
                   >
-                    <PetAppearance
-                      petType={pet.petType}
-                      selectedItem={null}
-                      appearance={pet.appearance}
-                      showBackground={false}
-                      className="h-[17rem] tablet:h-[22rem]"
-                      characterImageSize={340}
-                      emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                    <GameComponent
+                      setSpeechText={setSpeechText}
+                      gameState={gameState}
+                      setGameState={handleGameStateChange}
+                      showInformationModal={setInformationModal}
+                      setPetBoardX={setPetBoardX}
+                      setPetEmotion={setPetEmotion}
+                      setWinRewardDetails={setWinRewardDetails}
                     />
                   </div>
                 </div>
-              )}
-              <div
-                className={cn(
-                  "absolute inset-0 flex items-center justify-center",
-                  showGameAreaFrame && gameAreaFrameInsetClassName,
+              </div>
+            ) : (
+              /* Whiteboard — desktop layout (≥1400px) */
+              <div className={whiteboardContainerClassName}>
+                {showGameAreaFrame && (
+                  <img
+                    src={whiteboardSrc}
+                    className="absolute inset-0 h-full w-full"
+                    alt=""
+                    aria-hidden="true"
+                  />
                 )}
-              >
+                {petBoardX !== null && (
+                  <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
+                    <div
+                      style={{
+                        transform: `translateX(${petBoardX}%)`,
+                      }}
+                    >
+                      <PetAppearance
+                        petType={pet.petType}
+                        selectedItem={null}
+                        appearance={pet.appearance}
+                        showBackground={false}
+                        className="h-[17rem] tablet:h-[22rem]"
+                        characterImageSize={340}
+                        emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div
                   className={cn(
-                    "h-full w-full overflow-hidden border-2 border-red-500",
-                    gameAreaClassName,
+                    "absolute inset-0 flex items-center justify-center",
+                    showGameAreaFrame && gameAreaFrameInsetClassName,
                   )}
                 >
-                  <GameComponent
-                    setSpeechText={setSpeechText}
-                    gameState={gameState}
-                    setGameState={handleGameStateChange}
-                    showInformationModal={setInformationModal}
-                    setPetBoardX={setPetBoardX}
-                    setPetEmotion={setPetEmotion}
-                    setWinRewardDetails={setWinRewardDetails}
-                  />
+                  <div
+                    className={cn(
+                      "h-full w-full overflow-hidden",
+                      gameAreaClassName,
+                    )}
+                  >
+                    <GameComponent
+                      setSpeechText={setSpeechText}
+                      gameState={gameState}
+                      setGameState={handleGameStateChange}
+                      showInformationModal={setInformationModal}
+                      setPetBoardX={setPetBoardX}
+                      setPetEmotion={setPetEmotion}
+                      setWinRewardDetails={setWinRewardDetails}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Success overlay on win */}
             {showSuccess && (
