@@ -19,7 +19,11 @@ import {
   validateUpdatePet,
 } from "@/utils/serviceUtils/petsUtil";
 import PetDAO from "@/db/actions/pets";
-import { calculateXPForLevel, XP_GAIN } from "@/utils/constants";
+import {
+  calculateXPForLevel,
+  COINS_PER_LEVEL_UP,
+  XP_GAIN,
+} from "@/utils/constants";
 import { Types } from "mongoose";
 import { Appearance, Pet } from "@/db/models/pet";
 import ERRORS from "@/utils/errorMessages";
@@ -110,7 +114,7 @@ export default class PetService {
 
     if (updatedPet.xpGained >= currentLevelThreshold - XP_GAIN) {
       updatedPet.xpLevel += 1;
-      updatedPet.coins += 100;
+      updatedPet.coins += COINS_PER_LEVEL_UP;
       updatedPet.xpGained =
         (XP_GAIN + updatedPet.xpGained) % currentLevelThreshold;
     } else {

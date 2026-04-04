@@ -39,6 +39,10 @@ export default function Home({
   foods = undefined,
   foodCount = undefined,
 }: HomeProps) {
+  const currentDate = new Date();
+  const currentDateLabel = `${currentDate.toLocaleString("en-US", {
+    month: "long",
+  })} ${currentDate.getDate()}`;
   const router = useRouter();
   const tutorial = useTutorial();
   const isTutorial = tutorial.isActive;
@@ -299,8 +303,10 @@ export default function Home({
     }
 
     if (upcomingMed) {
-      const formattedTime = formatMedicationTime(upcomingMed.scheduledDoseTime);
-      return `Hi, {userName}!\nIt's time to take your ${formattedTime} medication.\nClick {logButton} to check-in!`;
+      const medicationTimeLabel = upcomingMed.includeTimes
+        ? formatMedicationTime(upcomingMed.scheduledDoseTime)
+        : currentDateLabel;
+      return `Hi, {userName}!\nIt's time to take your ${medicationTimeLabel} medication.\nClick {logButton} to check-in!`;
     }
 
     return "Hi {userName}!";
