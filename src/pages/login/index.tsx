@@ -17,7 +17,7 @@ import ChildColorPicker from "@/components/child-login/ChildColorPicker";
 
 export default function Home() {
   const childPasswordIncorrectMessage =
-    "Oh no! The password you entered is incorrect. Please try again.";
+    "Oh no! The password is incorrect. Please try again.";
   const [loginType, setLoginType] = useState<LoginType>(LoginType.PARENT);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -118,7 +118,7 @@ export default function Home() {
           }
         } else {
           setGeneralError(
-            "Oh no! The password you entered is incorrect. Please try again.",
+            "Oh no! The password is incorrect. Please try again.",
           );
         }
       }
