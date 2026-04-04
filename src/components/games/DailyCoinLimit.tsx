@@ -19,8 +19,8 @@ export default function DailyCoinLimit({
   let barColor: string;
 
   if (reached) {
-    title = "You\u2019ve reached today\u2019s coin limit";
-    message = "You can still play, but you won\u2019t earn more coins today.";
+    title = "Daily Coin Limit";
+    message = `You can earn up to ${GAMES_DAILY_COIN_LIMIT} coins from games today.`;
     barColor = "bg-[#6b5c4c]";
   } else if (lowRemaining) {
     title = "You\u2019ve almost reached today\u2019s coin limit";
@@ -40,9 +40,16 @@ export default function DailyCoinLimit({
   }
 
   return (
-    <div className="mx-6 mt-4 rounded-xl bg-icanBlue-100/40 px-5 py-4">
-      <p className="font-quantico text-base font-bold text-white">{title}</p>
-      <p className="font-quantico text-sm text-white/80">{message}</p>
+    <div
+      className="mx-6 mt-4 rounded-xl px-5 py-4"
+      style={{ backgroundColor: "#B7BDEFB2" }}
+    >
+      <p className="font-quantico text-xl min-[1400px]:text-base font-bold text-black">
+        {title}
+      </p>
+      <p className="font-quantico text-base min-[1400px]:text-sm text-black">
+        {message}
+      </p>
       <div className="mt-2 flex items-center gap-3">
         <Image
           src="/games/coin.png"
@@ -57,7 +64,7 @@ export default function DailyCoinLimit({
             className={`h-full rounded-full ${barColor} transition-all`}
             style={{ width: `${remainingPercent}%` }}
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 font-pixelify text-xs text-white font-bold">
+          <span className="absolute left-1/2 -translate-x-1/2 smallTablet:left-auto smallTablet:right-2 smallTablet:translate-x-0 top-1/2 -translate-y-1/2 font-pixelify text-xs text-white font-bold">
             {Math.max(coinsLeft, 0)} COINS LEFT
           </span>
         </div>
