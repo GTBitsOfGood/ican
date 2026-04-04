@@ -129,6 +129,71 @@ export default function TicTacToe({
     5 - board.filter((val) => val === "X").length,
   );
 
+  const movesLeftBanner = (
+    <div
+      className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-6 py-4 smallTablet:hidden"
+      style={{ backgroundColor: "#2D336BE5" }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+          <img
+            src="/games/tictactoe/o.png"
+            alt="Pet"
+            className="h-8 w-8 object-contain"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </div>
+        <div>
+          <p className="font-quantico text-xs font-bold text-white/70 uppercase">
+            Pet&apos;s Moves
+          </p>
+          <div className="flex gap-1">
+            {Array(petMovesLeft)
+              .fill(null)
+              .map((_, i) => (
+                <img
+                  key={i}
+                  src="/games/tictactoe/o.png"
+                  alt="O"
+                  className="h-4 w-4 object-contain opacity-80"
+                  style={{ imageRendering: "pixelated" }}
+                />
+              ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 text-right">
+        <div>
+          <p className="font-quantico text-xs font-bold text-white/70 uppercase">
+            Your Moves
+          </p>
+          <div className="flex justify-end gap-1">
+            {Array(playerMovesLeft)
+              .fill(null)
+              .map((_, i) => (
+                <img
+                  key={i}
+                  src="/games/tictactoe/x.png"
+                  alt="X"
+                  className="h-4 w-4 object-contain opacity-80"
+                  style={{ imageRendering: "pixelated" }}
+                />
+              ))}
+          </div>
+        </div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
+          <img
+            src="/games/tictactoe/x.png"
+            alt="You"
+            className="h-8 w-8 object-contain"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     if (gameState !== GameState.START) {
       return;
@@ -259,9 +324,9 @@ export default function TicTacToe({
   };
 
   return (
-    <div className="pt-12 flex h-full w-full flex-col items-center justify-center overflow-hidden">
+    <div className="pt-4 flex h-full w-full flex-col items-center justify-center overflow-hidden tablet:pt-12">
       {gameState !== GameState.START && (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 tablet:gap-4">
           {board.map((value, index) => {
             const row = Math.floor(index / 3);
             const col = index % 3;
@@ -275,7 +340,7 @@ export default function TicTacToe({
                 key={index}
                 onClick={() => handleSquareClick(index)}
                 disabled={aiIsThinking || gameState !== GameState.PLAYING}
-                className={`flex h-24 w-24 items-center justify-center rounded-2xl disabled:opacity-50 transition-colors ${
+                className={`flex h-16 w-16 items-center justify-center rounded-xl tablet:h-24 tablet:w-24 tablet:rounded-2xl disabled:opacity-50 transition-colors ${
                   value === null
                     ? "bg-icanGreen-100 hover:bg-icanGreen-200"
                     : ""
@@ -286,7 +351,7 @@ export default function TicTacToe({
                   <img
                     src="/games/tictactoe/x.png"
                     alt="X"
-                    className="h-24 w-24 object-contain"
+                    className="h-16 w-16 object-contain tablet:h-24 tablet:w-24"
                     style={{ imageRendering: "pixelated" }}
                   />
                 )}
@@ -295,7 +360,7 @@ export default function TicTacToe({
                   <img
                     src="/games/tictactoe/o.png"
                     alt="O"
-                    className="h-24 w-24 object-contain"
+                    className="h-16 w-16 object-contain tablet:h-24 tablet:w-24"
                     style={{ imageRendering: "pixelated" }}
                   />
                 )}
@@ -305,7 +370,7 @@ export default function TicTacToe({
         </div>
       )}
 
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 tablet:mt-8">
         {gameState === GameState.START && (
           <button
             onClick={handleStart}
@@ -354,7 +419,7 @@ export default function TicTacToe({
       </div>
 
       {gameState === GameState.PLAYING && (
-        <div className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-16 pb-8">
+        <div className="hidden fixed bottom-0 left-0 right-0 smallTablet:flex items-center justify-between px-16 pb-8">
           {/* Pet moves */}
           <div className="flex flex-col items-start">
             <p className="font-quantico text-white text-4xl font-bold">
@@ -398,6 +463,8 @@ export default function TicTacToe({
           </div>
         </div>
       )}
+
+      {gameState === GameState.PLAYING && movesLeftBanner}
     </div>
   );
 }
