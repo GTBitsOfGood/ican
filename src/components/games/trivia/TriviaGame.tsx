@@ -77,7 +77,7 @@ export default function TriviaGame({
   }, [gameState, handleStart, setSpeechText]);
 
   const buttonClassName =
-    "w-full border-[3px] border-black bg-icanGreen-200 py-3 font-quantico text-[32px] font-bold leading-none text-black disabled:opacity-50";
+    "w-full border-[2px] border-black bg-icanGreen-200 py-1 font-quantico text-sm wideGame:text-lg font-bold leading-none text-black disabled:opacity-50";
 
   const handleAnswer = (idx: number) => {
     if (isSubmitted) return;
@@ -196,7 +196,7 @@ export default function TriviaGame({
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center px-6">
+    <div className="flex h-full w-full items-center justify-center px-2 wideGame:px-6">
       <div className="text-center font-quantico text-icanBlue-300">
         {gameState === GameState.PLAYING && roundQuestions.length > 0 && (
           <>
@@ -204,12 +204,12 @@ export default function TriviaGame({
               <img
                 src="/games/trivia/Notification.svg"
                 alt="Correct XP +10"
-                className="pointer-events-none absolute right-[8%] top-[6%] z-20 w-[110px] animate-xpFloat"
+                className="pointer-events-none absolute right-[8%] top-[6%] z-20 w-[60px] wideGame:w-[110px] animate-xpFloat"
                 draggable={false}
                 style={{ imageRendering: "pixelated" }}
               />
             )}
-            <div className="mt-8 flex w-full flex-col items-center gap-6">
+            <div className="mt-2 wideGame:mt-8 flex w-full flex-col items-center gap-2 wideGame:gap-6">
               <QuestionCard
                 question={roundQuestions[currQuestionIdx]}
                 onAnswer={handleAnswer}
@@ -231,7 +231,7 @@ export default function TriviaGame({
         {(gameState === GameState.WON || gameState === GameState.LOSS) &&
           roundQuestions.length > 0 && (
             <>
-              <div className="mt-8 flex w-full flex-col items-center gap-6">
+              <div className="mt-2 wideGame:mt-8 flex w-full flex-col items-center gap-2 wideGame:gap-6">
                 <QuestionCard
                   question={roundQuestions[currQuestionIdx]}
                   onAnswer={() => {}}

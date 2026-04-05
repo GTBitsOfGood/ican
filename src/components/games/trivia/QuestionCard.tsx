@@ -19,20 +19,20 @@ export default function QuestionCard({
   currentQuestionNumber,
 }: QuestionCardProps) {
   return (
-    <div className="flex h-full w-full flex-col px-2 pb-2">
-      <div className="mb-8 flex flex-col items-center">
-        <div className="font-quantico text-[22px] font-bold leading-none text-black">
+    <div className="flex h-full w-full flex-col px-1 wideGame:px-2 pb-1 wideGame:pb-2">
+      <div className="mb-2 wideGame:mb-8 flex flex-col items-center">
+        <div className="font-quantico text-xs wideGame:text-[22px] font-bold leading-none text-black">
           {currentQuestionNumber} of 5
         </div>
 
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-1 wideGame:mt-3 flex items-center gap-1 wideGame:gap-2">
           {[0, 1, 2, 3, 4].map((idx) => {
             const isActive = idx === currentQuestionNumber - 1;
 
             return (
               <div
                 key={idx}
-                className={`h-3 w-3 rounded-full border border-black ${
+                className={`h-2 w-2 wideGame:h-3 wideGame:w-3 rounded-full border border-black ${
                   isActive ? "bg-icanGreen-300" : "bg-white"
                 }`}
               />
@@ -41,7 +41,7 @@ export default function QuestionCard({
         </div>
       </div>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2 wideGame:gap-5">
         {question.choices.map((option, idx) => {
           let variant: "default" | "hover" | "selected" | "correct" | "wrong" =
             "default";
