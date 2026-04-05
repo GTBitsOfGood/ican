@@ -175,7 +175,7 @@ export default function GameWrapper({
             {/* Mobile banner — visible only below 650px */}
             {gameName && isMobile && (
               <div
-                className="fixed top-0 left-0 right-0 z-50 flex items-center px-5 py-3 shadow-[0_6px_16px_4px_rgba(0,0,0,0.45)]"
+                className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-2 shadow-[0_6px_16px_4px_rgba(0,0,0,0.45)]"
                 style={{
                   backgroundColor: "#2D336B",
                   borderBottom: "1px solid #232540",
@@ -184,6 +184,32 @@ export default function GameWrapper({
                 <span className="font-quantico text-xl font-bold uppercase text-white">
                   {gameName}
                 </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => router.push("/games")}
+                    className="flex items-center justify-center"
+                    aria-label="Leave game"
+                  >
+                    <img
+                      src="/games/leave_game_new.svg"
+                      alt=""
+                      className="h-10 w-auto"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    className="flex items-center justify-center"
+                    aria-label="Restart game"
+                  >
+                    <img
+                      src="/games/restart_new.svg"
+                      alt=""
+                      className="h-10 w-auto"
+                    />
+                  </button>
+                </div>
               </div>
             )}
 
@@ -376,40 +402,42 @@ export default function GameWrapper({
               </div>
             )}
 
-            <div
-              className={cn(
-                "fixed right-4 z-[67] flex flex-col items-end gap-2 tablet:right-6",
-                useFlowerGameControls
-                  ? "bottom-4 tablet:bottom-6"
-                  : "top-4 tablet:top-6",
-              )}
-            >
-              <button
-                type="button"
-                onClick={() => router.push("/games")}
-                className="flex items-center justify-center"
-                aria-label="Leave game"
+            {!isMobile && (
+              <div
+                className={cn(
+                  "fixed right-4 z-[67] flex flex-col items-end gap-2 tablet:right-6",
+                  useFlowerGameControls
+                    ? "bottom-4 tablet:bottom-6"
+                    : "top-4 tablet:top-6",
+                )}
               >
-                <img
-                  src="/games/leave_game_new.svg"
-                  alt=""
-                  className="w-32 h-auto"
-                />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/games")}
+                  className="flex items-center justify-center"
+                  aria-label="Leave game"
+                >
+                  <img
+                    src="/games/leave_game_new.svg"
+                    alt=""
+                    className="w-32 h-auto"
+                  />
+                </button>
 
-              <button
-                type="button"
-                onClick={() => window.location.reload()}
-                className="flex items-center justify-center"
-                aria-label="Restart game"
-              >
-                <img
-                  src="/games/restart_new.svg"
-                  alt=""
-                  className="w-32 h-auto"
-                />
-              </button>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="flex items-center justify-center"
+                  aria-label="Restart game"
+                >
+                  <img
+                    src="/games/restart_new.svg"
+                    alt=""
+                    className="w-32 h-auto"
+                  />
+                </button>
+              </div>
+            )}
 
             {informationModal && (
               <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
