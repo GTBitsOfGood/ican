@@ -448,27 +448,14 @@ export default function GameWrapper({
                     alt=""
                     className="w-full h-auto pointer-events-none select-none"
                   />
-                  {/* X close button */}
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="absolute top-[6%] right-[4%] z-10 p-1"
-                    aria-label="Close"
-                  >
-                    <img
-                      src="/games/instruction_card_X.svg"
-                      alt="Close"
-                      className="h-7 w-auto"
-                    />
-                  </button>
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
                     {informationModal.gameMode && (
-                      <p className="font-quantico uppercase mb-5 font-bold text-textBeige text-sm smallTablet:text-2xl">
+                      <p className="font-quantico uppercase mb-2 smallTablet:mb-5 font-bold text-textBeige text-sm smallTablet:text-2xl">
                         GAME MODE: {informationModal.gameMode}
                       </p>
                     )}
-                    <h2 className="font-quantico font-bold uppercase mb-5 text-textBeige text-xl smallTablet:text-5xl">
+                    <h2 className="font-quantico font-bold uppercase mb-2 smallTablet:mb-5 text-textBeige text-xl smallTablet:text-5xl">
                       {informationModal.title}
                     </h2>
                     <p className="font-quantico font-bold leading-relaxed text-textBeige text-xs smallTablet:text-2xl">
@@ -479,6 +466,13 @@ export default function GameWrapper({
                         {informationModal.letters}
                       </p>
                     )}
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="mt-2 smallTablet:mt-5 border-[2px] border-black bg-icanGreen-200 px-10 py-1 font-quantico text-sm font-bold leading-none text-black smallTablet:text-lg smallTablet:py-2"
+                    >
+                      Begin
+                    </button>
                   </div>
                 </div>
               </div>
