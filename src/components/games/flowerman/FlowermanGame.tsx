@@ -61,6 +61,8 @@ export default function FlowermanGame({
           message: pendingHintRef.current,
           letters: `${pendingWordLengthRef.current} LETTERS`,
           onClose: () => setGameState(GameState.PLAYING),
+          buttonText: "Play",
+          showCloseButton: true,
         });
       },
     });

@@ -23,6 +23,8 @@ type InformationModalOptions = {
   message: string;
   letters?: string;
   onClose?: () => void;
+  buttonText?: string;
+  showCloseButton?: boolean;
 };
 
 type WinRewardDetails = {
@@ -448,6 +450,21 @@ export default function GameWrapper({
                     alt=""
                     className="w-full h-auto pointer-events-none select-none"
                   />
+                  {informationModal.showCloseButton && (
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="absolute top-[6%] right-[4%] z-10 p-1"
+                      aria-label="Close"
+                    >
+                      <img
+                        src="/games/instruction_card_X.svg"
+                        alt=""
+                        className="w-6 h-6 smallTablet:w-8 smallTablet:h-8"
+                        draggable={false}
+                      />
+                    </button>
+                  )}
                   {/* Content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
                     {informationModal.gameMode && (
@@ -471,7 +488,7 @@ export default function GameWrapper({
                       onClick={closeModal}
                       className="mt-2 smallTablet:mt-5 border-[2px] border-black bg-icanGreen-200 px-10 py-1 font-quantico text-sm font-bold leading-none text-black smallTablet:text-lg smallTablet:py-2"
                     >
-                      Begin
+                      {informationModal.buttonText ?? "Begin"}
                     </button>
                   </div>
                 </div>
