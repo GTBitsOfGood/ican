@@ -17,7 +17,7 @@ const Outfit: React.FC<ItemProps> = ({
 }) => {
   return (
     <div
-      className={`relative p-4 cursor-pointer mx-auto flex flex-col items-center w-full overflow-hidden ${
+      className={`relative mx-auto flex w-full cursor-pointer flex-col items-center overflow-hidden p-3 desktop:p-4 ${
         isSelected
           ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
           : "border-[5px] border-transparent hover:bg-icanGreen-200/25 hover:border-black/25"
@@ -29,7 +29,7 @@ const Outfit: React.FC<ItemProps> = ({
           Wearing
         </div>
       )}
-      <div className="relative largeDesktop:w-[121px] largeDesktop:h-[121px] desktop:w-[105px] desktop:h-[105px] tablet:w-[90px] tablet:h-[90px] object-contain">
+      <div className="relative h-[72px] w-[72px] object-contain tablet:h-[90px] tablet:w-[90px] desktop:h-[105px] desktop:w-[105px] largeDesktop:h-[121px] largeDesktop:w-[121px]">
         <PetAppearance
           appearance={item as Omit<SavedOutfit, "name">}
           className=""
@@ -37,7 +37,7 @@ const Outfit: React.FC<ItemProps> = ({
           outfitOnly={true}
         />
       </div>
-      <div className="mt-[10px] font-quantico text-center text-black largeDesktop:text-[36px] desktop:text-[30px] tablet:text-[24px] font-bold leading-none">
+      <div className="mt-[10px] font-quantico text-center text-[20px] font-bold leading-none text-black tablet:text-[24px] desktop:text-[30px] largeDesktop:text-[36px]">
         {item.name}
       </div>
     </div>

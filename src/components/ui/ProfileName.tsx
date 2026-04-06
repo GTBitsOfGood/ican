@@ -85,11 +85,11 @@ const ProfileName: React.FC = () => {
   return (
     <div
       ref={profileRef}
-      className="relative inline-flex flex-row flex-1 h-full items-center"
+      className="relative inline-flex h-[56px] flex-row items-center gap-1 4xl:h-[56px] 4xl:gap-2"
     >
       <input
         className={`
-          text-4xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          text-[3.1rem] leading-[56px] font-quantico font-bold bg-transparent text-white [text-shadow:0px_3px_0px_rgb(125_131_178_/_1.00)]
           w-auto min-w-[4rem] max-w-full
           ${
             !isEditing
@@ -103,31 +103,45 @@ const ProfileName: React.FC = () => {
         readOnly={!isEditing || updatePetNameMutation.isPending}
         onChange={(e) => setEditingName(e.target.value)}
         maxLength={20}
-        style={{ width: `${Math.max(displayName.length || 3, 3)}ch` }}
+        style={{
+          width: `${Math.max(displayName.length || 3, 3)}ch`,
+          WebkitTextStroke: "1px #353859",
+        }}
       />
 
       {/* Start Edit Name/ Confirm Edit Name */}
       <button
-        className={`relative h-3/5 w-fit ml-1 inline-block ${
-          updatePetNameMutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+        className={`relative inline-flex h-[40px] w-[40px] items-center justify-center self-center 4xl:h-[42px] 4xl:w-[42px] ${
+          updatePetNameMutation.isPending ? "cursor-not-allowed opacity-50" : ""
         }`}
         onClick={toggleEditing}
         disabled={updatePetNameMutation.isPending}
       >
-        <Image
-          src={isEditing ? "/misc/CheckMark.svg" : "/icons/Edit.svg"}
-          alt="Edit"
-          width={40}
-          height={40}
-          draggable={false}
-          className="h-full aspect-square object-contain select-none"
-        />
+        {isEditing ? (
+          <Image
+            src="/misc/CheckMark.svg"
+            alt="Confirm edit"
+            width={40}
+            height={40}
+            draggable={false}
+            className="h-full aspect-square object-contain select-none"
+          />
+        ) : (
+          <Image
+            src="/icons/Edit.svg"
+            alt="Edit"
+            width={34}
+            height={34}
+            draggable={false}
+            className="h-8 w-8 object-contain select-none 4xl:h-9 4xl:w-9"
+          />
+        )}
       </button>
 
       {/* Exit Edit Name */}
       {isEditing && (
         <button
-          className="relative h-3/5 w-fit inline-block"
+          className="relative inline-block h-8 w-8 4xl:h-9 4xl:w-9"
           onClick={cancelEditing}
         >
           <Image

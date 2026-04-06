@@ -24,10 +24,10 @@ export default function ModalCloseButton({
     <button
       type="button"
       onClick={handleClick}
-      className="absolute z-50 right-[2.5rem] top-[3rem] font-pixelify font-normal text-6xl rounded-full w-12 h-12 hover:bg-white/5 active:bg-white/10 text-iCAN-Green"
+      className="absolute left-[10px] top-[8px] z-50 flex h-11 w-11 items-center justify-center font-pixelify text-5xl font-normal leading-none text-white hover:bg-white/5 active:bg-white/10 desktop:left-auto desktop:right-[2.5rem] desktop:top-[3rem] desktop:h-12 desktop:w-12 desktop:rounded-full desktop:text-6xl desktop:text-iCAN-Green"
       aria-label="Close"
     >
-      <span className="relative bottom-3">x</span>
+      <span className="block leading-none">x</span>
     </button>
   );
 }

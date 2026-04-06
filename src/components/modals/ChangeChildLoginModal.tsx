@@ -79,21 +79,25 @@ export default function ChangeChildLoginModal() {
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px] max-h-[650px]",
-        header: "text-5xl",
+        base: "h-[100dvh] max-h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] text-white shadow-none desktop:h-auto desktop:max-h-[650px] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
+        header: "px-0 text-5xl",
       }}
-      className="w-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="z-50 h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] px-5 pb-8 pt-10 font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[60%] desktop:max-w-none desktop:bg-transparent desktop:px-6 desktop:py-8"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
       placement="center"
       closeButton={<ModalCloseButton onClose={onClose} />}
     >
-      <ModalContent>
-        <ModalHeader>Change Child Login</ModalHeader>
-        <ModalBody>
-          <div className="w-full flex flex-col gap-4">
-            <p className="text-xl">Update the child password and login type.</p>
+      <ModalContent className="h-full overflow-hidden desktop:h-auto">
+        <ModalHeader className="justify-start px-0 text-left leading-[48px] tracking-[-0.08em] desktop:justify-start">
+          Change Child Login
+        </ModalHeader>
+        <ModalBody className="overflow-y-auto px-0 pb-0">
+          <div className="flex w-full flex-col gap-6">
+            <p className="text-left text-[24px] font-normal leading-normal text-white desktop:text-xl">
+              Select the child login type
+            </p>
             {error && <p className="text-red-300">{error}</p>}
             <select
               value={childPasswordType}
@@ -103,18 +107,20 @@ export default function ChangeChildLoginModal() {
                 setColorSequence([]);
                 setError("");
               }}
-              className="h-12 px-3 text-black text-lg"
+              className="h-11 w-full border border-black bg-white px-6 text-[24px] font-normal text-black desktop:h-12 desktop:px-3 desktop:text-lg"
             >
               <option value={ChildPasswordType.NORMAL}>Pin</option>
-              <option value={ChildPasswordType.COLOR}>Color</option>
-              <option value={ChildPasswordType.SHAPE}>Shape</option>
-              <option value={ChildPasswordType.EMOJI}>Emoji</option>
-              <option value={ChildPasswordType.PATTERN}>Pattern</option>
+              <option value={ChildPasswordType.COLOR}>Colors</option>
+              <option value={ChildPasswordType.SHAPE}>Shapes</option>
+              <option value={ChildPasswordType.EMOJI}>Emojis</option>
+              <option value={ChildPasswordType.PATTERN}>Patterns</option>
             </select>
 
             {childPasswordType === ChildPasswordType.NORMAL ? (
               <>
-                <p className="text-white/80 text-lg">Enter a new pin below</p>
+                <p className="text-left text-[24px] font-normal leading-normal text-white desktop:text-white/80 desktop:text-lg">
+                  Enter a new pin below
+                </p>
                 <InputOTP
                   maxLength={4}
                   value={childPassword}
@@ -123,13 +129,14 @@ export default function ChangeChildLoginModal() {
                     setError("");
                   }}
                   pattern={REGEXP_ONLY_DIGITS}
+                  containerClassName="flex w-full justify-center"
                 >
                   <InputOTPGroup className="flex items-center gap-3">
                     {[0, 1, 2, 3].map((index) => (
                       <InputOTPSlot
                         key={index}
                         index={index}
-                        className="h-[120px] w-[120px] rounded-[4px] border border-black/10 bg-tilePreviewBg text-5xl text-black first:rounded-[4px] first:border last:rounded-[4px]"
+                        className="h-16 w-16 rounded-[4px] border border-black/10 bg-tilePreviewBg text-4xl text-black first:rounded-[4px] first:border last:rounded-[4px] desktop:h-[120px] desktop:w-[120px] desktop:text-5xl"
                       />
                     ))}
                   </InputOTPGroup>
@@ -137,6 +144,9 @@ export default function ChangeChildLoginModal() {
               </>
             ) : (
               <>
+                <p className="text-2xl font-normal text-white desktop:hidden">
+                  Choose the colors for your password below
+                </p>
                 <ChildColorPicker
                   sequence={colorSequence}
                   onAddColor={(token) => {
@@ -169,7 +179,7 @@ export default function ChangeChildLoginModal() {
             <button
               type="button"
               onClick={handleSave}
-              className="self-end p-2 text-black text-xl bg-icanGreen-100"
+              className="mt-1 h-11 w-full bg-[#accc6e] px-4 py-3 text-center text-[18px] font-normal leading-none text-black desktop:mt-0 desktop:self-end desktop:w-auto desktop:p-2 desktop:text-xl desktop:font-bold desktop:bg-icanGreen-100"
             >
               Save
             </button>

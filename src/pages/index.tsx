@@ -29,11 +29,69 @@ import { usePetEmotion } from "@/components/hooks/usePetEmotion";
 import { formatMedicationTime } from "@/utils/medicationDisplay";
 import { useRouter } from "next/router";
 import { usePetFoods } from "@/components/hooks/useInventory";
+import Image from "next/image";
+import { calculateXPForLevel } from "@/utils/constants";
 
 interface HomeProps {
   activeModal: string;
   foods?: string[];
   foodCount?: number;
+}
+
+function MobileNavButton({
+  label,
+  iconSrc,
+  onClick,
+}: {
+  label: string;
+  iconSrc: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="relative h-[97px] w-[97px] shrink-0 bg-transparent"
+    >
+      <Image
+        src="/misc/NavButton.svg"
+        alt=""
+        fill
+        className="pointer-events-none object-fill"
+      />
+      <div className="relative z-10 flex h-full flex-col items-center justify-start pt-[11px]">
+        <div className="relative h-[34px] w-[38px]">
+          <Image src={iconSrc} alt={label} fill className="object-contain" />
+        </div>
+        <span className="mt-[9px] font-pixelify text-[18px] font-normal leading-[18px] tracking-[0.11em] text-[#CBDBFC] [text-shadow:0px_0.924px_0px_rgba(0,0,0,0.25)] [text-stroke:0.462px_#4C539B] [-webkit-text-stroke:0.462px_#4C539B]">
+          {label}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function MobileFeedButton({
+  active,
+  onClick,
+}: {
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!active}
+      className="relative h-[56px] w-[196px] disabled:cursor-default disabled:grayscale-[0.35] disabled:opacity-80"
+    >
+      <span className="absolute inset-0 border-2 border-[#45531F]/40 bg-[linear-gradient(180deg,#B9D66F_0%,#7F9B3A_100%)] shadow-[0px_0px_0px_1.02px_rgba(61,112,201,0.4),inset_0px_1.02px_0.51px_0px_rgba(0,0,0,0.25)]" />
+      <span className="absolute left-[4px] top-[6px] h-[44px] w-[188px] border-2 border-[#8C9D5D]/40 bg-[linear-gradient(180deg,#B8D86E_0%,#88A43F_100%)] shadow-[inset_0px_2.04px_0px_0px_rgba(206,224,160,1)]" />
+      <span className="absolute inset-0 z-10 flex items-center justify-center font-quantico text-[32px] font-bold leading-8 text-white text-stroke-2 text-stroke-[#798C3F]">
+        FEED
+      </span>
+    </button>
+  );
 }
 
 export default function Home({
@@ -73,6 +131,7 @@ export default function Home({
         ? tutorial.replayXpGained
         : (pet.xpGained ?? 0)
       : (pet?.xpGained ?? 0);
+  const displayXpNeeded = calculateXPForLevel(displayLevel);
   const feedPetMutation = realFeedPet;
   const { data: tutorialBagFoods = [] } = usePetFoods(
     pet && isTutorial && !tutorial.isReplay ? pet._id : undefined,
@@ -137,6 +196,20 @@ export default function Home({
     (equippedBackgroundKey && equippedBackgroundKey.startsWith("/")
       ? equippedBackgroundKey
       : "/bg-home.svg");
+  const mobileFeedActive = isTutorial
+    ? tutorial.tutorialPortion === TUTORIAL_PORTIONS.FEED_TUTORIAL &&
+      tutorialFoods.length > 0
+    : (pet?.food ?? 0) > 0;
+  const shouldShowMobileFeedButton =
+    mobileFeedActive &&
+    !selectedFood &&
+    !showHearts &&
+    !showSuccessModalVisible &&
+    !showTutorialFoodRewardModal &&
+    !showNormalFoodRewardModal &&
+    (normalFeedPromptActive ||
+      (isTutorial &&
+        tutorial.tutorialPortion === TUTORIAL_PORTIONS.FEED_TUTORIAL));
 
   useEffect(() => {
     if (!isTutorial) return;
@@ -444,55 +517,152 @@ export default function Home({
       {pet ? (
         <div className="min-h-screen flex flex-col relative">
           <div
-            className="flex-1 flex flex-row justify-between bg-no-repeat"
+            className="flex-1 flex flex-col justify-between bg-no-repeat desktop:flex-row"
             style={{
               backgroundImage: `url("${equippedBackgroundImage}")`,
               backgroundSize: "cover",
               backgroundPosition: "center bottom",
             }}
           >
-            {/* Profile */}
-            <ProfileHeader
-              petType={pet.petType}
-              level={displayLevel}
-              coins={displayCoins}
-              currentExp={displayCurrentExp}
-            />
-            {/* Side Bar */}
-            <div className="flex flex-row gap-4 w-fit 4xl:gap-8 justify-center p-10">
-              <NavButton
-                buttonType="help"
-                drawButton={false}
-                redirect="/help"
-                disabled={isTutorial}
+            <div className="hidden w-full items-start justify-between border-b-0 px-0 desktop:flex">
+              <ProfileHeader
+                petType={pet.petType}
+                level={displayLevel}
+                coins={displayCoins}
+                currentExp={displayCurrentExp}
+                currentStreak={pet.currentStreak ?? 0}
               />
-              <NavButton buttonType="settings" drawButton={false} />
+              <div className="flex w-fit flex-row justify-center gap-4 p-10 4xl:gap-8">
+                <NavButton
+                  buttonType="help"
+                  drawButton={false}
+                  redirect="/help"
+                  disabled={isTutorial}
+                />
+                <NavButton buttonType="settings" drawButton={false} />
+              </div>
+            </div>
+            <div className="desktop:hidden relative z-20 h-[133px] w-full border-b border-[#232540] bg-[#2d336bcc] shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[2px]">
+              <div className="flex h-full items-start justify-between px-[30px] pb-[12px] pt-[24px]">
+                <div className="flex flex-col gap-[5px]">
+                  <div className="flex h-[30px] items-center gap-[10px]">
+                    <span className="font-quantico text-[30px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#353859] text-shadow-[#7D83B2]">
+                      {pet.name}
+                    </span>
+                    <Image
+                      src="/icons/Edit.svg"
+                      alt="Edit"
+                      width={18}
+                      height={18}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="relative h-[29px] w-[166px]">
+                    <div className="absolute left-[10px] top-[6px] h-[17px] w-[156px] bg-[#38401E] shadow-exp-outer" />
+                    <div className="absolute left-0 top-0 h-[29px] w-[29px]">
+                      <Image
+                        src="/icons/Star.svg"
+                        alt="Level"
+                        fill
+                        className="object-contain"
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center font-quantico text-[14px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#482D0D] text-shadow-[#603A0C]">
+                        {displayLevel}
+                      </span>
+                    </div>
+                    <span className="absolute left-[45px] top-[4px] font-quantico text-[21px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#2A3213] text-shadow-[#444D29]">
+                      {displayCurrentExp}/{displayXpNeeded} XP
+                    </span>
+                  </div>
+                  <div className="mt-[2px] flex h-[29px] items-center gap-[10px]">
+                    <div className="relative h-[29px] w-[29px]">
+                      <Image
+                        src="/icons/Coin.svg"
+                        alt="Coins"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <span className="font-quantico text-[21px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#482D0D] text-shadow-[#603A0C]">
+                      {displayCoins}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex pt-[2px]">
+                  <button
+                    type="button"
+                    aria-label="Open settings"
+                    className="flex h-[64px] w-[64px] items-center justify-center bg-transparent"
+                    onClick={() => router.push("/settings")}
+                  >
+                    <span className="relative h-8 w-14">
+                      <span className="absolute left-0 top-0 h-2 w-14 bg-white" />
+                      <span className="absolute left-0 top-[12px] h-2 w-14 bg-white" />
+                      <span className="absolute left-0 top-[24px] h-2 w-14 bg-white" />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 desktop:hidden min-h-[calc(100dvh-213px)]" />
+          </div>
+          <div className="hidden desktop:block">
+            <Navbar>
+              <NavButton buttonType="games" disabled={isTutorial} />
+              <NavButton
+                buttonType="store"
+                enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}
+                disabled={isTutorial && !tutorial.shouldEnlargeButton("store")}
+              />
+              <NavButton buttonType="bag" disabled={isTutorial} />
+              <NavButton
+                buttonType="log"
+                enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
+                disabled={isTutorial && !tutorial.shouldEnlargeButton("log")}
+              />
+              <FeedButton
+                active={
+                  isTutorial
+                    ? tutorial.tutorialPortion ===
+                        TUTORIAL_PORTIONS.FEED_TUTORIAL &&
+                      tutorialFoods.length > 0
+                    : pet.food > 0
+                }
+              />
+            </Navbar>
+          </div>
+          <div className="desktop:hidden relative z-20 h-20 w-full overflow-visible border border-[#232540] bg-[#2d336bcc] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[2px]">
+            {shouldShowMobileFeedButton && (
+              <div className="absolute inset-x-0 top-[-144px] flex justify-center">
+                <MobileFeedButton
+                  active={mobileFeedActive}
+                  onClick={() => router.push("/food")}
+                />
+              </div>
+            )}
+            <div className="absolute inset-x-0 top-[-45px] mx-auto flex w-[388px] max-w-full items-start justify-center gap-0 overflow-visible">
+              <MobileNavButton
+                label="GAMES"
+                iconSrc="/icons/Games.png"
+                onClick={() => router.push("/games")}
+              />
+              <MobileNavButton
+                label="STORE"
+                iconSrc="/icons/Store.svg"
+                onClick={() => router.push("/store")}
+              />
+              <MobileNavButton
+                label="BAG"
+                iconSrc="/icons/Bag.svg"
+                onClick={() => router.push("/bag")}
+              />
+              <MobileNavButton
+                label="LOG"
+                iconSrc="/icons/Log.svg"
+                onClick={() => router.push("/log")}
+              />
             </div>
           </div>
-          {/* Navbar - VH Scaling */}
-          <Navbar>
-            <NavButton buttonType="games" disabled={isTutorial} />
-            <NavButton
-              buttonType="store"
-              enlarged={isTutorial && tutorial.shouldEnlargeButton("store")}
-              disabled={isTutorial && !tutorial.shouldEnlargeButton("store")}
-            />
-            <NavButton buttonType="bag" disabled={isTutorial} />
-            <NavButton
-              buttonType="log"
-              enlarged={isTutorial && tutorial.shouldEnlargeButton("log")}
-              disabled={isTutorial && !tutorial.shouldEnlargeButton("log")}
-            />
-            <FeedButton
-              active={
-                isTutorial
-                  ? tutorial.tutorialPortion ===
-                      TUTORIAL_PORTIONS.FEED_TUTORIAL &&
-                    tutorialFoods.length > 0
-                  : pet.food > 0
-              }
-            />
-          </Navbar>
           {/* Character, speech bubble and food image is made relative to the image */}
           <PetDisplay
             petType={pet.petType}

@@ -3,15 +3,15 @@ import { motion } from "motion/react";
 import { useUserProfile } from "@/components/hooks/useAuth";
 import { useUser } from "@/components/UserContext";
 
-interface BubbleProps {
+interface MobileBubbleProps {
   text?: string;
   animation?: "jump" | "none";
 }
 
-const Bubble: React.FC<BubbleProps> = ({
+export default function MobileBubble({
   text = "Hi There!",
   animation = "none",
-}) => {
+}: MobileBubbleProps) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
   const userName = userProfile?.name || "there";
@@ -43,15 +43,15 @@ const Bubble: React.FC<BubbleProps> = ({
     return (
       <>
         {parts[0]}
-        <span className="relative mx-1 inline-flex h-12 w-32 translate-y-1 items-center justify-center align-middle">
+        <span className="relative mx-1 inline-flex h-[34px] w-[34px] translate-y-1 items-center justify-center align-middle">
           <Image
             src="/misc/NavButton.svg"
             alt=""
             fill
             className="pointer-events-none object-fill"
           />
-          <span className="relative z-10 flex h-full w-full items-center justify-center gap-1.5 px-4">
-            <span className="relative translate-y-[-5px] h-[62%] w-auto aspect-square shrink-0">
+          <span className="relative z-10 flex h-full w-full items-center justify-center gap-0.5 px-1">
+            <span className="relative h-[40%] w-auto aspect-square shrink-0 translate-y-[-1px]">
               <Image
                 src="/icons/Log.svg"
                 alt="Log"
@@ -59,7 +59,7 @@ const Bubble: React.FC<BubbleProps> = ({
                 className="pointer-events-none object-contain"
               />
             </span>
-            <span className="translate-y-[-5px] font-quantico text-2xl font-bold leading-none text-white">
+            <span className="translate-y-[-1px] font-quantico text-[6px] font-bold leading-none text-white">
               LOG
             </span>
           </span>
@@ -71,36 +71,34 @@ const Bubble: React.FC<BubbleProps> = ({
 
   return (
     <motion.div
-      className="h-full tall:w-[14rem] mobile:w-[14rem] tiny:w-[14rem] tablet:w-[24rem] short:w-[24rem] desktop:w-[24rem] lg:w-[24rem] xl:w-[26rem] 2xl:w-[24rem] 4xl:w-[28rem] mobile:leading-[1rem] largeDesktop:leading-[4rem]"
+      className="h-full w-[308px] max-w-[calc(100vw-28px)]"
       animate={wiggleAnimation}
     >
       <Image
-        src={"/misc/ChatBubbleTop.svg"}
-        alt={"chat bubble top"}
+        src="/misc/ChatBubbleTop.svg"
+        alt="chat bubble top"
         width={74}
         height={65}
-        className="object-cover pointer-events-none w-full tall:h-[38px] mobile:h-[18px] tiny:h-[18px] tablet:h-[32px] short:h-[32px] desktop:h-[28px] lg:h-[28px] xl:h-[32px] 2xl:h-[32px] 4xl:h-[36px]"
+        className="pointer-events-none h-[30px] w-full object-cover"
       />
-      <div className="relative inline-block -mt-[2px] px-4 w-full">
-        <div className="w-full mobile:p-4 desktop:px-5 desktop:py-4 tiny:text-xl short:text-2xl mobile:text-xl tablet:text-[18px] desktop:text-[1.05rem] largeDesktop:text-[1.2rem] font-bold text-[#343859] text-center font-quantico whitespace-pre-line">
+      <div className="relative inline-block -mt-[2px] w-full px-3">
+        <div className="w-full whitespace-pre-line px-7 py-4 text-center font-quantico text-[22px] font-bold leading-[1] tracking-[-0.04em] text-[#111111]">
           {processText()}
         </div>
         <Image
-          src={"/misc/ChatBubbleMid.svg"}
-          alt={"chat bubble top"}
+          src="/misc/ChatBubbleMid.svg"
+          alt="chat bubble middle"
           fill
-          className="object-fill pointer-events-none absolute top-0 left-[10] w-full h-full z-[-1] ml-[0.4%]"
+          className="pointer-events-none absolute left-[10] top-0 z-[-1] ml-[0.4%] h-full w-full object-fill"
         />
       </div>
       <Image
-        src={"/misc/ChatBubbleBottom.svg"}
-        alt={"chat bubble top"}
+        src="/misc/ChatBubbleBottom.svg"
+        alt="chat bubble bottom"
         width={74}
         height={65}
-        className="object-cover pointer-events-none -mt-[2px] w-full tall:h-[80px] mobile:h-[38px] tiny:h-[38px] tablet:h-[64px] short:h-[64px] desktop:h-[54px] lg:h-[54px] xl:h-[60px] 2xl:h-[60px] 4xl:h-[68px]"
+        className="pointer-events-none -mt-[2px] h-[56px] w-full object-cover"
       />
     </motion.div>
   );
-};
-
-export default Bubble;
+}

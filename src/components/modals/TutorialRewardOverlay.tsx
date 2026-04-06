@@ -42,7 +42,7 @@ export default function TutorialRewardOverlay({
       role="presentation"
     >
       <div
-        className="relative w-full max-w-[840px] bg-icanBlue-200 px-6 py-8 text-white outline-none"
+        className="relative w-full max-w-[357px] bg-[#565DAA] px-6 py-8 text-white outline-none desktop:max-w-[840px] desktop:bg-icanBlue-200"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -58,14 +58,14 @@ export default function TutorialRewardOverlay({
         </button>
         <div
           id="tutorial-reward-title"
-          className="flex justify-center text-center font-quantico font-bold mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl"
+          className="flex justify-center text-center font-quantico font-bold text-[32px] leading-none desktop:mobile:text-2xl desktop:tablet:text-3xl desktop:largeDesktop:text-4xl desktop:tiny:text-xl desktop:minimized:text-2xl desktop:small:text-3xl"
         >
           Medication Logged Successfully
         </div>
         <div className="mt-6 flex justify-center items-center">
-          {medicationIcon}
+          <div className="scale-[0.56] desktop:scale-100">{medicationIcon}</div>
         </div>
-        <div className="mt-4 flex justify-center text-center text-3xl font-medium font-quantico">
+        <div className="mt-4 flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:text-3xl desktop:font-quantico">
           {message}
         </div>
       </div>
