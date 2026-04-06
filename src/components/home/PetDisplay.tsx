@@ -113,11 +113,11 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
             petType={petType}
             emotion={emotion}
             selectedItem={null}
-            className="mx-auto w-[138px] tablet:w-[138px] desktop:mx-0 desktop:w-[210px] largeDesktop:w-[230px] short:w-[260px] minimized:w-[230px] tiny:w-[190px]"
+            className="mx-auto w-[112px] smallTablet:w-[120px] tablet:w-[128px] desktop:mx-0 desktop:w-[210px] largeDesktop:w-[230px] short:w-[260px] minimized:w-[230px] tiny:w-[190px]"
             showBackground={false}
           />
         </motion.div>
-        <div className="absolute bottom-[112%] left-1/2 -translate-x-1/2 desktop:bottom-[88%] desktop:left-[72%] desktop:translate-x-0">
+        <div className="absolute bottom-[108%] left-1/2 -translate-x-1/2 desktop:bottom-[88%] desktop:left-[72%] desktop:translate-x-0">
           <div className="desktop:hidden">
             <MobileBubble text={bubbleText} animation={bubbleAnimation} />
           </div>
