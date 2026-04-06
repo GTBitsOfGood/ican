@@ -17,8 +17,8 @@ function convertTimeToMinutes(timeStr: string): number {
 }
 
 export const baseMedicationSchema = z.object({
-  formOfMedication: z.enum(["Pill", "Syrup", "Shot"], {
-    errorMap: () => ({
+  formOfMedication: z.enum(["Pill", "Syrup", "Shot"] as const, {
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.FORM_OF_MEDICATION,
     }),
   }),
@@ -28,8 +28,8 @@ export const baseMedicationSchema = z.object({
     .nonempty(ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID)
     .max(5, ERRORS.MEDICATION.INVALID_ARGUMENTS.MEDICATION_ID),
 
-  repeatUnit: z.enum(["Day", "Week", "Month"], {
-    errorMap: () => ({
+  repeatUnit: z.enum(["Day", "Week", "Month"] as const, {
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.REPEAT_UNIT,
     }),
   }),
@@ -77,8 +77,8 @@ export const baseMedicationSchema = z.object({
     ])
     .optional(),
 
-  dosesUnit: z.enum(["Doses", "Hours"], {
-    errorMap: () => ({
+  dosesUnit: z.enum(["Doses", "Hours"] as const, {
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.DOSES_UNIT,
     }),
   }),
@@ -99,8 +99,8 @@ export const baseMedicationSchema = z.object({
 
   doseTimes: z.array(z.string()),
 
-  notificationFrequency: z.enum(["Day Of Dose", "Every Dose"], {
-    errorMap: () => ({
+  notificationFrequency: z.enum(["Day Of Dose", "Every Dose"] as const, {
+    error: () => ({
       message: ERRORS.MEDICATION.INVALID_ARGUMENTS.NOTIFICATION_FREQUENCY,
     }),
   }),
