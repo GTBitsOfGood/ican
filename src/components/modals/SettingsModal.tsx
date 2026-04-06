@@ -455,7 +455,9 @@ export default function SettingsModal() {
                     <ModalNextButton
                       link="/settings"
                       onClick={(e) => {
-                        e.preventDefault();
+                        if (e) {
+                          e.preventDefault();
+                        }
                         handleLogout();
                       }}
                       requirePin={!!settings.pin}
@@ -478,7 +480,9 @@ export default function SettingsModal() {
                     <ModalNextButton
                       link="/settings"
                       onClick={(e) => {
-                        e.preventDefault();
+                        if (e) {
+                          e.preventDefault();
+                        }
                         handleDeleteAccount();
                       }}
                       preventNavigation={true}

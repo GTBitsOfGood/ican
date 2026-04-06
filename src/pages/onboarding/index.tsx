@@ -7,7 +7,6 @@ import DisclaimerStep from "@/components/onboarding/steps/DisclaimerStep";
 import CompletionStep from "@/components/onboarding/steps/CompletionStep";
 import ChildLoginStep from "@/components/onboarding/steps/ChildLoginStep";
 import AuthorizedRoute from "@/components/AuthorizedRoute";
-import { useUser } from "@/components/UserContext";
 import {
   useUpdateChildLogin,
   useUpdatePin,
@@ -29,7 +28,6 @@ export default function Onboard() {
   const [consentChecked, setConsentChecked] = useState<boolean>(false);
   const [pinError, setPinError] = useState<string>("");
   const [hasSavedParentPin, setHasSavedParentPin] = useState<boolean>(false);
-  const { userId } = useUser();
   const updatePin = useUpdatePin();
   const updateChildLogin = useUpdateChildLogin();
 

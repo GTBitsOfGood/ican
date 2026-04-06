@@ -71,7 +71,7 @@ export default function MobileBubble({
 
   return (
     <motion.div
-      className="h-full w-[236px] max-w-[calc(100vw-48px)]"
+      className="h-full w-[220px] max-w-[calc(100vw-48px)]"
       animate={wiggleAnimation}
     >
       <Image
@@ -82,7 +82,7 @@ export default function MobileBubble({
         className="pointer-events-none h-[24px] w-full object-cover"
       />
       <div className="relative inline-block -mt-[2px] w-full px-3">
-        <div className="w-full whitespace-pre-line px-5 py-3 text-center font-quantico text-[17px] font-bold leading-[1.02] tracking-[-0.04em] text-[#111111]">
+        <div className="w-full whitespace-pre-line px-4 py-3 text-center font-quantico text-[16px] font-bold leading-[1.02] tracking-[-0.04em] text-[#111111]">
           {processText()}
         </div>
         <Image

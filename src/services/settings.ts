@@ -1,7 +1,11 @@
 import SettingsDAO from "@/db/actions/settings";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
-import { ConflictError, NotFoundError } from "@/types/exceptions";
+import {
+  ConflictError,
+  InvalidArgumentsError,
+  NotFoundError,
+} from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
   validateCreateSettings,
