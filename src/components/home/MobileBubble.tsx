@@ -43,7 +43,7 @@ export default function MobileBubble({
     return (
       <>
         {parts[0]}
-        <span className="relative mx-1 inline-flex h-[34px] w-[34px] translate-y-1 items-center justify-center align-middle">
+        <span className="relative mx-1 inline-flex h-[28px] w-[28px] translate-y-1 items-center justify-center align-middle">
           <Image
             src="/misc/NavButton.svg"
             alt=""
@@ -59,7 +59,7 @@ export default function MobileBubble({
                 className="pointer-events-none object-contain"
               />
             </span>
-            <span className="translate-y-[-1px] font-quantico text-[6px] font-bold leading-none text-white">
+            <span className="translate-y-[-1px] font-quantico text-[5px] font-bold leading-none text-white">
               LOG
             </span>
           </span>
@@ -71,7 +71,7 @@ export default function MobileBubble({
 
   return (
     <motion.div
-      className="h-full w-[308px] max-w-[calc(100vw-28px)]"
+      className="h-full w-[236px] max-w-[calc(100vw-48px)]"
       animate={wiggleAnimation}
     >
       <Image
@@ -79,10 +79,10 @@ export default function MobileBubble({
         alt="chat bubble top"
         width={74}
         height={65}
-        className="pointer-events-none h-[30px] w-full object-cover"
+        className="pointer-events-none h-[24px] w-full object-cover"
       />
       <div className="relative inline-block -mt-[2px] w-full px-3">
-        <div className="w-full whitespace-pre-line px-7 py-4 text-center font-quantico text-[22px] font-bold leading-[1] tracking-[-0.04em] text-[#111111]">
+        <div className="w-full whitespace-pre-line px-5 py-3 text-center font-quantico text-[17px] font-bold leading-[1.02] tracking-[-0.04em] text-[#111111]">
           {processText()}
         </div>
         <Image
@@ -97,7 +97,7 @@ export default function MobileBubble({
         alt="chat bubble bottom"
         width={74}
         height={65}
-        className="pointer-events-none -mt-[2px] h-[56px] w-full object-cover"
+        className="pointer-events-none -mt-[2px] h-[46px] w-full object-cover"
       />
     </motion.div>
   );

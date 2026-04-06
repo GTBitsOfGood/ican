@@ -1,11 +1,7 @@
 import SettingsDAO from "@/db/actions/settings";
 import { Settings } from "@/db/models/settings";
 import { removeUndefinedKeys } from "@/lib/utils";
-import {
-  ConflictError,
-  InvalidArgumentsError,
-  NotFoundError,
-} from "@/types/exceptions";
+import { ConflictError, NotFoundError } from "@/types/exceptions";
 import { UpdateSettingsRequestBody } from "@/types/settings";
 import {
   validateCreateSettings,
@@ -103,10 +99,6 @@ export default class SettingsService {
     }
 
     if (pin) {
-      if (settings.pin && (await HashingService.compare(pin, settings.pin))) {
-        throw new InvalidArgumentsError(ERRORS.SETTINGS.INVALID_ARGUMENTS.PIN);
-      }
-
       const encryptedPin = await HashingService.hash(pin);
       await SettingsDAO.updateSettingsByUserId(userId, {
         pin: encryptedPin,

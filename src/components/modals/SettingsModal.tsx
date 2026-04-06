@@ -23,7 +23,7 @@ import { useRouter } from "next/router";
 
 type ProtectedAction = {
   link?: string;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  onExecute?: () => void | Promise<void>;
 };
 
 function MobileSettingsToggle({
@@ -175,14 +175,11 @@ export default function SettingsModal() {
     onNotifModalOpen();
   };
 
-  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleLogout = () => {
     logoutMutation.mutate();
   };
 
-  const handleDeleteAccount = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const handleDeleteAccount = () => {
     onDeleteModalOpen();
   };
 
@@ -206,8 +203,8 @@ export default function SettingsModal() {
       setMobileAction(action);
       return;
     }
-    if (action.onClick) {
-      void action.onClick({} as React.MouseEvent<HTMLButtonElement>);
+    if (action.onExecute) {
+      void action.onExecute();
       return;
     }
     if (action.link) {
@@ -221,23 +218,23 @@ export default function SettingsModal() {
         <LogPasswordModal
           isOpen={true}
           onClose={() => setMobileAction(null)}
-          handleNext={async (e) => {
-            if (mobileAction.onClick) {
-              await mobileAction.onClick(e);
+          handleNext={async () => {
+            if (mobileAction.onExecute) {
+              await mobileAction.onExecute();
             } else if (mobileAction.link) {
               router.push(mobileAction.link);
             }
             setMobileAction(null);
           }}
-          link={mobileAction.onClick ? undefined : mobileAction.link}
+          link={mobileAction.link}
         />
       )}
       <Modal
         backdrop="opaque"
         classNames={{
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: "h-screen w-screen max-w-none rounded-none bg-[#565DAA] text-white shadow-none desktop:h-auto desktop:max-w-[1080px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
-          header: "mb-4 text-5xl text-white",
+          base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[1080px]",
+          header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
         className="z-50 h-screen w-screen max-h-[100dvh] rounded-none bg-[#565DAA] px-[15px] pb-6 pt-[39px] font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[80%] desktop:max-h-none desktop:max-w-none desktop:border-8 desktop:border-[#7177AC] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8"
@@ -294,18 +291,20 @@ export default function SettingsModal() {
                   <MobileSettingsRow
                     label="Medications"
                     locked={!!settings.pin}
-                    onClick={() => openProtectedAction({ link: "medications" })}
+                    onClick={() =>
+                      openProtectedAction({ link: "/medications" })
+                    }
                   />
                   <MobileSettingsRow
                     label="Change Pin"
                     locked={!!settings.pin}
-                    onClick={() => openProtectedAction({ link: "change-pin" })}
+                    onClick={() => openProtectedAction({ link: "/change-pin" })}
                   />
                   <MobileSettingsRow
                     label="Child Login"
                     locked={!!settings.pin}
                     onClick={() =>
-                      openProtectedAction({ link: "change-child-login" })
+                      openProtectedAction({ link: "/change-child-login" })
                     }
                   />
                   <MobileSettingsRow
@@ -313,8 +312,7 @@ export default function SettingsModal() {
                     locked={!!settings.pin}
                     onClick={() =>
                       openProtectedAction({
-                        onClick: handleLogout,
-                        link: "settings",
+                        onExecute: handleLogout,
                       })
                     }
                   />
@@ -323,8 +321,7 @@ export default function SettingsModal() {
                     locked={!!settings.pin}
                     onClick={() =>
                       openProtectedAction({
-                        onClick: handleDeleteAccount,
-                        link: "settings",
+                        onExecute: handleDeleteAccount,
                       })
                     }
                   />
@@ -378,7 +375,7 @@ export default function SettingsModal() {
                       <h5 className="text-3xl">Medications</h5>
                     </div>
                     <ModalNextButton
-                      link="medications"
+                      link="/medications"
                       requirePin={!!settings.pin}
                     />
                   </div>
@@ -419,7 +416,7 @@ export default function SettingsModal() {
                       <h5 className="text-3xl">Change Pin</h5>
                     </div>
                     <ModalNextButton
-                      link="change-pin"
+                      link="/change-pin"
                       requirePin={!!settings.pin}
                       disabled={!settings.pin}
                     />
@@ -438,7 +435,7 @@ export default function SettingsModal() {
                       <h5 className="text-3xl">Child Login</h5>
                     </div>
                     <ModalNextButton
-                      link="change-child-login"
+                      link="/change-child-login"
                       requirePin={!!settings.pin}
                     />
                   </div>
@@ -456,8 +453,11 @@ export default function SettingsModal() {
                       <h5 className="text-3xl">Logout</h5>
                     </div>
                     <ModalNextButton
-                      link="settings"
-                      onClick={handleLogout}
+                      link="/settings"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleLogout();
+                      }}
                       requirePin={!!settings.pin}
                       preventNavigation={true}
                     />
@@ -476,8 +476,11 @@ export default function SettingsModal() {
                       <h5 className="text-3xl">Delete Account</h5>
                     </div>
                     <ModalNextButton
-                      link="settings"
-                      onClick={handleDeleteAccount}
+                      link="/settings"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDeleteAccount();
+                      }}
                       preventNavigation={true}
                       requirePin={!!settings.pin}
                     />

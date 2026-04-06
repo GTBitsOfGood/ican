@@ -8,13 +8,16 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useUser } from "../UserContext";
 import SettingsHTTPClient from "@/http/settingsHTTPClient";
 
 type LogPasswordType = {
   isOpen: boolean;
   onClose: () => void;
-  handleNext?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  handleNext?: (
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ) => void | Promise<void>;
   link?: string;
 };
 
@@ -24,6 +27,7 @@ export default function LogPasswordModal({
   handleNext,
   link,
 }: LogPasswordType) {
+  const router = useRouter();
   const [error, setError] = useState<string>("");
   const { userId } = useUser();
   const [pin, setPin] = useState<string>("");
@@ -44,7 +48,7 @@ export default function LogPasswordModal({
         e.preventDefault();
         await handleNext(e);
       } else if (link) {
-        window.location.href = link;
+        await router.push(link);
       }
       onClose();
     } catch (error) {
@@ -61,17 +65,15 @@ export default function LogPasswordModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "max-w-[360px] rounded-none bg-[#565DAA] text-white shadow-none desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
-        header: "px-0 text-3xl desktop:text-5xl",
+        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px]",
+        header: "text-5xl",
       }}
-      className="z-50 w-[calc(100vw-34px)] max-w-[360px] rounded-none bg-[#565DAA] px-[30px] pb-9 pt-[64px] font-quantico font-bold text-white outline-none desktop:w-[85%] desktop:max-w-none desktop:bg-transparent desktop:px-6 desktop:py-8"
+      className="z-50 w-[calc(100vw-34px)] max-w-[360px] rounded-none bg-[#565DAA] px-[30px] pb-9 pt-[64px] font-quantico font-bold text-white outline-none desktop:w-[85%] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8 desktop:text-white"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={
-        <ModalCloseButton onClose={onClose} link={window.location.href} />
-      }
+      closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
         <ModalHeader className="justify-center text-center desktop:justify-start desktop:text-left">
@@ -120,7 +122,7 @@ export default function LogPasswordModal({
               </div>
               <Link
                 className="inline-block size-fit self-center desktop:self-start"
-                href="forgot-pin"
+                href="/forgot-pin"
               >
                 <button className="text-xl underline desktop:bg-white desktop:p-2 desktop:text-black desktop:no-underline">
                   Forget Password?

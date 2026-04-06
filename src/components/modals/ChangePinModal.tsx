@@ -35,19 +35,17 @@ export default function ChangePinModal() {
       return;
     }
 
-    updatePinMutation.mutate(oldPin, {
-      onSuccess: () => {
-        console.log("Pin successfully changed");
-        router.push("/");
-      },
-      onError: (error) => {
-        if (error instanceof Error) {
-          setError(`Error: ${error.message}`);
-        } else {
-          setError(`Unexpected error occurred.`);
-        }
-      },
-    });
+    try {
+      await updatePinMutation.mutateAsync(oldPin);
+      console.log("Pin successfully changed");
+      void router.push("/");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(`Error: ${error.message}`);
+      } else {
+        setError("Unexpected error occurred.");
+      }
+    }
   };
 
   const displayError =
@@ -61,10 +59,10 @@ export default function ChangePinModal() {
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "max-w-[360px] rounded-none bg-[#565DAA] text-white shadow-none desktop:max-w-[840px] desktop:max-h-[550px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
-        header: "px-0 text-3xl desktop:text-5xl",
+        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px] max-h-[550px]",
+        header: "text-5xl",
       }}
-      className="z-50 w-[calc(100vw-34px)] max-w-[360px] overflow-y-hidden rounded-none bg-[#565DAA] px-[30px] pb-9 pt-[64px] font-quantico font-bold text-white outline-none desktop:w-[85%] desktop:max-w-none desktop:bg-transparent desktop:px-6 desktop:py-8"
+      className="z-50 w-[calc(100vw-34px)] max-w-[360px] overflow-y-hidden rounded-none bg-[#565DAA] px-[30px] pb-9 pt-[64px] font-quantico font-bold text-white outline-none desktop:w-[85%] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8 desktop:text-white"
       isOpen={isOpen}
       onClose={onClose}
       radius="lg"

@@ -31,21 +31,25 @@ export const PATCH = withAuth<{ userId: string }>(
     const response = new NextResponse(null, { status: 204 });
 
     if (tokenReissue) {
-      const updatedSettings = await SettingsService.getSettings(userId);
+      try {
+        const updatedSettings = await SettingsService.getSettings(userId);
 
-      const fiveMinutes = Date.now() + 5 * 60 * 1000;
+        const fiveMinutes = Date.now() + 5 * 60 * 1000;
 
-      const newToken = JWTService.generateToken(
-        {
-          userId,
-          parentalControls: !!updatedSettings.pin,
-          parentalModeExpiresAt: fiveMinutes,
-          origin: "login",
-        },
-        "90d",
-      );
+        const newToken = JWTService.generateToken(
+          {
+            userId,
+            parentalControls: !!updatedSettings.pin,
+            parentalModeExpiresAt: fiveMinutes,
+            origin: "login",
+          },
+          "90d",
+        );
 
-      await generateAPIAuthCookie(response, newToken);
+        await generateAPIAuthCookie(response, newToken);
+      } catch (error) {
+        console.error("Failed to refresh auth token after pin update:", error);
+      }
     }
 
     return response;

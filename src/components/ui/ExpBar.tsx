@@ -33,7 +33,7 @@ const ExpBar: React.FC<ExpProps> = ({ level, currentExp }) => {
             {level}
           </div>
         </div>
-        <span className="z-10 h-fit font-quantico text-[1.55rem] font-extrabold text-white text-stroke-4 text-stroke-[#2A3213] text-shadow-[#444D29] paint-stroke letter-spacing-ui 4xl:text-[1.75rem]">
+        <span className="z-10 h-fit whitespace-nowrap font-quantico text-[1.45rem] font-extrabold text-white text-stroke-4 text-stroke-[#2A3213] text-shadow-[#444D29] paint-stroke letter-spacing-ui 4xl:text-[1.75rem]">
           {currentExp}/{xpNeeded} XP
         </span>
       </div>
