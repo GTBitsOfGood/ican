@@ -144,7 +144,6 @@ export default function GameWrapper({
     onClose?.();
   };
 
-  // Copy and pasted from the main page, probably a better way to do this or just make a util function
   const equippedBackgroundKey = pet?.appearance?.background;
   const equippedBackgroundFromStore =
     equippedBackgroundKey &&
@@ -154,6 +153,16 @@ export default function GameWrapper({
     (equippedBackgroundKey && equippedBackgroundKey.startsWith("/")
       ? equippedBackgroundKey
       : "/bg-home.svg");
+  const gameComponentProps: GameWrapperControls = {
+    setSpeechText,
+    gameState,
+    setGameState: handleGameStateChange,
+    showInformationModal: setInformationModal,
+    setPetBoardX,
+    setPetEmotion,
+    setWinRewardDetails,
+    isMobile,
+  };
 
   return (
     <AuthorizedRoute>
@@ -175,7 +184,6 @@ export default function GameWrapper({
           />
 
           <div className="relative z-10 min-h-screen">
-            {/* Mobile banner — visible only below 650px */}
             {gameName && isMobile && (
               <div
                 className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-2 shadow-[0_6px_16px_4px_rgba(0,0,0,0.45)]"
@@ -218,19 +226,16 @@ export default function GameWrapper({
 
             {isMobile ? (
               useFlowerGameControls ? (
-                /* ── Flowerman mobile layout: board → pet → keyboard (fixed bottom) ── */
                 <div
                   className="fixed inset-0 flex flex-col items-center"
                   style={{ paddingTop: gameName ? "3rem" : 0 }}
                 >
-                  {/* Easel/chalkboard area + pet overlay */}
                   <div
                     className="relative shrink-0 mt-10"
                     style={{
                       width: "min(98vw, 450px)",
                     }}
                   >
-                    {/* Board frame */}
                     <div
                       className="relative w-full"
                       style={{ aspectRatio: "366 / 332" }}
@@ -256,20 +261,10 @@ export default function GameWrapper({
                             gameAreaClassName,
                           )}
                         >
-                          <GameComponent
-                            setSpeechText={setSpeechText}
-                            gameState={gameState}
-                            setGameState={handleGameStateChange}
-                            showInformationModal={setInformationModal}
-                            setPetBoardX={setPetBoardX}
-                            setPetEmotion={setPetEmotion}
-                            setWinRewardDetails={setWinRewardDetails}
-                            isMobile={isMobile}
-                          />
+                          <GameComponent {...gameComponentProps} />
                         </div>
                       </div>
                     </div>
-                    {/* Pet — bottom-left, overlapping board */}
                     {petBoardX === null && (
                       <div
                         className="absolute bottom-0 left-0 z-20 translate-y-[75%]"
@@ -294,12 +289,10 @@ export default function GameWrapper({
                   </div>
                 </div>
               ) : (
-                /* ── Default mobile layout (<650px): pet flush above board, both same width ── */
                 <div
                   className="fixed inset-0 flex flex-col items-center justify-end"
                   style={{ paddingTop: gameName ? "3rem" : 0 }}
                 >
-                  {/* Pet — width-based sizing matching desktop proportions, aligned bottom-left */}
                   {petBoardX === null && (
                     <div
                       className="relative flex flex-1 items-end justify-start"
@@ -323,7 +316,6 @@ export default function GameWrapper({
                       </div>
                     </div>
                   )}
-                  {/* Mobile whiteboard */}
                   <div
                     className="relative shrink-0"
                     style={{
@@ -351,25 +343,14 @@ export default function GameWrapper({
                           gameAreaClassName,
                         )}
                       >
-                        <GameComponent
-                          setSpeechText={setSpeechText}
-                          gameState={gameState}
-                          setGameState={handleGameStateChange}
-                          showInformationModal={setInformationModal}
-                          setPetBoardX={setPetBoardX}
-                          setPetEmotion={setPetEmotion}
-                          setWinRewardDetails={setWinRewardDetails}
-                          isMobile={isMobile}
-                        />
+                        <GameComponent {...gameComponentProps} />
                       </div>
                     </div>
                   </div>
                 </div>
               )
             ) : (
-              /* ── Desktop layout (≥1400px): pet left, board top-right ── */
               <>
-                {/* Pet to the left of the board */}
                 {petBoardX === null && (
                   <div
                     className="absolute left-[1vw] top-[55%] -translate-y-1/2"
@@ -392,7 +373,6 @@ export default function GameWrapper({
                     </div>
                   </div>
                 )}
-                {/* Desktop whiteboard */}
                 <div className={whiteboardContainerClassName}>
                   {showGameAreaFrame && (
                     <img
@@ -434,23 +414,13 @@ export default function GameWrapper({
                         gameAreaClassName,
                       )}
                     >
-                      <GameComponent
-                        setSpeechText={setSpeechText}
-                        gameState={gameState}
-                        setGameState={handleGameStateChange}
-                        showInformationModal={setInformationModal}
-                        setPetBoardX={setPetBoardX}
-                        setPetEmotion={setPetEmotion}
-                        setWinRewardDetails={setWinRewardDetails}
-                        isMobile={isMobile}
-                      />
+                      <GameComponent {...gameComponentProps} />
                     </div>
                   </div>
                 </div>
               </>
             )}
 
-            {/* Success overlay on win */}
             {showSuccess && (
               <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
                 <div className="relative w-full max-w-6xl px-4">
@@ -525,7 +495,6 @@ export default function GameWrapper({
             {informationModal && (
               <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-8">
                 <div className="relative w-full max-w-2xl">
-                  {/* Card background */}
                   <img
                     src="/games/instruction_card.svg"
                     alt=""
@@ -546,7 +515,6 @@ export default function GameWrapper({
                       />
                     </button>
                   )}
-                  {/* Content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center px-[10%] py-[8%] text-center">
                     {informationModal.gameMode && (
                       <p className="font-quantico uppercase mb-2 smallTablet:mb-5 font-bold text-textBeige text-sm smallTablet:text-2xl">

@@ -133,8 +133,7 @@ export default function FlowermanGame({
       });
 
       setGameState(GameState.WON);
-    } catch (error) {
-      console.error("Error processing game win:", error);
+    } catch {
       setWinRewardDetails?.(null);
       showInformationModal({
         title: "YOU WIN!",
@@ -185,11 +184,9 @@ export default function FlowermanGame({
   if (isMobile) {
     return (
       <div className="flex flex-col items-center w-full h-full">
-        {/* Mistakes left — positioned above the whiteboard frame */}
         <div className="absolute -top-4 left-0 right-0 flex justify-center z-10">
           <MistakesLeft count={lives} />
         </div>
-        {/* Word + Flower — pushed down within the board */}
         <div className="flex-1 flex flex-col items-center justify-center w-full pt-20">
           <FlowermanWordWithFlower
             word={word}
@@ -198,7 +195,6 @@ export default function FlowermanGame({
             isMobile
           />
         </div>
-        {/* Mobile keyboard — fixed at bottom */}
         <div className="fixed bottom-0 left-0 right-0 px-2 pb-4 z-[40]">
           <FlowermanKeyboard
             word={word}
@@ -214,7 +210,6 @@ export default function FlowermanGame({
 
   return (
     <>
-      {/* Mistakes left — top left, to the right of the profile header; z below modal (60) so it greys out with overlay */}
       <div className="fixed top-[100px] left-[90px] z-[50]">
         <MistakesLeft count={lives} />
       </div>
@@ -226,7 +221,6 @@ export default function FlowermanGame({
           livesRemaining={lives}
         />
       </div>
-      {/* Keyboard — fixed across the full bottom of the screen; disabled until playing */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4">
         <FlowermanKeyboard
           word={word}
