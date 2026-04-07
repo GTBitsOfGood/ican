@@ -185,12 +185,12 @@ export default function FlowermanGame({
   if (isMobile) {
     return (
       <div className="flex flex-col items-center w-full h-full">
-        {/* Mistakes left — centered at top */}
-        <div className="pt-1 pb-1">
+        {/* Mistakes left — positioned above the whiteboard frame */}
+        <div className="absolute -top-4 left-0 right-0 flex justify-center z-10">
           <MistakesLeft count={lives} />
         </div>
-        {/* Word + Flower — scaled down to fit */}
-        <div className="flex-1 flex flex-col items-center justify-center w-full">
+        {/* Word + Flower — pushed down within the board */}
+        <div className="flex-1 flex flex-col items-center justify-center w-full pt-20">
           <FlowermanWordWithFlower
             word={word}
             guessedLetters={guessedLetters}
