@@ -223,56 +223,60 @@ export default function GameWrapper({
                   className="fixed inset-0 flex flex-col items-center"
                   style={{ paddingTop: gameName ? "3rem" : 0 }}
                 >
-                  {/* Easel/chalkboard area */}
+                  {/* Easel/chalkboard area + pet overlay */}
                   <div
-                    className="relative shrink-0 mt-6"
+                    className="relative shrink-0 mt-8"
                     style={{
                       width: "min(98vw, 450px)",
-                      aspectRatio: "366 / 332",
                     }}
                   >
-                    {showGameAreaFrame && (
-                      <img
-                        src={mobileWhiteboardSrc}
-                        className="absolute inset-0 h-full w-full"
-                        alt=""
-                        aria-hidden="true"
-                      />
-                    )}
+                    {/* Board frame */}
                     <div
-                      className={cn(
-                        "absolute inset-0 flex items-center justify-center",
-                        showGameAreaFrame && mobileGameAreaFrameInsetClassName,
-                      )}
+                      className="relative w-full"
+                      style={{ aspectRatio: "366 / 332" }}
                     >
+                      {showGameAreaFrame && (
+                        <img
+                          src={mobileWhiteboardSrc}
+                          className="absolute inset-0 h-full w-full"
+                          alt=""
+                          aria-hidden="true"
+                        />
+                      )}
                       <div
                         className={cn(
-                          "h-full w-full overflow-hidden",
-                          gameAreaClassName,
+                          "absolute inset-0 flex items-center justify-center",
+                          showGameAreaFrame &&
+                            mobileGameAreaFrameInsetClassName,
                         )}
                       >
-                        <GameComponent
-                          setSpeechText={setSpeechText}
-                          gameState={gameState}
-                          setGameState={handleGameStateChange}
-                          showInformationModal={setInformationModal}
-                          setPetBoardX={setPetBoardX}
-                          setPetEmotion={setPetEmotion}
-                          setWinRewardDetails={setWinRewardDetails}
-                          isMobile={isMobile}
-                        />
+                        <div
+                          className={cn(
+                            "h-full w-full overflow-hidden",
+                            gameAreaClassName,
+                          )}
+                        >
+                          <GameComponent
+                            setSpeechText={setSpeechText}
+                            gameState={gameState}
+                            setGameState={handleGameStateChange}
+                            showInformationModal={setInformationModal}
+                            setPetBoardX={setPetBoardX}
+                            setPetEmotion={setPetEmotion}
+                            setWinRewardDetails={setWinRewardDetails}
+                            isMobile={isMobile}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* Pet below the board */}
-                  {petBoardX === null && (
-                    <div
-                      className="relative flex items-center justify-center"
-                      style={{ paddingBottom: "100px" }}
-                    >
-                      <div className="relative" style={{ width: "120px" }}>
+                    {/* Pet — bottom-left, overlapping board */}
+                    {petBoardX === null && (
+                      <div
+                        className="absolute bottom-0 left-0 z-20 translate-y-[50%]"
+                        style={{ width: "120px" }}
+                      >
                         {speechText && (
-                          <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.55]">
+                          <div className="absolute bottom-[78%] left-[80%] z-20 origin-bottom-left scale-[0.55]">
                             <Bubble text={speechText} />
                           </div>
                         )}
@@ -286,8 +290,8 @@ export default function GameWrapper({
                           emotion={petEmotion ?? PetEmotion.NEUTRAL}
                         />
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               ) : (
                 /* ── Default mobile layout (<650px): pet flush above board, both same width ── */

@@ -33,8 +33,8 @@ export default function FlowermanKeyboard({
 }) {
   if (isMobile) {
     return (
-      <div className="mx-auto bg-[#F5F0E8] rounded-xl p-2">
-        <div className="grid grid-cols-7 gap-1.5 w-full max-w-[400px]">
+      <div className="bg-[#F5F0E8] rounded-xl p-3">
+        <div className="grid grid-cols-7 gap-1.5 w-full">
           {ALPHABET.map((letter) => (
             <FlowermanKey
               key={letter}
