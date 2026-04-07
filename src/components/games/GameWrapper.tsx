@@ -264,6 +264,26 @@ export default function GameWrapper({
                           <GameComponent {...gameComponentProps} />
                         </div>
                       </div>
+                      {petBoardX !== null && (
+                        <div className="absolute top-[35%] inset-0 z-20 flex items-center justify-center pointer-events-none">
+                          <div
+                            style={{
+                              width: "112px",
+                              transform: `translateX(${petBoardX}%)`,
+                            }}
+                          >
+                            <PetAppearance
+                              petType={pet.petType}
+                              selectedItem={null}
+                              appearance={pet.appearance}
+                              showBackground={false}
+                              className="h-auto w-full"
+                              characterImageSize={280}
+                              emotion={petEmotion ?? PetEmotion.NEUTRAL}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     {petBoardX === null && (
                       <div
