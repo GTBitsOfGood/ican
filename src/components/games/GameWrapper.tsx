@@ -225,7 +225,7 @@ export default function GameWrapper({
                 >
                   {/* Easel/chalkboard area + pet overlay */}
                   <div
-                    className="relative shrink-0 mt-8"
+                    className="relative shrink-0 mt-10"
                     style={{
                       width: "min(98vw, 450px)",
                     }}
@@ -272,7 +272,7 @@ export default function GameWrapper({
                     {/* Pet — bottom-left, overlapping board */}
                     {petBoardX === null && (
                       <div
-                        className="absolute bottom-0 left-0 z-20 translate-y-[70%]"
+                        className="absolute bottom-0 left-0 z-20 translate-y-[75%]"
                         style={{ width: "120px" }}
                       >
                         {speechText && (

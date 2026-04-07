@@ -39,7 +39,7 @@ export default function FlowermanKeyboard({
 }) {
   if (isMobile) {
     return (
-      <div className="bg-[#F5F0E8] rounded-xl p-2 mx-auto w-fit flex flex-col gap-1">
+      <div className="bg-[#F5F0E8] rounded-md p-4 mx-auto w-fit flex flex-col gap-1.5">
         {[MOBILE_ROW1, MOBILE_ROW2, MOBILE_ROW3, MOBILE_ROW4].map((row, ri) => (
           <div key={ri} className="flex gap-1 justify-center">
             {row.map((letter) => (
