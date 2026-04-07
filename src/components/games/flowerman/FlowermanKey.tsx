@@ -28,7 +28,7 @@ export default function FlowermanKey({
       type="button"
       onClick={onPress}
       disabled={disabled}
-      className={`relative disabled:pointer-events-none touch-manipulation ${isMobile ? "aspect-square w-full" : "flex-1 h-full"}`}
+      className={`relative disabled:pointer-events-none touch-manipulation ${isMobile ? "aspect-square w-[calc((100vw-56px)/7)] max-w-[52px]" : "flex-1 h-full"}`}
       aria-label={`Key ${letter}`}
     >
       <Image
