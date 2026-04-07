@@ -199,7 +199,7 @@ export default function FlowermanGame({
           />
         </div>
         {/* Mobile keyboard — fixed at bottom */}
-        <div className="fixed bottom-0 left-0 right-0 px-3 pb-3 z-[40]">
+        <div className="fixed bottom-0 left-0 right-0 px-2 pb-4 z-[40]">
           <FlowermanKeyboard
             word={word}
             guessedLetters={guessedLetters}

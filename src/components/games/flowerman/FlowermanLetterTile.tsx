@@ -16,7 +16,7 @@ export default function FlowermanLetterTile({
 }) {
   return (
     <div
-      className={`relative flex-1 aspect-[79/88] ${isMobile ? "max-w-[35px]" : "max-w-[60px]"} ${revealed ? "opacity-100" : "opacity-50"}`}
+      className={`relative flex-1 aspect-[79/88] ${isMobile ? "max-w-[40px]" : "max-w-[60px]"} ${revealed ? "opacity-100" : "opacity-50"}`}
     >
       <Image
         src={revealed ? BUTTON_GREEN : BUTTON_BASE}
@@ -26,7 +26,7 @@ export default function FlowermanLetterTile({
       />
       {revealed && (
         <span
-          className={`absolute inset-0 flex items-center justify-center font-quantico text-textBeige font-bold uppercase ${isMobile ? "text-base" : "text-3xl"}`}
+          className={`absolute inset-0 flex items-center justify-center font-quantico text-textBeige font-bold uppercase ${isMobile ? "text-lg" : "text-3xl"}`}
           aria-hidden
         >
           {letter}

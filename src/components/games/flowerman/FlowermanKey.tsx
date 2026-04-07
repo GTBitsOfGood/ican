@@ -38,7 +38,7 @@ export default function FlowermanKey({
         className="object-contain pointer-events-none"
       />
       <span
-        className={`absolute inset-0 flex items-center justify-center font-quantico text-textBeige font-bold ${isMobile ? "text-sm" : "text-3xl"}`}
+        className={`absolute inset-0 flex items-center justify-center font-quantico text-textBeige font-bold ${isMobile ? "text-base" : "text-3xl"}`}
       >
         {letter}
       </span>

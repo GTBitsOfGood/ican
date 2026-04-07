@@ -185,7 +185,7 @@ export default function GameWrapper({
                 }}
               >
                 <span className="font-quantico text-xl font-bold uppercase text-white">
-                  {gameName}
+                  {{ HANGMAN: "Flowerman" }[gameName] ?? gameName}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -225,9 +225,9 @@ export default function GameWrapper({
                 >
                   {/* Easel/chalkboard area */}
                   <div
-                    className="relative shrink-0 mt-2"
+                    className="relative shrink-0 mt-6"
                     style={{
-                      width: "min(92vw, 366px)",
+                      width: "min(98vw, 450px)",
                       aspectRatio: "366 / 332",
                     }}
                   >
@@ -268,11 +268,11 @@ export default function GameWrapper({
                   {petBoardX === null && (
                     <div
                       className="relative flex items-center justify-center"
-                      style={{ paddingBottom: "120px" }}
+                      style={{ paddingBottom: "100px" }}
                     >
-                      <div className="relative" style={{ width: "80px" }}>
+                      <div className="relative" style={{ width: "120px" }}>
                         {speechText && (
-                          <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.4]">
+                          <div className="absolute bottom-[78%] left-[60%] z-20 origin-bottom-left scale-[0.55]">
                             <Bubble text={speechText} />
                           </div>
                         )}
@@ -282,7 +282,7 @@ export default function GameWrapper({
                           appearance={pet.appearance}
                           showBackground={false}
                           className="h-auto w-full"
-                          characterImageSize={200}
+                          characterImageSize={280}
                           emotion={petEmotion ?? PetEmotion.NEUTRAL}
                         />
                       </div>

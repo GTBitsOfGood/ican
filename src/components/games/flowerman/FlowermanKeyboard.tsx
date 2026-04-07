@@ -33,17 +33,19 @@ export default function FlowermanKeyboard({
 }) {
   if (isMobile) {
     return (
-      <div className="mx-auto grid grid-cols-7 gap-1 w-full max-w-[340px]">
-        {ALPHABET.map((letter) => (
-          <FlowermanKey
-            key={letter}
-            letter={letter}
-            state={getKeyState(letter, word, guessedLetters)}
-            disabled={disabled || guessedLetters.has(letter)}
-            onPress={() => onLetterGuess(letter)}
-            isMobile
-          />
-        ))}
+      <div className="mx-auto bg-[#F5F0E8] rounded-xl p-2">
+        <div className="grid grid-cols-7 gap-1.5 w-full max-w-[400px]">
+          {ALPHABET.map((letter) => (
+            <FlowermanKey
+              key={letter}
+              letter={letter}
+              state={getKeyState(letter, word, guessedLetters)}
+              disabled={disabled || guessedLetters.has(letter)}
+              onPress={() => onLetterGuess(letter)}
+              isMobile
+            />
+          ))}
+        </div>
       </div>
     );
   }

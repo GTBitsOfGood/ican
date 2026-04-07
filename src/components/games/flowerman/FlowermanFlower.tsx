@@ -16,7 +16,7 @@ export default function FlowermanFlower({
 
   return (
     <div
-      className={`relative w-full aspect-square mx-auto overflow-hidden ${isMobile ? "max-w-[120px]" : "max-w-[350px]"}`}
+      className={`relative w-full aspect-square mx-auto overflow-hidden ${isMobile ? "max-w-[160px]" : "max-w-[350px]"}`}
     >
       {/* Faint full flower in the background so players see the end state */}
       <Image
