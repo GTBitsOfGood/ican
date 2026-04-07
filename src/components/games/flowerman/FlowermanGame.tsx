@@ -25,6 +25,7 @@ export default function FlowermanGame({
   setPetBoardX,
   setPetEmotion,
   setWinRewardDetails,
+  isMobile,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: gameStatistics } = useGameStatistics(userId);
@@ -180,6 +181,36 @@ export default function FlowermanGame({
       }
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col items-center w-full h-full">
+        {/* Mistakes left — centered at top */}
+        <div className="pt-1 pb-1">
+          <MistakesLeft count={lives} />
+        </div>
+        {/* Word + Flower — scaled down to fit */}
+        <div className="flex-1 flex flex-col items-center justify-center w-full">
+          <FlowermanWordWithFlower
+            word={word}
+            guessedLetters={guessedLetters}
+            livesRemaining={lives}
+            isMobile
+          />
+        </div>
+        {/* Mobile keyboard — fixed at bottom */}
+        <div className="fixed bottom-0 left-0 right-0 px-3 pb-3 z-[40]">
+          <FlowermanKeyboard
+            word={word}
+            guessedLetters={guessedLetters}
+            disabled={gameState !== GameState.PLAYING}
+            onLetterGuess={handleLetterGuess}
+            isMobile
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

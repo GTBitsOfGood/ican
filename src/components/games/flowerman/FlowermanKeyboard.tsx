@@ -23,12 +23,31 @@ export default function FlowermanKeyboard({
   guessedLetters,
   disabled,
   onLetterGuess,
+  isMobile = false,
 }: {
   word: string;
   guessedLetters: Set<string>;
   disabled: boolean;
   onLetterGuess: (letter: string) => void;
+  isMobile?: boolean;
 }) {
+  if (isMobile) {
+    return (
+      <div className="mx-auto grid grid-cols-7 gap-1 w-full max-w-[340px]">
+        {ALPHABET.map((letter) => (
+          <FlowermanKey
+            key={letter}
+            letter={letter}
+            state={getKeyState(letter, word, guessedLetters)}
+            disabled={disabled || guessedLetters.has(letter)}
+            onPress={() => onLetterGuess(letter)}
+            isMobile
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="relative mx-auto w-[870px] max-w-[70%] overflow-hidden">
       <Image
