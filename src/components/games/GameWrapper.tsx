@@ -443,11 +443,21 @@ export default function GameWrapper({
 
             {showSuccess && (
               <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-                <div className="relative w-full max-w-6xl px-4">
+                <div
+                  className={`relative px-4 ${
+                    isMobile
+                      ? "w-full overflow-hidden flex justify-center"
+                      : "w-full max-w-6xl"
+                  }`}
+                >
                   <img
                     src="/assets/CongratulationsBackdrop.svg"
                     alt="Success!"
-                    className="w-full h-auto"
+                    className={
+                      isMobile
+                        ? "w-[140vw] max-w-none shrink-0 h-auto"
+                        : "w-full h-auto"
+                    }
                   />
                   {winRewardDetails && (
                     <div className="absolute left-1/2 top-1/2 flex w-[85%] max-w-xl -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-4 rounded-full bg-white/95 px-10 py-4 shadow-[0_6px_0_0_#7D83B2]">
