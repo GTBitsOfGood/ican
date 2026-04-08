@@ -109,7 +109,6 @@ const ProfileName: React.FC = () => {
         }}
       />
 
-      {/* Start Edit Name/ Confirm Edit Name */}
       <button
         className={`relative inline-flex h-[40px] w-[40px] items-center justify-center self-center 4xl:h-[42px] 4xl:w-[42px] ${
           updatePetNameMutation.isPending ? "cursor-not-allowed opacity-50" : ""
@@ -138,7 +137,6 @@ const ProfileName: React.FC = () => {
         )}
       </button>
 
-      {/* Exit Edit Name */}
       {isEditing && (
         <button
           className="relative inline-block h-8 w-8 4xl:h-9 4xl:w-9"
@@ -146,7 +144,7 @@ const ProfileName: React.FC = () => {
         >
           <Image
             src="/misc/CrossMark.svg"
-            alt="Edit"
+            alt="Cancel edit"
             width={40}
             height={40}
             draggable={false}

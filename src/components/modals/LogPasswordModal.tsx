@@ -15,9 +15,7 @@ import SettingsHTTPClient from "@/http/settingsHTTPClient";
 type LogPasswordType = {
   isOpen: boolean;
   onClose: () => void;
-  handleNext?: (
-    e?: React.MouseEvent<HTMLButtonElement>,
-  ) => void | Promise<void>;
+  handleNext?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   link?: string;
 };
 

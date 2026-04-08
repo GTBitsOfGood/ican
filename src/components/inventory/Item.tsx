@@ -27,12 +27,12 @@ const Item: React.FC<ItemProps> = ({
   const isSportsItem = sportsOccupations.includes(item.name);
 
   const imageSizeClass = isSportsItem
-    ? "h-[110px] w-[110px] tablet:h-[160px] tablet:w-[160px] desktop:h-[220px] desktop:w-[220px] largeDesktop:h-[240px] largeDesktop:w-[240px]"
+    ? "h-[110px] w-[110px] tablet:h-[200px] tablet:w-[200px] desktop:h-[220px] desktop:w-[220px] largeDesktop:h-[240px] largeDesktop:w-[240px]"
     : "h-[72px] w-[72px] tablet:h-[90px] tablet:w-[90px] desktop:h-[105px] desktop:w-[105px] largeDesktop:h-[121px] largeDesktop:w-[121px]";
 
   return (
     <div
-      className={`relative mx-auto flex w-full cursor-pointer flex-col items-center overflow-hidden p-3 desktop:p-4 ${
+      className={`relative mx-auto flex w-full cursor-pointer flex-col items-center overflow-hidden p-4 ${
         isSelected
           ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
           : "border-[5px] border-transparent hover:bg-icanGreen-200/25 hover:border-black/25"
@@ -67,7 +67,7 @@ const Item: React.FC<ItemProps> = ({
         </div>
       ) : (
         type === "Store" && (
-          <div className="mx-auto mb-2 flex justify-center bg-[#FFFFFF66] px-2 text-center font-quantico text-[20px] font-bold text-black tablet:mb-[18px] tablet:text-[24px] desktop:mb-[30px] desktop:text-[30px] largeDesktop:text-[36px]">
+          <div className="mx-auto mb-[30px] flex justify-center bg-[#FFFFFF66] px-2 text-center font-quantico text-[20px] font-bold text-black tablet:text-[24px] desktop:text-[30px] largeDesktop:text-[36px]">
             <Image
               src="/icons/Coin.svg"
               alt="Coins"

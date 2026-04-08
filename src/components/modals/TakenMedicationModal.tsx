@@ -41,7 +41,7 @@ export default function MedicationTakenModal({
       <ModalContent>
         <ModalHeader>{`Mark ${name} as Taken?`}</ModalHeader>
         <ModalBody>
-          <div className="flex w-full items-center justify-center gap-10 desktop:mobile:w-[70%] desktop:tablet:w-[50%] desktop:largeDesktop:mb-4">
+          <div className="flex w-full items-center justify-center gap-10 desktop:w-[50%] desktop:largeDesktop:mb-4">
             <button
               onClick={handleClose}
               className="border-2 border-solid border-white px-5 py-2 text-[32px] font-normal leading-none text-white"

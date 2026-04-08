@@ -17,7 +17,7 @@ const Outfit: React.FC<ItemProps> = ({
 }) => {
   return (
     <div
-      className={`relative mx-auto flex w-full cursor-pointer flex-col items-center overflow-hidden p-3 desktop:p-4 ${
+      className={`relative mx-auto flex w-full cursor-pointer flex-col items-center overflow-hidden p-4 ${
         isSelected
           ? "bg-icanGreen-200 border-[5px] border-black shadow-md"
           : "border-[5px] border-transparent hover:bg-icanGreen-200/25 hover:border-black/25"

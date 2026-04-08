@@ -65,7 +65,7 @@ export default function TutorialRewardOverlay({
         <div className="mt-6 flex justify-center items-center">
           <div className="scale-[0.56] desktop:scale-100">{medicationIcon}</div>
         </div>
-        <div className="mt-4 flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:text-3xl desktop:font-quantico">
+        <div className="mt-4 flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:px-0 desktop:text-3xl desktop:font-quantico">
           {message}
         </div>
       </div>

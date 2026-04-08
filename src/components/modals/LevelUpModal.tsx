@@ -2,7 +2,6 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import { useEffect } from "react";
 import Image from "next/image";
 import ExpBar from "../ui/ExpBar";
-import ModalCloseButton from "./ModalCloseButton";
 
 interface LevelUpModalProps {
   setVisible: (visible: boolean) => void;
@@ -38,8 +37,6 @@ export default function FoodModal({
         header:
           "mobile:text-3xl tablet:text-4xl largeDesktop:text-5xl tiny:text-2xl minimized:text-3xl small:text-4xl items-center",
         footer: "items-center justify-center",
-        closeButton:
-          "top-[1rem] right-[1rem] desktop:right-[2.5rem] desktop:top-[3rem]",
       }}
       className="w-[60%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
       isOpen={true}
@@ -48,7 +45,7 @@ export default function FoodModal({
       placement="center"
       isDismissable={true}
       shouldCloseOnInteractOutside={() => true}
-      closeButton={<ModalCloseButton onClose={handleClose} />}
+      hideCloseButton={true}
     >
       <ModalContent>
         <ModalHeader>{levelChanged ? "Level Up!" : ""}</ModalHeader>

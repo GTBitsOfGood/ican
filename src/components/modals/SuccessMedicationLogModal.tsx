@@ -43,8 +43,8 @@ export default function SuccessMedicationModal({
     <Image
       src={imageSrc}
       alt={imageAlt}
-      width={112}
-      height={112}
+      width={200}
+      height={200}
       className="h-28 w-28 object-contain desktop:h-[200px] desktop:w-[200px]"
     />
   ) : medicationType === "Syrup" ? (
@@ -77,7 +77,7 @@ export default function SuccessMedicationModal({
         <ModalHeader>{title}</ModalHeader>
         <ModalBody>
           <div className="flex justify-center items-center">{rewardIcon}</div>
-          <div className="flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:text-3xl desktop:font-quantico">
+          <div className="flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:px-0 desktop:text-3xl desktop:font-quantico">
             {message}
           </div>
         </ModalBody>

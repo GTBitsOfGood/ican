@@ -80,7 +80,7 @@ export default function ChangeChildLoginModal() {
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "h-[100dvh] max-h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] text-white shadow-none desktop:h-auto desktop:max-h-[650px] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
-        header: "px-0 text-5xl",
+        header: "px-0 text-5xl desktop:px-0",
       }}
       className="z-50 h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] px-5 pb-8 pt-10 font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[60%] desktop:max-w-none desktop:bg-transparent desktop:px-6 desktop:py-8"
       isOpen={isOpen}
@@ -179,7 +179,7 @@ export default function ChangeChildLoginModal() {
             <button
               type="button"
               onClick={handleSave}
-              className="mt-1 h-11 w-full bg-[#accc6e] px-4 py-3 text-center text-[18px] font-normal leading-none text-black desktop:mt-0 desktop:self-end desktop:w-auto desktop:p-2 desktop:text-xl desktop:font-bold desktop:bg-icanGreen-100"
+              className="mt-1 h-11 w-full bg-[#accc6e] px-4 py-3 text-center text-[18px] font-normal leading-none text-black desktop:mt-0 desktop:self-end desktop:w-auto desktop:bg-icanGreen-100 desktop:p-2 desktop:text-xl desktop:font-bold"
             >
               Save
             </button>

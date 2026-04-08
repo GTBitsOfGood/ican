@@ -24,15 +24,15 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
 
   return (
     <div className="relative bg-[#E6E8F9] p-4 desktop:h-screen">
-      <div className="-mt-2 mb-6 w-full desktop:hidden">
+      <div className="-mt-4 mb-12 w-full desktop:hidden">
         <div className="flex justify-between items-center">
           {topView}
-          <div className="h-16 w-16 pr-1 pt-3">
+          <div className="mt-[30px] h-20 w-20 pr-[30px]">
             <BackButton onClick={() => router.push("/")} />
           </div>
         </div>
       </div>
-      <div className="w-full text-center font-quantico leading-none text-icanBlue-300 desktop:absolute desktop:top-4 desktop:left-1/2 desktop:-translate-x-1/2">
+      <div className="w-full text-center font-quantico leading-none text-icanBlue-300 desktop:absolute desktop:left-1/2 desktop:top-4 desktop:-translate-x-1/2">
         <div className="text-[40px] font-bold short:text-[40px] minimized:text-[35px] desktop:text-[52px] largeDesktop:text-[64px]">
           {selectedItem
             ? isSavedOutfit
@@ -49,7 +49,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
         )}
       </div>
 
-      <div className="relative mx-auto my-8 w-[150px] short:w-[150px] minimized:w-[135px] desktop:absolute desktop:top-1/2 desktop:left-1/2 desktop:my-0 desktop:w-[180px] desktop:-translate-x-1/2 desktop:-translate-y-1/2 largeDesktop:w-[212px]">
+      <div className="relative mx-auto my-12 w-[150px] short:w-[150px] minimized:w-[135px] desktop:absolute desktop:left-1/2 desktop:top-1/2 desktop:my-0 desktop:mt-0 desktop:w-[180px] desktop:-translate-x-1/2 desktop:-translate-y-1/2 largeDesktop:w-[212px]">
         <PetAppearance
           appearance={
             isSavedOutfit ? (selectedItem as SavedOutfit) : petData.appearance
@@ -61,7 +61,7 @@ const InventoryLeftPanel: React.FC<PanelProps> = ({
         />
       </div>
 
-      <div className="mb-2 flex items-center justify-center desktop:absolute desktop:bottom-4 desktop:left-1/2 desktop:mb-0 desktop:block desktop:-translate-x-1/2">
+      <div className="mb-6 flex items-center justify-center desktop:absolute desktop:bottom-4 desktop:left-1/2 desktop:mb-0 desktop:block desktop:-translate-x-1/2">
         {button || <div className="h-[100px]"></div>}
       </div>
     </div>

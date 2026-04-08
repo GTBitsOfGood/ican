@@ -3,7 +3,6 @@ import ExpBar from "./ExpBar";
 import ProfileName from "./ProfileName";
 
 interface ProfileInfoProps {
-  // name: string;
   level: number;
   coins: number;
   currentExp: number;
@@ -11,7 +10,6 @@ interface ProfileInfoProps {
 }
 
 const ProfileInfo: React.FC<ProfileInfoProps> = ({
-  // name,
   level,
   coins,
   currentExp,

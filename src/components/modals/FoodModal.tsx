@@ -49,8 +49,8 @@ export default function FoodModal({
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
         base: "overflow-hidden rounded-none bg-icanBlue-200 text-[#a8b0d3] mobile:h-screen mobile:w-screen mobile:max-w-none mobile:max-h-none desktop:w-[70%] desktop:h-[70%] desktop:max-w-[960px] desktop:max-h-[720px]",
-        header: "mb-4 text-5xl mobile:mb-0",
-        body: "overflow-y-auto mobile:bg-transparent desktop:bg-icanBlue-100 desktop:grid desktop:gap-8 desktop:mobile:grid-cols-1 desktop:tablet:grid-cols-2 desktop:desktop:grid-cols-3 desktop:largeDesktop:grid-cols-4 desktop:tiny:auto-rows-[90%] desktop:minimized:auto-rows-[90%] desktop:short:auto-rows-[60%] desktop:list-scrollbar",
+        header: "mb-4 text-5xl mobile:mb-0 desktop:underline",
+        body: "overflow-y-auto mobile:bg-transparent desktop:grid desktop:bg-icanBlue-100 desktop:gap-8 desktop:grid-cols-3 desktop:largeDesktop:grid-cols-4 desktop:tiny:auto-rows-[90%] desktop:minimized:auto-rows-[90%] desktop:short:auto-rows-[60%] desktop:list-scrollbar",
         closeButton: "top-[2.75rem]",
         footer: "items-center justify-center mobile:hidden",
       }}

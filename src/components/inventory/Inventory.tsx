@@ -33,7 +33,7 @@ export default function Inventory({
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {cloneElement(leftPanel as ReactElement<any>, { topView })}
       </div>
-      <div className="flex min-h-screen flex-col w-full bg-[#4C539B] pb-7 desktop:w-[74%] desktop:min-h-screen">
+      <div className="flex min-h-screen w-full flex-col bg-[#4C539B] pb-7 desktop:w-[74%] desktop:min-h-screen">
         <div className="hidden desktop:flex items-center px-[31px] pt-[30px]">
           <div className="h-20 w-20 shrink-0">
             <BackButton onClick={handleBackClick} />

@@ -105,7 +105,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
       : {};
 
   return (
-    <div className="fixed bottom-[190px] left-1/2 z-10 w-full -translate-x-1/2 desktop:bottom-[124px] desktop:left-[28%] desktop:w-fit desktop:translate-x-0">
+    <div className="fixed bottom-[190px] left-1/2 w-full -translate-x-1/2 desktop:bottom-auto desktop:left-1/3 desktop:top-[60%] desktop:h-[45%] desktop:max-h-[40rem] desktop:w-fit desktop:-translate-x-1/2 desktop:-translate-y-1/2">
       <div className="relative w-full">
         <motion.div animate={jumpAnimation}>
           <PetAppearance
@@ -113,11 +113,11 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
             petType={petType}
             emotion={emotion}
             selectedItem={null}
-            className="mx-auto w-[112px] smallTablet:w-[120px] tablet:w-[128px] desktop:mx-0 desktop:w-[210px] largeDesktop:w-[230px] short:w-[260px] minimized:w-[230px] tiny:w-[190px]"
+            className="mx-auto w-[112px] smallTablet:w-[120px] tablet:w-[128px] desktop:mx-0 desktop:w-[330px] desktop:short:w-[300px] desktop:minimized:w-[270px] desktop:tiny:w-[240px] largeDesktop:w-[350px]"
             showBackground={false}
           />
         </motion.div>
-        <div className="absolute bottom-[108%] left-1/2 -translate-x-1/2 desktop:bottom-[88%] desktop:left-[72%] desktop:translate-x-0">
+        <div className="absolute bottom-[108%] left-1/2 -translate-x-1/2 desktop:bottom-[75%] desktop:left-[90%] desktop:translate-x-0">
           <div className="desktop:hidden">
             <MobileBubble text={bubbleText} animation={bubbleAnimation} />
           </div>
@@ -127,7 +127,7 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
         </div>
         <div
           ref={constraintsRef}
-          className="absolute bottom-[30%] right-[2%] h-[110px] w-[150px] rotate-6 tablet:bottom-[28%] tablet:right-[4%] tablet:h-[110px] tablet:w-[190px] desktop:bottom-[28%] desktop:right-[-72%] desktop:h-[100px] desktop:w-[275px]"
+          className="absolute bottom-[30%] right-[2%] h-[110px] w-[150px] rotate-6 tablet:bottom-[28%] tablet:right-[4%] tablet:h-[110px] tablet:w-[190px] desktop:bottom-[30%] desktop:right-[-45%] desktop:h-[100px] desktop:w-[275px] desktop:rotate-12"
         ></div>
         {selectedFood && (
           <motion.div
@@ -137,20 +137,16 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
             dragElastic={0.1}
             dragMomentum={false}
             whileTap={{ cursor: "grabbing" }}
-            className="absolute bottom-[34%] right-[6%] z-[25] tablet:bottom-[30%] tablet:right-[8%] desktop:bottom-[25%] desktop:right-[-50%]"
-            style={{
-              width: 120,
-              height: 120,
-              cursor: "grab",
-            }}
+            className="absolute bottom-[34%] right-[6%] z-[25] h-[120px] w-[120px] tablet:bottom-[30%] tablet:right-[8%] desktop:bottom-[25%] desktop:right-[-50%] desktop:h-[150px] desktop:w-[150px]"
+            style={{ cursor: "grab" }}
             onDrag={handleDrag}
             onDragEnd={handleFoodDragEnd}
           >
             <Image
               src={`/foods/${selectedFood.toLowerCase()}.svg`}
               alt={selectedFood}
-              width={120}
-              height={120}
+              fill
+              className="object-contain"
               style={{ pointerEvents: "none" }}
             />
           </motion.div>
@@ -163,12 +159,8 @@ const PetDisplay: React.FC<PetDisplayProps> = ({
             dragElastic={0.1}
             dragMomentum={false}
             whileTap={{ cursor: "grabbing" }}
-            className="absolute bottom-[34%] right-[6%] z-[25] flex items-center justify-center tablet:bottom-[30%] tablet:right-[8%] desktop:bottom-[25%] desktop:right-[-50%]"
-            style={{
-              width: 120,
-              height: 120,
-              cursor: "grab",
-            }}
+            className="absolute bottom-[34%] right-[6%] z-[25] flex h-[120px] w-[120px] items-center justify-center tablet:bottom-[30%] tablet:right-[8%] desktop:bottom-[25%] desktop:right-[-50%] desktop:h-[150px] desktop:w-[150px]"
+            style={{ cursor: "grab" }}
             onDrag={handleMedicationDrag}
             onDragEnd={handleMedicationDragEnd}
           >

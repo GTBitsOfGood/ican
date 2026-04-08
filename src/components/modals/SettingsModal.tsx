@@ -237,7 +237,7 @@ export default function SettingsModal() {
           header: "text-5xl underline mb-4",
           closeButton: "right-[3rem] top-[3rem]",
         }}
-        className="z-50 h-screen w-screen max-h-[100dvh] rounded-none bg-[#565DAA] px-[15px] pb-6 pt-[39px] font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[80%] desktop:max-h-none desktop:max-w-none desktop:border-8 desktop:border-[#7177AC] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8"
+        className="z-50 h-screen w-screen max-h-[100dvh] rounded-none bg-[#565DAA] px-[15px] pb-6 pt-[39px] font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[80%] desktop:max-h-none desktop:border-8 desktop:border-[#7177AC] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8"
         isOpen={isOpen}
         onClose={handleClose}
         radius="lg"
