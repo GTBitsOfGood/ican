@@ -30,7 +30,6 @@ import { formatMedicationTime } from "@/utils/medicationDisplay";
 import { useRouter } from "next/router";
 import { usePetFoods } from "@/components/hooks/useInventory";
 import Image from "next/image";
-import { calculateXPForLevel } from "@/utils/constants";
 
 interface HomeProps {
   activeModal: string;
@@ -63,8 +62,8 @@ function MobileNavButton({
         <div className="relative h-[34px] w-[38px]">
           <Image src={iconSrc} alt={label} fill className="object-contain" />
         </div>
-        <span className="mt-[9px] font-pixelify text-[18px] font-normal leading-[18px] tracking-[0.11em] text-[#CBDBFC] [text-shadow:0px_0.924px_0px_rgba(0,0,0,0.25)] [text-stroke:0.462px_#4C539B] [-webkit-text-stroke:0.462px_#4C539B]">
-          {label}
+        <span className="mt-[9px] font-quantico text-center text-[18px] font-bold leading-[18px] text-white text-stroke-1 text-stroke-[#2B2F58] text-shadow-[#2B2F58] paint-stroke letter-spacing-ui">
+          {label.toUpperCase()}
         </span>
       </div>
     </button>
@@ -131,7 +130,6 @@ export default function Home({
         ? tutorial.replayXpGained
         : (pet.xpGained ?? 0)
       : (pet?.xpGained ?? 0);
-  const displayXpNeeded = calculateXPForLevel(displayLevel);
   const feedPetMutation = realFeedPet;
   const { data: tutorialBagFoods = [] } = usePetFoods(
     pet && isTutorial && !tutorial.isReplay ? pet._id : undefined,
@@ -542,53 +540,17 @@ export default function Home({
                 <NavButton buttonType="settings" drawButton={false} />
               </div>
             </div>
-            <div className="desktop:hidden relative z-20 h-[133px] w-full border-b border-[#232540] bg-[#2d336bcc] shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[2px]">
-              <div className="flex h-full items-start justify-between px-[30px] pb-[12px] pt-[24px]">
-                <div className="flex flex-col gap-[5px]">
-                  <div className="flex h-[30px] items-center gap-[10px]">
-                    <span className="font-quantico text-[30px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#353859] text-shadow-[#7D83B2]">
-                      {pet.name}
-                    </span>
-                    <Image
-                      src="/icons/Edit.svg"
-                      alt="Edit"
-                      width={18}
-                      height={18}
-                      className="mt-1"
-                    />
-                  </div>
-                  <div className="relative h-[29px] w-[166px]">
-                    <div className="absolute left-[10px] top-[6px] h-[17px] w-[156px] bg-[#38401E] shadow-exp-outer" />
-                    <div className="absolute left-0 top-0 h-[29px] w-[29px]">
-                      <Image
-                        src="/icons/Star.svg"
-                        alt="Level"
-                        fill
-                        className="object-contain"
-                      />
-                      <span className="absolute inset-0 flex items-center justify-center font-quantico text-[14px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#482D0D] text-shadow-[#603A0C]">
-                        {displayLevel}
-                      </span>
-                    </div>
-                    <span className="absolute left-[45px] top-[4px] font-quantico text-[21px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#2A3213] text-shadow-[#444D29]">
-                      {displayCurrentExp}/{displayXpNeeded} XP
-                    </span>
-                  </div>
-                  <div className="mt-[2px] flex h-[29px] items-center gap-[10px]">
-                    <div className="relative h-[29px] w-[29px]">
-                      <Image
-                        src="/icons/Coin.svg"
-                        alt="Coins"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                    <span className="font-quantico text-[21px] font-bold leading-none tracking-[-0.04em] text-white text-stroke-1 text-stroke-[#482D0D] text-shadow-[#603A0C]">
-                      {displayCoins}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex pt-[2px]">
+            <div className="desktop:hidden relative z-20 h-[184px] w-full border-b border-[#232540] bg-[#2d336bcc] shadow-[0_4px_4px_rgba(0,0,0,0.25)] backdrop-blur-[2px]">
+              <div className="flex h-full items-start justify-between gap-4 px-[30px] pb-[12px] pt-[24px]">
+                <ProfileHeader
+                  petType={pet.petType}
+                  level={displayLevel}
+                  coins={displayCoins}
+                  currentExp={displayCurrentExp}
+                  currentStreak={pet.currentStreak ?? 0}
+                  className="min-w-0 flex-1"
+                />
+                <div className="flex shrink-0 pt-[2px]">
                   <button
                     type="button"
                     aria-label="Open settings"
@@ -604,7 +566,7 @@ export default function Home({
                 </div>
               </div>
             </div>
-            <div className="flex-1 desktop:hidden min-h-[calc(100dvh-213px)]" />
+            <div className="flex-1 desktop:hidden min-h-[calc(100dvh-264px)]" />
           </div>
           <div className="hidden desktop:block">
             <Navbar>

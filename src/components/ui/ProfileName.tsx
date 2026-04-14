@@ -85,16 +85,16 @@ const ProfileName: React.FC = () => {
   return (
     <div
       ref={profileRef}
-      className="relative inline-flex h-[56px] flex-row items-center gap-1 4xl:h-[56px] 4xl:gap-2"
+      className="relative flex h-[38px] w-full min-w-0 flex-row items-center desktop:inline-flex desktop:h-[56px] desktop:w-auto"
     >
       <input
         className={`
-          text-[3.1rem] leading-[56px] font-quantico font-bold bg-transparent text-white [text-shadow:0px_3px_0px_rgb(125_131_178_/_1.00)]
-          w-auto min-w-[4rem] max-w-full
+          text-4xl 4xl:text-4xl font-quantico font-bold bg-transparent text-white
+          w-auto min-w-[4rem] max-w-full overflow-hidden text-ellipsis whitespace-nowrap
           ${
             !isEditing
-              ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none"
-              : "animate-pulse outline-dashed outline-white outline-2"
+              ? "focus:outline-none focus:ring-0 focus:border-none pointer-events-none select-none border-none max-w-[calc(100%-32px)] desktop:max-w-full"
+              : "animate-pulse outline-dashed outline-white outline-2 max-w-[calc(100%-56px)] desktop:max-w-full"
           }
         `}
         type="text"
@@ -103,14 +103,12 @@ const ProfileName: React.FC = () => {
         readOnly={!isEditing || updatePetNameMutation.isPending}
         onChange={(e) => setEditingName(e.target.value)}
         maxLength={20}
-        style={{
-          width: `${Math.max(displayName.length || 3, 3)}ch`,
-          WebkitTextStroke: "1px #353859",
-        }}
+        style={{ width: `${Math.max(displayName.length || 3, 3)}ch` }}
       />
 
       <button
-        className={`relative inline-flex h-[40px] w-[40px] items-center justify-center self-center 4xl:h-[42px] 4xl:w-[42px] ${
+        type="button"
+        className={`relative ml-1 inline-block h-3/5 w-fit shrink-0 ${
           updatePetNameMutation.isPending ? "cursor-not-allowed opacity-50" : ""
         }`}
         onClick={toggleEditing}
@@ -132,14 +130,15 @@ const ProfileName: React.FC = () => {
             width={34}
             height={34}
             draggable={false}
-            className="h-8 w-8 object-contain select-none 4xl:h-9 4xl:w-9"
+            className="h-full aspect-square object-contain select-none"
           />
         )}
       </button>
 
       {isEditing && (
         <button
-          className="relative inline-block h-8 w-8 4xl:h-9 4xl:w-9"
+          type="button"
+          className="relative inline-block h-3/5 w-fit shrink-0"
           onClick={cancelEditing}
         >
           <Image

@@ -1,4 +1,5 @@
 import ProfileInfo from "@/components/ui/ProfileInfo";
+import { cn } from "@/lib/utils";
 import { PetType } from "@/types/pet";
 
 interface ProfileHeaderProps {
@@ -7,6 +8,7 @@ interface ProfileHeaderProps {
   coins: number;
   currentExp: number;
   currentStreak: number;
+  className?: string;
 }
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({
@@ -14,9 +16,15 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   coins,
   currentExp,
   currentStreak,
+  className,
 }) => {
   return (
-    <div className="flex h-44 w-fit items-start px-6 pt-6 largeDesktop:px-8 4xl:h-48 4xl:px-10">
+    <div
+      className={cn(
+        "flex max-w-full items-start desktop:h-44 desktop:px-6 desktop:pt-6 largeDesktop:px-8 4xl:h-48 4xl:px-10",
+        className,
+      )}
+    >
       <ProfileInfo
         level={level}
         coins={coins}
