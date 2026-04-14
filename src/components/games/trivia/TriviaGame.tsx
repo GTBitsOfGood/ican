@@ -9,6 +9,7 @@ import {
   useRecordGameResult,
 } from "@/components/hooks/useGameStatistics";
 import { GAMES_DAILY_COIN_LIMIT } from "@/utils/constants";
+import { PetEmotion } from "@/types/pet";
 
 function generateRoundQuestions(): TriviaQuestion[] {
   const shuffled = [...triviaQuestions];
@@ -26,6 +27,7 @@ export default function TriviaGame({
   setGameState,
   showInformationModal,
   setWinRewardDetails,
+  setPetEmotion,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: gameStatistics } = useGameStatistics(userId);
@@ -136,6 +138,7 @@ export default function TriviaGame({
 
     setIsProcessingWin(true);
     setWinRewardDetails?.(null);
+    setPetEmotion(PetEmotion.HAPPY);
 
     try {
       const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
