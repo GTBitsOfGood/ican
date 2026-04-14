@@ -1,17 +1,10 @@
-import { FlatCompat } from "@eslint/eslintrc";
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 import prettier from "eslint-config-prettier/flat";
 
-const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
-});
-
 const config = [
-  ...compat.extends(
-    "plugin:@next/next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended",
-  ),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   {
     files: ["**/*.{js,jsx,mjs,ts,tsx,mts,cts}"],
     settings: {
