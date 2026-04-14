@@ -52,7 +52,7 @@ export default function FoodModal({
         header: "mb-4 text-5xl mobile:mb-0 desktop:underline",
         body: "overflow-y-auto mobile:bg-transparent desktop:grid desktop:bg-icanBlue-100 desktop:gap-8 desktop:grid-cols-3 desktop:largeDesktop:grid-cols-4 desktop:tiny:auto-rows-[90%] desktop:minimized:auto-rows-[90%] desktop:short:auto-rows-[60%] desktop:list-scrollbar",
         closeButton: "top-[2.75rem]",
-        footer: "items-center justify-center mobile:hidden",
+        footer: "hidden items-center justify-center desktop:flex",
       }}
       className="z-50 overflow-y-auto rounded-none px-0 py-0 font-quantico font-bold text-white outline-none desktop:px-6 desktop:py-8"
       isOpen={isOpen}
