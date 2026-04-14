@@ -62,7 +62,7 @@ export default function NotificationSettingsModal({
       onClose={onClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} link="#" />}
+      closeButton={<ModalCloseButton onClose={onClose} />}
     >
       <ModalContent>
         <ModalHeader>Notifications</ModalHeader>

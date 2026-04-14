@@ -45,14 +45,14 @@ export default function SuccessMedicationModal({
       alt={imageAlt}
       width={200}
       height={200}
-      className="h-[200px] w-[200px] object-contain"
+      className="h-28 w-28 object-contain desktop:h-[200px] desktop:w-[200px]"
     />
   ) : medicationType === "Syrup" ? (
-    <LiquidIcon className="h-[200px] w-[200px]" />
+    <LiquidIcon className="h-28 w-28 desktop:h-[200px] desktop:w-[200px]" />
   ) : medicationType === "Shot" ? (
-    <InjectionIcon className="h-[200px] w-[200px]" />
+    <InjectionIcon className="h-28 w-28 desktop:h-[200px] desktop:w-[200px]" />
   ) : (
-    <PillIcon className="h-[200px] w-[200px]" />
+    <PillIcon className="h-28 w-28 desktop:h-[200px] desktop:w-[200px]" />
   );
 
   return (
@@ -60,12 +60,12 @@ export default function SuccessMedicationModal({
       backdrop="opaque"
       classNames={{
         backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-        base: "bg-icanBlue-200 text-[#a8b0d3] max-w-[840px]",
+        base: "max-w-[357px] rounded-none bg-[#565DAA] text-white shadow-none desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
         header:
-          "mobile:text-2xl tablet:text-3xl largeDesktop:text-4xl tiny:text-xl minimized:text-2xl small:text-3xl justify-center items-center",
+          "justify-center items-center text-center text-[32px] leading-none desktop:mobile:text-2xl desktop:tablet:text-3xl desktop:largeDesktop:text-4xl desktop:tiny:text-xl desktop:minimized:text-2xl desktop:small:text-3xl",
         body: "items-center justify-between",
       }}
-      className="mobile:w-[70%] tablet:w-[65%] desktop:w-[60%] largeDesktop:w-[50%] h-fit font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-auto rounded-none outline-none"
+      className="z-50 h-fit w-[calc(100vw-36px)] max-w-[357px] overflow-y-auto rounded-none px-6 py-8 font-quantico font-bold text-white outline-none desktop:mobile:w-[70%] desktop:tablet:w-[65%] desktop:desktop:w-[60%] desktop:largeDesktop:w-[50%]"
       isOpen={true}
       onClose={handleClose}
       radius="lg"
@@ -77,7 +77,7 @@ export default function SuccessMedicationModal({
         <ModalHeader>{title}</ModalHeader>
         <ModalBody>
           <div className="flex justify-center items-center">{rewardIcon}</div>
-          <div className="flex justify-center text-center text-3xl font-medium font-quantico">
+          <div className="flex justify-center px-5 text-center font-mono text-[15px] font-medium leading-6 desktop:px-0 desktop:text-3xl desktop:font-quantico">
             {message}
           </div>
         </ModalBody>

@@ -57,10 +57,10 @@ const InventoryTabPanel: ReactTabsFunctionComponent<StoreTabContentProps> = ({
   return (
     <TabPanel
       {...props}
-      className={`-mt-[2px] hidden border-2 border-white bg-[#7D83B2] min-h-[520px] flex-grow overflow-y-auto`}
+      className={`-mt-[2px] hidden min-h-[420px] flex-grow overflow-y-auto border-2 border-white bg-[#7D83B2] desktop:min-h-[520px]`}
       selectedClassName={`!block`}
     >
-      <div className="p-4 grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 p-3 tablet:grid-cols-3 desktop:grid-cols-4 desktop:gap-4 desktop:p-4">
         {sortedItems.map((item, index) =>
           "level" in item ? (
             type === "Store" ? (
