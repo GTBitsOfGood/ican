@@ -7,7 +7,7 @@ export default function TriviaGamePage() {
     <GameWrapper
       GameComponent={TriviaGame}
       gameName={GameName.TRIVIA}
-      gameAreaClassName="right-[12%]"
+      whiteboardContainerClassName="absolute right-40 top-0 aspect-square w-[50%]"
     />
   );
 }

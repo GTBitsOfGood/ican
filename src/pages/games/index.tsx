@@ -16,13 +16,16 @@ export default function GamesIndex() {
   return (
     <AuthorizedRoute>
       <div className="min-h-screen bg-icanBlue-200 flex flex-col">
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <div className="w-10" />
-          <h1 className="font-quantico text-4xl font-bold text-white">Games</h1>
+        <div className="flex items-center justify-between px-6 pt-6 pb-2 smallTablet:justify-center smallTablet:relative">
+          <div className="w-10 hidden smallTablet:block" />
+          <h1 className="font-quantico text-5xl smallTablet:text-4xl font-bold text-white">
+            Games
+          </h1>
+          <div className="w-10 smallTablet:hidden" />
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="hover:opacity-80 transition-opacity"
+            className="hover:opacity-80 transition-opacity absolute right-6"
             aria-label="Close"
           >
             <svg

@@ -5,16 +5,19 @@ import { LIVES } from "@/constant/flowermanConstants";
 
 export default function FlowermanFlower({
   livesRemaining,
+  isMobile = false,
 }: {
   livesRemaining: number;
+  isMobile?: boolean;
 }) {
   const index = Math.min(9, Math.max(1, 9 - livesRemaining));
   const src = `/games/flowerman/flower/${index}.svg`;
   const showFlower = livesRemaining < LIVES;
 
   return (
-    <div className="relative w-full max-w-[350px] aspect-square mx-auto overflow-hidden">
-      {/* Faint full flower in the background so players see the end state */}
+    <div
+      className={`relative w-full aspect-square mx-auto overflow-hidden ${isMobile ? "max-w-[160px]" : "max-w-[350px]"}`}
+    >
       <Image
         src="/games/flowerman/flower/9.svg"
         alt=""

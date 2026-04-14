@@ -25,6 +25,7 @@ export default function FlowermanGame({
   setPetBoardX,
   setPetEmotion,
   setWinRewardDetails,
+  isMobile,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: gameStatistics } = useGameStatistics(userId);
@@ -61,6 +62,8 @@ export default function FlowermanGame({
           message: pendingHintRef.current,
           letters: `${pendingWordLengthRef.current} LETTERS`,
           onClose: () => setGameState(GameState.PLAYING),
+          buttonText: "Play",
+          showCloseButton: true,
         });
       },
     });
@@ -131,8 +134,7 @@ export default function FlowermanGame({
       });
 
       setGameState(GameState.WON);
-    } catch (error) {
-      console.error("Error processing game win:", error);
+    } catch {
       setWinRewardDetails?.(null);
       showInformationModal({
         title: "YOU WIN!",
@@ -180,9 +182,35 @@ export default function FlowermanGame({
     }
   };
 
+  if (isMobile) {
+    return (
+      <div className="flex flex-col items-center w-full h-full">
+        <div className="absolute -top-4 left-0 right-0 flex justify-center z-10">
+          <MistakesLeft count={lives} />
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center w-full pt-20">
+          <FlowermanWordWithFlower
+            word={word}
+            guessedLetters={guessedLetters}
+            livesRemaining={lives}
+            isMobile
+          />
+        </div>
+        <div className="fixed bottom-0 left-0 right-0 px-2 pb-4 z-[40]">
+          <FlowermanKeyboard
+            word={word}
+            guessedLetters={guessedLetters}
+            disabled={gameState !== GameState.PLAYING}
+            onLetterGuess={handleLetterGuess}
+            isMobile
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* Mistakes left — top left, to the right of the profile header; z below modal (60) so it greys out with overlay */}
       <div className="fixed top-[100px] left-[90px] z-[50]">
         <MistakesLeft count={lives} />
       </div>
@@ -194,7 +222,6 @@ export default function FlowermanGame({
           livesRemaining={lives}
         />
       </div>
-      {/* Keyboard — fixed across the full bottom of the screen; disabled until playing */}
       <div className="fixed bottom-0 left-0 right-0 px-6 pb-4">
         <FlowermanKeyboard
           word={word}

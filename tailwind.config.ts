@@ -11,10 +11,11 @@ export default {
   theme: {
     screens: {
       mobile: "320px",
-      smallTablet: "550px",
+      smallTablet: "650px",
       tablet: "768px",
       desktop: "1024px",
       largeDesktop: "1280px",
+      wideGame: "1400px",
       extraLargeDesktop: "1536px",
       short: {
         raw: "(max-height: 800px)",
