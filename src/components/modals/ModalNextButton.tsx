@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface ModalNextButtonProps {
   link: string;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
+  onClick?: (e?: React.MouseEvent<HTMLButtonElement>) => void | Promise<void>;
   requirePin?: boolean;
   preventNavigation?: boolean;
   disabled?: boolean;
@@ -43,7 +43,11 @@ export default function ModalNextButton({
         <LogPasswordModal
           isOpen={isOpen}
           onClose={onClose}
-          handleNext={onClick}
+          handleNext={async (e) => {
+            if (onClick) {
+              await onClick(e);
+            }
+          }}
           link={link}
         />
       )}

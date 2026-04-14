@@ -45,9 +45,9 @@ const InventoryTabContainer: React.FC<TabsProps> = ({
         setSelectedIndex(index);
         onSelectTab();
       }}
-      className="flex flex-col h-full"
+      className="flex h-full min-h-[420px] flex-col desktop:min-h-0"
     >
-      <TabList className="flex gap-16 justify-between border-bottom-0">
+      <TabList className="scrollbar-custom flex gap-0 overflow-x-auto overflow-y-hidden whitespace-nowrap border-bottom-0 desktop:justify-between desktop:gap-16 desktop:overflow-x-visible">
         {["Clothes", "Accessories", "Backgrounds"].map((title, index) => (
           <InventoryTab
             key={title}

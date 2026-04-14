@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { belanosima, pixelifySans, quantico } from "@/styles/font";
 import { UserProvider } from "@/components/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
@@ -21,6 +22,9 @@ export default function App({ Component, pageProps }: AppProps) {
     <main
       className={`${quantico.variable} ${pixelifySans.variable} ${belanosima.variable}`}
     >
+      <Head>
+        <title>iCAN Pill Pall</title>
+      </Head>
       <QueryClientProvider client={queryClient}>
         <GoogleOAuthProvider clientId={clientId}>
           <UserProvider>

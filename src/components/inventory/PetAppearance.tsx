@@ -41,9 +41,7 @@ const PetAppearance: React.FC<PetAppearanceProps> = ({
       : undefined;
 
   return (
-    <div
-      className={`relative ${className} flex items-center justify-center w-full`}
-    >
+    <div className={`relative flex items-center justify-center ${className}`}>
       {!outfitOnly && petType && (
         <Image
           src={getCharacterImage(petType, emotion)}

@@ -6,6 +6,7 @@ import {
   ModalBody,
   useDisclosure,
 } from "@heroui/react";
+import { useRouter } from "next/router";
 import { useUser } from "../UserContext";
 import ModalCloseButton from "./ModalCloseButton";
 import {
@@ -18,6 +19,7 @@ import AuthHTTPClient from "@/http/authHTTPClient";
 
 export default function ForgotPinModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const router = useRouter();
   const { userId } = useUser();
   const [otp, setOTP] = useState<string>("");
   const [displayError, setDisplayError] = useState<string>("");
@@ -59,7 +61,7 @@ export default function ForgotPinModal() {
       return;
     }
 
-    window.location.href = "change-pin";
+    void router.push("/change-pin");
   };
 
   return (
