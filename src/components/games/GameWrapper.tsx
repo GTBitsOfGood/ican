@@ -40,7 +40,7 @@ export interface GameWrapperControls {
   setGameState: (state: GameState) => void;
   showInformationModal: (options: InformationModalOptions) => void;
   setPetBoardX?: (percent: number | null) => void;
-  setPetEmotion?: (emotion: PetEmotion | null) => void;
+  setPetEmotion: (emotion: PetEmotion | null) => void;
   setWinRewardDetails?: (details: WinRewardDetails | null) => void;
   isMobile?: boolean;
 }

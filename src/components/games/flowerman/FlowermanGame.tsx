@@ -50,7 +50,7 @@ export default function FlowermanGame({
     const { hint, wordLength } = startNewWord();
     pendingHintRef.current = hint;
     pendingWordLengthRef.current = wordLength;
-    setSpeechText("Let's start! It’s your turn to guess a letter.");
+    setSpeechText("Let's start! It's your turn to guess a letter.");
     showInformationModal({
       gameMode: "FLOWERMAN",
       title: "INSTRUCTIONS",
@@ -106,6 +106,7 @@ export default function FlowermanGame({
     if (!userId || isProcessingWin) return;
 
     setIsProcessingWin(true);
+    setPetEmotion(PetEmotion.HAPPY);
     setWinRewardDetails?.(null);
 
     try {

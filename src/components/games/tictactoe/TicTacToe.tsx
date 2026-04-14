@@ -14,6 +14,7 @@ import {
   type Board,
   type Difficulty,
 } from "./tictactoeAI";
+import { PetEmotion } from "@/types/pet";
 
 export default function TicTacToe({
   setSpeechText,
@@ -21,6 +22,7 @@ export default function TicTacToe({
   setGameState,
   showInformationModal,
   setWinRewardDetails,
+  setPetEmotion,
 }: GameWrapperControls) {
   const { userId } = useUser();
   const { data: userProfile } = useUserProfile(userId);
@@ -213,6 +215,7 @@ export default function TicTacToe({
 
     setIsProcessingWin(true);
     setWinRewardDetails?.(null);
+    setPetEmotion(PetEmotion.HAPPY);
 
     try {
       const coinsAlreadyEarned = gameStatistics?.coinsEarnedToday ?? 0;
