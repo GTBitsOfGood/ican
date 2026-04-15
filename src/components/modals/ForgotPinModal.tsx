@@ -28,6 +28,11 @@ export default function ForgotPinModal() {
     onOpen();
   }, [onOpen]);
 
+  const handleClose = () => {
+    onClose();
+    void router.replace("/");
+  };
+
   //sends OTP
   useEffect(() => {
     if (!userId) {
@@ -74,10 +79,10 @@ export default function ForgotPinModal() {
       }}
       className="w-[45%] font-quantico font-bold z-50 text-white py-8 px-6 overflow-y-hidden rounded-none outline-none"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader>Forgot Pin</ModalHeader>

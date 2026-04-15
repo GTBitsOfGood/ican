@@ -28,6 +28,11 @@ export default function ChangePinModal() {
     onOpen();
   }, [onOpen]);
 
+  const handleClose = () => {
+    onClose();
+    void router.replace("/");
+  };
+
   // Currently only updates pin, the logic here should be changed in the future
   const handleClick = async () => {
     if (oldPin.length < 4) {
@@ -64,10 +69,10 @@ export default function ChangePinModal() {
       }}
       className="z-50 w-[calc(100vw-34px)] max-w-[360px] overflow-y-hidden rounded-none bg-[#565DAA] px-[30px] pb-9 pt-[64px] font-quantico font-bold text-white outline-none desktop:w-[85%] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8 desktop:text-white"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent>
         <ModalHeader className="justify-center text-center desktop:justify-start desktop:text-left">

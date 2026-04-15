@@ -37,6 +37,11 @@ export default function ChangeChildLoginModal() {
     onOpen();
   }, [onOpen]);
 
+  const handleClose = () => {
+    onClose();
+    void router.replace("/");
+  };
+
   const handleSave = () => {
     if (
       isPatternChildPasswordType(childPasswordType) &&
@@ -82,12 +87,12 @@ export default function ChangeChildLoginModal() {
         base: "h-[100dvh] max-h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] text-white shadow-none desktop:h-auto desktop:max-h-[650px] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:text-[#a8b0d3]",
         header: "px-0 text-5xl desktop:px-0",
       }}
-      className="z-50 h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] px-5 pb-8 pt-10 font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[60%] desktop:max-w-none desktop:bg-transparent desktop:px-6 desktop:py-8"
+      className="z-50 h-[100dvh] w-screen max-w-none rounded-none bg-[#565DAA] px-5 pb-8 pt-10 font-quantico font-bold text-white outline-none desktop:h-auto desktop:w-[85%] desktop:max-w-[840px] desktop:bg-icanBlue-200 desktop:px-6 desktop:py-8 desktop:text-white"
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       radius="lg"
       placement="center"
-      closeButton={<ModalCloseButton onClose={onClose} />}
+      closeButton={<ModalCloseButton onClose={handleClose} />}
     >
       <ModalContent className="h-full overflow-hidden desktop:h-auto">
         <ModalHeader className="justify-start px-0 text-left leading-[48px] tracking-[-0.08em] desktop:justify-start">
