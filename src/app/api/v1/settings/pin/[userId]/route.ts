@@ -66,7 +66,15 @@ export const POST = withAuth<{ userId: string }>(
     verifyUser(tokenUser, userId, ERRORS.SETTINGS.UNAUTHORIZED.USER_ID);
 
     const { pin } = await req.json();
-    await SettingsService.validatePin(userId, pin);
+
+    try {
+      await SettingsService.validatePin(userId, pin);
+    } catch {
+      return NextResponse.json(
+        { error: "Incorrect PIN. Please try again." },
+        { status: 400 },
+      );
+    }
 
     const newToken = await AuthService.enableParentalMode(userId);
 
