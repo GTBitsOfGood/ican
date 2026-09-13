@@ -72,7 +72,7 @@ export default function GameCard({ name, banner, href, stats }: GameCardProps) {
             />
           </div>
         ) : (
-          <div className="mt-3 text-center text-sm text-gray-500">
+          <div className="mt-3 text-center text-sm text-gray-500 font-quantico">
             <p>No games played yet</p>
             <div className="flex items-center justify-center gap-1 font-bold">
               <Image
@@ -110,7 +110,7 @@ function StatItem({
   sublabel: string;
 }) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center font-quantico">
       <div className="flex items-center gap-1 text-xs text-gray-500">
         <Image
           src={icon}
