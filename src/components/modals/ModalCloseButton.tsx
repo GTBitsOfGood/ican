@@ -1,14 +1,18 @@
 import { useRouter } from "next/router";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 interface ModalCloseButtonProps {
   onClose: () => void;
   link?: string;
+  // Not `className`: HeroUI clones closeButton and overwrites className with its own slot classes.
+  buttonClassName?: string;
 }
 
 export default function ModalCloseButton({
   onClose,
   link,
+  buttonClassName,
 }: ModalCloseButtonProps) {
   const router = useRouter();
 
@@ -24,7 +28,10 @@ export default function ModalCloseButton({
     <button
       type="button"
       onClick={handleClick}
-      className="absolute left-[10px] top-[8px] z-50 flex h-11 w-11 items-center justify-center font-pixelify text-5xl font-normal leading-none text-white hover:bg-white/5 active:bg-white/10 desktop:left-auto desktop:right-[2.5rem] desktop:top-[3rem] desktop:h-12 desktop:w-12 desktop:rounded-full desktop:text-6xl desktop:text-iCAN-Green"
+      className={cn(
+        "absolute left-[10px] top-[8px] z-50 flex h-11 w-11 items-center justify-center font-pixelify text-5xl font-normal leading-none text-white hover:bg-white/5 active:bg-white/10 desktop:left-auto desktop:right-[2.5rem] desktop:top-[3rem] desktop:h-12 desktop:w-12 desktop:rounded-full desktop:text-6xl desktop:text-iCAN-Green",
+        buttonClassName,
+      )}
       aria-label="Close"
     >
       <span className="block leading-none">x</span>

@@ -46,7 +46,12 @@ export default function FoodModal({
       placement="center"
       isDismissable={true}
       shouldCloseOnInteractOutside={() => true}
-      closeButton={<ModalCloseButton onClose={handleClose} />}
+      closeButton={
+        <ModalCloseButton
+          onClose={handleClose}
+          buttonClassName="desktop:right-3 desktop:top-3"
+        />
+      }
     >
       <ModalContent>
         <ModalHeader>{levelChanged ? "Level Up!" : ""}</ModalHeader>
