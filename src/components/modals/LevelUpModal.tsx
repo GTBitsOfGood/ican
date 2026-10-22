@@ -49,7 +49,9 @@ export default function FoodModal({
       closeButton={
         <ModalCloseButton
           onClose={handleClose}
-          buttonClassName="desktop:right-3 desktop:top-3"
+          buttonClassName={
+            levelChanged ? undefined : "desktop:right-3 desktop:top-3"
+          }
         />
       }
     >
